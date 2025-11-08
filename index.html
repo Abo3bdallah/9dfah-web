@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع صدفة</title>
+    <!-- تحميل مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خط "تجواب" من جوجل -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* تطبيق الخط المخصص على كامل الصفحة */
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        /* إخفاء الصفحات التي تحتاج تنسيق flex بشكل افتراضي */
+        /* هذا ضروري لـ page-tools, page-competitions, page-games, page-policy */
+        .page-flex {
+            display: none;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- ======================= -->
+    <!--     الصفحة الرئيسية       -->
+    <!-- (style="display: block;" لجعلها ظاهرة افتراضياً) -->
+    <!-- ======================= -->
+    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen flex flex-col" style="display: block;">
+
+        <!-- القسم العلوي المرن -->
+        <div class="flex-grow flex flex-col justify-center">
+            <!-- العنوان الرئيسي -->
+            <header class="text-center mb-16">
+                <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 to-green-500 text-transparent bg-clip-text drop-shadow-md transition-all duration-300 hover:drop-shadow-xl">صدفة</h1>
+                <p class="text-2xl text-gray-600 mt-6">اختر القسم الذي تريد تصفحه</p>
+            </header>
+
+            <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
+            <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- اختيار 1: ادوات الميسر -->
+                <div id="btn-tools" class="bg-white p-8 rounded-xl shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl duration-300 cursor-pointer text-center">
+                    <!-- تم استبدال الأيقونة SVG بالصورة الجديدة -->
+                    <img src="https://i.postimg.cc/66M7Z6Wx/3.png" alt="ادوات الميسر" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-2">ادوات الميسر</h2>
+                    <p class="text-gray-600">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
+                </div>
+
+                <!-- اختيار 2: منصة التنافس -->
+                <div id="btn-competitions" class="bg-white p-8 rounded-xl shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl duration-300 cursor-pointer text-center">
+                    <img src="https://i.postimg.cc/y6LJR61K/4.png" alt="منصة التنافس" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h2 class="text-2xl font-bold text-green-700 mb-2">منصة التنافس</h2>
+                    <p class="text-gray-600">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
+                </div>
+
+                <!-- اختيار 3: ألعاب اجتماعية -->
+                <div id="btn-games" class="bg-white p-8 rounded-xl shadow-lg transform transition-transform hover:scale-105 hover:shadow-xl duration-300 cursor-pointer text-center">
+                    <img src="https://i.postimg.cc/sfTBWfjr/5.png" alt="ألعاب اجتماعية" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h2 class="text-2xl font-bold text-red-700 mb-2">ألعاب اجتماعية</h2>
+                    <p class="text-gray-600">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <footer class="text-center text-gray-600 mt-24 pt-6 border-t border-gray-200">
+            <!-- التعديل هنا: تم تغيير الرابط واستخدام كلاس -->
+            <p class="text-sm">
+                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                <span class="mx-2">|</span>
+                <a href="#" class="btn-policy hover:text-blue-500 transition-colors">سياسة الاستخدام والخصوصية</a>
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- ======================= -->
+    <!--     صفحة أدوات الميسر    -->
+    <!-- (style="display: none;" لإخفائها افتراضياً) -->
+    <!-- ======================= -->
+    <div id="page-tools" class="page page-flex container mx-auto p-6 md:p-12 min-h-screen" style="display: none;">
+        <!-- رأس الصفحة -->
+        <header class="flex justify-between items-center mb-12">
+            <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">ادوات الميسر</h2>
+            <!-- زر العودة (أصبح زر مع كلاس btn-back) -->
+            <button class="btn-back bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                العودة للرئيسية
+            </button>
+        </header>
+
+        <!-- شبكة عرض البطاقات -->
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
+            <!-- بطاقة 1: صدفة -->
+            <a href="https://9odfah6.netlify.app/#wheel" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-blue-700">1. صدفة</h3>
+                    <p class="text-gray-600 mb-4">موقع يجمع 6 أنواع مختلفة من القرع تساعد الميسر في شتى المجالات.</p>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">للجوال والكمبيوتر</span>
+                </div>
+            </a>
+            <!-- بطاقة 2: صناديق الأسئلة -->
+            <a href="https://bank-alaselh.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/PJVJmNhK/snadyq.png" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-blue-700">2. صناديق الأسئلة</h3>
+                    <p class="text-gray-600 mb-4">بنك ضخم تفاعلي فيه 500 سؤال مع خيارات وتأثيرات مختلفة ونظام منافسة.</p>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">للجوال والكمبيوتر</span>
+                </div>
+            </a>
+            <!-- بطاقة 3: حروف رحال -->
+            <a href="https://7rof-questions.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/SR1RWjqL/hrwf.png" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-blue-700">3. حروف رحال</h3>
+                    <p class="text-gray-600 mb-4">بنك أسئلة ضخم بأكثر من 800 سؤال مقسمة على الحروف مع نظام منافسة.</p>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">للجوال والكمبيوتر</span>
+                </div>
+            </a>
+            <!-- بطاقة 4: ريموت -->
+            <a href="https://remot-althy.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/2y9y43m0/rymwt.png" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-blue-700">4. ريموت</h3>
+                    <p class="text-gray-600 mb-4">موقع جاهز لإظهار شاشة صحيحة (خضراء) أو خاطئة (حمراء) بشكل تفاعلي.</p>
+                    <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">للعرض على الشاشات</span>
+                </div>
+            </a>
+        </main>
+        <!-- تذييل الصفحة -->
+        <footer class="text-center text-gray-600 mt-16 pt-6 border-t border-gray-200">
+            <!-- التعديل هنا: تم تغيير الرابط واستخدام كلاس -->
+            <p class="text-sm">
+                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                <span class="mx-2">|</span>
+                <a href="#" class="btn-policy hover:text-blue-500 transition-colors">سياسة الاستخدام والخصوصية</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ======================= -->
+    <!--    صفحة منصة التنافس     -->
+    <!-- (style="display: none;" لإخفائها افتراضياً) -->
+    <!-- ======================= -->
+    <div id="page-competitions" class="page page-flex container mx-auto p-6 md:p-12 min-h-screen" style="display: none;">
+        <!-- رأس الصفحة -->
+        <header class="flex justify-between items-center mb-12">
+            <h2 class="text-3xl font-bold border-r-4 border-green-500 pr-4">منصة التنافس</h2>
+            <button class="btn-back bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                العودة للرئيسية
+            </button>
+        </header>
+        
+        <!-- شبكة عرض البطاقات -->
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
+            
+            <!-- بطاقة 1: خزنة ربان (الصورة المحدثة) -->
+            <a href="https://5znh.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/8z9yZbtp/khznt.png" alt="صورة مسابقة خزنة ربان" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=خزنة+ربان';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-green-700">1. مسابقة خزنة ربان</h3>
+                    <p class="text-gray-600 mb-4">قالب مسابقة جاهز مكون من 50 خزنة قابل للهيكلة بشكل كامل.</p>
+                    <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">للشاشات فقط</span>
+                </div>
+            </a>
+            
+            <!-- بطاقة 2: حرب البحار (الصورة المحدثة) -->
+            <a href="https://sea-war-althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/RCjfNbsR/hrb-albhar.png" alt="صورة مسابقة حرب البحار" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حرب+البحار';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-green-700">2. حرب البحار</h3>
+                    <p class="text-gray-600 mb-4">لعبة تنافسية بين ثلاثة فرق لإخفاء وكشف السفن مع تخصيص كامل.</p>
+                    <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">للشاشات فقط</span>
+                </div>
+            </a>
+            
+            <!-- بطاقة 3: الترتيب العاشر (الصورة المحدثة) -->
+            <a href="https://top10althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/TPrN4DKt/altrtyb.png" alt="صورة مسابقة الترتيب العاشر" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=الترتيب+العاشر';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-green-700">3. الترتيب العاشر</h3>
+                    <p class="text-gray-600 mb-4">مسابقة توقع إجابات وكلما كان المركز أبعد كانت النقاط أعلى.</p>
+                    <span class="inline-block bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">للشاشات (تعمل على الجوال)</span>
+                </div>
+            </a>
+            
+            <!-- بطاقة 4: فكر تربح (الصورة المحدثة) -->
+            <a href="https://fkrtrb7.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/Gpkg5y4S/trbh.png" alt="صورة لعبة فكر تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=فكر+تربح';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-green-700">4. فكر تربح</h3>
+                    <p class="text-gray-600 mb-4">لعبة "اربع تربح" ولكن بنسخة خماسية مع أسئلة ثقافية ومنافسة.</p>
+                    <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">للشاشات فقط</span>
+                </div>
+            </a>
+        </main>
+        <!-- تذييل الصفحة -->
+        <footer class="text-center text-gray-600 mt-16 pt-6 border-t border-gray-200">
+            <!-- التعديل هنا: تم تغيير الرابط واستخدام كلاس -->
+            <p class="text-sm">
+                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                <span class="mx-2">|</span>
+                <a href="#" class="btn-policy hover:text-blue-500 transition-colors">سياسة الاستخدام والخصوصية</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ======================= -->
+    <!--    صفحة ألعاب اجتماعية   -->
+    <!-- (style="display: none;" لإخفائها افتراضياً) -->
+    <!-- ======================= -->
+    <div id="page-games" class="page page-flex container mx-auto p-6 md:p-12 min-h-screen" style="display: none;">
+        <!-- رأس الصفحة -->
+        <header class="flex justify-between items-center mb-12">
+            <h2 class="text-3xl font-bold border-r-4 border-red-500 pr-4">ألعاب اجتماعية</h2>
+            <button class="btn-back bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                العودة للرئيسية
+            </button>
+        </header>
+
+        <!-- شبكة عرض البطاقات -->
+        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
+            
+            <!-- بطاقة 1: مين الملقوف (الصورة المحدثة) -->
+            <a href="https://almlgof.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/m2B9YF4M/7.png" alt="صورة لعبة مين الملقوف" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=مين+الملقوف';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-red-700">1. مين الملقوف</h3>
+                    <p class="text-gray-600 mb-4">لعبة لتحديد كلمة يعلمها الجميع عدى "الملقوف" الذي يحاول توقعها.</p>
+                    <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">للجوالات فقط</span>
+                </div>
+            </a>
+            
+            <!-- بطاقة 2: مافيا (الصورة المحدثة) -->
+            <a href="https://mafia-althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-xl duration-300">
+                <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=مافيا';">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-2 text-red-700">2. مافيا</h3>
+                    <p class="text-gray-600 mb-4">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
+                    <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">للجوالات فقط</span>
+                </div>
+            </a>
+        </main>
+        <!-- تذييل الصفحة -->
+        <footer class="text-center text-gray-600 mt-16 pt-6 border-t border-gray-200">
+            <!-- التعديل هنا: تم تغيير الرابط واستخدام كلاس -->
+            <p class="text-sm">
+                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                <span class="mx-2">|</span>
+                <a href="#" class="btn-policy hover:text-blue-500 transition-colors">سياسة الاستخدام والخصوصية</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ======================= -->
+    <!--    صفحة سياسة الاستخدام   -->
+    <!-- (style="display: none;" لإخفائها افتراضياً) -->
+    <!-- ======================= -->
+    <div id="page-policy" class="page page-flex flex-col" style="display: none;">
+      <!-- الرأس العلوي (من صفحة السياسة) -->
+      <header class="bg-gradient-to-r from-blue-600 to-green-500 text-white shadow-lg w-full">
+        <div class="container mx-auto p-6 md:p-10 text-center">
+          <h1 class="text-3xl md:text-4xl font-bold">شروط الاستخدام لموقع "صدفة"</h1>
+          <p class="mt-2 text-lg">آخر تحديث: 8 نوفمبر 2025</p>
+        </div>
+      </header>
+    
+      <!-- المحتوى الرئيسي (من صفحة السياسة) -->
+      <main class="container mx-auto max-w-4xl my-10 md:my-16 p-6 md:p-10 bg-white rounded-xl shadow-lg flex-grow">
+        
+        <!-- زر العودة (هام: يستخدم كلاس btn-back) -->
+        <div class="mb-8">
+          <button class="btn-back bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+            &rarr; العودة للرئيسية
+          </button>
+        </div>
+    
+        <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
+        يُعد دخولك إلى الموقع أو استخدامك لأي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام المذكورة أدناه.<br>
+        إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
+    
+        <!-- 1. الملكية الفكرية -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">1. الملكية الفكرية</h2>
+        <p class="font-bold text-lg mb-2">1.1 الملكية الحصرية:</p>
+        <p class="mb-4">جميع المحتويات، والأكواد المصدرية، والتصاميم، والرسومات، والشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (مثل: صدفة، صناديق الأسئلة، حروف رحال، ريموت، خزنة ربان، حرب البحار، الترتيب العاشر، فكر تربح، مين الملقوف، مافيا) هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
+    
+        <p class="font-bold text-lg mb-2">1.2 الاستخدامات المحظورة:</p>
+        <ul class="list-disc pr-6 space-y-2">
+          <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو التصاميم أو المحتوى.</li>
+          <li>محاولة تحليل أو تفكيك أو إجراء هندسة عكسية لأي جزء من برمجيات الموقع.</li>
+          <li>استغلال الخدمات لأغراض تجارية أو لإنشاء منتج منافس.</li>
+          <li>إزالة أو إخفاء أي إشعارات متعلقة بحقوق النشر أو العلامات التجارية.</li>
+        </ul>
+    
+        <!-- 2. ترخيص الاستخدام -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">2. ترخيص الاستخدام</h2>
+        <p>يُمنح المستخدم ترخيصًا محدودًا، شخصيًا، غير حصري، غير قابل للتحويل، وقابلًا للإلغاء لاستخدام الخدمات لأغراض شخصية وغير تجارية فقط، ووفقًا لشروط هذه الاتفاقية.</p>
+    
+        <!-- 3. سلوك المستخدم -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">3. سلوك المستخدم</h2>
+        <ul class="list-disc pr-6 space-y-2">
+          <li>عدم ممارسة أي نشاط غير قانوني أو احتيالي.</li>
+          <li>عدم محاولة الوصول غير المصرح به إلى خوادم الموقع أو قواعد بياناته.</li>
+          <li>عدم استخدام أدوات أو برمجيات آلية (مثل Bots أو Scrapers) لجمع البيانات.</li>
+          <li>عدم التسبب بضرر أو تعطيل للخدمات أو التأثير سلبًا على تجربة المستخدمين الآخرين.</li>
+        </ul>
+    
+        <!-- 4. إخلاء المسؤولية -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">4. إخلاء المسؤولية</h2>
+        <p>تُقدَّم الخدمات "كما هي" (As-Is) دون أي ضمانات صريحة أو ضمنية تتعلق بالأداء أو الملاءمة أو الدقة.<br>
+        ولا يتحمل المالك أي مسؤولية عن أي أضرار مباشرة أو غير مباشرة تنتج عن استخدامك أو عدم قدرتك على استخدام الموقع أو تطبيقاته.</p>
+    
+        <!-- 5. تعديل الشروط -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">5. تعديل الشروط</h2>
+        <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت دون إشعار مسبق.<br>
+        سيتم نشر النسخة المحدثة على هذا الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
+    
+        <!-- 6. التواصل -->
+        <h2 class="text-2xl font-bold text-blue-700 border-r-4 border-blue-500 pr-3 mb-4 mt-8">6. التواصل</h2>
+        <p>للاستفسارات أو طلبات الإذن باستخدام أي من المواد، يُرجى التواصل عبر البريد الإلكتروني:<br>
+        <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline">althebyani7@gmail.com</a></p>
+      </main>
+    
+      <!-- تذييل الصفحة (من صفحة السياسة) -->
+      <footer class="text-center text-gray-600 mt-16 mb-10 pt-6 border-t border-gray-200 container mx-auto">
+        <p class="text-sm">
+          جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+        </p>
+      </footer>
+    </div>
+
+
+    <!-- ======================= -->
+    <!-- كود الجافاسكربت للتنقل -->
+    <!-- ======================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // جلب عناصر الصفحات
+            const pageWelcome = document.getElementById('page-welcome');
+            const pageTools = document.getElementById('page-tools');
+            const pageCompetitions = document.getElementById('page-competitions');
+            const pageGames = document.getElementById('page-games');
+            const pagePolicy = document.getElementById('page-policy'); // <-- إضافة صفحة السياسة
+            
+            // جلب كل الصفحات (لإخفائها)
+            const allPages = document.querySelectorAll('.page');
+
+            // جلب أزرار الاختيار من الصفحة الرئيسية
+            const btnTools = document.getElementById('btn-tools');
+            const btnCompetitions = document.getElementById('btn-competitions');
+            const btnGames = document.getElementById('btn-games');
+            
+            // جلب جميع أزرار العودة (الموجودة في كل صفحة قسم)
+            const backButtons = document.querySelectorAll('.btn-back');
+
+            // جلب جميع روابط السياسة (الموجودة في التذييلات)
+            const policyLinks = document.querySelectorAll('.btn-policy'); // <-- إضافة روابط السياسة
+
+            // دالة لإظهار صفحة معينة وإخفاء البقية
+            function showPage(pageToShow) {
+                // إخفاء جميع الصفحات أولاً
+                allPages.forEach(page => {
+                    page.style.display = 'none'; 
+                });
+                
+                // ثم إظهار الصفحة المطلوبة
+                if (pageToShow) {
+                    // الصفحة الرئيسية (page-welcome) تحتاج display: block
+                    if (pageToShow === pageWelcome) {
+                        pageToShow.style.display = 'block';
+                    } else {
+                        // صفحات الأقسام الأخرى (بما فيها السياسة) تحتاج display: flex
+                        pageToShow.style.display = 'flex'; 
+                    }
+                }
+                // العودة لأعلى الصفحة لضمان تجربة مستخدم سلسة
+                window.scrollTo(0, 0);
+            }
+
+            // ربط أحداث النقر على أزرار اختيار الأقسام
+            btnTools.addEventListener('click', () => showPage(pageTools));
+            btnCompetitions.addEventListener('click', () => showPage(pageCompetitions));
+            btnGames.addEventListener('click', () => showPage(pageGames));
+
+            // ربط أحداث النقر على جميع روابط "سياسة الاستخدام"
+            policyLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); // منع الرابط من القفز لأعلى الصفحة
+                    showPage(pagePolicy);
+                });
+            });
+
+            // ربط أحداث النقر على جميع أزرار "العودة للرئيسية"
+            // هذا الكود سيعمل تلقائياً مع زر العودة الجديد في صفحة السياسة
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => showPage(pageWelcome));
+            });
+        });
+    </script>
+
+</body>
+</html>
