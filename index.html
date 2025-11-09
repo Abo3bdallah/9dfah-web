@@ -76,12 +76,6 @@
             padding: 0 !important; 
             overflow: hidden; /* إخفاء أي scrollbars */
         }
-        
-        #remote-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
 
     </style>
 </head>
@@ -498,9 +492,10 @@
         </header>
         
         <!-- إطار التضمين -->
-        <!-- *** إصلاح: إضافة flex-grow لضمان تمدد الإطار *** -->
-        <main class="flex-grow">
-            <iframe id="remote-iframe" src="about:blank" class="w-full h-full border-none"></iframe>
+        <!-- *** إصلاح: هذا هو التعديل الأخير لضمان ملء الشاشة *** -->
+        <!-- استخدام `flex-1` على `main` و `h-full` على `iframe` داخل حاوية `flex` -->
+        <main class="flex-1"> <!-- تم التغيير من flex-grow -->
+            <iframe id="remote-iframe" src="about:blank" class="w-full h-full border-none"></iframe> <!-- تم الإبقاء على h-full -->
         </main>
     </div>
 
