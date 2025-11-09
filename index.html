@@ -112,10 +112,8 @@
         
         <!-- يظهر عند تسجيل الدخول -->
         <div id="user-info" class="hidden items-center gap-3">
-            <!-- (تعديل) هذا العنصر سيعرض اسم المستخدم الآن وهو "زر" -->
-            <button id="user-display-button" class="text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 px-3 py-2 rounded-lg hover:bg-white/70 dark:hover:bg-zinc-800/70 transition">
-                ...
-            </button>
+            <!-- (تعديل) هذا العنصر سيعرض اسم المستخدم الآن -->
+            <span id="user-email" class="text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 px-3 py-2 rounded-lg"></span>
             <button id="btn-logout" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition active:scale-95 text-sm font-medium">خروج</button>
         </div>
     </div>
@@ -251,46 +249,6 @@
                         إنشاء حساب جديد
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- ======================= -->
-    <!-- (جديد) شاشة الإعدادات -->
-    <!-- ======================= -->
-    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
-            <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 id="settings-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">الإعدادات</h2>
-                <button id="btn-close-settings" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
-            </header>
-            
-            <!-- نموذج الإعدادات -->
-            <form id="settings-form" class="p-8">
-                <!-- قسم: تعديل اسم المستخدم -->
-                <div class="mb-6">
-                    <label for="settings-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تعديل اسم المستخدم</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        <button type="submit" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
-                    </div>
-                </div>
-
-                <!-- قسم: تغيير كلمة المرور -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور</label>
-                    <button id="btn-reset-password" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
-                        إرسال رابط إعادة التعيين إلى بريدي
-                    </button>
-                </div>
-                
-                <!-- رسالة الخطأ -->
-                <div id="settings-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-                <!-- رسالة النجاح -->
-                <div id="settings-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
             </form>
         </div>
     </div>
@@ -827,21 +785,8 @@
             // واجهة المستخدم المسجل
             const authLinks = document.getElementById('auth-links');
             const userInfo = document.getElementById('user-info');
-            const userDisplayButton = document.getElementById('user-display-button'); // (تعديل) تم تغيير ID العنصر
+            const userEmail = document.getElementById('user-email'); // (ملاحظة) هذا العنصر سيعرض اسم المستخدم الآن
             const btnLogout = document.getElementById('btn-logout');
-
-            // (جديد) عناصر شاشة الإعدادات
-            const settingsModal = document.getElementById('settings-modal');
-            const btnCloseSettings = document.getElementById('btn-close-settings');
-            const settingsForm = document.getElementById('settings-form');
-            const settingsUsernameInput = document.getElementById('settings-username');
-            const btnUpdateUsername = document.getElementById('btn-update-username');
-            const btnResetPassword = document.getElementById('btn-reset-password');
-            const settingsError = document.getElementById('settings-error');
-            const settingsSuccess = document.getElementById('settings-success');
-            
-            // (*** الإصلاح هنا: تعريف الزر الذي يفتح الإعدادات ***)
-            const btnShowSettings = userDisplayButton;
 
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
@@ -1217,20 +1162,6 @@
                 authSuccess.classList.remove('hidden');
                 authSuccess.textContent = message;
             }
-
-            // (جديد) إظهار رسالة خطأ في الإعدادات
-            function showSettingsError(message) {
-                settingsSuccess.classList.add('hidden');
-                settingsError.classList.remove('hidden');
-                settingsError.textContent = message;
-            }
-            
-            // (جديد) إظهار رسالة نجاح في الإعدادات
-            function showSettingsSuccess(message) {
-                settingsError.classList.add('hidden');
-                settingsSuccess.classList.remove('hidden');
-                settingsSuccess.textContent = message;
-            }
             
             // فتح شاشة تسجيل الدخول
             btnShowLogin.addEventListener('click', () => {
@@ -1243,77 +1174,6 @@
                 authModal.style.display = 'flex';
             });
             
-            // (جديد) فتح شاشة الإعدادات
-            btnShowSettings.addEventListener('click', () => {
-                // التأكد من جلب اسم المستخدم الحالي ووضعه في الحقل
-                const { data: { user } } = supabase.auth.getUser();
-                if (user && user.user_metadata?.username) {
-                    settingsUsernameInput.value = user.user_metadata.username;
-                }
-                // إخفاء الرسائل القديمة
-                settingsError.classList.add('hidden');
-                settingsSuccess.classList.add('hidden');
-                // إظهار الشاشة
-                settingsModal.style.display = 'flex';
-            });
-
-            // (جديد) إغلاق شاشة الإعدادات
-            btnCloseSettings.addEventListener('click', () => {
-                settingsModal.style.display = 'none';
-            });
-
-            // (جديد) عند إرسال نموذج الإعدادات (تحديث اسم المستخدم)
-            btnUpdateUsername.addEventListener('click', async (e) => {
-                e.preventDefault(); // منع إرسال النموذج
-                
-                const newUsername = settingsUsernameInput.value.trim();
-                if (!newUsername) {
-                    showSettingsError('الرجاء إدخال اسم مستخدم.');
-                    return;
-                }
-                if (newUsername.length < 3) {
-                    showSettingsError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
-                    return;
-                }
-
-                showSettingsSuccess('يتم تحديث الاسم...');
-
-                const { data, error } = await supabase.auth.updateUser({
-                    data: { username: newUsername } // تحديث البيانات في user_metadata
-                });
-
-                if (error) {
-                    showSettingsError(error.message);
-                } else {
-                    showSettingsSuccess('تم تحديث اسم المستخدم بنجاح!');
-                    // (مهم) تحديث الاسم الظاهر في الزر العلوي
-                    userDisplayButton.textContent = newUsername; 
-                    setTimeout(() => {
-                        settingsModal.style.display = 'none';
-                    }, 1500);
-                }
-            });
-
-            // (جديد) عند طلب إعادة تعيين كلمة المرور
-            btnResetPassword.addEventListener('click', async (e) => {
-                e.preventDefault();
-                showSettingsSuccess('يتم إرسال الرابط...');
-
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    showSettingsError('لا يمكن العثور على المستخدم.');
-                    return;
-                }
-
-                const { data, error } = await supabase.auth.resetPasswordForEmail(user.email);
-                
-                if (error) {
-                    showSettingsError(error.message);
-                } else {
-                    showSettingsSuccess('تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.');
-                }
-            });
-
             // فتح شاشة إنشاء حساب
             btnShowSignup.addEventListener('click', () => {
                 authTitle.textContent = 'إنشاء حساب جديد';
@@ -1395,11 +1255,7 @@
             
             // --- تسجيل الخروج ---
             btnLogout.addEventListener('click', async () => {
-                showAuthSuccess('يتم تسجيل الخروج...'); // (اختياري: إظهار رسالة)
-                const { error } = await supabase.auth.signOut();
-                if (error) {
-                    showAuthError(error.message);
-                }
+                await supabase.auth.signOut();
             });
             
             // --- مراقبة حالة المصادقة ---
@@ -1419,7 +1275,7 @@
                     // (تعديل) إظهار اسم المستخدم بدلاً من الإيميل
                     // إذا كان اسم المستخدم موجوداً، اعرضه. وإلا، اعرض الإيميل.
                     const displayName = session.user.user_metadata?.username || session.user.email;
-                    userDisplayButton.textContent = displayName; // (تعديل) تحديث الزر
+                    userEmail.textContent = displayName;
                     
                     // (جديد) إذا كان المستخدم قد سجل دخوله للتو عبر الرابط
                     // أو كان في الصفحة الرئيسية، اعرض له صفحة 'welcome'.
@@ -1439,10 +1295,7 @@
                     authLinks.classList.remove('hidden');
                     userInfo.classList.add('hidden');
                     userInfo.classList.remove('flex');
-                    userDisplayButton.textContent = ''; // (تعديل) مسح الزر
-                    
-                    // (*** إصلاح: إعادة التوجيه للرئيسية عند تسجيل الخروج ***)
-                    showPage('welcome', true);
+                    userEmail.textContent = '';
                 }
             });
 
