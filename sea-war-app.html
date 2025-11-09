@@ -1,0 +1,3587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حرب بحار الفتيان - تصميم جديد</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style id="dynamic-styles"></style>
+    <style>
+        :root {
+            --primary-color: #00a8ff;
+            --secondary-color: #fbc531;
+            --background-start: #1e272e;
+            --background-end: #34495e;
+            --surface-color: #485460;
+            --hit-color: #e84118;
+            --miss-color: #95a5a6;
+            --sunk-color: #2f3640;
+            --font-family: 'Cairo', sans-serif;
+            --border-radius: 12px;
+        }
+
+        body {
+            box-sizing: border-box;
+            font-family: var(--font-family);
+            background-image: linear-gradient(to bottom right, var(--background-start), var(--background-end));
+            margin: 0;
+            padding: 20px;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-y: auto; /* Allow vertical scroll */
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: white;
+            text-shadow: 0 0 15px var(--secondary-color);
+            animation: fadeInDown 1s ease;
+        }
+
+        /* New Style for Copyright Notice */
+        .copyright-notice {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4); /* Faint white color */
+            margin-top: 30px; /* Added margin-top for spacing */
+            text-align: center;
+        }
+
+        .game-status {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-controls {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .icon-btn {
+            background: var(--surface-color);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .icon-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 168, 255, 0.3);
+        }
+        .icon-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--surface-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .icon-btn.active {
+            background-color: #27ae60;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.7);
+        }
+        
+        /* --- New Ability Button Styles --- */
+        .ability-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            outline-offset: 4px;
+            transition: filter 250ms;
+            user-select: none;
+            touch-action: manipulation;
+            flex-shrink: 0;
+        }
+        .ability-btn .shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: hsl(0deg 0% 0% / 0.25);
+            will-change: transform;
+            transform: translateY(2px);
+            transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+        }
+        .ability-btn .edge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+        .ability-btn .front {
+            display: flex; /* Use flexbox */
+            align-items: center; /* Center items vertically */
+            gap: 8px; /* Space between icon and text */
+            position: relative;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: white;
+            will-change: transform;
+            transform: translateY(-4px);
+            transition: transform 600ms cubic-bezier(.3, .7, .4, 1), box-shadow 300ms ease;
+        }
+         .ability-btn .front svg {
+            width: 20px;
+            height: 20px;
+        }
+        .ability-btn:hover { filter: brightness(110%); }
+        .ability-btn:hover .front {
+            transform: translateY(-6px);
+            transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+        }
+        .ability-btn:active .front {
+            transform: translateY(-2px);
+            transition: transform 34ms;
+        }
+        .ability-btn:hover .shadow {
+            transform: translateY(4px);
+            transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+        }
+        .ability-btn:active .shadow {
+            transform: translateY(1px);
+            transition: transform 34ms;
+        }
+        .ability-btn:focus:not(:focus-visible) { outline: none; }
+        
+        /* Color Variants */
+        .ability-btn.radar .edge { background: linear-gradient( to left, hsl(195deg 100% 16%) 0%, hsl(195deg 100% 32%) 8%, hsl(195deg 100% 32%) 92%, hsl(195deg 100% 16%) 100% );}
+        .ability-btn.radar .front { background: hsl(195deg 100% 47%); }
+        
+        .ability-btn.double-shot .edge { background: linear-gradient( to left, hsl(140deg 100% 16%) 0%, hsl(140deg 100% 32%) 8%, hsl(140deg 100% 32%) 92%, hsl(140deg 100% 16%) 100% );}
+        .ability-btn.double-shot .front { background: hsl(140deg 100% 47%); }
+
+        /* States */
+        .ability-btn.active .front {
+            transform: translateY(-6px);
+            box-shadow: 0 0 15px 3px var(--secondary-color);
+        }
+        .ability-btn.used {
+            filter: grayscale(1);
+            cursor: not-allowed;
+            pointer-events: none; /* Make it unclickable */
+        }
+        .ability-btn.used .front { transform: translateY(-2px); }
+        .ability-btn.used .shadow { transform: translateY(1px); }
+        .ability-btn.used:hover .front, .ability-btn.used:active .front { transform: translateY(-2px); }
+        .ability-btn.used:hover .shadow, .ability-btn.used:active .shadow { transform: translateY(1px); }
+
+        /* Neumorphic Button Style */
+        .neumorphic-btn {
+            color: #e8e8e8;
+            padding: 0.7em 1.7em;
+            font-size: 16px;
+            border-radius: 0.5em;
+            background: #2a343a;
+            cursor: pointer;
+            border: 1px solid #3c4a58;
+            transition: all 0.3s;
+            box-shadow: 6px 6px 12px #1c252c, -6px -6px 12px #3a4f60;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-family);
+        }
+        
+        .neumorphic-btn svg {
+             width: 18px;
+            height: 18px;
+            stroke: currentColor;
+        }
+
+        .neumorphic-btn:hover {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .neumorphic-btn:active {
+            box-shadow: inset 4px 4px 12px #1c252c, inset -4px -4px 12px #3a4f60;
+        }
+
+
+        .turn-control-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .turn-control-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+      
+        .timer-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #27ae60;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        .timer-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .timer-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .timer-warning {
+            animation: pulse 1s infinite;
+            border-color: #f39c12 !important;
+        }
+        .timer-warning .timer-value { color: #f39c12 !important; }
+        .timer-danger {
+            animation: pulse 0.5s infinite;
+            border-color: var(--hit-color) !important;
+        }
+        .timer-danger .timer-value { color: var(--hit-color) !important; }
+        .timer-expired {
+            background: rgba(231, 76, 60, 0.3) !important;
+            border-color: #c0392b !important;
+        }
+        .current-player-display {
+            background: rgba(0, 168, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            flex-grow: 1;
+        }
+        .current-player-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .current-player-status { font-size: 0.9rem; opacity: 0.9; }
+        .turn-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .turn-btn {
+            color: #e8e8e8;
+            border-radius: 0.5em;
+            background: #2a343a;
+            cursor: pointer;
+            border: 1px solid #3c4a58;
+            transition: all 0.3s;
+            box-shadow: 6px 6px 12px #1c252c, -6px -6px 12px #3a4f60;
+            font-weight: bold;
+            font-family: var(--font-family);
+            margin: 0;
+        }
+        .turn-btn:hover {
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .turn-btn:active {
+            box-shadow: inset 4px 4px 12px #1c252c, inset -4px -4px 12px #3a4f60;
+        }
+        .turn-btn.success {
+            background: #27ae60;
+            box-shadow: 6px 6px 12px #1a6e3a, -6px -6px 12px #34f086;
+        }
+        .turn-btn.success:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+         .turn-btn.success:active {
+            box-shadow: inset 4px 4px 12px #1a6e3a, inset -4px -4px 12px #34f086;
+        }
+        .turn-btn.danger {
+            background: var(--hit-color);
+            box-shadow: 6px 6px 12px #a02d10, -6px -6px 12px #ff5520;
+        }
+        .turn-btn.danger:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+         .turn-btn.danger:active {
+             box-shadow: inset 4px 4px 12px #a02d10, inset -4px -4px 12px #ff5520;
+        }
+        .turn-btn.warning {
+            background: #f39c12;
+            box-shadow: 6px 6px 12px #a96d0c, -6px -6px 12px #ffc918;
+        }
+        .turn-btn.warning:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+         .turn-btn.warning:active {
+            box-shadow: inset 4px 4px 12px #a96d0c, inset -4px -4px 12px #ffc918;
+        }
+
+        .setting-group { margin-bottom: 15px; }
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .setting-input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .setting-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .turn-history {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .turn-history-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .auto-advance-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #44bd32;
+            margin-left: 10px;
+            animation: blink 1s infinite;
+        }
+
+        /* New Turn Control Panel Layout */
+        .main-turn-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .main-actions {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .main-actions .turn-btn {
+            padding: 15px 10px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        #startTimer, #pauseTimer {
+            grid-column: 2 / 3; /* Center button */
+            background: var(--secondary-color);
+            color: #1c252c;
+            border-color: #b34a00;
+        }
+        #startTimer:hover, #pauseTimer:hover {
+            background: #d35400;
+            color: white !important;
+            border-color: #d35400 !important;
+        }
+        
+        .secondary-controls-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            min-height: 50px; /* Prevent layout shift */
+        }
+
+        #toggleAdvancedSettingsBtn {
+            padding: 0.7em; /* Make it more square */
+            flex-shrink: 0; /* Prevent resizing */
+            transition: transform 0.4s ease-in-out;
+        }
+        #toggleAdvancedSettingsBtn.toggled {
+            transform: rotate(90deg);
+        }
+
+        .advanced-settings-panel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding: 0;
+            transition: max-width 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.5s ease-in-out;
+            white-space: nowrap; /* Prevent items from wrapping during animation */
+        }
+
+        .advanced-settings-panel.active {
+            max-width: 700px; /* A large value to accommodate all content */
+            opacity: 1;
+            padding: 10px 15px;
+        }
+
+        .turn-settings-compact {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end; /* Align children to bottom */
+            flex-grow: 1;
+            justify-content: center;
+        }
+        .turn-settings-compact .setting-group {
+            margin-bottom: 0;
+            /* Removed flex: 1 to stop inputs from stretching */
+        }
+
+        .setting-input[type="number"] {
+            width: 90px;
+        }
+        .secondary-actions {
+            margin-bottom: 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .secondary-actions .neumorphic-btn {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            white-space: nowrap; /* Prevent button text from wrapping */
+        }
+
+        .scoreboard {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .scoreboard-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .score-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid;
+            transition: transform 0.3s ease;
+        }
+        .score-card:hover { transform: scale(1.03); }
+        .score-card.rank-1 { border-left-color: var(--secondary-color); }
+        .score-card.rank-2 { border-left-color: var(--miss-color); }
+        .score-card.rank-3 { border-left-color: #e67e22; }
+
+        .team-score-name { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; }
+        .team-total-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        .score-details {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .teams-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Simplified layout for 3 teams on large screens */
+        @media (min-width: 1200px) {
+             body.teams-3 .teams-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .team-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 5px solid;
+        }
+        .team-section:hover {
+            transform: translateY(-5px);
+        }
+        .team-section.current-turn-highlight {
+            box-shadow: 0 0 25px rgba(251, 197, 49, 0.6);
+            border-color: var(--secondary-color) !important;
+        }
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .team-name { font-size: 1.3rem; font-weight: bold; }
+        .ships-status { font-size: 0.9rem; opacity: 0.8; }
+        .switch-turn-btn {
+            padding: 4px;
+            font-size: 0.7rem;
+            height: 28px;
+            width: 28px;
+            margin: 0 10px;
+            display: none; /* Hidden by default */
+        }
+        body.battle-phase .switch-turn-btn {
+            display: inline-flex;
+        }
+
+
+        .abilities-container {
+            display: none;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .team-section.current-turn-highlight .abilities-container {
+            display: flex;
+        }
+
+        .grid-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        .grid-header {
+            display: grid;
+            grid-template-columns: 30px repeat(var(--grid-width, 7), 1fr);
+            gap: 2px;
+            margin-bottom: 5px;
+            padding: 0 10px;
+        }
+        .grid-header-cell {
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        .grid-with-labels {
+            display: grid;
+            grid-template-columns: 30px 1fr;
+            gap: 5px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .grid-labels {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .grid-label {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-width, 7), 1fr);
+            gap: 3px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background-image: url('https://i.postimg.cc/zvrFxWCn/image.png');
+            background-size: cover;
+            background-position: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .cell:hover {
+            transform: scale(1.1);
+            box-shadow: inset 0 0 10px 2px rgba(0, 168, 255, 0.7);
+        }
+        .cell.ship, .cell.mine { background: transparent; }
+        .cell.hit { 
+            background: linear-gradient(135deg, #ff3838, #ff5722);
+            animation: hitPulse 0.5s ease;
+        }
+        .cell.miss {
+            background-image: none;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+        }
+        .cell.sunk { background: linear-gradient(135deg, #2d3436, #636e72); animation: sunkPulse 1s ease infinite; }
+        .cell.sinking-ship { animation: sinkingShip 1.5s ease forwards; }
+        
+        .cell.radar-reveal.water { animation: radarPulseWater 1s infinite; }
+        .cell.radar-reveal.hit { animation: radarPulseHit 1s infinite; }
+        .cell.radar-reveal.hit { background-color: rgba(0, 255, 0, 0.4); }
+        .cell.radar-preview {
+            background-color: rgba(46, 204, 113, 0.4) !important;
+            box-shadow: inset 0 0 10px rgba(46, 204, 113, 0.8);
+        }
+
+        .mine-image {
+            width: 80%;
+            height: 80%;
+            background-image: url('https://i.postimg.cc/y87gLKD3/image.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .controls { text-align: center; margin-bottom: 20px; }
+        .btn {
+            background-image: linear-gradient(to right, var(--primary-color), #0097e6);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 168, 255, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 168, 255, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            filter: grayscale(1);
+            background-image: none;
+            background-color: var(--surface-color);
+        }
+
+        .ships-dock {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dock-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--secondary-color); }
+        .ships-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .ship-item-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .count-arrow {
+            background: var(--surface-color);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .count-arrow:hover {
+            background-color: var(--primary-color);
+        }
+        .count-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: var(--surface-color);
+        }
+        .ship-counter {
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--secondary-color);
+            font-weight: bold;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .draggable-ship {
+            display: flex;
+            gap: 2px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid transparent;
+        }
+        .draggable-ship:hover { transform: scale(1.1); border-color: var(--secondary-color); }
+        .draggable-ship.dragging { cursor: grabbing; opacity: 0.7; transform: rotate(5deg); }
+        .draggable-ship.vertical { flex-direction: column; }
+        .draggable-ship.placed {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .ship-part {
+            width: 30px;
+            height: 30px;
+            background-color: var(--surface-color);
+            border: 1px solid var(--background-start);
+            border-radius: 3px;
+            transition: transform 0.3s ease;
+        }
+        .draggable-ship.vertical .ship-part {
+            transform: rotate(90deg);
+        }
+        .cell.vertical-ship-part {
+            transform: rotate(90deg);
+        }
+        .ship-part, .cell.ship, .cell.shark {
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+        }
+
+        .ship-part.single-ship, .cell.ship.single-ship { background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); }
+        
+        .ship-part.ship-2-part-1, .cell.ship.ship-2-part-1 { background-image: url('https://i.postimg.cc/Y0Sgj3M9/3.png'); }
+        .ship-part.ship-2-part-2, .cell.ship.ship-2-part-2 { background-image: url('https://i.postimg.cc/gj0RrDm9/4.png'); }
+        
+        .ship-part.ship-3-part-1, .cell.ship.ship-3-part-1 { background-image: url('https://i.postimg.cc/8cZTK7zj/4.png'); }
+        .ship-part.ship-3-part-2, .cell.ship.ship-3-part-2 { background-image: url('https://i.postimg.cc/Y0dtnvCm/3.png'); }
+        .ship-part.ship-3-part-3, .cell.ship.ship-3-part-3 { background-image: url('https://i.postimg.cc/90Lc8DQw/2.png'); }
+
+        .ship-part.ship-4-part-1, .cell.ship.ship-4-part-1 { background-image: url('https://i.postimg.cc/T1nWhY4K/14.png'); }
+        .ship-part.ship-4-part-2, .cell.ship.ship-4-part-2 { background-image: url('https://i.postimg.cc/0j7Jr2Bb/13.png'); }
+        .ship-part.ship-4-part-3, .cell.ship.ship-4-part-3 { background-image: url('https://i.postimg.cc/Xq9yX7zX/12.png'); }
+        .ship-part.ship-4-part-4, .cell.ship.ship-4-part-4 { background-image: url('https://i.postimg.cc/Kz6MZgJ8/11.png'); }
+        
+        .ship-part.ship-5-part-1, .cell.ship.ship-5-part-1 { background-image: url('https://i.postimg.cc/B6SJG7BP/6.png'); }
+        .ship-part.ship-5-part-2, .cell.ship.ship-5-part-2 { background-image: url('https://i.postimg.cc/LXx24kx9/7.png'); }
+        .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('https://i.postimg.cc/sXTsfPT2/8.png'); }
+        .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('https://i.postimg.cc/j5Mtq6ML/9.png'); }
+        .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('https://i.postimg.cc/G2Xd3PXB/10.png'); }
+
+
+        .rotate-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            transition: all 0.2s ease;
+        }
+        .rotate-btn:hover { background: #d35400; transform: scale(1.05); }
+
+        .cell.drag-over { background: #f39c12 !important; }
+        .cell.invalid-drop { background: var(--hit-color) !important; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background-image: linear-gradient(to bottom right, var(--surface-color), var(--background-start));
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            animation: slideInUp 0.5s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        .modal-title { font-size: 1.5rem; font-weight: bold; color: var(--secondary-color); }
+        .close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+        .close:hover { color: white; }
+
+        /* --- START: How to Play Modal Styles --- */
+        .modal-body-how-to-play {
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+        .modal-body-how-to-play h2 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        .modal-body-how-to-play h3 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 15px;
+        }
+        .modal-body-how-to-play ul {
+            list-style-type: '🚢';
+            padding-right: 30px; /* Space for custom bullet */
+        }
+        .modal-body-how-to-play li {
+            margin-bottom: 10px;
+            padding-right: 10px; /* Space between bullet and text */
+        }
+        .modal-body-how-to-play li::marker {
+            font-size: 1.2em;
+        }
+        .modal-body-how-to-play .points-list-pro {
+            list-style-type: '👍';
+        }
+        .modal-body-how-to-play .points-list-con {
+            list-style-type: '👎';
+        }
+        .modal-body-how-to-play .highlight {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+         /* --- END: How to Play Modal Styles --- */
+
+
+        .confirm-actions {
+            text-align: center;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn-yes { background-image: linear-gradient(to right, #44bd32, #4cd137); }
+        .btn-yes:hover { box-shadow: 0 10px 30px rgba(76, 209, 55, 0.4); }
+        .btn-no { background-image: linear-gradient(to right, var(--hit-color), #c23616); }
+        .btn-no:hover { box-shadow: 0 10px 30px rgba(232, 65, 24, 0.4); }
+
+
+        .settings-section { margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px; }
+        .settings-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            background: rgba(0,0,0,0.2);
+            color: white;
+            font-size: 1rem;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary-color); }
+        .color-picker { width: 50px; height: 40px; border: none; border-radius: 5px; cursor: pointer; }
+
+        .ships-config { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .ship-config { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; position: relative; }
+        .remove-ship-btn {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: var(--hit-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .remove-ship-btn:hover { background: #c23616; transform: scale(1.1); }
+
+        .presenter-tools-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 15px 0;
+        }
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .tool-item .btn {
+            flex-shrink: 0;
+            width: 150px;
+            margin: 0;
+            padding: 10px 20px;
+        }
+        .tool-description {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            text-align: right;
+            margin: 0;
+        }
+
+        .legend { display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 20px; }
+        .legend-color { width: 20px; height: 20px; border-radius: 3px; }
+
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; }
+        .toast {
+            background-color: var(--surface-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border-left: 5px solid var(--primary-color);
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+        }
+        .toast.success { border-left-color: #44bd32; }
+        .toast.error { border-left-color: var(--hit-color); }
+        
+        .winner-title { font-size: 2.5rem; text-align: center; color: var(--secondary-color); margin-bottom: 20px; }
+        .final-scores { text-align: center; }
+
+        .cannonball {
+            position: fixed;
+            z-index: 9999;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 5px 5px, #666, #000);
+            border-radius: 50%;
+            pointer-events: none;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+
+        .particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: #192a56;
+            z-index: 10001;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: explode 0.7s ease-out forwards;
+        }
+
+        /* --- New Admin Panel UI --- */
+        .tab-container {
+            width: 100%;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--surface-color);
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--miss-color);
+            border-bottom: 3px solid transparent;
+            position: relative;
+            top: 1px;
+        }
+        .tab-button:hover {
+            color: white;
+        }
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+            padding: 6px 12px;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- New Custom Select Dropdown --- */
+        .custom-select-container select {
+            display: none; /* Hide the original select box */
+        }
+        .custom-select-container {
+            position: relative;
+            width: 100%;
+        }
+        .select-selected {
+            background-color: rgba(0,0,0,0.2);
+            color: white;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        .select-selected:after {
+            position: absolute;
+            content: "";
+            top: 18px;
+            left: 15px;
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-color: #fff transparent transparent transparent;
+        }
+        .select-selected.select-arrow-active:after {
+            border-color: transparent transparent #fff transparent;
+            top: 12px;
+        }
+        .select-selected:hover {
+            border-color: var(--primary-color);
+        }
+        .select-items {
+            position: absolute;
+            background-color: var(--surface-color);
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .select-hide {
+            display: none;
+        }
+        .select-items div {
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .select-items div:hover, .same-as-selected {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Custom Checkbox */
+        .checkbox-container {
+          display: inline-flex;
+          align-items: center;
+          position: relative;
+          padding-right: 35px; /* RTL Support */
+          padding-left: 0;
+          margin-bottom: 0px;
+          cursor: pointer;
+          font-size: 1rem;
+          user-select: none;
+          height: 45px; /* Match button height for alignment */
+        }
+
+        .custom-checkbox {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+        }
+
+        .checkmark {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          right: 0; /* RTL Support */
+          left: auto;
+          height: 25px;
+          width: 25px;
+          background-color: var(--surface-color);
+          border-radius: 4px;
+          transition: background-color 0.3s;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkmark:after {
+          content: "";
+          position: absolute;
+          display: none;
+          left: 9px;
+          top: 5px;
+          width: 5px;
+          height: 10px;
+          border: solid white;
+          border-width: 0 3px 3px 0;
+          transform: rotate(45deg);
+        }
+
+        .custom-checkbox:checked ~ .checkmark {
+          background-color: var(--primary-color);
+          box-shadow: 0 3px 7px rgba(0, 168, 255, 0.3);
+        }
+
+        .custom-checkbox:checked ~ .checkmark:after {
+          display: block;
+        }
+
+        @keyframes checkAnim {
+          0% { height: 0; }
+          100% { height: 10px; }
+        }
+
+        .custom-checkbox:checked ~ .checkmark:after {
+          animation: checkAnim 0.2s forwards;
+        }
+
+
+        /* Animations */
+        @keyframes fireCannonball {
+            0% {
+                transform: translate(var(--start-x), var(--start-y)) scale(0.3);
+                opacity: 1;
+            }
+            40% {
+                transform: translate(var(--mid-x), var(--mid-y)) scale(1.2);
+            }
+            100% {
+                transform: translate(var(--end-x), var(--end-y)) scale(0.2);
+                opacity: 1;
+            }
+        }
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 0;
+            }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInUp { from { transform: translateY(50px); } to { transform: translateY(0); } }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
+        @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @keyframes sunkPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        @keyframes sinkingShip {
+            0% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(-5deg); opacity: 0.8; }
+            100% { transform: scale(0.8) rotate(10deg); opacity: 0.4; }
+        }
+        @keyframes radarPulseWater {
+            0% { box-shadow: 0 0 0 0 rgba(0, 168, 255, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 168, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 168, 255, 0); }
+        }
+        @keyframes radarPulseHit {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+
+
+        @media (max-width: 1200px) { 
+            .teams-container { 
+                /* Ensures single column on smaller screens unless overridden */
+                grid-template-columns: 1fr; 
+            }
+        }
+        @media (max-width: 768px) {
+            .game-title { font-size: 2rem; }
+            .grid { gap: 1px; padding: 5px; }
+            .scores-grid { grid-template-columns: 1fr; }
+            .turn-controls { grid-template-columns: 1fr; }
+            .turn-actions { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title"> حروب البحار🚢 </h1>
+            <!-- Copyright notice moved from here -->
+            <div class="game-status" id="gameStatus">مرحلة وضع السفن - المجموعة الأولى</div>
+        </div>
+
+        <div class="admin-controls">
+            <!-- تمت إضافة زر "كيف تلعب" هنا -->
+            <button class="neumorphic-btn" onclick="openHowToPlayModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                كيف تلعب؟
+            </button>
+        </div>
+
+        <div class="turn-control-panel" id="turnControlPanel" style="display: none;">
+            <div class="turn-control-title">⏱️ تحكم في الأدوار</div>
+            <div class="main-turn-display">
+                <div class="current-player-display">
+                    <div class="current-player-name" id="currentPlayerName">في انتظار بدء اللعبة</div>
+                    <div class="current-player-status" id="currentPlayerStatus">--</div>
+                </div>
+                <div class="timer-display" id="timerDisplay">
+                    <div class="timer-value" id="timerValue">--</div>
+                    <div class="timer-label">ثانية متبقية</div>
+                </div>
+            </div>
+
+            <div class="turn-actions main-actions">
+                <button class="turn-btn danger" id="prevTurn" onclick="turnManager.previousTurn()">⏮️ السابق</button>
+                <button class="turn-btn" id="startTimer" onclick="turnManager.startTimer()">▶️ بدء</button>
+                <button class="turn-btn" id="pauseTimer" onclick="turnManager.pauseTimer()" style="display:none;">⏸️ إيقاف</button>
+                <button class="turn-btn success" id="nextTurn" onclick="turnManager.nextTurn()">التالي ⏭️</button>
+            </div>
+
+            <div class="secondary-controls-wrapper">
+                <div class="advanced-settings-panel" id="advancedSettingsPanel">
+                    <div class="turn-settings-compact">
+                        <div class="setting-group">
+                            <label class="setting-label">مدة الدور</label>
+                            <input type="number" class="setting-input" id="turnDuration" value="30" min="10" max="300">
+                        </div>
+                        <div class="setting-group">
+                            <label class="setting-label">الرميات</label>
+                            <input type="number" class="setting-input" id="shotsPerTurn" value="1" min="1" max="5">
+                        </div>
+                        <div class="setting-group">
+                            <label class="checkbox-container">تلقائي
+                                <input type="checkbox" class="custom-checkbox" id="autoAdvance" checked=""> 
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="turn-actions secondary-actions">
+                        <button class="neumorphic-btn warning" id="addTime" onclick="turnManager.addTime(15)">+15 ثانية</button>
+                        <button class="neumorphic-btn" id="toggleHistoryBtn" onclick="game.toggleHistory()"></button>
+                    </div>
+                </div>
+                <button class="neumorphic-btn" id="toggleAdvancedSettingsBtn" onclick="toggleAdvancedSettings()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+            </div>
+
+            <div class="turn-history" id="turnHistory" style="display: none;">
+                <div style="text-align: center; font-weight: bold; margin-bottom: 10px;">📋 سجل الأدوار</div>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <div class="scoreboard" id="scoreboard">
+            <div class="scoreboard-title">🏆 لوحة النقاط</div>
+            <div class="scores-grid" id="scoresGrid"></div>
+        </div>
+
+        <div class="ships-dock" id="shipsDock">
+            <div class="dock-title">اسحب السفن والألغام إلى الشبكة</div>
+            <div class="ships-container" id="shipsContainer"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="randomPlacement">وضع عشوائي</button>
+            <button class="btn" id="clearGrid">مسح الشبكة</button>
+            <button class="btn" id="confirmPlacement" disabled>تأكيد الوضع</button>
+            <button class="btn" id="startBattle" style="display: none;">بدء المعركة</button>
+        </div>
+
+        <div class="teams-container" id="teamsContainer">
+        </div>
+
+        <div class="legend">
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">لوحة تحكم المقدم</h2>
+                <span class="close" onclick="closeAdminPanel()">&times;</span>
+            </div>
+             <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="openTab(event, 'gameSettings')">إعدادات اللعبة</button>
+                    <button class="tab-button" onclick="openTab(event, 'teamSettings')">الفرق</button>
+                    <button class="tab-button" onclick="openTab(event, 'scoreSettings')">النقاط</button>
+                </div>
+
+                <div id="gameSettings" class="tab-content">
+                    <div class="settings-section">
+                        <div class="settings-title">أبعاد الشبكة</div>
+                        <div class="form-group">
+                            <label class="form-label">عرض الشبكة:</label>
+                            <input type="number" class="form-input" id="gridWidthInput" value="9" min="5" max="15">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ارتفاع الشبكة:</label>
+                            <input type="number" class="form-input" id="gridHeightInput" value="9" min="5" max="15">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="teamSettings" class="tab-content">
+                    <div class="settings-section">
+                        <div class="settings-title">أسماء وألوان الفرق</div>
+                        <div id="teamNamesConfig" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
+                        <div id="teamColorsConfig" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <div id="scoreSettings" class="tab-content">
+                    <div class="settings-section">
+                        <div class="settings-title">إعدادات النقاط</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">نقاط الإصابة:</label>
+                                <input type="number" class="form-input" id="hitPoints" value="10" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">نقاط إغراق السفينة:</label>
+                                <input type="number" class="form-input" id="sinkPoints" value="50" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">عقوبة اللغم:</label>
+                                <input type="number" class="form-input" id="minePenalty" value="50" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">مكافأة الدقة (%):</label>
+                                <input type="number" class="form-input" id="accuracyBonus" value="20" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">عقوبة الأخطاء المتتالية:</label>
+                                <input type="number" class="form-input" id="missPenalty" value="5" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="applySettings()">✅ تطبيق وإعادة تشغيل</button>
+                <button class="btn" onclick="resetToDefaults()">🔄 إعادة للافتراضي</button>
+            </div>
+        </div>
+    </div>
+    
+     <!-- Presenter Tools Modal -->
+    <div id="presenterToolsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">أدوات المقدم</h2>
+                <span class="close" onclick="closePresenterTools()">&times;</span>
+            </div>
+            <div class="presenter-tools-grid">
+                <div class="tool-item">
+                    <button class="btn" onclick="game.saveGame()">حفظ</button>
+                    <p class="tool-description">حفظ الحالة الحالية للعبة لاستئنافها لاحقاً.</p>
+                </div>
+                <div class="tool-item">
+                    <button class="btn" onclick="game.loadGame()">تحميل</button>
+                    <p class="tool-description">تحميل آخر لعبة تم حفظها.</p>
+                </div>
+                <div class="tool-item">
+                    <button class="btn" onclick="game.resetPlacements()">إعادة التوزيع</button>
+                    <p class="tool-description">العودة إلى مرحلة توزيع السفن مع الاحتفاظ بالنقاط الحالية.</p>
+                </div>
+                <div class="tool-item">
+                    <button class="btn" onclick="game.undoMove()">تراجع</button>
+                    <p class="tool-description">التراجع عن آخر حركة تم لعبها في مرحلة المعركة.</p>
+                </div>
+                <div class="tool-item">
+                    <button class="btn" onclick="game.endGameConfirm()">إنهاء اللعبة</button>
+                    <p class="tool-description">إنهاء اللعبة الحالية وكشف جميع أماكن السفن والفخاخ.</p>
+                </div>
+                <div class="tool-item">
+                    <button class="btn" onclick="game.resetGame(true)">إعادة اللعبة</button>
+                    <p class="tool-description">بدء لعبة جديدة من البداية ومسح جميع البيانات الحالية.</p>
+                </div>
+                <div class="tool-item">
+                    <button id="soundBtn" class="btn" onclick="soundManager.toggleMute()">كتم الصوت</button>
+                    <p class="tool-description">كتم أو تشغيل المؤثرات الصوتية للعبة.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">انتهت المعركة!</h2>
+                <span class="close" onclick="closeGameOverModal()">&times;</span>
+            </div>
+            <h3 class="winner-title" id="winnerTitle"></h3>
+            <div class="final-scores" id="finalScores"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="game.resetGame()">🚀 ابدأ لعبة جديدة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="confirmTitle"></h2>
+            </div>
+            <p id="confirmMessage" style="text-align: center; font-size: 1.1rem; margin: 20px 0;"></p>
+            <div class="confirm-actions">
+                <button class="btn btn-yes" id="confirmBtnYes">✅ تأكيد</button>
+                <button class="btn btn-no" id="confirmBtnNo">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- START: How to Play Modal -->
+    <div id="howToPlayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">كيف تلعب "حرب البحار"؟</h2>
+                <span class="close" onclick="closeHowToPlayModal()">&times;</span>
+            </div>
+            <div class="modal-body-how-to-play">
+                <p>أهلاً أيها القادة! هدفكم بسيط: كونوا آخر فريق صامد في البحر!</p>
+
+                <h2>المرحلة الأولى: توزيع القطع (التجهيز)</h2>
+                <h3>رتب قطعك:</h3>
+                <p>كل فريق لديه شبكة خاصة. مهمتك هي سحب السفن والأفخاخ من "مرسى السفن" ووضعها في شبكتك.</p>
+                <h3>قطعك هي:</h3>
+                <ul>
+                    <li>مجموعة سفن بأحجام مختلفة.</li>
+                    <li>لغم واحد (فخ).</li>
+                    <li>فخ قرش واحد (فخ).</li>
+                </ul>
+                <h3>التأكيد:</h3>
+                <p>عندما تنتهي من توزيع قطعك، اضغط على زر "تأكيد الوضع" لينتقل الدور للفريق الذي بعدك. عندما ينتهي الجميع، تبدأ المعركة!</p>
+
+                <h2>المرحلة الثانية: المعركة (الهجوم)</h2>
+                <h3>دورك:</h3>
+                <p>في كل دور، ستهاجم شبكة خصم (ليس شبكتك).</p>
+                <h3>اختر هدفك:</h3>
+                <p>اضغط على أي مربع في شبكة الخصم لإطلاق قذيفة.</p>
+                <h3>النتائج:</h3>
+                <ul>
+                    <li><span style="color: var(--blue-color);">أزرق (خطأ):</span> قذيفتك سقطت في الماء.</li>
+                    <li><span style="color: var(--hit-color);">أحمر (إصابة):</span> أحسنت! لقد أصبت سفينة.</li>
+                    <li><span style="color: var(--miss-color);">رمادي "ظهور السفينة" (إغراق):</span> ممتاز! لقد دمرت السفينة بالكامل.</li>
+                </ul>
+
+                <h2>أهم شيء: النقاط والأفخاخ (ركز هنا!)</h2>
+                <p class="highlight">هنا يكمن التحدي!</p>
+                <h3>النقاط (لصالحك):</h3>
+                <ul class="points-list-pro">
+                    <li>إصابة: كلما أصبت سفينة، يكسب فريقك نقاط.</li>
+                    <li>إغراق: عندما تُغرق سفينة بالكامل، يكسب فريقك نقاط إضافية كثيرة.</li>
+                    <li>مكافأة الدقة: حافظ على دقتك! إذا كانت نسبة إصاباتك عالية مقارنة بأخطائك، ستحصل على نقاط إضافية كمكافأة.</li>
+                </ul>
+                <h3>النقاط (ضدك):</h3>
+                <ul class="points-list-con">
+                    <li>اللغم: احذر! إذا هاجمت مربعاً وكان فيه "لغم" للخصم، فريقك يخسر نقاط فوراً.</li>
+                    <li>الأخطاء المتتالية: لا تضيع رمياتك! إذا أخطأت الهدف عدة مرات متتالية، سيبدأ فريقك بخسارة نقاط كعقوبة.</li>
+                    <li>فخ القرش: هذا هو الأسوأ! إذا هاجمت مربعاً وكان فيه "فخ قرش"، فريقك يُحرم من دوره القادم.</li>
+                </ul>
+
+                <h2>قدرات خاصة (استخدمها بذكاء)</h2>
+                <p>لكل فريق قدرتان يمكن استخدامها مرة واحدة فقط طوال اللعبة:</p>
+                <ul>
+                    <li>الرادار: بدلاً من الهجوم، يمكنك كشف منطقة صغيرة (2x2) في شبكة الخصم لتعرف إذا كان بها قطع أم لا.</li>
+                    <li>ضربة مزدوجة: إذا استخدمت هذه القدرة وأصبت سفينة، ستحصل على رمية إضافية فوراً.</li>
+                </ul>
+                <p class="highlight" style="text-align: center; font-size: 1.3rem; margin-top: 20px;">
+                    الفائز هو الفريق صاحب أعلى نقاط في النهاية، أو آخر فريق تبقى لديه سفن!
+                    <br>
+                    والنقاط والخصومات قابلة للتعديل في الإعدادات
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- END: How to Play Modal -->
+
+
+    <script>
+        // --- SVG Icons ---
+        const icons = {
+            settings: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
+            reset: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
+            scoreboard: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
+            timer: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
+            soundOn: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
+            soundOff: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
+            radar: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>`,
+            doubleShot: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4 4V8"/></svg>`,
+            save: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`,
+            load: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>`,
+            undo: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>`,
+            resetPlacements: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7L21 16"/>`,
+            endGame: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>`,
+            target: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+            history: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18M3 10h18M3 16h18"/></svg>`,
+            tools: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`
+        };
+
+        // --- Toast Notification ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        class SoundManager {
+            constructor() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.error("Web Audio API is not supported in this browser");
+                    this.audioContext = null;
+                }
+                this.isMuted = false;
+            }
+
+            toggleMute() {
+                this.isMuted = !this.isMuted;
+                const soundBtn = document.getElementById('soundBtn');
+                 if (soundBtn) {
+                    soundBtn.textContent = this.isMuted ? 'تشغيل الصوت' : 'كتم الصوت';
+                }
+                return this.isMuted;
+            }
+
+            playSound(type) {
+                if (this.isMuted || !this.audioContext) return;
+                
+                switch (type) {
+                    case 'fire': this._playFireSound(); break;
+                    case 'splash': this._playSplashSound(); break;
+                    case 'hit': this._playHitSound(); break;
+                    case 'sink': this._playSinkSound(); break;
+                    case 'radar': this._playRadarSound(); break;
+                }
+            }
+            
+            _playRadarSound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+
+                osc.connect(gain);
+                gain.connect(context.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1000, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
+
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+
+            _playFireSound() {
+                const context = this.audioContext; const now = context.currentTime;
+                const osc = context.createOscillator(); const gain = context.createGain();
+                osc.connect(gain); gain.connect(context.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+
+            _playSplashSound() {
+                const context = this.audioContext; const now = context.currentTime;
+                const bufferSize = context.sampleRate * 0.5;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+                const noise = context.createBufferSource(); noise.buffer = buffer;
+                const filter = context.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 800; filter.Q.value = 0.5;
+                const gain = context.createGain();
+                noise.connect(filter); filter.connect(gain); gain.connect(context.destination);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                noise.start(now); noise.stop(now + 0.3);
+            }
+
+            _playHitSound() {
+                const context = this.audioContext; const now = context.currentTime;
+                const thudOsc = context.createOscillator(); const thudGain = context.createGain();
+                thudOsc.connect(thudGain); thudGain.connect(context.destination);
+                thudOsc.type = 'sine';
+                thudOsc.frequency.setValueAtTime(100, now);
+                thudOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
+                thudGain.gain.setValueAtTime(0.8, now);
+                thudGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                thudOsc.start(now); thudOsc.stop(now + 0.15);
+
+                const bufferSize = context.sampleRate * 0.2;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+                const noise = context.createBufferSource(); noise.buffer = buffer;
+                const noiseFilter = context.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 1000;
+                const noiseGain = context.createGain();
+                noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(context.destination);
+                noiseGain.gain.setValueAtTime(0.4, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                noise.start(now); noise.stop(now + 0.2);
+            }
+
+            _playSinkSound() {
+                const context = this.audioContext; const now = context.currentTime;
+                const osc = context.createOscillator(); const gain = context.createGain();
+                osc.connect(gain); gain.connect(context.destination);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 1.5);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.linearRampToValueAtTime(0, now + 1.5);
+                osc.start(now); osc.stop(now + 1.5);
+                for(let i = 0; i < 5; i++) { this._createBubble(now + i * 0.25); }
+            }
+
+            _createBubble(startTime){
+                const context = this.audioContext; const bufferSize = context.sampleRate * 0.1;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+                const noise = context.createBufferSource(); noise.buffer = buffer;
+                const filter = context.createBiquadFilter(); filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(600, startTime);
+                filter.frequency.linearRampToValueAtTime(1200, startTime + 0.1);
+                filter.Q.value = 15;
+                const gain = context.createGain();
+                noise.connect(filter); filter.connect(gain); gain.connect(context.destination);
+                gain.gain.setValueAtTime(0.5, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+                noise.start(startTime); noise.stop(startTime + 0.1);
+            }
+        }
+
+
+        class TurnManager {
+            constructor() {
+                this.timeLeft = 0;
+                this.timerInterval = null;
+                this.isRunning = false;
+                this.isPaused = false;
+                this.turnHistory = [];
+            }
+
+            clearHistory() {
+                showConfirmationModal('مسح السجل', 'هل أنت متأكد من مسح سجل الأدوار؟', () => {
+                    this.turnHistory = [];
+                    this.updateHistoryDisplay();
+                    showToast('تم مسح سجل الأدوار.', 'success');
+                });
+            }
+
+            startTimer() {
+                const duration = parseInt(document.getElementById('turnDuration').value);
+                if (this.isPaused) { this.isPaused = false; }
+                else { this.timeLeft = duration; }
+                this.isRunning = true;
+                this.updateTimerDisplay();
+                this.timerInterval = setInterval(() => {
+                    this.timeLeft--;
+                    this.updateTimerDisplay();
+                    if (this.timeLeft <= 0) this.onTimerExpired();
+                }, 1000);
+                this.updateButtons();
+                this.addToHistory(`بدء مؤقت الدور - ${this.timeLeft} ثانية`);
+            }
+
+            pauseTimer() {
+                if (this.isRunning) {
+                    this.isPaused = true;
+                    this.isRunning = false;
+                    clearInterval(this.timerInterval);
+                    this.updateButtons();
+                    this.addToHistory('تم إيقاف المؤقت مؤقتاً');
+                }
+            }
+
+            stopTimer() {
+                this.isRunning = false;
+                this.isPaused = false;
+                clearInterval(this.timerInterval);
+                this.timeLeft = 0;
+                this.updateTimerDisplay();
+                this.updateButtons();
+            }
+
+            addTime(seconds) {
+                this.timeLeft += seconds;
+                this.updateTimerDisplay();
+                this.addToHistory(`تم إضافة ${seconds} ثانية`);
+            }
+
+            nextTurn() {
+                this.stopTimer();
+                if (game.battlePhase) {
+                    const currentTeam = game.teams[game.currentTurn].name;
+                    this.addToHistory(`انتهى دور ${currentTeam}`);
+                    game.shotsMadeThisTurn = 0;
+                    game.nextTurn();
+                    this.updateCurrentPlayer();
+                }
+            }
+
+            previousTurn() {
+                this.stopTimer();
+                if (game.battlePhase) {
+                    const currentTeam = game.teams[game.currentTurn].name;
+                    this.addToHistory(`العودة إلى الدور السابق من ${currentTeam}`);
+                    game.previousTurn();
+                    this.updateCurrentPlayer();
+                }
+            }
+
+            onTimerExpired() {
+                this.stopTimer();
+                const currentTeam = game.teams[game.currentTurn].name;
+                this.addToHistory(`انتهى وقت ${currentTeam}`);
+                if (document.getElementById('autoAdvance').checked) {
+                    setTimeout(() => this.nextTurn(), 2000);
+                }
+            }
+
+            updateTimerDisplay() {
+                const timerValue = document.getElementById('timerValue');
+                const timerDisplay = document.getElementById('timerDisplay');
+                if(!timerValue || !timerDisplay) return;
+                if (this.timeLeft <= 0) {
+                    timerValue.textContent = '00';
+                    timerDisplay.className = 'timer-display timer-expired';
+                } else {
+                    timerValue.textContent = this.timeLeft.toString().padStart(2, '0');
+                    timerDisplay.className = 'timer-display';
+                    if (this.timeLeft <= 5) timerDisplay.classList.add('timer-danger');
+                    else if (this.timeLeft <= 10) timerDisplay.classList.add('timer-warning');
+                }
+            }
+
+            updateButtons() {
+                const startBtn = document.getElementById('startTimer');
+                const pauseBtn = document.getElementById('pauseTimer');
+                if(!startBtn || !pauseBtn) return;
+                if (this.isRunning) {
+                    startBtn.style.display = 'none';
+                    pauseBtn.style.display = 'inline-block';
+                } else if (this.isPaused) {
+                    startBtn.textContent = '▶️ استئناف';
+                    startBtn.style.display = 'inline-block';
+                    pauseBtn.style.display = 'none';
+                } else {
+                    startBtn.textContent = '▶️ بدء';
+                    startBtn.style.display = 'inline-block';
+                    pauseBtn.style.display = 'none';
+                }
+            }
+
+            updateCurrentPlayer() {
+                const playerName = document.getElementById('currentPlayerName');
+                const playerStatus = document.getElementById('currentPlayerStatus');
+                 if(!playerName || !playerStatus) return;
+                if (game.battlePhase && !game.gameOver) {
+                    const team = game.teams[game.currentTurn];
+                    const aliveShips = team.ships.filter(s => !s.sunk).length;
+                    const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                    playerStatus.textContent = `النقاط: ${team.score.total} | السفن: ${aliveShips} | الرميات: ${shotsPerTurn - game.shotsMadeThisTurn}`;
+                    playerName.textContent = team.name;
+                } else if (game.placementPhase) {
+                    const team = game.teams[game.currentTeam];
+                    playerName.textContent = team.name;
+                    playerStatus.textContent = 'مرحلة وضع السفن';
+                } else {
+                    playerName.textContent = 'انتهت اللعبة';
+                    playerStatus.textContent = '--';
+                }
+            }
+
+            addToHistory(message) {
+                const timestamp = new Date().toLocaleTimeString('ar-SA');
+                this.turnHistory.unshift({ time: timestamp, message: message });
+                if (this.turnHistory.length > 20) this.turnHistory.pop();
+                this.updateHistoryDisplay();
+            }
+
+            updateHistoryDisplay() {
+                const list = document.getElementById('historyList');
+                if (!list) return; // Guard against null element
+                list.innerHTML = '';
+                this.turnHistory.forEach(entry => {
+                    const item = document.createElement('div');
+                    item.className = 'turn-history-item';
+                    item.innerHTML = `<span>${entry.message}</span><span style="opacity: 0.7;">${entry.time}</span>`;
+                    list.appendChild(item);
+                });
+            }
+
+            reset() {
+                this.stopTimer();
+                this.turnHistory = [];
+                this.updateHistoryDisplay();
+                this.updateCurrentPlayer();
+            }
+        }
+
+        class BattleshipGame {
+            constructor() {
+                this.gridWidth = 9;
+                this.gridHeight = 9;
+                this.teams = [];
+                this.numTeams = 3; // Always 3 teams
+                this.defaultTeams = [
+                    { name: 'القراصنة', color: '#ff6b6b' },
+                    { name: 'البحارة', color: '#4ecdc4' },
+                    { name: 'المستكشفون', color: '#45b7d1' },
+                    { name: 'العمالقة', color: '#feca57' }, // Keep 4 for data safety
+                ];
+                this.shipTypes = [
+                    { name: 'غواصة نووية', size: 5, count: 1 },
+                    { name: 'غواصة', size: 4, count: 1 },
+                    { name: 'قارب سريع', size: 3, count: 1 },
+                    { name: 'باخرة', size: 2, count: 2 },
+                    { name: 'قارب', size: 1, count: 2 }
+                ];
+                this.scoring = { hitPoints: 10, sinkPoints: 50, minePenalty: 50, accuracyBonus: 20, missPenalty: 5 };
+                
+                this.moveHistory = [];
+                this.init();
+            }
+
+            init() {
+                this.currentTeam = 0;
+                this.placementPhase = true;
+                this.battlePhase = false;
+                this.currentTurn = 0;
+                this.gameOver = false;
+                this.draggedShip = null;
+                this.dockItemTypes = [];
+                this.scoreboardVisible = true;
+                this.isRadarActive = false;
+                this.isDoubleShotActive = false;
+                this.isAttackAllowed = true;
+                this.moveHistory = [];
+                this.teamToSkip = null;
+                this.shipCountsLocked = false;
+                this.shotsPerTurn = 1;
+                this.shotsMadeThisTurn = 0;
+                this.historyVisible = false;
+
+                document.documentElement.style.setProperty('--grid-width', this.gridWidth);
+                document.body.classList.remove('battle-phase');
+                this.createTeams();
+                this.renderTeamContainers();
+                this.initializeGrids();
+                this.createDockItems();
+                this.setupEventListeners();
+                this.updateUI();
+                this.updateScoreboard();
+                this.renderLegend();
+                this.populateAdminPanel();
+                this.renderAdminControls();
+                this.applyTrapStyles();
+                this.toggleHistory(true); 
+                this.setupAdminPanelListeners();
+
+                if (localStorage.getItem('battleshipSaveData')) {
+                    showConfirmationModal('لعبة محفوظة', 'تم العثور على لعبة محفوظة. هل تريد استئنافها؟', () => {
+                        this.loadGame(true);
+                    });
+                }
+            }
+            
+            applyTrapStyles() {
+                const sharkImg1 = "https://i.postimg.cc/Pr2b8HzN/15.png";
+                const sharkImg2 = "https://i.postimg.cc/Pr2b8Hz5/14.png";
+                const styleEl = document.getElementById('dynamic-styles');
+                if(styleEl) {
+                    styleEl.innerHTML = `
+                        .ship-part.shark-part-1, .cell.shark.shark-part-1 { background-image: url('${sharkImg1}'); }
+                        .ship-part.shark-part-2, .cell.shark.shark-part-2 { background-image: url('${sharkImg2}'); }
+                    `;
+                }
+            }
+
+            renderAdminControls() {
+                const container = document.querySelector('.admin-controls');
+                // ندرج الزر الجديد مع الأزرار الموجودة
+                container.innerHTML = `
+                    <button class="neumorphic-btn" onclick="openHowToPlayModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        كيف تلعب؟
+                    </button>
+                    <button class="neumorphic-btn" onclick="openAdminPanel()">${this.getIcon('settings')} لوحة التحكم</button>
+                    <button class="neumorphic-btn" onclick="openPresenterTools()">${this.getIcon('tools')} أدوات المقدم</button>
+                    <button class="neumorphic-btn" onclick="toggleScoreboard()">${this.getIcon('scoreboard')} عرض النقاط</button>
+                    <button class="neumorphic-btn" onclick="toggleTurnControl()">${this.getIcon('timer')} عرض الأدوار</button>
+                `;
+            }
+            
+            getIcon(name) {
+                const svgContent = icons[name] || '';
+                return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgContent}</svg>`;
+            }
+
+            updateTeamLayout() {
+                document.body.classList.remove('teams-2', 'teams-3', 'teams-4');
+                document.body.classList.add(`teams-${this.numTeams}`);
+            }
+            
+            setupAdminPanelListeners() {
+                const numTeamsInput = document.getElementById('numTeamsInput');
+                if (numTeamsInput) {
+                    // This listener is now setup inside the custom select logic
+                    // to trigger when a new value is selected.
+                }
+            }
+
+            renderTeamSettingsInputs(numTeams) {
+                const namesContainer = document.getElementById('teamNamesConfig');
+                const colorsContainer = document.getElementById('teamColorsConfig');
+                namesContainer.innerHTML = '';
+                colorsContainer.innerHTML = '';
+                // Loop is now hardcoded to 3 teams
+                for (let i = 0; i < 3; i++) {
+                    const teamData = this.defaultTeams[i] || { name: `الفريق ${i + 1}`, color: '#ffffff' };
+                    namesContainer.innerHTML += `<div class="form-group"><label>الفريق ${i + 1}:</label><input type="text" class="form-input" id="teamName${i + 1}Input" value="${teamData.name}"></div>`;
+                    colorsContainer.innerHTML += `<div class="form-group"><label>لون الفريق ${i + 1}:</label><input type="color" class="color-picker" id="teamColor${i + 1}Input" value="${teamData.color}"></div>`;
+                }
+            }
+
+            createTeams() {
+                const teamsToCreate = this.defaultTeams.slice(0, this.numTeams);
+
+                this.teams = teamsToCreate.map((team, index) => ({
+                    id: index + 1,
+                    ...team,
+                    ships: [],
+                    mine: null,
+                    shark: { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' },
+                    grid: Array(this.gridWidth * this.gridHeight).fill(0),
+                    hits: Array(this.gridWidth * this.gridHeight).fill(0),
+                    score: { total: 0, hits: 0, sinks: 0, misses: 0, accuracy: 0, consecutiveMisses: 0 },
+                    abilities: {
+                        canUseRadar: true,
+                        canUseDoubleShot: true
+                    }
+                }));
+                this.updateTeamLayout();
+            }
+
+            renderTeamContainers() {
+                const container = document.getElementById('teamsContainer');
+                container.innerHTML = '';
+                const alphabet = ['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح', 'ط', 'ي', 'ك', 'ل', 'م', 'ن', 'س'];
+                
+                this.teams.forEach(team => {
+                    const teamElement = this.createTeamElement(team, alphabet);
+                    container.appendChild(teamElement);
+                });
+            }
+            
+            createTeamElement(team, alphabet) {
+                const teamSection = document.createElement('div');
+                teamSection.className = `team-section team-${team.id}`;
+                teamSection.style.borderColor = team.color;
+                
+                const gridLabels = Array.from({ length: this.gridHeight }, (_, i) => alphabet[i] || '').map(label => `<div class="grid-label">${label}</div>`).join('');
+                const gridHeaderCells = Array.from({ length: this.gridWidth }, (_, i) => `<div class="grid-header-cell">${i + 1}</div>`).join('');
+
+                teamSection.innerHTML = `
+                    <div class="team-header">
+                        <div class="team-name" id="teamName${team.id}">${team.name}</div>
+                         <button class="icon-btn switch-turn-btn" title="انقل الدور لهذا الفريق" onclick="game.switchToTeam(${team.id})">${this.getIcon('target')}</button>
+                        <div class="ships-status" id="team${team.id}Status">0 سفن متبقية</div>
+                    </div>
+                    <div class="grid-container">
+                        <div class="grid-header"><div class="grid-header-cell"></div>${gridHeaderCells}</div>
+                        <div class="grid-with-labels"><div class="grid-labels">${gridLabels}</div><div class="grid" id="grid${team.id}"></div></div>
+                    </div>
+                    <div class="abilities-container" id="abilities${team.id}">
+                         <button id="radarBtn${team.id}" class="ability-btn radar" onclick="game.activateRadar()">
+                            <span class="shadow"></span><span class="edge"></span>
+                            <span class="front">${this.getIcon('radar')} رادار</span>
+                         </button>
+                         <button id="doubleShotBtn${team.id}" class="ability-btn double-shot" onclick="game.activateDoubleShot()">
+                            <span class="shadow"></span><span class="edge"></span>
+                            <span class="front">${this.getIcon('doubleShot')} ضربة مزدوجة</span>
+                         </button>
+                    </div>
+                    `;
+                return teamSection;
+            }
+
+            populateAdminPanel() {
+                document.getElementById('gridWidthInput').value = this.gridWidth;
+                document.getElementById('gridHeightInput').value = this.gridHeight;
+                this.renderTeamSettingsInputs(this.numTeams);
+            }
+
+            calculateScore(teamIndex, isHit, isSink, isMine = false) {
+                const { score } = this.teams[teamIndex];
+
+                if (isMine) {
+                    score.total = Math.max(0, score.total - this.scoring.minePenalty);
+                    this.updateScoreboard();
+                    return;
+                }
+
+                if (isHit) {
+                    score.hits++;
+                    score.total += this.scoring.hitPoints;
+                    score.consecutiveMisses = 0;
+                    if (isSink) {
+                        score.sinks++;
+                        score.total += this.scoring.sinkPoints;
+                    }
+                } else {
+                    score.misses++;
+                    score.consecutiveMisses++;
+                    if (score.consecutiveMisses >= 3) {
+                        score.total = Math.max(0, score.total - this.scoring.missPenalty);
+                    }
+                }
+                const totalShots = score.hits + score.misses;
+                if (totalShots > 0) {
+                    score.accuracy = (score.hits / totalShots) * 100;
+                    if (isHit && score.accuracy >= 50) {
+                        score.total += Math.floor((score.accuracy / 100) * this.scoring.accuracyBonus);
+                    }
+                }
+                this.updateScoreboard();
+            }
+
+            updateScoreboard() {
+                if (!this.scoreboardVisible) return;
+                const grid = document.getElementById('scoresGrid');
+                const sorted = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+                grid.innerHTML = '';
+                sorted.forEach((team, index) => {
+                    const card = document.createElement('div');
+                    card.className = `score-card rank-${index + 1}`;
+                    const emoji = ['🥇', '🥈', '🥉'][index] || '🏅';
+                    card.innerHTML = `<div class="team-score-name">${emoji} ${team.name}</div>
+                        <div class="team-total-score">${team.score.total}</div>
+                        <div class="score-details">إصابات: ${team.score.hits} | إغراق: ${team.score.sinks}<br>أخطاء: ${team.score.misses} | دقة: ${team.score.accuracy.toFixed(1)}%</div>`;
+                    grid.appendChild(card);
+                });
+            }
+
+            createDockItems() {
+                this.dockItemTypes = [];
+                this.shipTypes.forEach(type => {
+                    this.dockItemTypes.push({
+                        ...type,
+                        type: 'ship',
+                        totalCount: type.count,
+                        placedCount: 0,
+                        horizontal: true
+                    });
+                });
+                this.dockItemTypes.push({ name: 'لغم', type: 'mine', size: 1, totalCount: 1, placedCount: 0 });
+                this.dockItemTypes.push({ name: 'قرش', type: 'shark', size: 2, totalCount: 1, placedCount: 0, horizontal: true });
+                this.renderDockItems();
+            }
+
+            adjustShipCount(typeName, amount) {
+                if (this.shipCountsLocked) return;
+                const itemType = this.dockItemTypes.find(item => item.name === typeName);
+                if (itemType) {
+                    const newCount = itemType.totalCount + amount;
+                    if (newCount >= 0 && newCount <= 5) {
+                        itemType.totalCount = newCount;
+                        if (itemType.type === 'ship') {
+                            const shipType = this.shipTypes.find(s => s.name === typeName);
+                            if (shipType) shipType.count = newCount;
+                        }
+                        this.renderDockItems();
+                    }
+                }
+            }
+
+            renderDockItems() {
+                const container = document.getElementById('shipsContainer');
+                container.innerHTML = '';
+                this.dockItemTypes.forEach(item => {
+                    const isPlaced = item.placedCount >= item.totalCount;
+            
+                    const itemContainer = document.createElement('div');
+                    itemContainer.className = 'ship-item-container';
+            
+                    const el = document.createElement('div');
+                    el.className = `draggable-ship ${item.horizontal === false ? 'vertical' : ''} ${isPlaced ? 'placed' : ''}`;
+                    el.dataset.typeName = item.name;
+                    el.draggable = !isPlaced;
+            
+                    if (item.type === 'mine') {
+                        const part = document.createElement('div');
+                        part.className = 'ship-part mine-image';
+                        el.appendChild(part);
+                    } else {
+                        for (let i = 0; i < item.size; i++) {
+                            const part = document.createElement('div');
+                            part.className = 'ship-part';
+                            let partIndex = i + 1;
+                            if (!item.horizontal && item.size > 1) {
+                                partIndex = item.size - i;
+                            }
+                            if (item.type === 'ship') {
+                                if (item.size === 1) part.classList.add('single-ship');
+                                else part.classList.add(`ship-${item.size}-part-${partIndex}`);
+                            } else if (item.type === 'shark') {
+                                part.classList.add(`shark-part-${partIndex}`);
+                            }
+                            el.appendChild(part);
+                        }
+                    }
+                    
+                    itemContainer.appendChild(el);
+            
+                    const counterControls = document.createElement('div');
+                    counterControls.className = 'counter-controls';
+
+                    const downArrow = document.createElement('button');
+                    downArrow.className = 'count-arrow';
+                    downArrow.textContent = '▼';
+                    downArrow.onclick = () => this.adjustShipCount(item.name, -1);
+                    if (this.shipCountsLocked) downArrow.style.display = 'none';
+
+                    const counter = document.createElement('div');
+                    counter.className = 'ship-counter';
+                    counter.textContent = `x${item.totalCount - item.placedCount}`;
+                    
+                    const upArrow = document.createElement('button');
+                    upArrow.className = 'count-arrow';
+                    upArrow.textContent = '▲';
+                    upArrow.onclick = () => this.adjustShipCount(item.name, 1);
+                    if (this.shipCountsLocked) upArrow.style.display = 'none';
+
+                    counterControls.append(downArrow, counter, upArrow);
+                    itemContainer.appendChild(counterControls);
+
+            
+                    if ((item.type === 'ship' || item.type === 'shark') && item.size > 1) {
+                        const rotateBtn = document.createElement('button');
+                        rotateBtn.className = 'rotate-btn';
+                        rotateBtn.textContent = '↻';
+                        if (isPlaced) rotateBtn.disabled = true;
+                        rotateBtn.onclick = e => {
+                            e.stopPropagation();
+                            if (!isPlaced) {
+                                item.horizontal = !item.horizontal;
+                                this.renderDockItems();
+                            }
+                        };
+                        itemContainer.appendChild(rotateBtn);
+                    }
+                    
+                    container.appendChild(itemContainer);
+                });
+            }
+
+
+            initializeGrids() {
+                this.teams.forEach(team => {
+                    const grid = document.getElementById(`grid${team.id}`);
+                    if (!grid) return; // defensive check
+                    grid.innerHTML = '';
+                    grid.addEventListener('mouseleave', () => this.handleRadarHoverEnd());
+                    for (let i = 0; i < this.gridWidth * this.gridHeight; i++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.index = i;
+                        cell.dataset.team = team.id;
+                        cell.addEventListener('click', (e) => this.handleCellClick(e));
+                        cell.addEventListener('dragover', (e) => this.handleDragOver(e));
+                        cell.addEventListener('drop', (e) => this.handleDrop(e));
+                        cell.addEventListener('dragenter', (e) => this.handleDragEnter(e));
+                        cell.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+                        cell.addEventListener('dragstart', (e) => this.handleGridDragStart(e));
+                        cell.addEventListener('dragend', (e) => this.handleDragEnd(e));
+                        cell.addEventListener('mouseover', (e) => this.handleRadarHover(e));
+                        grid.appendChild(cell);
+                    }
+                });
+            }
+            
+            renderLegend() {
+                const container = document.querySelector('.legend');
+                container.innerHTML = `
+                    <div class="legend-item"><div class="legend-color" style="background-image: url('https://i.postimg.cc/zvrFxWCn/image.png'); background-size: cover;"></div><span>ماء</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: var(--surface-color);"></div><span>سفينة</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: var(--hit-color);"></div><span>إصابة</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: var(--miss-color);"></div><span>خطأ</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: var(--sunk-color);"></div><span>غارقة</span></div>
+                    <div class="legend-item"><div class="mine-image" style="width: 20px; height: 20px;"></div><span>لغم</span></div>
+                `;
+            }
+
+            setupEventListeners() {
+                document.getElementById('randomPlacement').addEventListener('click', () => this.randomPlacement());
+                document.getElementById('clearGrid').addEventListener('click', () => this.clearCurrentGrid());
+                document.getElementById('confirmPlacement').addEventListener('click', () => this.confirmPlacement());
+                document.getElementById('startBattle').addEventListener('click', () => this.startBattle());
+                document.getElementById('shipsContainer').addEventListener('dragstart', (e) => this.handleDockDragStart(e));
+                document.getElementById('shotsPerTurn').addEventListener('change', (e) => {
+                    const value = parseInt(e.target.value);
+                    if (value >= 1 && value <= 5) {
+                        this.shotsPerTurn = value;
+                        turnManager.addToHistory(`تم تغيير عدد الرميات إلى ${value}`);
+                        turnManager.updateCurrentPlayer();
+                    } else {
+                        e.target.value = this.shotsPerTurn; // revert if invalid
+                    }
+                });
+            }
+
+            handleDockDragStart(e) {
+                if (e.target.classList.contains('draggable-ship')) {
+                    const typeName = e.target.dataset.typeName;
+                    const itemType = this.dockItemTypes.find(item => item.name === typeName);
+                    if (itemType && itemType.placedCount < itemType.totalCount) {
+                        this.draggedShip = { ...itemType, isFromGrid: false };
+                        e.target.classList.add('dragging');
+                    } else {
+                        e.preventDefault();
+                    }
+                }
+            }
+            handleDragOver(e) { e.preventDefault(); }
+            handleDragEnter(e) {
+                e.preventDefault();
+                if (this.draggedShip) e.target.classList.add(this.canDropShip(e.target) ? 'drag-over' : 'invalid-drop');
+            }
+            handleDragLeave(e) { e.target.classList.remove('drag-over', 'invalid-drop'); }
+           
+            handleGridDragStart(e) {
+                if (!this.placementPhase || parseInt(e.target.dataset.team) !== this.currentTeam + 1) {
+                    e.preventDefault();
+                    return;
+                }
+                const index = parseInt(e.target.dataset.index);
+                const team = this.teams[this.currentTeam];
+                let piece = null;
+
+                const shipId = team.grid[index];
+                if (shipId > 0) {
+                    piece = { ...team.ships.find(s => s.id === shipId) };
+                } else if (team.mine === index) {
+                    piece = { type: 'mine', size: 1, name: 'لغم' };
+                } else if (team.shark.positions.includes(index)) {
+                    piece = { ...team.shark, name: 'قرش' };
+                }
+
+                if (piece) {
+                    const isHorizontal = piece.positions ? (piece.positions.length > 1 ? piece.positions[1] - piece.positions[0] === 1 : true) : true;
+                    this.draggedShip = { ...piece, isFromGrid: true, horizontal: isHorizontal };
+                    e.target.classList.add('dragging');
+                } else {
+                    e.preventDefault();
+                }
+            }
+
+            handleDragEnd(e) {
+                this.draggedShip = null;
+                document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                document.querySelectorAll('.drag-over, .invalid-drop').forEach(el => el.classList.remove('drag-over', 'invalid-drop'));
+            }
+
+            removePiece(pieceToRemove) {
+                const team = this.teams[this.currentTeam];
+                const dockItem = this.dockItemTypes.find(item => item.name === pieceToRemove.name);
+                
+                if (pieceToRemove.type === 'ship') {
+                    const originalShip = team.ships.find(s => s.id === pieceToRemove.id);
+                    if (originalShip) {
+                        originalShip.positions.forEach(p => team.grid[p] = 0);
+                        team.ships = team.ships.filter(s => s.id !== pieceToRemove.id);
+                        if (dockItem) dockItem.placedCount--;
+                    }
+                } else if (pieceToRemove.type === 'mine') {
+                    if (team.mine !== null) {
+                        team.mine = null;
+                        if (dockItem) dockItem.placedCount--;
+                    }
+                } else if (pieceToRemove.type === 'shark') {
+                    team.shark.positions = [];
+                    if (dockItem) dockItem.placedCount--;
+                }
+            }
+            
+            handleDrop(e) {
+                e.preventDefault();
+                e.target.classList.remove('drag-over', 'invalid-drop');
+                if (!this.draggedShip) return;
+
+                if (!this.shipCountsLocked) {
+                    this.shipCountsLocked = true;
+                    this.renderDockItems(); 
+                }
+
+                if (!this.canDropShip(e.target)) {
+                    this.updateGridDisplay();
+                    return;
+                }
+
+                const team = this.teams[this.currentTeam];
+                const start = parseInt(e.target.dataset.index);
+                const positions = this.getShipPositions(start, this.draggedShip.size, this.draggedShip.horizontal);
+
+                if (this.draggedShip.isFromGrid) {
+                    const dockItem = this.dockItemTypes.find(item => item.name === this.draggedShip.name);
+                    this.removePiece(this.draggedShip);
+                    if (dockItem) dockItem.placedCount++;
+                }
+
+                if (this.draggedShip.type === 'mine') {
+                    team.mine = start;
+                } else if (this.draggedShip.type === 'shark') {
+                    team.shark.positions = positions;
+                } else {
+                    let shipId;
+                    if (this.draggedShip.isFromGrid) {
+                        shipId = this.draggedShip.id;
+                    } else {
+                        shipId = (team.ships.length > 0 ? Math.max(0, ...team.ships.map(s => s.id)) + 1 : 1);
+                    }
+                    
+                    positions.forEach(p => team.grid[p] = shipId);
+                    team.ships.push({ 
+                        id: shipId, 
+                        positions, 
+                        size: this.draggedShip.size, 
+                        name: this.draggedShip.name, 
+                        type: 'ship', 
+                        hits: 0, 
+                        sunk: false 
+                    });
+                }
+
+                if (!this.draggedShip.isFromGrid) {
+                    const dockItem = this.dockItemTypes.find(item => item.name === this.draggedShip.name);
+                    if (dockItem) {
+                        dockItem.placedCount++;
+                    }
+                }
+
+                this.renderDockItems();
+                this.updateGridDisplay();
+                this.checkPlacementComplete();
+            }
+
+
+            canDropShip(cell) {
+                if (!this.placementPhase || !cell.dataset.index || parseInt(cell.dataset.team) !== this.currentTeam + 1) return false;
+                
+                const team = this.teams[this.currentTeam];
+                const positions = this.getShipPositions(parseInt(cell.dataset.index), this.draggedShip.size, this.draggedShip.horizontal);
+                if (!positions) return false;
+
+                let tempGrid = [...team.grid];
+                let tempMine = team.mine;
+                let tempSharkPositions = [...team.shark.positions];
+                
+                if (this.draggedShip.isFromGrid) {
+                    if (this.draggedShip.type === 'ship') {
+                        const originalShip = team.ships.find(s => s.id === this.draggedShip.id);
+                        if(originalShip) originalShip.positions.forEach(p => tempGrid[p] = 0);
+                    } else if (this.draggedShip.type === 'mine') {
+                        tempMine = null;
+                    } else if (this.draggedShip.type === 'shark') {
+                        tempSharkPositions = [];
+                    }
+                }
+                
+                return positions.every(p => tempGrid[p] === 0 && tempMine !== p && !tempSharkPositions.includes(p));
+            }
+
+            getShipPositions(start, size, horizontal) {
+                const pos = [];
+                const row = Math.floor(start / this.gridWidth), col = start % this.gridWidth;
+                if (horizontal) {
+                    if (col + size > this.gridWidth) return null;
+                    for (let i = 0; i < size; i++) pos.push(start + i);
+                } else {
+                    if (row + size > this.gridHeight) return null;
+                    for (let i = 0; i < size; i++) pos.push(start + i * this.gridWidth);
+                }
+                return pos;
+            }
+
+            checkPlacementComplete() {
+                const allPlaced = this.dockItemTypes.every(item => item.placedCount >= item.totalCount);
+                document.getElementById('confirmPlacement').disabled = !allPlaced;
+            }
+
+            handleCellClick(e) {
+                if (!this.isAttackAllowed) return;
+                const index = parseInt(e.target.dataset.index);
+                const teamId = parseInt(e.target.dataset.team);
+                if (this.battlePhase && !this.gameOver && teamId !== this.currentTurn + 1) {
+                    if (this.isRadarActive) {
+                        this.performRadarScan(e.target.parentElement, teamId - 1, index);
+                    } else {
+                        this.makeAttack(e.target, teamId - 1, index);
+                    }
+                }
+            }
+
+            randomPlacement() {
+                this.clearCurrentGrid();
+                const itemsToPlace = [];
+                this.dockItemTypes.forEach(itemType => {
+                    for (let i = 0; i < itemType.totalCount; i++) {
+                        itemsToPlace.push({ ...itemType });
+                    }
+                });
+
+                itemsToPlace.forEach(item => {
+                    let placed = false, attempts = 0;
+                    while (!placed && attempts < 100) {
+                        const start = Math.floor(Math.random() * this.gridWidth * this.gridHeight);
+                        item.horizontal = Math.random() < 0.5;
+                        const positions = this.getShipPositions(start, item.size, item.horizontal);
+                        
+                        const canPlace = () => {
+                             const team = this.teams[this.currentTeam];
+                             if (!positions) return false;
+                             return positions.every(p => team.grid[p] === 0 && team.mine !== p && !team.shark.positions.includes(p));
+                        }
+
+                        if (positions && canPlace()) {
+                             this.draggedShip = { ...item, isFromGrid: false };
+                             this.handleDrop({ 
+                                 preventDefault: () => {}, 
+                                 target: document.querySelector(`#grid${this.currentTeam+1} .cell[data-index='${start}']`)
+                             });
+                             placed = true;
+                        }
+                        attempts++;
+                    }
+                });
+                this.draggedShip = null;
+            }
+
+            clearCurrentGrid() {
+                if (!this.teams[this.currentTeam]) {
+                    console.error(`Attempted to clear grid for non-existent team index: ${this.currentTeam}`);
+                    return;
+                }
+                const team = this.teams[this.currentTeam];
+                team.grid.fill(0);
+                team.ships = [];
+                team.mine = null;
+                team.shark = { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' };
+                
+                this.dockItemTypes.forEach(item => item.placedCount = 0);
+                this.renderDockItems();
+
+                this.updateGridDisplay();
+                this.checkPlacementComplete();
+            }
+
+            confirmPlacement() { this.nextTeam(); }
+
+            nextTeam() {
+                // Check if the current team is NOT the last one
+                if (this.currentTeam < this.teams.length - 1) {
+                    // If not last, move to the next team and reset the dock for them
+                    this.currentTeam++;
+                    this.shipCountsLocked = false;
+                    this.dockItemTypes.forEach(item => {
+                        item.placedCount = 0;
+                        if (item.type !== 'mine') item.horizontal = true;
+                    });
+                    this.renderDockItems();
+                    this.checkPlacementComplete();
+                } else {
+                    // If this WAS the last team, end the placement phase and show the start button
+                    this.placementPhase = false;
+                    document.getElementById('shipsDock').style.display = 'none';
+                    document.getElementById('randomPlacement').style.display = 'none';
+                    document.getElementById('clearGrid').style.display = 'none';
+                    document.getElementById('confirmPlacement').style.display = 'none';
+                    document.getElementById('startBattle').style.display = 'inline-block';
+                }
+
+                // Update the UI to reflect the new state (either next team or "start battle" screen)
+                this.updateUI();
+                turnManager.updateCurrentPlayer();
+            }
+
+            startBattle() {
+                this.battlePhase = true;
+                this.placementPhase = false;
+                document.body.classList.add('battle-phase');
+                this.currentTurn = 0;
+                this.moveHistory = [];
+                // Hide all placement-related controls
+                document.getElementById('shipsDock').style.display = 'none';
+                document.getElementById('randomPlacement').style.display = 'none';
+                document.getElementById('clearGrid').style.display = 'none';
+                document.getElementById('confirmPlacement').style.display = 'none';
+                document.getElementById('startBattle').style.display = 'none';
+                // Show battle controls
+                document.getElementById('turnControlPanel').style.display = 'block';
+                this.updateUI();
+                this.updateAllGridsForBattle();
+                turnManager.updateCurrentPlayer();
+                turnManager.addToHistory('بدأت المعركة!');
+            }
+
+            createExplosion(cell, isHit, isMine = false) {
+                const rect = cell.getBoundingClientRect();
+                const cellCenterX = rect.left + rect.width / 2;
+                const cellCenterY = rect.top + rect.height / 2;
+                const particleCount = isMine ? 60 : 30;
+                const colors = isMine ? ['#ff4757', '#ffa502'] : (isHit ? ['#ff9f43', 'var(--hit-color)'] : ['#192a56']);
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.left = `${cellCenterX}px`;
+                    particle.style.top = `${cellCenterY}px`;
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * (isMine ? 100 : 50) + 20;
+                    const x = Math.cos(angle) * distance;
+                    const y = Math.sin(angle) * distance;
+                    particle.style.setProperty('--x', `${x}px`);
+                    particle.style.setProperty('--y', `${y}px`);
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 700);
+                }
+            }
+
+            makeAttack(cell, targetTeamIdx, pos, isDoubleShotSecond = false) {
+                if (!this.isAttackAllowed) return;
+                const targetTeam = this.teams[targetTeamIdx];
+                if (targetTeam.hits[pos] !== 0) return;
+                
+                this.isAttackAllowed = false;
+                this.saveMoveState();
+                soundManager.playSound('fire');
+                
+                const cannonball = document.createElement('div');
+                cannonball.className = 'cannonball';
+                document.body.appendChild(cannonball);
+
+                const endRect = cell.getBoundingClientRect();
+                const startX = window.innerWidth / 2, startY = window.innerHeight;
+                const endX = endRect.left + endRect.width / 2, endY = endRect.top + endRect.height / 2;
+                const midX = startX + (endX - startX) / 2, midY = Math.min(startY, endY) - 150;
+
+                cannonball.style.setProperty('--start-x', `${startX}px`);
+                cannonball.style.setProperty('--start-y', `${startY}px`);
+                cannonball.style.setProperty('--mid-x', `${midX}px`);
+                cannonball.style.setProperty('--mid-y', `${midY}px`);
+                cannonball.style.setProperty('--end-x', `${endX}px`);
+                cannonball.style.setProperty('--end-y', `${endY}px`);
+                cannonball.style.animation = 'fireCannonball 0.8s cubic-bezier(0.4, 0, 0.6, 1) forwards';
+
+                setTimeout(() => {
+                    cannonball.remove();
+                    
+                    if (targetTeam.mine === pos) {
+                        this.createExplosion(cell, true, true);
+                        soundManager.playSound('sink');
+                        this.calculateScore(this.currentTurn, false, false, true);
+                        turnManager.addToHistory(`${this.teams[this.currentTurn].name} أصاب لغمًا! -${this.scoring.minePenalty} نقطة.`);
+                        targetTeam.hits[pos] = 4;
+                        targetTeam.mine = null;
+                        this.updateGridDisplay();
+                        
+                        this.shotsMadeThisTurn++;
+                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
+                        if (shotsRemaining > 0 && !this.gameOver) {
+                            showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        } else {
+                            if (!this.gameOver) turnManager.nextTurn();
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        }
+                        turnManager.updateCurrentPlayer();
+                        return;
+                    }
+                    if (targetTeam.shark.positions.includes(pos)) {
+                        targetTeam.shark.hits++;
+                        targetTeam.hits[pos] = 2;
+                        if (targetTeam.shark.hits >= targetTeam.shark.size) {
+                            targetTeam.shark.revealed = true;
+                            this.teamToSkip = this.currentTurn;
+                            turnManager.addToHistory(`${this.teams[this.currentTurn].name} كشف فخ القرش! سيتم حرمانه من الجولة القادمة.`);
+                            showToast(`${this.teams[this.currentTurn].name} سيتخطى دوره القادم!`, 'error');
+                        } else {
+                            turnManager.addToHistory(`${this.teams[this.currentTurn].name} أصاب جزءًا من فخ القرش!`);
+                        }
+                        this.createExplosion(cell, true, true);
+                        soundManager.playSound('hit');
+                        this.updateGridDisplay();
+
+                        this.shotsMadeThisTurn++;
+                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
+                        if (shotsRemaining > 0 && !this.gameOver) {
+                            showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        } else {
+                            if (!this.gameOver) turnManager.nextTurn();
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        }
+                        turnManager.updateCurrentPlayer();
+                        return;
+                    }
+                    
+                    let isHit = false, isSink = false;
+                    const shipId = targetTeam.grid[pos];
+                    if (shipId > 0) {
+                        isHit = true;
+                        const ship = targetTeam.ships.find(s => s.id === shipId);
+                        if (ship && ship.hits + 1 >= ship.size) {
+                           isSink = true;
+                        }
+                    }
+
+                    if (isSink) soundManager.playSound('sink');
+                    else if (isHit) soundManager.playSound('hit');
+                    else soundManager.playSound('splash');
+                    
+                    this.createExplosion(cell, isHit);
+
+                    setTimeout(() => {
+                        if (isHit) {
+                            targetTeam.hits[pos] = 2; // Hit
+                            const ship = targetTeam.ships.find(s => s.id === shipId);
+                            if (ship) {
+                                ship.hits++;
+                                if (ship.hits >= ship.size) {
+                                    ship.sunk = true;
+                                    ship.positions.forEach(p => { targetTeam.hits[p] = 3; });
+                                }
+                            }
+                        } else {
+                            targetTeam.hits[pos] = 1; // Miss
+                        }
+
+                        this.calculateScore(this.currentTurn, isHit, isSink);
+                        const result = isHit ? (isSink ? 'إغراق!' : 'إصابة!') : 'خطأ';
+                        turnManager.addToHistory(`${this.teams[this.currentTurn].name} هاجم ${targetTeam.name}: ${result}`);
+                        this.updateGridDisplay();
+                        this.checkGameOver();
+                        
+                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        this.shotsMadeThisTurn++;
+                        const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
+
+                        if (this.isDoubleShotActive && isHit && !isDoubleShotSecond) {
+                            showToast(`ضربة ناجحة! لديك ضربة إضافية.`, 'success');
+                            const team = this.teams[this.currentTurn];
+                            team.abilities.canUseDoubleShot = false; // Consume ability on successful use
+                            const doubleShotBtn = document.getElementById(`doubleShotBtn${team.id}`);
+                            if (doubleShotBtn) {
+                                doubleShotBtn.classList.remove('active');
+                            }
+                            this.isDoubleShotActive = false;
+                            this.shotsMadeThisTurn--; // Grant an extra shot
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        } else if (shotsRemaining > 0 && !this.gameOver) {
+                            showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        } else {
+                            if (!this.gameOver) turnManager.nextTurn();
+                            setTimeout(() => this.isAttackAllowed = true, 500);
+                        }
+                        turnManager.updateCurrentPlayer();
+                    }, 100);
+
+                }, 800);
+            }
+
+            activateRadar() {
+                if (!this.battlePhase) {
+                    showToast('لا يمكن استخدام القدرات قبل بدء المعركة.', 'error');
+                    return;
+                }
+                if (this.isDoubleShotActive) {
+                    showToast('لا يمكن استخدام الرادار أثناء تفعيل الضربة المزدوجة.', 'error');
+                    return;
+                }
+                const team = this.teams[this.currentTurn];
+                if (!team.abilities.canUseRadar) return;
+
+                this.isRadarActive = !this.isRadarActive;
+                const radarBtn = document.getElementById(`radarBtn${team.id}`);
+
+                if (this.isRadarActive) {
+                    soundManager.playSound('radar');
+                    radarBtn.classList.add('active');
+                    showToast('الرادار مفعل! اختر مربعًا في شبكة الخصم لكشف المنطقة.', 'info');
+                } else {
+                    radarBtn.classList.remove('active');
+                    this.clearRadarPreview();
+                    showToast('تم إلغاء تفعيل الرادار.', 'warning');
+                }
+            }
+            
+            handleRadarHover(e) {
+                if (!this.isRadarActive || parseInt(e.target.dataset.team) === this.currentTurn + 1) return;
+
+                this.clearRadarPreview(); // Clear previous preview
+                const targetTeamIdx = parseInt(e.target.dataset.team) - 1;
+                const pos = parseInt(e.target.dataset.index);
+                const gridEl = document.getElementById(`grid${targetTeamIdx + 1}`);
+                const cells = gridEl.querySelectorAll('.cell');
+
+                const row = Math.floor(pos / this.gridWidth);
+                const col = pos % this.gridWidth;
+
+                for (let r = row; r <= row + 1 && r < this.gridHeight; r++) {
+                    for (let c = col; c <= col + 1 && c < this.gridWidth; c++) {
+                        const index = r * this.gridWidth + c;
+                        if(cells[index]) cells[index].classList.add('radar-preview');
+                    }
+                }
+            }
+
+            handleRadarHoverEnd() {
+                if (!this.isRadarActive) return;
+                this.clearRadarPreview();
+            }
+
+            clearRadarPreview() {
+                document.querySelectorAll('.grid .cell.radar-preview').forEach(cell => {
+                    cell.classList.remove('radar-preview');
+                });
+            }
+
+
+            performRadarScan(gridEl, targetTeamIdx, pos) {
+                this.saveMoveState();
+
+                const team = this.teams[this.currentTurn];
+                team.abilities.canUseRadar = false;
+                this.isRadarActive = false;
+                this.clearRadarPreview();
+                
+                const radarBtn = document.getElementById(`radarBtn${team.id}`);
+                if(radarBtn) {
+                    radarBtn.classList.remove('active');
+                }
+                
+                const cells = gridEl.querySelectorAll('.cell');
+                const row = Math.floor(pos / this.gridWidth);
+                const col = pos % this.gridWidth;
+                
+                const revealedCells = [];
+                for (let r = row; r <= row + 1 && r < this.gridHeight; r++) {
+                    for (let c = col; c <= col + 1 && c < this.gridWidth; c++) {
+                        const index = r * this.gridWidth + c;
+                        const cell = cells[index];
+                        
+                        const targetTeam = this.teams[targetTeamIdx];
+                        if(cell) {
+                             if (targetTeam.grid[index] > 0 || targetTeam.mine === index || targetTeam.shark.positions.includes(index)) {
+                                cell.classList.add('radar-reveal', 'hit');
+                            } else {
+                                cell.classList.add('radar-reveal', 'water');
+                            }
+                            revealedCells.push(cell);
+                        }
+                    }
+                }
+                
+                turnManager.addToHistory(`${team.name} استخدم الرادار.`);
+
+                let pulseCount = 0;
+                soundManager.playSound('radar'); // Play immediately once
+                const radarInterval = setInterval(() => {
+                    pulseCount++;
+                    if (pulseCount < 3) {
+                        soundManager.playSound('radar');
+                    } else {
+                        clearInterval(radarInterval);
+                    }
+                }, 1000);
+
+                const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                this.shotsMadeThisTurn++;
+                const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
+
+                setTimeout(() => {
+                    revealedCells.forEach(cell => {
+                        cell.classList.remove('radar-reveal', 'hit', 'water');
+                    });
+                    this.updateGridDisplay();
+
+                    if (shotsRemaining > 0 && !this.gameOver) {
+                        showToast(`استخدمت الرادار. لديك ${shotsRemaining} رمية متبقية.`, 'info');
+                        this.isAttackAllowed = true;
+                    } else {
+                        if (!this.gameOver) turnManager.nextTurn();
+                    }
+                    turnManager.updateCurrentPlayer();
+
+                }, 3000);
+            }
+
+
+            activateDoubleShot() {
+                if (!this.battlePhase) {
+                    showToast('لا يمكن استخدام القدرات قبل بدء المعركة.', 'error');
+                    return;
+                }
+                 if (this.isRadarActive) {
+                    showToast('لا يمكن استخدام الضربة المزدوجة أثناء تفعيل الرادار.', 'error');
+                    return;
+                }
+                const team = this.teams[this.currentTurn];
+                if (!team.abilities.canUseDoubleShot) return;
+                
+                this.isDoubleShotActive = !this.isDoubleShotActive;
+                const doubleShotBtn = document.getElementById(`doubleShotBtn${team.id}`);
+
+                if (this.isDoubleShotActive) {
+                    doubleShotBtn.classList.add('active');
+                    showToast('ضربة مزدوجة مفعلة! إذا أصبت الهدف، ستحصل على ضربة أخرى.', 'info');
+                } else {
+                    doubleShotBtn.classList.remove('active');
+                    showToast('تم إلغاء تفعيل الضربة المزدوجة.', 'warning');
+                }
+            }
+
+            nextTurn() {
+                this.isDoubleShotActive = false;
+                this.isRadarActive = false;
+                this.clearRadarPreview();
+                document.querySelectorAll('.icon-btn.active').forEach(btn => btn.classList.remove('active'));
+                
+                this.currentTurn = (this.currentTurn + 1) % this.teams.length;
+                
+                if (this.teamToSkip === this.currentTurn) {
+                    showToast(`تم حرمان فريق ${this.teams[this.currentTurn].name} من جولة بسبب فخ القرش!`, 'warning');
+                    this.teamToSkip = null;
+                    this.nextTurn();
+                    return;
+                }
+
+                this.updateUI();
+            }
+
+            previousTurn() {
+                this.isDoubleShotActive = false;
+                this.isRadarActive = false;
+                this.clearRadarPreview();
+                document.querySelectorAll('.ability-btn.active').forEach(btn => btn.classList.remove('active'));
+                
+                this.currentTurn = (this.currentTurn - 1 + this.teams.length) % this.teams.length;
+                
+                this.shotsMadeThisTurn = 0;
+                
+                this.updateUI();
+                turnManager.updateCurrentPlayer();
+            }
+
+
+            switchToTeam(teamId) {
+                if (!this.battlePhase || this.gameOver) return;
+                const teamIndex = this.teams.findIndex(t => t.id === teamId);
+                if (teamIndex !== -1 && this.currentTurn !== teamIndex) {
+                    turnManager.stopTimer();
+                    turnManager.addToHistory(`المقدم قام بنقل الدور إلى ${this.teams[teamIndex].name}`);
+                    this.currentTurn = teamIndex;
+                    this.shotsMadeThisTurn = 0; // Reset shot count
+                    this.shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                    this.updateUI();
+                    turnManager.updateCurrentPlayer();
+                }
+            }
+
+            checkGameOver() {
+                const aliveTeams = this.teams.filter(t => t.ships.some(s => !s.sunk));
+                if (aliveTeams.length <= 1) {
+                    this.gameOver = true;
+                    showGameOverModal(aliveTeams[0]);
+                    turnManager.stopTimer();
+                }
+            }
+
+            updateGridDisplay() {
+                this.teams.forEach((team) => {
+                    const grid = document.getElementById(`grid${team.id}`);
+                    if (!grid) return;
+                    grid.querySelectorAll('.cell').forEach((cell, index) => {
+                        cell.className = 'cell';
+                        cell.innerHTML = '';
+                        
+                        const shipId = team.grid[index];
+                        const ship = shipId > 0 ? team.ships.find(s => s.id === shipId) : null;
+                        const isShark = team.shark.positions.includes(index);
+
+                        const applyImage = (item, cell, index) => {
+                            if (!item || !item.positions) return;
+                            const isHorizontal = item.positions.length > 1 && item.positions[1] === item.positions[0] + 1;
+                            const partIndexInItem = item.positions.indexOf(index);
+
+                            if (partIndexInItem !== -1) {
+                                let partClassIndex = partIndexInItem + 1;
+                                
+                                if (!isHorizontal && item.size > 1) {
+                                    partClassIndex = item.size - partIndexInItem;
+                                }
+
+                                if (item.type === 'ship') {
+                                     if (item.size === 1) cell.classList.add('single-ship');
+                                     else cell.classList.add(`ship-${item.size}-part-${partClassIndex}`);
+                                } else if (item.type === 'shark') {
+                                    cell.classList.add(`shark-part-${partClassIndex}`);
+                                }
+                            }
+                            if (!isHorizontal) cell.classList.add('vertical-ship-part');
+                        };
+
+                        let isPieceHere = false;
+
+                        if ((this.placementPhase && team.id === this.currentTeam + 1)) {
+                            if (ship) {
+                                isPieceHere = true;
+                                cell.classList.add('ship');
+                                applyImage(ship, cell, index);
+                            } else if (team.mine === index) {
+                                isPieceHere = true;
+                                cell.classList.add('mine');
+                                cell.innerHTML = '<div class="mine-image"></div>';
+                            } else if (isShark) {
+                                isPieceHere = true;
+                                cell.classList.add('shark');
+                                applyImage(team.shark, cell, index);
+                            }
+                        } 
+                        else if (this.battlePhase) {
+                            if (team.hits[index] === 1) {
+                                cell.classList.add('miss');
+                            } else if (team.hits[index] === 2) {
+                                cell.classList.add('hit');
+                                if (isShark && team.shark.revealed) {
+                                    cell.classList.add('shark');
+                                    applyImage(team.shark, cell, index);
+                                }
+                            } else if (team.hits[index] === 3) {
+                                cell.classList.add('ship', 'sunk');
+                                applyImage(ship, cell, index);
+                            } else if (team.hits[index] === 4) {
+                                cell.classList.add('mine', 'hit');
+                                cell.innerHTML = '<div class="mine-image"></div>';
+                            }
+                        }
+
+                        if (this.placementPhase && team.id === this.currentTeam + 1 && isPieceHere) {
+                            cell.draggable = true;
+                            cell.style.cursor = 'grab';
+                        } else {
+                            cell.draggable = false;
+                            cell.style.cursor = 'pointer';
+                        }
+                    });
+                    const statusEl = document.getElementById(`team${team.id}Status`);
+                    if(statusEl) {
+                        const alive = team.ships.filter(s => !s.sunk).length;
+                        statusEl.textContent = `${alive} سفن متبقية`;
+                    }
+                });
+            }
+
+
+            updateAllGridsForBattle() { this.updateGridDisplay(); }
+
+            updateUI() {
+                document.querySelectorAll('.team-section').forEach(el => el.classList.remove('current-turn-highlight'));
+                
+                const currentActiveTeam = this.teams[this.placementPhase ? this.currentTeam : this.currentTurn];
+                if (!currentActiveTeam) return; // Exit if no active team
+
+                const teamName = currentActiveTeam.name;
+                
+                let status;
+                if (this.placementPhase) {
+                    status = `مرحلة وضع السفن - ${teamName}`;
+                } else if (this.battlePhase) {
+                    status = `دور ${teamName} - اختر هدفك!`;
+                } else {
+                    // Intermediate state after placement but before battle
+                    status = 'اكتمل التوزيع! اضغط على بدء المعركة.';
+                }
+
+                document.getElementById('gameStatus').textContent = status;
+
+                const highlightId = currentActiveTeam.id;
+                const teamSection = document.querySelector(`.team-${highlightId}`);
+                if (teamSection) {
+                    teamSection.classList.add('current-turn-highlight');
+                }
+                
+                this.teams.forEach(team => {
+                   const radarBtn = document.getElementById(`radarBtn${team.id}`);
+                   if(radarBtn) {
+                       radarBtn.classList.toggle('used', !team.abilities.canUseRadar);
+                   }
+                   const doubleShotBtn = document.getElementById(`doubleShotBtn${team.id}`);
+                   if(doubleShotBtn) {
+                       doubleShotBtn.classList.toggle('used', !team.abilities.canUseDoubleShot);
+                   }
+                });
+            }
+            
+            saveMoveState() {
+                 this.moveHistory.push(JSON.parse(JSON.stringify({
+                    teams: this.teams,
+                    currentTurn: this.currentTurn,
+                    teamToSkip: this.teamToSkip
+                })));
+            }
+            
+            undoMove() {
+                if(!this.battlePhase || this.moveHistory.length === 0) {
+                    showToast('لا يمكن التراجع الآن.', 'error');
+                    return;
+                }
+
+                showConfirmationModal('تراجع', 'هل أنت متأكد من التراجع عن الخطوة الأخيرة؟', () => {
+                    const lastState = this.moveHistory.pop();
+                    this.teams = lastState.teams;
+                    this.currentTurn = lastState.currentTurn;
+                    this.teamToSkip = lastState.teamToSkip;
+
+                    this.updateAllGridsForBattle();
+                    this.updateScoreboard();
+                    this.updateUI();
+                    turnManager.updateCurrentPlayer();
+                    showToast('تم التراجع عن الخطوة الأخيرة.', 'success');
+                });
+            }
+            
+            resetPlacements() {
+                 showConfirmationModal('إعادة التوزيع', 'هل أنت متأكد من إعادة توزيع السفن؟ سيتم الاحتفاظ بالنقاط الحالية.', () => {
+                    this.placementPhase = true;
+                    this.battlePhase = false;
+                    document.body.classList.remove('battle-phase');
+                    this.currentTeam = 0;
+                    this.currentTurn = 0;
+                    this.moveHistory = [];
+                    this.shipCountsLocked = false;
+                    this.teams.forEach(team => {
+                        team.ships = [];
+                        team.mine = null;
+                        team.shark = { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' };
+                        team.grid.fill(0);
+                        team.hits.fill(0);
+                        team.abilities.canUseRadar = true;
+                        team.abilities.canUseDoubleShot = true;
+                    });
+
+                    this.createDockItems();
+                    this.updateAllGridsForBattle();
+                    this.updateUI();
+                    turnManager.reset();
+
+                    document.getElementById('shipsDock').style.display = 'block';
+                    document.getElementById('randomPlacement').style.display = 'inline-block';
+                    document.getElementById('clearGrid').style.display = 'inline-block';
+                    document.getElementById('confirmPlacement').style.display = 'inline-block';
+                    document.getElementById('startBattle').style.display = 'none';
+
+                    showToast('عدنا إلى مرحلة التوزيع.', 'info');
+                });
+            }
+
+            endGameConfirm() {
+                showConfirmationModal('إنهاء اللعبة', 'هل أنت متأكد من إنهاء اللعبة؟ سيتم كشف جميع السفن.', () => {
+                    this.revealAll();
+                });
+            }
+            
+            revealAll() {
+                if (this.gameOver) return;
+                this.gameOver = true;
+                turnManager.stopTimer();
+                this.teams.forEach(team => {
+                    team.ships.forEach(ship => {
+                        ship.positions.forEach(p => {
+                            if (team.hits[p] === 0) {
+                                team.hits[p] = 3;
+                            }
+                        });
+                    });
+
+                    if (team.mine !== null && team.hits[team.mine] === 0) {
+                        team.hits[p] = 4;
+                    }
+
+                    team.shark.positions.forEach(p => {
+                        if (team.hits[p] === 0) {
+                            team.hits[p] = 2;
+                        }
+                    });
+                    team.shark.revealed = true;
+                });
+                this.updateGridDisplay();
+                showToast('انتهت اللعبة! تم كشف جميع المواقع.', 'warning');
+            }
+            
+            saveGame() {
+                const gameState = {
+                    gridWidth: this.gridWidth,
+                    gridHeight: this.gridHeight,
+                    teams: this.teams,
+                    numTeams: this.numTeams,
+                    shipTypes: this.shipTypes,
+                    scoring: this.scoring,
+                    currentTeam: this.currentTeam,
+                    placementPhase: this.placementPhase,
+                    battlePhase: this.battlePhase,
+                    currentTurn: this.currentTurn,
+                    gameOver: this.gameOver,
+                    moveHistory: this.moveHistory,
+                    teamToSkip: this.teamToSkip,
+                    turnHistory: turnManager.turnHistory,
+                    dockItemTypes: this.dockItemTypes,
+                    shipCountsLocked: this.shipCountsLocked
+                };
+                localStorage.setItem('battleshipSaveData', JSON.stringify(gameState));
+                showToast('تم حفظ اللعبة بنجاح!', 'success');
+            }
+
+            _performLoad(gameState) {
+                Object.assign(this, gameState);
+                turnManager.turnHistory = gameState.turnHistory || [];
+                this.isAttackAllowed = true;
+
+                this.renderTeamContainers();
+                this.initializeGrids();
+                
+                if (this.placementPhase) {
+                    this.renderDockItems(); 
+                } else {
+                     document.getElementById('shipsDock').style.display = 'none';
+                     document.getElementById('randomPlacement').style.display = 'none';
+                     document.getElementById('clearGrid').style.display = 'none';
+                     document.getElementById('confirmPlacement').style.display = 'none';
+                     document.getElementById('startBattle').style.display = 'none';
+                     document.getElementById('turnControlPanel').style.display = 'block';
+                     document.body.classList.add('battle-phase');
+                }
+
+                this.updateAllGridsForBattle();
+                this.updateScoreboard();
+                this.populateAdminPanel();
+                this.renderAdminControls();
+                this.updateUI();
+                turnManager.updateCurrentPlayer();
+                turnManager.updateHistoryDisplay();
+                this.updateTeamLayout();
+
+                showToast('تم تحميل اللعبة بنجاح!', 'success');
+            }
+
+            loadGame(skipConfirm = false) {
+                const savedState = localStorage.getItem('battleshipSaveData');
+                if (!savedState) {
+                    showToast('لا توجد لعبة محفوظة.', 'error');
+                    return;
+                }
+                const gameState = JSON.parse(savedState);
+                
+                if (skipConfirm) {
+                    this._performLoad(gameState);
+                } else {
+                    showConfirmationModal('تحميل لعبة', 'هل أنت متأكد من تحميل اللعبة المحفوظة؟ سيتم فقدان التقدم الحالي.', () => {
+                        this._performLoad(gameState);
+                    });
+                }
+            }
+
+            _performReset() {
+                localStorage.removeItem('battleshipSaveData');
+                this.init();
+                turnManager.reset();
+                closeGameOverModal();
+                document.getElementById('shipsDock').style.display = 'block';
+                document.getElementById('randomPlacement').style.display = 'inline-block';
+                document.getElementById('clearGrid').style.display = 'inline-block';
+                document.getElementById('confirmPlacement').style.display = 'inline-block';
+                document.getElementById('startBattle').style.display = 'none';
+                showToast('بدأت لعبة جديدة!', 'success');
+            }
+
+            resetGame(confirmReset = false) {
+                if (confirmReset) {
+                    showConfirmationModal('إعادة اللعبة', 'هل أنت متأكد من إعادة تعيين اللعبة بالكامل؟', () => {
+                        this._performReset();
+                    });
+                } else {
+                    this._performReset();
+                }
+            }
+            toggleHistory(initial = false) {
+                if (!initial) {
+                    this.historyVisible = !this.historyVisible;
+                }
+                const historyPanel = document.getElementById('turnHistory');
+                const btn = document.getElementById('toggleHistoryBtn');
+                historyPanel.style.display = this.historyVisible ? 'block' : 'none';
+                if(btn) {
+                    btn.innerHTML = this.historyVisible ? `${this.getIcon('history')} إخفاء السجل` : `${this.getIcon('history')} إظهار السجل`;
+                }
+            }
+        }
+
+        // --- Global Functions ---
+        let onConfirmCallback = null;
+        function showConfirmationModal(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            onConfirmCallback = callback;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            onConfirmCallback = null;
+        }
+
+        function openAdminPanel() { 
+            document.getElementById('adminModal').style.display = 'block'; 
+            document.querySelector('.tab-button').click();
+            setupCustomSelects(); // Initialize custom selects when modal is opened
+        }
+        function closeAdminPanel() { document.getElementById('adminModal').style.display = 'none'; }
+        function openPresenterTools() { document.getElementById('presenterToolsModal').style.display = 'block'; }
+        function closePresenterTools() { document.getElementById('presenterToolsModal').style.display = 'none'; }
+
+        // --- START: How to Play Functions ---
+        function openHowToPlayModal() {
+            document.getElementById('howToPlayModal').style.display = 'block';
+        }
+        function closeHowToPlayModal() {
+            document.getElementById('howToPlayModal').style.display = 'none';
+        }
+        // --- END: How to Play Functions ---
+
+
+        function showGameOverModal(winner) {
+            const modal = document.getElementById('gameOverModal');
+            document.getElementById('winnerTitle').textContent = winner ? `🏆 الفريق الفائز: ${winner.name} 🏆` : 'انتهت اللعبة بالتعادل!';
+            const scores = document.getElementById('finalScores');
+            scores.innerHTML = '';
+            game.teams.forEach(t => scores.innerHTML += `<p>${t.name}: ${t.score.total} نقطة</p>`);
+            modal.style.display = 'block';
+        }
+        function closeGameOverModal() { document.getElementById('gameOverModal').style.display = 'none'; }
+        
+        function toggleTurnControl() {
+            const panel = document.getElementById('turnControlPanel');
+            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
+        }
+
+        function toggleAdvancedSettings() {
+            const panel = document.getElementById('advancedSettingsPanel');
+            const btn = document.getElementById('toggleAdvancedSettingsBtn');
+            panel.classList.toggle('active');
+            btn.classList.toggle('toggled');
+        }
+
+        function applySettings() {
+            // --- THE FIX ---
+            // Step 1: Read all new settings from the modal and update the game object's properties first.
+            game.gridWidth = parseInt(document.getElementById('gridWidthInput').value);
+            game.gridHeight = parseInt(document.getElementById('gridHeightInput').value);
+            
+            game.numTeams = 3; // Hardcoded to 3
+
+            // This is the crucial fix: Update the master list instead of replacing it.
+            for (let i = 0; i < game.numTeams; i++) { 
+                const nameInput = document.getElementById(`teamName${i + 1}Input`);
+                const colorInput = document.getElementById(`teamColor${i + 1}Input`);
+                if (nameInput && colorInput) { 
+                     game.defaultTeams[i].name = nameInput.value;
+                     game.defaultTeams[i].color = colorInput.value;
+                }
+            }
+            
+            game.scoring = {
+                hitPoints: parseInt(document.getElementById('hitPoints').value),
+                sinkPoints: parseInt(document.getElementById('sinkPoints').value),
+                minePenalty: parseInt(document.getElementById('minePenalty').value),
+                accuracyBonus: parseInt(document.getElementById('accuracyBonus').value),
+                missPenalty: parseInt(document.getElementById('missPenalty').value)
+            };
+            
+            // Step 2: Now that all properties are updated, call resetGame to re-initialize the game with the new state.
+            game.resetGame(false); // Call reset without confirmation
+            
+            // Step 3: Final UI updates
+            showToast('تم تطبيق الإعدادات! سيتم إعادة تشغيل اللعبة.', 'success');
+            closeAdminPanel();
+        }
+
+        function resetToDefaults() {
+            game.gridWidth = 7;
+            game.gridHeight = 7;
+            game.numTeams = 3;
+            // Restore the master list to its original state
+            game.defaultTeams = [
+                { name: 'القراصنة', color: '#ff6b6b' },
+                { name: 'البحارة', color: '#4ecdc4' },
+                { name: 'المستكشفون', color: '#45b7d1' },
+                { name: 'العمالقة', color: '#feca57' }
+            ];
+            
+            document.getElementById('gridWidthInput').value = game.gridWidth;
+            document.getElementById('gridHeightInput').value = game.gridHeight;
+            game.resetGame();
+            showToast('تمت استعادة الإعدادات الافتراضية.');
+        }
+        
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.querySelectorAll("#adminModal .tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.querySelectorAll("#adminModal .tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        function setupCustomSelects() {
+            const containers = document.getElementsByClassName("custom-select-container");
+            for (let i = 0; i < containers.length; i++) {
+                const selectEl = containers[i].getElementsByTagName("select")[0];
+                if (!selectEl || containers[i].querySelector('.select-selected')) continue; // Already initialized
+
+                const selectedDiv = document.createElement("DIV");
+                selectedDiv.setAttribute("class", "select-selected");
+                selectedDiv.innerHTML = selectEl.options[selectEl.selectedIndex].innerHTML;
+                containers[i].appendChild(selectedDiv);
+                
+                const optionsDiv = document.createElement("DIV");
+                optionsDiv.setAttribute("class", "select-items select-hide");
+                
+                for (let j = 0; j < selectEl.length; j++) {
+                    const option = document.createElement("DIV");
+                    option.innerHTML = selectEl.options[j].innerHTML;
+                    option.addEventListener("click", function(e) {
+                        const s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                        const h = this.parentNode.previousSibling;
+                        for (let k = 0; k < s.length; k++) {
+                            if (s.options[k].innerHTML == this.innerHTML) {
+                                s.selectedIndex = k;
+                                h.innerHTML = this.innerHTML;
+                                const y = this.parentNode.getElementsByClassName("same-as-selected");
+                                for (let l = 0; l < y.length; l++) {
+                                    y[l].removeAttribute("class");
+                                }
+                                this.setAttribute("class", "same-as-selected");
+                                break;
+                            }
+                        }
+                        h.click();
+                        // Trigger change event for team settings update
+                        const changeEvent = new Event('change');
+                        s.dispatchEvent(changeEvent);
+                        game.renderTeamSettingsInputs(parseInt(s.value));
+                    });
+                    optionsDiv.appendChild(option);
+                }
+                containers[i].appendChild(optionsDiv);
+                
+                selectedDiv.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    closeAllSelect(this);
+                    this.nextSibling.classList.toggle("select-hide");
+                    this.classList.toggle("select-arrow-active");
+                });
+            }
+        }
+        function closeAllSelect(elmnt) {
+            const arrNo = [];
+            const items = document.getElementsByClassName("select-items");
+            const selected = document.getElementsByClassName("select-selected");
+            for (let i = 0; i < selected.length; i++) {
+                if (elmnt == selected[i]) {
+                    arrNo.push(i);
+                } else {
+                    selected[i].classList.remove("select-arrow-active");
+                }
+            }
+            for (let i = 0; i < items.length; i++) {
+                if (arrNo.indexOf(i)) {
+                    items[i].classList.add("select-hide");
+                }
+            }
+        }
+        document.addEventListener("click", closeAllSelect);
+
+        function toggleScoreboard() {
+            game.scoreboardVisible = !game.scoreboardVisible;
+            document.getElementById('scoreboard').style.display = game.scoreboardVisible ? 'block' : 'none';
+        }
+
+        window.onclick = e => { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
+        
+        const soundManager = new SoundManager();
+        const turnManager = new TurnManager();
+        const game = new BattleshipGame();
+
+        document.addEventListener('DOMContentLoaded', () => {
+             // This line was causing the error, it's removed.
+        });
+
+        // Setup confirmation modal listeners
+        document.getElementById('confirmBtnYes').onclick = () => {
+            if (onConfirmCallback) {
+                onConfirmCallback();
+            }
+            closeConfirmationModal();
+        };
+        document.getElementById('confirmBtnNo').onclick = closeConfirmationModal;
+
+
+    </script>
+    <!-- Copyright notice moved to here, before closing body tag -->
+    <p class="copyright-notice">حقوق الطبع والنشر © احمد الذبياني</p>
+</body>
+</html>

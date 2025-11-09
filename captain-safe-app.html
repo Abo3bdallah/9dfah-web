@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خزنة ربان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #0ea5e9 75%, #06b6d4 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(30,58,138,0.8) 0%, rgba(6,182,212,0.6) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* تحديث تنسيق الخزنة لاستخدام الصور */
+        .treasure-chest {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            /* إزالة الخلفية المتدرجة والحدود */
+            background: transparent; 
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            overflow: hidden; /* لضمان عدم خروج الصورة */
+            height: 100%; /* يجب تحديد ارتفاع للتحكم في أبعاد الصورة */
+            aspect-ratio: 1 / 1; /* جعلها مربع */
+        }
+        
+        /* إخفاء العناصر الزخرفية السابقة غير المستخدمة */
+        .treasure-chest::before,
+        .treasure-chest::after {
+            content: none !important;
+        }
+        
+        .treasure-chest:hover {
+            transform: translateY(-8px) scale(1.08) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 0 20px rgba(255,215,0,0.3);
+        }
+
+        .treasure-chest-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s;
+        }
+        
+        .treasure-chest.opened .treasure-chest-image {
+            /* لجعل الصورة تبدو "مفتوحة" أو "غير نشطة"، سنقلل التعتيم */
+            opacity: 0.5;
+            filter: grayscale(80%);
+        }
+
+        /* نحتاج لتعديل أبعاد شبكة الخزائن لضمان ظهور الصور بشكل صحيح */
+        #treasureGrid {
+            /* تعديل: تحديد الحد الأقصى لـ 10 أعمدة */
+            grid-template-columns: repeat(10, 1fr); 
+            gap: 0.5rem;
+        }
+
+        /* لضمان التوافق على الجوالات، سنجعلها 5 أعمدة على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            #treasureGrid {
+                grid-template-columns: repeat(5, 1fr); 
+            }
+        }
+        
+        /* بقية التنسيقات (wave-animation, ship-container, etc.) تبقى كما هي */
+        .wave-animation {
+            animation: wave 3s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        
+        .ship-container {
+            position: relative;
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            border: 2px solid #0284c7;
+            box-shadow: 
+                0 8px 25px rgba(2,132,199,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        
+        /* إخفاء القارب القديم */
+        .ship-container::before {
+            content: none; 
+        }
+        
+        .points-animation {
+            animation: pointsFloat 2.5s ease-out forwards;
+        }
+        
+        @keyframes pointsFloat {
+            0% { 
+                transform: translateY(0) scale(1) rotate(0deg); 
+                opacity: 1; 
+            }
+            50% { 
+                transform: translateY(-30px) scale(1.1) rotate(5deg); 
+                opacity: 0.8; 
+            }
+            100% { 
+                transform: translateY(-60px) scale(1.3) rotate(10deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%) scale(0.8); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0) scale(1); 
+                opacity: 1; 
+            }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2.5s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 20px rgba(6,182,212,0.5),
+                    0 0 40px rgba(14,165,233,0.3); 
+            }
+            50% { 
+                box-shadow: 
+                    0 0 30px rgba(6,182,212,0.8),
+                    0 0 60px rgba(14,165,233,0.5); 
+            }
+        }
+        
+        .ocean-waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(90deg, 
+                rgba(6,182,212,0.3) 0%, 
+                rgba(14,165,233,0.2) 50%, 
+                rgba(6,182,212,0.3) 100%);
+            animation: oceanWave 8s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes oceanWave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* تنسيق قائمة الإعدادات والنوافذ المنبثقة */
+        .settings-container, .modal-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .settings-card, .modal-card {
+            max-width: 400px;
+            width: 90%;
+            padding: 24px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            border: 2px solid #0284c7;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .settings-container.active .settings-card, .modal-container.active .modal-card {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* تنسيق زر الإلغاء الجديد في شاشة الخزنة */
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255, 0, 0, 0.6);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .close-button:hover {
+            background: rgba(255, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white relative">
+    <div class="ocean-waves"></div>
+    <!-- الشاشة الرئيسية -->
+    <div id="mainScreen" class="container mx-auto px-4 py-6">
+        <!-- شريط الإدارة العلوي -->
+        <div class="ship-container backdrop-blur-md rounded-2xl p-4 md:p-6 mb-8 border border-cyan-300/30 wave-animation">
+            <!-- العنوان و زر الإعدادات -->
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-amber-300 flex items-center justify-center gap-2 flex-grow">
+                    <!-- استبدال أيقونة القارب بصورة -->
+                    <img src="https://i.postimg.cc/rs4LLx24/image.png" alt="Boat Icon" class="w-8 h-8 md:w-10 md:h-10 transform -scale-x-100">
+                    <span>خزنة ربان</span>
+                    <span class="text-2xl">⚓</span>
+                </h1>
+                
+                <!-- زر الإعدادات -->
+                <button onclick="toggleSettingsModal(true)" class="bg-indigo-600 hover:bg-indigo-700 p-3 rounded-full font-semibold transition-colors border border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    <span class="text-xl">⚙️</span>
+                </button>
+            </div>
+            
+            <!-- اختيار الطاقم -->
+            <div class="mb-4">
+                <select id="currentTeam" class="w-full bg-cyan-600 text-white px-4 py-3 rounded-lg font-semibold border border-cyan-400 text-center">
+                    <!-- سيتم ملؤه بواسطة JavaScript -->
+                </select>
+            </div>
+            
+            <!-- أزرار الإدارة الرئيسية (تبقى الأهم) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                <!-- إضافة نقاط -->
+                <div class="flex gap-2">
+                    <input type="number" id="addPointsInput" placeholder="النقاط" class="flex-1 bg-cyan-800/50 text-white placeholder-cyan-200 px-3 py-2 rounded-lg text-center border border-cyan-400" min="0">
+                    <button onclick="addPoints()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-emerald-400 whitespace-nowrap">
+                        <span class="text-lg">💰</span> إضافة
+                    </button>
+                </div>
+                
+                <!-- خصم نقاط -->
+                <div class="flex gap-2">
+                    <input type="number" id="subtractPointsInput" placeholder="النقاط" class="flex-1 bg-cyan-800/50 text-white placeholder-cyan-200 px-3 py-2 rounded-lg text-center border border-cyan-400" min="0">
+                    <button onclick="subtractPoints()" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-red-400 whitespace-nowrap">
+                        <span class="text-lg">⚡</span> خصم
+                    </button>
+                </div>
+                
+                <!-- إعادة فتح خزنة -->
+                <div class="flex gap-2 col-span-1 sm:col-span-2 lg:col-span-1">
+                    <select id="reopenBoxSelect" class="flex-1 bg-cyan-800/50 text-white px-3 py-2 rounded-lg border border-cyan-400">
+                        <option value="">اختر خزنة</option>
+                    </select>
+                    <button onclick="reopenBox()" class="bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-amber-400 whitespace-nowrap">
+                        <span class="text-lg">🗝️</span> فتح
+                    </button>
+                </div>
+            </div>
+            
+            <!-- لوحة النقاط -->
+            <div id="scoreboard" class="grid gap-4 mt-6">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+        
+        <!-- شبكة الخزائن -->
+        <div class="grid grid-cols-5 md:grid-cols-10 gap-3" id="treasureGrid">
+            <!-- سيتم إنشاء الخزائن بواسطة JavaScript -->
+        </div>
+    </div>
+    
+    <!-- شاشة الإعدادات -->
+    <div id="settingsModal" class="settings-container hidden">
+        <div class="settings-card">
+            <h2 class="text-2xl font-bold text-amber-300 mb-6 text-center">⚙️ إعدادات اللعبة ⚓</h2>
+
+            <div class="space-y-4">
+                
+                <!-- تحرير الفرق (تم استبدال اختيار عدد الفرق وزر القلم) -->
+                <button onclick="openTeamConfigModal(); toggleSettingsModal(false);" class="w-full bg-indigo-600 hover:bg-indigo-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-indigo-400">
+                    <span class="text-lg">🚢</span> إعدادات وتعديل الفرق
+                </button>
+                
+                <!-- تحرير الخزائن (نقل إلى الإعدادات) -->
+                <button onclick="openTreasureEditor(); toggleSettingsModal(false);" class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-purple-400">
+                    <span class="text-lg">✏️</span> تحرير وتعديل الخزائن
+                </button>
+
+                <!-- فتح جميع الخزائن -->
+                <button onclick="reopenAllBoxes(); toggleSettingsModal(false);" class="w-full bg-amber-600 hover:bg-amber-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-amber-400">
+                    <span class="text-lg">🗝️</span> إعادة فتح جميع الخزائن
+                </button>
+                
+                <!-- تصفير النقاط -->
+                <button onclick="resetPoints(); toggleSettingsModal(false);" class="w-full bg-red-600 hover:bg-red-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-red-400">
+                    <span class="text-lg">🌊</span> تصفير نقاط جميع الفرق
+                </button>
+                
+                <!-- إعادة تعيين الكل -->
+                <button onclick="resetBoxes(); toggleSettingsModal(false);" class="w-full bg-yellow-600 hover:bg-yellow-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-yellow-400">
+                    <span class="text-lg">⚓</span> إعادة تعيين الكل (نقاط وخزائن وتعديلات)
+                </button>
+            </div>
+
+            <div class="text-center mt-6">
+                <!-- خانة أحمد الذبياني -->
+                <p class="text-sm text-cyan-200/50 mb-4">
+                    إعداد: أحمد الذبياني
+                </p>
+                
+                <button onclick="toggleSettingsModal(false)" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-lg transition-colors border border-cyan-400">
+                    إغلاق الإعدادات
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- شاشة إعدادات الفرق الجديدة -->
+    <div id="teamConfigModal" class="modal-container hidden">
+        <div class="modal-card">
+            <h2 class="text-2xl font-bold text-amber-300 mb-6 text-center">🚢 إعدادات وتعديل الفرق ✏️</h2>
+            
+            <div class="space-y-4">
+                <!-- اختيار عدد الفرق -->
+                <div class="p-3 bg-cyan-900/50 rounded-lg border border-cyan-400/50">
+                    <label for="configNumTeamsSelect" class="block text-cyan-200 mb-2">تحديد عدد الفرق النشطة:</label>
+                    <select id="configNumTeamsSelect" onchange="previewNumTeams(this.value)" class="w-full bg-cyan-700/80 text-white px-4 py-2 rounded-lg font-semibold border border-cyan-500">
+                        <option value="4">4 فرق</option>
+                        <option value="3">3 فرق</option>
+                        <option value="2">2 فريقين</option>
+                    </select>
+                </div>
+                
+                <h3 class="text-xl font-bold text-cyan-200 mb-3 text-center pt-2">تعديل أسماء الفرق:</h3>
+                
+                <!-- حقول إدخال الأسماء -->
+                <div id="teamNameInputs" class="space-y-3">
+                    <!-- سيتم ملؤه بواسطة JavaScript -->
+                </div>
+
+                <!-- زر الحفظ والإلغاء -->
+                <div class="flex gap-4 pt-4">
+                    <button onclick="saveTeamConfig()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-emerald-400">
+                        💾 حفظ التعديلات
+                    </button>
+                    <button onclick="toggleTeamConfigModal(false)" class="flex-1 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-red-400">
+                        ❌ إلغاء
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- شاشة الخزنة -->
+    <div id="treasureScreen" class="hidden fixed inset-0 z-50">
+        <div class="ocean-waves"></div>
+        <div class="container mx-auto px-4 py-8 h-full flex items-center justify-center">
+            <div class="ship-container backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full border border-cyan-300/30 slide-in relative">
+                
+                <!-- زر إلغاء الإجراء (X) في الزاوية العلوية اليسرى -->
+                <div onclick="cancelAction()" class="close-button" title="إلغاء الإجراء (إعادة فتح الخزنة)">
+                    &times;
+                </div>
+
+                <div class="text-center">
+                    <div id="treasureIcon" class="text-8xl mb-6">🏴‍☠️</div>
+                    <h2 id="treasureTitle" class="text-3xl font-bold mb-6 text-amber-300">خزنة رقم 1</h2>
+                    <div id="treasureContent" class="text-xl mb-8 leading-relaxed">
+                        <!-- محتوى الخزنة سيظهر هنا -->
+                    </div>
+                    <div id="treasurePoints" class="text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed">
+                        <!-- نقاط الخزنة ستظهر هنا -->
+                    </div>
+                    <div id="teamSelector" class="hidden mb-6">
+                        <p class="text-xl mb-4 text-amber-300">اختر الطاقم الذي سيخسر النقاط:</p>
+                        <select id="penaltyTeamSelect" class="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-red-400">
+                            <!-- سيتم ملؤه بواسطة JavaScript -->
+                        </select>
+                    </div>
+                    <div id="pointsInput" class="hidden mb-6">
+                        <p class="text-xl mb-4 text-amber-300">أدخل عدد النقاط:</p>
+                        <input type="number" id="customPointsInput" class="bg-cyan-800/50 text-white placeholder-cyan-200 px-6 py-3 rounded-xl text-center text-lg font-semibold border border-cyan-400" min="0" max="50" placeholder="النقاط">
+                    </div>
+                    <div id="charitySelector" class="hidden mb-6">
+                        <div class="mb-4">
+                            <p class="text-xl mb-2 text-amber-300">الطاقم المانح:</p>
+                            <select id="donorTeamSelect" class="bg-cyan-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-cyan-400">
+                                <!-- سيتم ملؤه بواسطة JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <p class="text-xl mb-2 text-amber-300">الطاقم المستقبل:</p>
+                            <select id="receiverTeamSelect" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-emerald-400">
+                                <!-- سيتم ملؤه بواسطة JavaScript -->
+                            </select>
+                        </div>
+                        <div>
+                            <p class="text-xl mb-2 text-amber-300">عدد النقاط المنقولة:</p>
+                            <input type="number" id="charityPointsInput" class="bg-cyan-800/50 text-white placeholder-cyan-200 px-6 py-3 rounded-xl text-center text-lg font-semibold border border-cyan-400" min="0" placeholder="النقاط">
+                        </div>
+                    </div>
+                    <div id="pointsEffect" class="text-4xl font-bold mb-6 hidden">
+                        <!-- تأثير النقاط سيظهر هنا -->
+                    </div>
+                    <div id="actionButtons" class="flex gap-4 justify-center mb-6">
+                        <!-- زر التنفيذ -->
+                        <button onclick="executeAction()" class="bg-emerald-600 hover:bg-emerald-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-emerald-400">
+                            ⚓ تنفيذ
+                        </button>
+                        <!-- زر عدم التنفيذ الجديد -->
+                        <button onclick="skipAction()" class="bg-yellow-600 hover:bg-yellow-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-yellow-400">
+                            🚫 عدم تنفيذ
+                        </button>
+                    </div>
+                    <button id="backButton" onclick="closeTreasure(false)" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors pulse-glow hidden border border-cyan-400">
+                        العودة للخزائن 🚢
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- شاشة محرر الخزائن (بدون تغيير) -->
+    <div id="treasureEditor" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+        <div class="ocean-waves"></div>
+        <div class="container mx-auto px-4 py-8 h-full flex items-center justify-center">
+            <div class="ship-container backdrop-blur-md rounded-3xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-cyan-300/30 slide-in">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-amber-300 mb-4">✏️ محرر الخزائن ⚓</h2>
+                    <p class="text-cyan-200">يمكنك تعديل محتوى أي خزنة من الخزائن الـ 50</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- قائمة الخزائن -->
+                    <div class="bg-cyan-900/30 rounded-xl p-6 border border-cyan-400/30">
+                        <h3 class="text-xl font-bold text-amber-300 mb-4">📦 اختر خزنة للتعديل</h3>
+                        <div class="grid grid-cols-5 gap-2 mb-4 max-h-60 overflow-y-auto">
+                            <!-- سيتم إنشاء أزرار الخزائن هنا -->
+                        </div>
+                        <div class="text-center">
+                            <span class="text-sm text-cyan-300">الخزنة المحددة: </span>
+                            <span id="selectedBoxNumber" class="font-bold text-amber-300">لم يتم الاختيار</span>
+                        </div>
+                    </div>
+                    
+                    <!-- نموذج التعديل -->
+                    <div class="bg-cyan-900/30 rounded-xl p-6 border border-cyan-400/30">
+                        <h3 class="text-xl font-bold text-amber-300 mb-4">⚙️ تعديل الخزنة</h3>
+                        <div id="editForm" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-cyan-200 mb-2">🎭 الأيقونة:</label>
+                                <input type="text" id="editIcon" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="🏴‍☠️">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-cyan-200 mb-2">📝 العنوان:</label>
+                                <input type="text" id="editTitle" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="عنوان الخزنة">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-cyan-200 mb-2">📄 المحتوى:</label>
+                                <textarea id="editContent" rows="3" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="وصف ما يحدث في هذه الخزنة"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-cyan-200 mb-2">🏷️ نوع الخزنة:</label>
+                                <select id="editType" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400">
+                                    <option value="bonus">🎉 مكافأة</option>
+                                    <option value="penalty">💔 خصم</option>
+                                    <option value="challenge">🎯 تحدي</option>
+                                    <option value="gift">🎁 هدية لمجموعة أخرى</option>
+                                    <option value="charity">💝 نقل نقاط</option>
+                                    <option value="neutral">⏸️ محايد</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-cyan-200 mb-2">💰 النقاط:</label>
+                                <select id="editPointsType" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400 mb-2">
+                                    <option value="fixed">عدد ثابت</option>
+                                    <option value="double">مضاعفة النقاط</option>
+                                    <option value="half">نصف النقاط</option>
+                                    <option value="input_bonus">إدخال نقاط للإضافة</option>
+                                    <option value="input_penalty">إدخال نقاط للخصم</option>
+                                    <option value="variable_penalty_self">خصم متغير على النفس</option>
+                                    <option value="variable_penalty_big_self">خصم متغير كبير على النفس</option>
+                                    <option value="charity">نقل نقاط</option>
+                                </select>
+                                <input type="number" id="editPointsValue" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="عدد النقاط (للعدد الثابت فقط)">
+                            </div>
+                            
+                            <div class="flex gap-4">
+                                <button onclick="saveTreasureEdit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg font-semibold transition-colors border border-emerald-400">
+                                    💾 حفظ التعديل
+                                </button>
+                                <button onclick="resetToDefault()" class="flex-1 bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg font-semibold transition-colors border border-amber-400">
+                                    🔄 استعادة الأصلي
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="noSelection" class="text-center text-cyan-300">
+                            👆 اختر خزنة من القائمة أعلاه للبدء في التعديل
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button onclick="closeTreasureEditor()" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-cyan-400">
+                        🚢 العودة للعبة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // مفتاح الحفظ في localStorage
+        const STORAGE_KEY = 'robbans_vault_state';
+        
+        // ** مصفوفة صور الفرق الجديدة
+        const TEAM_IMAGE_URLS = [
+            'https://i.postimg.cc/zGXTtjr6/1.png', // Team 1
+            'https://i.postimg.cc/YCnYJWrX/2.png', // Team 2
+            'https://i.postimg.cc/t4SWLxqS/3.png', // Team 3
+            'https://i.postimg.cc/mgXC0HL8/4.png'  // Team 4
+        ];
+        
+        // مصفوفة روابط صور الخزائن المرقمة (تم التحديث هنا)
+        const TREASURE_IMAGE_URLS = [
+            // 1-9
+            'https://i.postimg.cc/05dHRC7G/1.png', 
+            'https://i.postimg.cc/ZYFDtL6L/2.png', 
+            'https://i.postimg.cc/SNS1yzGY/3.png', 
+            'https://i.postimg.cc/SNS1yzGM/4.png', 
+            'https://i.postimg.cc/qMJDkCGK/5.png', 
+            'https://i.postimg.cc/Qx8YXWqk/6.png', 
+            'https://i.postimg.cc/kXJYntyv/7.png', 
+            'https://i.postimg.cc/HsYvp7tB/8.png', 
+            'https://i.postimg.cc/xTfp0bPx/9.png', 
+            // 10-19
+            'https://i.postimg.cc/SNS1yzGv/10.png', 
+            'https://i.postimg.cc/yY1pVSTt/11.png', 
+            'https://i.postimg.cc/65Wb9GhD/12.png', 
+            'https://i.postimg.cc/Dyvp2bgV/13.png', 
+            'https://i.postimg.cc/sDjHVZJk/14.png', 
+            'https://i.postimg.cc/c4xks8my/15.png', 
+            'https://i.postimg.cc/GhX79hMM/16.png', 
+            'https://i.postimg.cc/PrS3Nr63/17.png', 
+            'https://i.postimg.cc/8PZKsPyX/18.png', 
+            'https://i.postimg.cc/BQmYtQhk/19.png',
+            // 20-29
+            'https://i.postimg.cc/nc3RMcd6/20.png',
+            'https://i.postimg.cc/65MjT5jJ/21.png',
+            'https://i.postimg.cc/65MjT5jt/22.png',
+            'https://i.postimg.cc/zXxt3XtJ/23.png',
+            'https://i.postimg.cc/c4F96491/24.png',
+            'https://i.postimg.cc/rFfnzFnF/25.png',
+            'https://i.postimg.cc/CLcPdLP5/26.png',
+            'https://i.postimg.cc/Dyxjmyjm/27.png',
+            'https://i.postimg.cc/15vC45C8/28.png',
+            'https://i.postimg.cc/CLcPdLPz/29.png',
+            // 30-39
+            'https://i.postimg.cc/t47r6Qw9/30.png',
+            'https://i.postimg.cc/T3hkbMFd/31.png',
+            'https://i.postimg.cc/BnthF9kZ/32.png',
+            'https://i.postimg.cc/vZDPnFkH/33.png',
+            'https://i.postimg.cc/8zsyvQ9C/34.png',
+            'https://i.postimg.cc/SxjZ9F3n/35.png',
+            'https://i.postimg.cc/x1qsmDhk/36.png',
+            'https://i.postimg.cc/zG3dhZ6V/37.png',
+            'https://i.postimg.cc/52jPzdT8/38.png',
+            'https://i.postimg.cc/Z50fNt2r/39.png',
+            // 40-50
+            'https://i.postimg.cc/pLy0jb4Q/40.png',
+            'https://i.postimg.cc/vZDPnFkr/41.png',
+            'https://i.postimg.cc/YCjXFKZd/42.png',
+            'https://i.postimg.cc/RhRP7MvY/43.png',
+            'https://i.postimg.cc/v8LSFv5Y/44.png',
+            'https://i.postimg.cc/zDSPZkT8/45.png',
+            'https://i.postimg.cc/66L1JhC9/46.png',
+            'https://i.postimg.cc/tRtmQzF9/47.png',
+            'https://i.postimg.cc/44bFk1p9/48.png',
+            'https://i.postimg.cc/7PMQ8NST/49.png',
+            'https://i.postimg.cc/L4B0KVjz/50.png'
+        ];
+        
+        // ** تحديث قائمة أسماء الفرق: يتم الآن تخزين أيقونة الفريق كنص عادي (مثل "الطاقم الأول")، والأيقونة ستكون صورة
+        let TEAM_NAMES = ['الطاقم الأول', 'الطاقم الثاني', 'الطاقم الثالث', 'الطاقم الرابع'];
+
+        // القيمة الافتراضية لنقاط البداية
+        const INITIAL_SCORE = 50;
+
+        // بيانات اللعبة
+        let gameState = {
+            teams: [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE], 
+            currentTeam: 0,
+            numTeams: 3, // الافتراضي هو 3 طواقم
+            openedBoxes: new Set(),
+            treasures: [],
+            currentTreasure: null,
+            currentBoxNumber: null
+        };
+        
+        // متغيرات مؤقتة لحفظ الإعدادات قبل الحفظ النهائي
+        let tempTeamConfig = {
+            numTeams: gameState.numTeams,
+            teamNames: [...TEAM_NAMES]
+        };
+
+        // متغيرات المحرر
+        let editorState = {
+            selectedBox: null,
+            originalTreasures: [] // نسخة احتياطية من البيانات الأصلية
+        };
+
+        // قائمة الخزائن المبرمجة مسبقاً (احتفظ بها كـ const)
+        const initialTreasureData = [
+            {type: 'penalty', icon: '💔', title: 'خصم على مجموعة', content: 'اختر مجموعة تخصم عليها 10 نقاط', points: -10, selectTeam: true},
+            {type: 'penalty', icon: '⚡', title: 'خصم متغير', content: 'اختر مجموعة تخصم عليك من 1 إلى 10 نقاط', points: 'variable_penalty_self', inputPoints: true},
+            {type: 'gift', icon: '🎁', title: 'هدية لمجموعة', content: 'اختر مجموعة تعطيها 10 نقاط', points: 10, selectTeam: true, giveToOther: true},
+            {type: 'penalty', icon: '🤐', title: 'صمت', content: 'بكل حب أغلق فمك لمدة دورة كاملة', points: -15},
+            {type: 'bonus', icon: '👔', title: 'الثياب السوداء', content: 'نقاطكم تزيد على عدد ثيابكم السوداء، الثوب الواحد بخمس نقاط', points: 'input_bonus', inputPoints: true},
+            {type: 'bonus', icon: '👴', title: 'وداع الأكبر', content: 'ودعوا أكبركم عمراً😢', points: 10},
+            {type: 'penalty', icon: '👶', title: 'عمر الأصغر', content: 'أصغركم عمراً خصم على قدر عمره', points: 'input_penalty', inputPoints: true},
+            {type: 'penalty', icon: '🧢', title: 'الأشمغة', content: 'آسف لكن خصم على عدد الأشمغة الملبوسة 3 نقاط على الشماغ', points: 'input_penalty', inputPoints: true},
+            {type: 'bonus', icon: '💰', title: 'الكاش', content: 'اذا معكم 46 ريال كاش لكم نصفها نقاط', points: 23},
+            {type: 'challenge', icon: '❓', title: 'أسئلة سريعة', content: '10 أسئلة سريعة في 60 ثانية اذا جاوبتم على 8 لكم النقاط', points: 30},
+            {type: 'bonus', icon: '🎓', title: 'طلاب الجامعة', content: '10 نقاط على عدد طلاب الجامعة، بكالوريوس فقط', points: 'input_bonus', inputPoints: true},
+            {type: 'penalty', icon: '😭', title: 'نصف النقاط', content: 'أنا آسف خصم 50%😭', points: 'half'},
+            {type: 'bonus', icon: '🎉', title: 'مضاعفة النقاط', content: 'إجحدوها نقاطكم ضرب 2', points: 'double'},
+            {type: 'challenge', icon: '📝', title: 'قصيدة كاملة', content: 'أعطوني قصيدة كاملة جميلة', points: 20},
+            {type: 'challenge', icon: '🎵', title: 'نشيد شجي', content: 'نشيد بصوت شجي لمدة دقيقتين', points: 30},
+            {type: 'challenge', icon: '📖', title: 'شعر بالجيم', content: 'بيتين شعر تبدأ بحرف الجيم', points: 15},
+            {type: 'challenge', icon: '📖', title: 'شعر بالياء', content: 'بيتين شعر بحرف الياء', points: 15},
+            {type: 'penalty', icon: '🎩', title: 'اخلع الرأس', content: 'بكامل الإحترام اخلع ما على رأسك', points: -30},
+            {type: 'challenge', icon: '📿', title: 'آية النور', content: 'تلاوة عطره لآية الله نور السموات والأرض', points: 25},
+            {type: 'penalty', icon: '⏸️', title: 'توقف', content: 'اوقفوا حتى يحين دوركم مرة أخرى', points: -35},
+            {type: 'bonus', icon: '✏️', title: 'الأقلام', content: 'على كل قلم في جيوب المجموعة نقطتين', points: 'input_bonus', inputPoints: true},
+            {type: 'penalty', icon: '😢', title: 'الوداع', content: 'نواادعكم بدمعات العيون😢، الشخص رقم 3 من يمين الملقي يروح للمجموعة التالية او ادفع 50 نقطة', points: -50},
+            {type: 'challenge', icon: '😂', title: 'الضحك', content: 'اضحكوا لمدة 10 ثواني', points: 30},
+            {type: 'penalty', icon: '🦵', title: 'قدم واحدة', content: 'اوقفوا على قدم واحدة لمدة 10 ثواني', points: -10},
+            {type: 'bonus', icon: '📦', title: 'خزنتين', content: 'لك خزنتين يا الطيب', points: 5},
+            {type: 'challenge', icon: '👑', title: 'شعر العقال', content: 'ابتكر بيتا موزونا من الشعر عن العقال', points: 20},
+            {type: 'challenge', icon: '🚗', title: 'شعر الكفر', content: 'ابتكر بيتا موزونا من الشعر عن كفر السيارة', points: 20},
+            {type: 'neutral', icon: '🛑', title: 'وقف', content: 'وقف الله لا يهينك', points: 0},
+            {type: 'charity', icon: '💝', title: 'صدقة', content: 'صدقة، المجموعة الأعلى نقاط تعطي المجموعة الأقل نقاط 15% من نقاطهم، الفواصل تجبر', points: 'charity', selectTeam: true, inputPoints: true},
+            {type: 'challenge', icon: '🕌', title: 'لغز فقهي 1', content: 'من المعلوم أن من سها في صلاته فإن السهو يجبر بسجود السهو، فما تقول في رجل سها في صلاته ولم يجز له سجود السهو؟', points: 25},
+            {type: 'challenge', icon: '🕌', title: 'لغز فقهي 2', content: 'من المعلوم أن ما فاتته صلاة فإنه يقضيها كما هي من غير زيادة في عدد ركعاتها فما تقول في رجل صلى صلاة قضاء بزيادة ركعات عن الصلاة الفائتة؟', points: 25},
+            {type: 'challenge', icon: '👨‍👩‍👧‍👦', title: 'لغز الميراث', content: 'ما القول في رجل تزوج امرأة وكان بينهما أولاد، فلما مات عنها هذا الرجل لم يكن لها نصيب من التركة، وإنما كانت من نصيب أولادها فقط؟', points: 30},
+            {type: 'challenge', icon: '🤲', title: 'شرح المثل 1', content: 'واحد يطلع يشرح المثل إيماءً', points: 30},
+            {type: 'challenge', icon: '🤲', title: 'شرح المثل 2', content: 'واحد يطلع يشرح المثل إيماءً', points: 30},
+            {type: 'challenge', icon: '🤲', title: 'شرح المثل 3', content: 'واحد يطلع يشرح المثل إيماءً', points: 30},
+            {type: 'challenge', icon: '🤲', title: 'شرح المثل 4', content: 'واحد يطلع يشرح المثل إيماءً', points: 30},
+            {type: 'challenge', icon: '📚', title: 'بيت شعر 1', content: 'وإذا كانت النفوس كباراً** تعبت في مرادها الأجسامٍ، من القائل؟', points: 15},
+            {type: 'challenge', icon: '📚', title: 'مقولة مشهورة', content: 'أطلبو الموت توهب لكم الحياة، من القائل؟', points: 15},
+            {type: 'penalty', icon: '📸', title: 'صورة مع الوردة', content: 'اثنين منكم يتصورون مع الوردة وينزلوها سناب عام', points: -30},
+            {type: 'challenge', icon: '📷', title: 'صورة جماعية', content: 'صورة جماعية مع الوورد في القروب', points: 20},
+            {type: 'challenge', icon: '🍌', title: 'شعر الموز', content: 'ارتجل بيتا موزونا من الشعر عن الموز', points: 20},
+            {type: 'penalty', icon: '⚡', title: 'خصم كبير متغير', content: 'اختر مجموعة تخصم عليك من 1 إلى 20 نقطة', points: 'variable_penalty_big_self', inputPoints: true},
+            {type: 'gift', icon: '🎁', title: 'هدية كبيرة', content: 'أختر مجموعة تمنحها 20 نقطة', points: 20, selectTeam: true, giveToOther: true},
+            {type: 'challenge', icon: '🎵', title: 'نشيد جماعي', content: 'نشيد جماعي لمدة دقيقة، اذا خرب النشيد راحت النقاط', points: 30},
+            {type: 'challenge', icon: '📖', title: 'سالفة', content: 'سالفة تقيمها 10/11، أنا المقيم👍🏼', points: 25},
+            {type: 'penalty', icon: '🗣️', title: 'لسان معقود 1', content: 'قولها خمس مرات بسرعة (شـرشـفـنا مع شـريف وشرشف شـريف زى شـرشـفـنا) ثلاث محاولات', points: -20},
+            {type: 'challenge', icon: '🗣️', title: 'لسان معقود 2', content: 'قولها خمس مرات بسرعة( ذبحنا بقرتـنا وذبحوا بقـرة بارقبه طلعت مرقة بقرتـنا احسن من مرقة بقـرة بارقبه) ثلاث محاولات', points: 20},
+            {type: 'penalty', icon: '😭', title: 'بكاء شديد', content: 'بكاء شديد لمدة 15 ثانية', points: -20},
+            {type: 'bonus', icon: '👶', title: 'الأبناء', content: 'زيادة نقاط على عدد ابناء المجموعة 5 نقاط', points: 'input_bonus', inputPoints: true},
+            {type: 'penalty', icon: '👓', title: 'النظارات', content: 'خصم على عدد النظارات في المجموعة خصم 5', points: 'input_penalty', inputPoints: true}
+        ];
+
+
+        // 1. دالة حفظ حالة اللعبة في localStorage
+        function saveGameState() {
+            try {
+                // نحفظ أسماء الفرق أيضاً
+                const stateToSave = {
+                    teams: gameState.teams,
+                    currentTeam: gameState.currentTeam,
+                    numTeams: gameState.numTeams,
+                    openedBoxes: Array.from(gameState.openedBoxes), 
+                    treasures: gameState.treasures,
+                    teamNames: TEAM_NAMES // حفظ أسماء الفرق المعدلة
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+                //console.log('Game state saved successfully.');
+            } catch (error) {
+                console.error('Error saving game state:', error);
+            }
+        }
+
+        // 2. دالة تحميل حالة اللعبة من localStorage
+        function loadGameState() {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY);
+                if (savedState) {
+                    const loadedState = JSON.parse(savedState);
+                    
+                    // استعادة حالة اللعبة
+                    gameState.teams = loadedState.teams || [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
+                    gameState.currentTeam = loadedState.currentTeam || 0;
+                    // ** تحديث: الافتراضي 3 طواقم إذا لم يتم الحفظ من قبل
+                    gameState.numTeams = loadedState.numTeams !== undefined ? loadedState.numTeams : 3;
+                    
+                    if (gameState.currentTeam >= gameState.numTeams) {
+                        gameState.currentTeam = 0;
+                    }
+
+                    gameState.openedBoxes = new Set(loadedState.openedBoxes || []);
+
+                    if (loadedState.treasures && loadedState.treasures.length === initialTreasureData.length) {
+                        gameState.treasures = loadedState.treasures;
+                    } else {
+                        gameState.treasures = [...initialTreasureData];
+                    }
+                    
+                    // ** تحديث: تحميل أسماء الفرق المعدلة
+                    if (loadedState.teamNames && loadedState.teamNames.length === 4) {
+                        TEAM_NAMES = loadedState.teamNames;
+                    }
+                    
+                    // console.log('Game state loaded successfully.');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading game state:', error);
+            }
+            return false;
+        }
+
+        // تهيئة اللعبة
+        function initGame() {
+            const isLoaded = loadGameState();
+            
+            if (!isLoaded) {
+                gameState.treasures = [...initialTreasureData];
+                // ** تحديث: تعيين النقاط الافتراضية
+                gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
+                // ** تحديث: تعيين الافتراضي إلى 3 فرق إذا لم يتم التحميل
+                gameState.numTeams = 3; 
+            }
+            
+            editorState.originalTreasures = JSON.parse(JSON.stringify(initialTreasureData)); 
+
+            // تحديث واجهة المستخدم
+            createTreasureGrid();
+            updateTeamSelectors();
+            updateScoreboard();
+            updateReopenBoxSelect();
+            document.getElementById('currentTeam').value = gameState.currentTeam;
+            // يجب أن يتم تحديث قائمة configNumTeamsSelect عند فتح المودال، وليس هنا
+        }
+        
+        // ** دالة جديدة لفتح نافذة إعدادات الفرق
+        function openTeamConfigModal() {
+            // نسخ الإعدادات الحالية إلى المتغير المؤقت
+            tempTeamConfig.numTeams = gameState.numTeams;
+            tempTeamConfig.teamNames = [...TEAM_NAMES];
+
+            // تعيين القيمة الحالية في المحدد
+            document.getElementById('configNumTeamsSelect').value = gameState.numTeams;
+
+            // إنشاء حقول إدخال الأسماء بناءً على العدد الأقصى (4)
+            generateTeamNameInputs(4); 
+            
+            // إظهار المودال
+            toggleTeamConfigModal(true);
+        }
+
+        // ** دالة لفتح/إغلاق نافذة إعدادات الفرق
+        function toggleTeamConfigModal(open) {
+            const modal = document.getElementById('teamConfigModal');
+            if (open) {
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('active'), 10);
+            } else {
+                modal.classList.remove('active');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+        
+        // ** دالة لعرض/إخفاء حقول إدخال أسماء الفرق بناءً على العدد
+        function generateTeamNameInputs(count) {
+            const container = document.getElementById('teamNameInputs');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                const isVisible = i < count;
+                // إضافة فئة Tailwind للتحكم في العرض
+                const visibilityClass = isVisible ? '' : 'hidden opacity-0 h-0';
+                
+                const div = document.createElement('div');
+                div.className = `flex items-center gap-2 transition-all duration-300 ${visibilityClass}`;
+                
+                // استخدام صورة الفريق بدلاً من الإيموجي في التسمية
+                const teamImage = TEAM_IMAGE_URLS[i];
+
+                div.innerHTML = `
+                    <label class="block text-cyan-200 w-1/4 flex items-center gap-1">
+                        <img src="${teamImage}" alt="Team ${i+1} Icon" class="w-5 h-5">
+                    </label>
+                    <input type="text" 
+                        id="configTeamName${i}" 
+                        value="${tempTeamConfig.teamNames[i]}"
+                        oninput="tempTeamConfig.teamNames[${i}] = this.value"
+                        class="flex-1 bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" 
+                        placeholder="اسم الطاقم ${i + 1}"
+                    >
+                `;
+                container.appendChild(div);
+            }
+        }
+        
+        // ** دالة لمعاينة العدد الجديد للفرق (تحديث الحقول المرئية مؤقتاً)
+        function previewNumTeams(num) {
+            const newNum = parseInt(num);
+            tempTeamConfig.numTeams = newNum;
+            // تحديث مرئية حقول الإدخال لتتناسب مع العدد الجديد
+            const inputs = document.getElementById('teamNameInputs').children;
+            for (let i = 0; i < 4; i++) {
+                if (i < newNum) {
+                    inputs[i].classList.remove('hidden', 'opacity-0', 'h-0');
+                } else {
+                    inputs[i].classList.add('hidden', 'opacity-0', 'h-0');
+                }
+            }
+        }
+        
+        // ** دالة لحفظ إعدادات الفرق الجديدة
+        function saveTeamConfig() {
+            const oldNumTeams = gameState.numTeams;
+            const newNumTeams = tempTeamConfig.numTeams;
+
+            // 1. تحديث الأسماء بشكل دائم
+            TEAM_NAMES = [...tempTeamConfig.teamNames];
+            
+            // 2. تحديث عدد الفرق
+            if (newNumTeams !== oldNumTeams) {
+                // تصفير نقاط الفرق غير المستخدمة فقط إذا قل العدد
+                if (newNumTeams < oldNumTeams) {
+                    for (let i = newNumTeams; i < 4; i++) {
+                        gameState.teams[i] = 0; // تصفير النقاط للفرق التي تم تعطيلها
+                    }
+                }
+                
+                gameState.numTeams = newNumTeams;
+                
+                // إعادة تعيين الفريق الحالي إذا تجاوز النطاق الجديد
+                if (gameState.currentTeam >= gameState.numTeams) {
+                    gameState.currentTeam = 0;
+                }
+                document.getElementById('currentTeam').value = gameState.currentTeam;
+            }
+
+            // 3. تحديث الواجهة وحفظ الحالة
+            updateTeamSelectors();
+            updateScoreboard(); 
+            saveGameState();
+            toggleTeamConfigModal(false);
+            showPointsAnimation('💾 تم حفظ إعدادات الفرق بنجاح', 'green');
+        }
+
+        // تحديث محددات الفرق في الواجهة بناءً على numTeams
+        function updateTeamSelectors() {
+            const teamNames = TEAM_NAMES.slice(0, gameState.numTeams);
+            const teamSelects = [
+                document.getElementById('currentTeam'),
+                document.getElementById('penaltyTeamSelect'),
+                document.getElementById('donorTeamSelect'),
+                document.getElementById('receiverTeamSelect')
+            ];
+
+            teamSelects.forEach(select => {
+                const currentValue = parseInt(select.value);
+                select.innerHTML = '';
+                teamNames.forEach((name, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = name; // عرض الاسم فقط
+                    select.appendChild(option);
+                });
+                
+                if (currentValue < gameState.numTeams) {
+                    select.value = currentValue;
+                } else {
+                    select.value = 0;
+                }
+            });
+        }
+
+        // تحديث لوحة النقاط (Scoreboard)
+        function updateScoreboard() {
+            const scoreboard = document.getElementById('scoreboard');
+            scoreboard.innerHTML = '';
+            
+            // تحديث تصميم الشبكة حسب عدد الفرق
+            scoreboard.className = 'grid gap-4 mt-6';
+            if (gameState.numTeams === 4) {
+                scoreboard.classList.add('grid-cols-2', 'md:grid-cols-4');
+            } else if (gameState.numTeams === 3) {
+                scoreboard.classList.add('grid-cols-1', 'sm:grid-cols-3');
+            } else if (gameState.numTeams === 2) {
+                scoreboard.classList.add('grid-cols-1', 'sm:grid-cols-2');
+            }
+            
+            // التحقق من أن مصفوفة النقاط تتطابق مع عدد الفرق، وتصفير الزيادات
+            while (gameState.teams.length < 4) {
+                gameState.teams.push(INITIAL_SCORE); 
+            }
+            
+            for (let i = 0; i < gameState.numTeams; i++) {
+                const teamDiv = document.createElement('div');
+                let colors = '';
+                if (i === 0) colors = 'from-blue-600/60 to-cyan-600/60 border-blue-400/30';
+                if (i === 1) colors = 'from-emerald-600/60 to-teal-600/60 border-emerald-400/30';
+                if (i === 2) colors = 'from-red-600/60 to-rose-600/60 border-red-400/30';
+                if (i === 3) colors = 'from-purple-600/60 to-indigo-600/60 border-purple-400/30';
+
+                const teamName = TEAM_NAMES[i];
+                const teamImage = TEAM_IMAGE_URLS[i]; // استخدام رابط الصورة
+
+                teamDiv.className = `bg-gradient-to-br ${colors} rounded-xl p-4 text-center border backdrop-blur-sm relative`;
+                teamDiv.innerHTML = `
+                    <h3 class="font-semibold mb-2 flex items-center justify-center gap-2" id="teamName${i}">
+                        <!-- استخدام الصورة بدلاً من الايموجي -->
+                        <img src="${teamImage}" alt="Team ${i+1} Icon" class="w-6 h-6"> 
+                        <span>${teamName}</span>
+                    </h3>
+                    <button onclick="openTeamConfigModal()" class="absolute top-2 left-2 text-cyan-200 hover:text-amber-300 transition-colors p-1 rounded-full bg-black/20">
+                        ✏️
+                    </button>
+                    <div id="team${i}Score" class="text-2xl font-bold text-amber-300">${gameState.teams[i]}</div>
+                `;
+                scoreboard.appendChild(teamDiv);
+            }
+        }
+        
+        // تغيير عدد الفرق (تم نقل المنطق إلى saveTeamConfig)
+        function changeNumTeams(num) {
+            // هذه الدالة أصبحت مهملة، نستخدم previewNumTeams و saveTeamConfig
+        }
+
+        // فتح/إغلاق شاشة الإعدادات
+        function toggleSettingsModal(open) {
+            const modal = document.getElementById('settingsModal');
+            if (open) {
+                // لا نحتاج لتعيين قيمة عدد الفرق هنا بعد الآن
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('active'), 10);
+            } else {
+                modal.classList.remove('active');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+        
+        // إظهار تأثير النقاط
+        function showPointsAnimation(text, color) {
+            const animation = document.createElement('div');
+            animation.textContent = text;
+            animation.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-${color}-400 points-animation z-50 pointer-events-none`;
+            document.body.appendChild(animation);
+            
+            setTimeout(() => {
+                document.body.removeChild(animation);
+            }, 2000);
+        }
+        
+        // تصفير النقاط (يتم الآن إعادتها إلى 50)
+        function resetPoints() {
+            const isConfirmed = confirm('هل أنت متأكد من تصفير نقاط جميع الفرق؟ (ستبدأ الفرق من 50 نقطة)');
+            if (isConfirmed) {
+                for (let i = 0; i < gameState.teams.length; i++) {
+                    gameState.teams[i] = INITIAL_SCORE;
+                }
+                updateScoreboard();
+                showPointsAnimation(`تم تصفير النقاط، الكل يبدأ من ${INITIAL_SCORE} 🌊`, 'red');
+                saveGameState();
+            }
+        }
+
+        // إعادة فتح جميع الخزائن
+        function reopenAllBoxes() {
+            const isConfirmed = confirm('هل أنت متأكد من إعادة فتح جميع الخزائن؟');
+            if (isConfirmed) {
+                gameState.openedBoxes.clear();
+                createTreasureGrid();
+                updateReopenBoxSelect();
+                showPointsAnimation('🗝️ تم إعادة فتح جميع الخزائن', 'blue');
+                saveGameState();
+            }
+        }
+
+        // إعادة تعيين الخزائن (بما في ذلك التعديلات)
+        function resetBoxes() {
+            const isConfirmed = confirm('هل أنت متأكد من إعادة تعيين جميع الخزائن والنقاط؟ (ستفقد جميع التعديلات والحالة الحالية)');
+            if (isConfirmed) {
+                // إعادة تعيين الحالة إلى الافتراضي
+                gameState.openedBoxes.clear();
+                // ** التحديث: نقاط البداية 50
+                gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE]; 
+                gameState.currentTeam = 0;
+                gameState.numTeams = 3; // إعادة التعيين إلى 3
+                gameState.treasures = [...initialTreasureData]; // استعادة الخزائن الأصلية
+                TEAM_NAMES = ['الطاقم الأول', 'الطاقم الثاني', 'الطاقم الثالث', 'الطاقم الرابع']; // إعادة تعيين الأسماء (بدون إيموجي)
+                
+                document.getElementById('currentTeam').value = 0;
+                
+                updateTeamSelectors();
+                createTreasureGrid();
+                updateReopenBoxSelect();
+                updateScoreboard();
+                showPointsAnimation('⚓ تم إعادة تعيين كل شيء', 'yellow');
+                
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        }
+        
+        // إنشاء شبكة الخزائن
+        function createTreasureGrid() {
+            const grid = document.getElementById('treasureGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 50; i++) {
+                const box = document.createElement('div');
+                // نستخدم flex لجعل الصورة تملأ المربع
+                box.className = `treasure-chest rounded-xl cursor-pointer flex justify-center items-center ${gameState.openedBoxes.has(i) ? 'opened' : ''}`;
+                
+                // إضافة الصورة باستخدام الرابط من مصفوفة TREASURE_IMAGE_URLS
+                const imageUrl = TREASURE_IMAGE_URLS[i - 1];
+                if (imageUrl) {
+                    box.innerHTML = `
+                        <img 
+                            src="${imageUrl}" 
+                            alt="خزنة رقم ${i}" 
+                            class="treasure-chest-image rounded-xl"
+                            onerror="this.onerror=null; this.src='https://placehold.co/100x100/374151/FFFFFF?text=${i}'"
+                        />
+                    `;
+                } else {
+                    // في حال كان هناك خطأ في الرابط أو كان غير موجود
+                    box.innerHTML = `
+                        <div class="text-center p-4">
+                            <div class="text-2xl mb-2 text-red-500">❌</div>
+                            <div class="font-bold text-amber-100">${i}</div>
+                        </div>
+                    `;
+                }
+                
+                box.onclick = () => openTreasure(i);
+                grid.appendChild(box);
+            }
+        }
+
+        // فتح الخزنة
+        function openTreasure(boxNumber) {
+            if (gameState.openedBoxes.has(boxNumber)) {
+                alert('هذه الخزنة مفتوحة بالفعل!');
+                return;
+            }
+
+            const treasure = gameState.treasures[boxNumber - 1];
+            gameState.openedBoxes.add(boxNumber);
+            gameState.currentTreasure = treasure;
+            gameState.currentBoxNumber = boxNumber;
+            
+            saveGameState(); 
+            
+            document.getElementById('treasureIcon').textContent = treasure.icon;
+            document.getElementById('treasureTitle').textContent = `خزنة رقم ${boxNumber}`;
+            document.getElementById('treasureContent').textContent = treasure.content;
+            
+            document.getElementById('teamSelector').classList.add('hidden');
+            document.getElementById('pointsInput').classList.add('hidden');
+            document.getElementById('charitySelector').classList.add('hidden');
+            
+            const pointsElement = document.getElementById('treasurePoints');
+            
+            if (treasure.points === 'double') {
+                pointsElement.textContent = '🎉 مضاعفة النقاط الحالية! 🎉';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-purple-400 text-purple-300 bg-purple-900/30';
+            } else if (treasure.points === 'half') {
+                pointsElement.textContent = '💔 خصم نصف النقاط الحالية 💔';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+            } else if (treasure.points === 'charity') {
+                pointsElement.textContent = '💝 نقل نقاط بين المجموعات 💝';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-blue-400 text-blue-300 bg-blue-900/30';
+                document.getElementById('charitySelector').classList.remove('hidden');
+            } else if (treasure.inputPoints && (treasure.points === 'input_bonus' || treasure.points === 'input_penalty')) {
+                if (treasure.points === 'input_bonus') {
+                    pointsElement.textContent = '✨ أدخل عدد النقاط للإضافة ✨';
+                    pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-green-400 text-green-300 bg-green-900/30';
+                } else {
+                    pointsElement.textContent = '💔 أدخل عدد النقاط للخصم 💔';
+                    pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+                }
+                document.getElementById('pointsInput').classList.remove('hidden');
+            } else if (treasure.selectTeam && treasure.giveToOther) {
+                pointsElement.textContent = `🎁 إعطاء ${treasure.points} نقطة لمجموعة أخرى 🎁`;
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-green-400 text-green-300 bg-green-900/30';
+                document.getElementById('teamSelector').classList.remove('hidden');
+                document.getElementById('penaltyTeamSelect').value = (gameState.currentTeam + 1) % gameState.numTeams; 
+            } else if (treasure.inputPoints && (treasure.points === 'variable_penalty_self' || treasure.points === 'variable_penalty_big_self')) {
+                const maxPoints = treasure.points === 'variable_penalty_big_self' ? 20 : 10;
+                pointsElement.textContent = `💔 خصم من 1 إلى ${maxPoints} نقاط عليك 💔`;
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+                document.getElementById('customPointsInput').max = maxPoints;
+                document.getElementById('pointsInput').classList.remove('hidden');
+            } else if (treasure.selectTeam && treasure.inputPoints) {
+                pointsElement.textContent = '⚡ خصم نقاط متغيرة من مجموعة أخرى ⚡';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+                document.getElementById('teamSelector').classList.remove('hidden');
+                document.getElementById('pointsInput').classList.remove('hidden');
+                document.getElementById('penaltyTeamSelect').value = gameState.currentTeam;
+            } else if (treasure.selectTeam && treasure.points < 0) {
+                pointsElement.textContent = `💔 خصم ${Math.abs(treasure.points)} نقاط من مجموعة أخرى 💔`;
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+                document.getElementById('teamSelector').classList.remove('hidden');
+                document.getElementById('penaltyTeamSelect').value = gameState.currentTeam;
+            } else if (treasure.points > 0) {
+                pointsElement.textContent = `+${treasure.points} نقطة 🎉`;
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-green-400 text-green-300 bg-green-900/30';
+            } else if (treasure.points < 0) {
+                pointsElement.textContent = `${treasure.points} نقطة 💔`;
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+            } else if (treasure.points === 0) {
+                pointsElement.textContent = '⏸️ لا توجد نقاط ⏸️';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-gray-400 text-gray-300 bg-gray-900/30';
+            }
+            
+            document.getElementById('pointsEffect').classList.add('hidden');
+            document.getElementById('actionButtons').classList.remove('hidden');
+            document.getElementById('backButton').classList.add('hidden');
+            
+            document.getElementById('mainScreen').classList.add('hidden');
+            document.getElementById('treasureScreen').classList.remove('hidden');
+            
+            createTreasureGrid();
+            updateReopenBoxSelect();
+        }
+
+        // تطبيق تأثير النقاط
+        function applyPointsEffect(points, targetTeam = null, customPoints = null) {
+            const pointsElement = document.getElementById('pointsEffect');
+            const currentTeam = gameState.currentTeam;
+            const affectedTeam = targetTeam !== null ? targetTeam : currentTeam;
+            const teamNames = TEAM_NAMES;
+            
+            if (points === 'double') {
+                gameState.teams[currentTeam] *= 2;
+                pointsElement.textContent = '🎉 مضاعفة النقاط! 🎉';
+                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+            } else if (points === 'half') {
+                gameState.teams[currentTeam] = Math.floor(gameState.teams[currentTeam] / 2);
+                pointsElement.textContent = '💔 خصم نصف النقاط! 💔';
+                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+            } else if (points === 'input_bonus' && customPoints) {
+                gameState.teams[currentTeam] += customPoints;
+                pointsElement.textContent = `+${customPoints} 🎉`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+            } else if (points === 'input_penalty' && customPoints) {
+                gameState.teams[currentTeam] -= customPoints;
+                if (gameState.teams[currentTeam] < 0) gameState.teams[currentTeam] = 0;
+                pointsElement.textContent = `-${customPoints} 💔`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+            } else if ((points === 'variable_penalty_self' || points === 'variable_penalty_big_self') && customPoints) {
+                gameState.teams[currentTeam] -= customPoints;
+                if (gameState.teams[currentTeam] < 0) gameState.teams[currentTeam] = 0;
+                pointsElement.textContent = `-${customPoints} نقطة عليك 💔`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+            } else if ((points === 'variable_penalty' || points === 'variable_penalty_big') && customPoints && targetTeam !== null) {
+                gameState.teams[affectedTeam] -= customPoints;
+                if (gameState.teams[affectedTeam] < 0) gameState.teams[affectedTeam] = 0;
+                pointsElement.textContent = `-${customPoints} نقطة من ${teamNames[affectedTeam]} 💔`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+            } else if (points > 0 && targetTeam !== null && gameState.currentTreasure.giveToOther) {
+                gameState.teams[affectedTeam] += points;
+                pointsElement.textContent = `+${points} نقطة لـ ${teamNames[affectedTeam]} 🎁`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+            } else if (points > 0) {
+                gameState.teams[currentTeam] += points;
+                pointsElement.textContent = `+${points} 🎉`;
+                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+            } else if (points < 0) {
+                gameState.teams[affectedTeam] += points;
+                if (gameState.teams[affectedTeam] < 0) gameState.teams[affectedTeam] = 0;
+                
+                if (targetTeam !== null) {
+                    pointsElement.textContent = `${points} نقطة من ${teamNames[affectedTeam]} 💔`;
+                } else {
+                    pointsElement.textContent = `${points} 💔`;
+                }
+                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+            } else if (points === 0) {
+                pointsElement.textContent = '⏸️ لا تغيير في النقاط ⏸️';
+                pointsElement.className = 'text-4xl font-bold mb-6 text-gray-400 points-animation';
+            }
+            
+            pointsElement.classList.remove('hidden');
+            updateScoreboard();
+            saveGameState();
+        }
+
+        // تطبيق تأثير الصدقة
+        function applyCharityEffect(donorTeam, receiverTeam, points) {
+            const pointsElement = document.getElementById('pointsEffect');
+            const teamNames = TEAM_NAMES;
+            
+            gameState.teams[donorTeam] -= points;
+            gameState.teams[receiverTeam] += points;
+            
+            if (gameState.teams[donorTeam] < 0) gameState.teams[donorTeam] = 0;
+            
+            pointsElement.textContent = `💝 نقل ${points} نقطة من ${teamNames[donorTeam]} إلى ${teamNames[receiverTeam]} 💝`;
+            pointsElement.className = 'text-4xl font-bold mb-6 text-blue-400 points-animation';
+            pointsElement.classList.remove('hidden');
+            updateScoreboard();
+            saveGameState();
+        }
+
+        // تنفيذ الإجراء
+        function executeAction() {
+            if (gameState.currentTreasure) {
+                let targetTeam = null;
+                let customPoints = null;
+                
+                if (gameState.currentTreasure.points === 'charity') {
+                    const donorTeam = parseInt(document.getElementById('donorTeamSelect').value);
+                    const receiverTeam = parseInt(document.getElementById('receiverTeamSelect').value || '0');
+                    const charityPoints = parseInt(document.getElementById('charityPointsInput').value || '0');
+                    
+                    if (charityPoints > 0 && donorTeam !== receiverTeam) {
+                        applyCharityEffect(donorTeam, receiverTeam, charityPoints);
+                    } else {
+                        alert('يرجى إدخال بيانات صحيحة للصدقة: نقاط أكبر من صفر، ومجموعتان مختلفتان.');
+                        return;
+                    }
+                } else {
+                    if (gameState.currentTreasure.selectTeam) {
+                        targetTeam = parseInt(document.getElementById('penaltyTeamSelect').value);
+                    }
+                    
+                    if (gameState.currentTreasure.inputPoints) {
+                        customPoints = parseInt(document.getElementById('customPointsInput').value || '0');
+                        if (customPoints < 0) { 
+                            customPoints = 0;
+                        }
+                        if ((gameState.currentTreasure.points === 'variable_penalty_self' || gameState.currentTreasure.points === 'variable_penalty_big_self') && customPoints <= 0) {
+                            alert('يرجى إدخال عدد صحيح موجب من النقاط للخصم.');
+                            return;
+                        }
+                    }
+                    
+                    applyPointsEffect(gameState.currentTreasure.points, targetTeam, customPoints);
+                }
+                
+                // بعد التنفيذ، يجب إغلاق الشاشة
+                document.getElementById('actionButtons').classList.add('hidden');
+                document.getElementById('teamSelector').classList.add('hidden');
+                document.getElementById('pointsInput').classList.add('hidden');
+                document.getElementById('charitySelector').classList.add('hidden');
+                document.getElementById('backButton').classList.remove('hidden');
+            }
+        }
+
+        // دالة جديدة: عدم تنفيذ (يغلق الصندوق وينتقل للدور التالي دون تطبيق أي تأثير)
+        function skipAction() {
+            // لا يتم تطبيق أي نقاط أو تأثيرات
+            
+            const pointsElement = document.getElementById('pointsEffect');
+            pointsElement.textContent = '🚫 لم يتم تنفيذ الأمر';
+            pointsElement.className = 'text-4xl font-bold mb-6 text-yellow-400';
+            pointsElement.classList.remove('hidden');
+            
+            // إخفاء الأزرار وإظهار زر العودة
+            document.getElementById('actionButtons').classList.add('hidden');
+            document.getElementById('teamSelector').classList.add('hidden');
+            document.getElementById('pointsInput').classList.add('hidden');
+            document.getElementById('charitySelector').classList.add('hidden');
+            document.getElementById('backButton').classList.remove('hidden');
+        }
+
+        // دالة إلغاء الإجراء (زر الـ X) - تزيل الخزنة من المفتوحة وتغلق الشاشة
+        function cancelAction() {
+            if (gameState.currentBoxNumber) {
+                // إعادة الخزنة إلى حالة "غير مفتوحة"
+                gameState.openedBoxes.delete(gameState.currentBoxNumber);
+                saveGameState();
+                createTreasureGrid();
+                updateReopenBoxSelect();
+            }
+            
+            // إغلاق الشاشة والانتقال للفريق التالي (مثل closeTreasure)
+            closeTreasure(true); // نمرر true لتعيين الفريق التالي
+            showPointsAnimation('❌ تم إلغاء الإجراء وإعادة فتح الخزنة', 'red');
+        }
+
+        // إغلاق شاشة الخزنة (Close Treasure)
+        function closeTreasure(shouldGoToNextTeam = true) {
+            document.getElementById('treasureScreen').classList.add('hidden');
+            document.getElementById('mainScreen').classList.remove('hidden');
+            document.getElementById('pointsEffect').classList.add('hidden');
+            
+            gameState.currentTreasure = null;
+            gameState.currentBoxNumber = null;
+            
+            if (shouldGoToNextTeam) {
+                gameState.currentTeam = (gameState.currentTeam + 1) % gameState.numTeams; 
+                document.getElementById('currentTeam').value = gameState.currentTeam;
+            }
+            
+            saveGameState();
+        }
+
+        // إضافة نقاط يدوياً
+        function addPoints() {
+            const pointsInput = document.getElementById('addPointsInput');
+            const points = parseInt(pointsInput.value || '0');
+            if (points > 0) {
+                const teamIndex = parseInt(document.getElementById('currentTeam').value);
+                gameState.teams[teamIndex] += points;
+                updateScoreboard();
+                
+                showPointsAnimation(`+${points}`, 'green');
+                
+                pointsInput.value = '';
+                saveGameState();
+            } else {
+                alert('يرجى إدخال عدد صحيح موجب من النقاط');
+            }
+        }
+
+        // خصم نقاط يدوياً
+        function subtractPoints() {
+            const pointsInput = document.getElementById('subtractPointsInput');
+            const points = parseInt(pointsInput.value || '0');
+            if (points > 0) {
+                const teamIndex = parseInt(document.getElementById('currentTeam').value);
+                gameState.teams[teamIndex] -= points;
+                if (gameState.teams[teamIndex] < 0) gameState.teams[teamIndex] = 0;
+                updateScoreboard();
+                
+                showPointsAnimation(`-${points}`, 'red');
+                
+                pointsInput.value = '';
+                saveGameState();
+            } else {
+                alert('يرجى إدخال عدد صحيح موجب من النقاط');
+            }
+        }
+
+        // إعادة فتح صندوق محدد
+        function reopenBox() {
+            const selectElement = document.getElementById('reopenBoxSelect');
+            const boxNumber = parseInt(selectElement.value);
+            
+            if (boxNumber && gameState.openedBoxes.has(boxNumber)) {
+                gameState.openedBoxes.delete(boxNumber);
+                createTreasureGrid();
+                updateReopenBoxSelect();
+                selectElement.value = '';
+                
+                showPointsAnimation(`🗝️ تم إعادة فتح الخزنة ${boxNumber}`, 'blue');
+                saveGameState();
+            } else if (boxNumber) {
+                alert('هذه الخزنة غير مفتوحة أصلاً!');
+            } else {
+                alert('يرجى اختيار خزنة لإعادة فتحها');
+            }
+        }
+
+        // تحديث قائمة الصناديق المفتوحة
+        function updateReopenBoxSelect() {
+            const select = document.getElementById('reopenBoxSelect');
+            select.innerHTML = '<option value="">اختر خزنة</option>';
+            
+            Array.from(gameState.openedBoxes).sort((a, b) => a - b).forEach(boxNumber => {
+                const option = document.createElement('option');
+                option.value = boxNumber;
+                option.textContent = `خزنة ${boxNumber}`;
+                select.appendChild(option);
+            });
+        }
+        
+        // === وظائف محرر الخزائن ===
+        
+        // فتح محرر الخزائن
+        function openTreasureEditor() {
+            document.getElementById('treasureEditor').classList.remove('hidden');
+            createEditorBoxGrid();
+        }
+
+        // إغلاق محرر الخزائن
+        function closeTreasureEditor() {
+            document.getElementById('treasureEditor').classList.add('hidden');
+            editorState.selectedBox = null;
+            document.getElementById('selectedBoxNumber').textContent = 'لم يتم الاختيار';
+            document.getElementById('editForm').classList.add('hidden');
+            document.getElementById('noSelection').classList.remove('hidden');
+        }
+
+        // إنشاء شبكة الخزائن في المحرر
+        function createEditorBoxGrid() {
+            const container = document.querySelector('#treasureEditor .grid.grid-cols-5');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 50; i++) {
+                const button = document.createElement('button');
+                button.className = `bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition-colors border border-cyan-500 ${
+                    editorState.selectedBox === i ? 'bg-amber-600 border-amber-400' : ''
+                }`;
+                button.textContent = i;
+                button.onclick = () => selectBoxForEdit(i);
+                container.appendChild(button);
+            }
+        }
+
+        // اختيار خزنة للتعديل
+        function selectBoxForEdit(boxNumber) {
+            editorState.selectedBox = boxNumber;
+            document.getElementById('selectedBoxNumber').textContent = `خزنة ${boxNumber}`;
+            
+            createEditorBoxGrid();
+            
+            loadTreasureData(boxNumber);
+            
+            document.getElementById('editForm').classList.remove('hidden');
+            document.getElementById('noSelection').classList.add('hidden');
+        }
+
+        // تحميل بيانات الخزنة
+        function loadTreasureData(boxNumber) {
+            const treasure = gameState.treasures[boxNumber - 1];
+            
+            document.getElementById('editIcon').value = treasure.icon || '';
+            document.getElementById('editTitle').value = treasure.title || '';
+            document.getElementById('editContent').value = treasure.content || '';
+            document.getElementById('editType').value = treasure.type || 'bonus';
+            
+            if (treasure.points === 'double') {
+                document.getElementById('editPointsType').value = 'double';
+            } else if (treasure.points === 'half') {
+                document.getElementById('editPointsType').value = 'half';
+            } else if (treasure.points === 'input_bonus') {
+                document.getElementById('editPointsType').value = 'input_bonus';
+            } else if (treasure.points === 'input_penalty') {
+                document.getElementById('editPointsType').value = 'input_penalty';
+            } else if (treasure.points === 'variable_penalty_self') {
+                document.getElementById('editPointsType').value = 'variable_penalty_self';
+            } else if (treasure.points === 'variable_penalty_big_self') {
+                document.getElementById('editPointsType').value = 'variable_penalty_big_self';
+            } else if (treasure.points === 'charity') {
+                document.getElementById('editPointsType').value = 'charity';
+            } else {
+                document.getElementById('editPointsType').value = 'fixed';
+            }
+            
+            // التعامل مع قيمة النقاط
+            if (typeof treasure.points === 'number' && document.getElementById('editPointsType').value === 'fixed') {
+                 document.getElementById('editPointsValue').value = treasure.points;
+            } else {
+                 document.getElementById('editPointsValue').value = '';
+            }
+        }
+
+        // حفظ تعديل الخزنة
+        function saveTreasureEdit() {
+            if (!editorState.selectedBox) return;
+            
+            const boxIndex = editorState.selectedBox - 1;
+            const treasure = gameState.treasures[boxIndex];
+            
+            treasure.icon = document.getElementById('editIcon').value || '🏴‍☠️';
+            treasure.title = document.getElementById('editTitle').value || `خزنة رقم ${editorState.selectedBox}`;
+            treasure.content = document.getElementById('editContent').value || 'محتوى الخزنة';
+            treasure.type = document.getElementById('editType').value;
+            
+            const pointsType = document.getElementById('editPointsType').value;
+            const pointsValue = parseInt(document.getElementById('editPointsValue').value || '0');
+            
+            if (pointsType === 'fixed') {
+                treasure.points = pointsValue;
+            } else {
+                treasure.points = pointsType;
+            }
+            
+            treasure.selectTeam = false;
+            treasure.inputPoints = false;
+            treasure.giveToOther = false;
+            
+            if (treasure.type === 'gift') {
+                treasure.selectTeam = true;
+                treasure.giveToOther = true;
+            } else if (treasure.type === 'penalty' && typeof treasure.points === 'number' && treasure.points < 0) {
+                treasure.selectTeam = true;
+            } else if (pointsType === 'input_bonus' || pointsType === 'input_penalty' || 
+                      pointsType === 'variable_penalty_self' || pointsType === 'variable_penalty_big_self') {
+                treasure.inputPoints = true;
+            } else if (pointsType === 'charity') {
+                treasure.selectTeam = true;
+                treasure.inputPoints = true;
+            }
+            
+            saveGameState();
+            
+            showPointsAnimation(`💾 تم حفظ تعديل الخزنة ${editorState.selectedBox}`, 'green');
+        }
+
+        // استعادة الخزنة للحالة الأصلية
+        function resetToDefault() {
+            if (!editorState.selectedBox) return;
+            
+            const boxIndex = editorState.selectedBox - 1;
+            const originalTreasure = initialTreasureData[boxIndex]; 
+            
+            if (originalTreasure) {
+                gameState.treasures[boxIndex] = JSON.parse(JSON.stringify(originalTreasure));
+                loadTreasureData(editorState.selectedBox);
+                
+                saveGameState(); 
+                
+                showPointsAnimation(`🔄 تم استعادة الخزنة ${editorState.selectedBox} للحالة الأصلية`, 'blue');
+            }
+        }
+
+        // تهيئة اللعبة عند تحميل الصفحة
+        window.onload = initGame;
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9875307e15c69355',t:'MTc1OTI1MDcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الترتيب | جولات متعددة</title>
+    <!-- تحميل Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* استخدام خط Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* لإخفاء شريط التمرير مع الحفاظ على وظيفته */
+        .selection-list::-webkit-scrollbar,
+        .settings-modal-body::-webkit-scrollbar {
+            display: none;
+        }
+        .selection-list,
+        .settings-modal-body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* لضمان عمل نافذة الإعدادات بشكل جيد على الجوال */
+        .settings-modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* (جديد) تأثير "قفز" الإجابة الصحيحة */
+        @keyframes reveal-pop {
+            0% { 
+                transform: scale(1); 
+            }
+            50% { 
+                transform: scale(1.08); 
+                background-color: #34d399; /* emerald-400 */
+                box-shadow: 0 0 20px #34d399;
+            }
+            100% { 
+                transform: scale(1); 
+                /* سيعود إلى لونه الطبيعي (bg-emerald-800/60) */
+            }
+        }
+        .animate-reveal {
+            animation: reveal-pop 0.6s ease-out;
+        }
+
+        /* (تعديل) تصميم المؤقت الوامض للتحذير (يدعم SVG stroke) */
+        @keyframes warning-blink {
+            0%, 100% { 
+                color: #f87171; /* red-400 */
+                stroke: #f87171; /* (جديد) للـ SVG */
+                transform: scale(1.05);
+            }
+            50% { 
+                color: #fef2f2; /* red-50 */
+                stroke: #fef2f2; /* (جديد) للـ SVG */
+                transform: scale(1);
+            }
+        }
+        .timer-warning-text {
+            animation: warning-blink 0.8s infinite;
+        }
+        .timer-warning-circle {
+            animation: warning-blink 0.8s infinite;
+        }
+
+        /* (جديد) تأثير "X" للإجابة الخاطئة */
+        @keyframes wrong-answer-pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            30% {
+                transform: scale(1.2) rotate(-5deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1) rotate(5deg);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(1.15) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        .animate-wrong-answer-pop {
+            animation: wrong-answer-pop 0.8s ease-out;
+        }
+
+        /* (جديد) كلاس مخصص لحلقة المؤقت لتجنب تضارب الانتقالات */
+        .timer-progress-ring {
+            transition: stroke-dashoffset 0.3s linear;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 text-white min-h-screen p-4">
+
+    <!-- شاشة اختيار الجولة (Modal) -->
+    <div id="game-selection-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 rounded-2xl p-8 shadow-xl border border-white/20 w-full max-w-2xl text-center">
+            <h2 class="text-3xl font-bold text-cyan-300 mb-6 text-shadow">اختر جولة</h2>
+            <div id="game-selection-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto selection-list">
+                <!-- سيتم ملء هذه القائمة بواسطة JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- الحاوية الرئيسية للعبة (مخفية افتراضياً) -->
+    <div id="main-game-container" class="w-full max-w-7xl mx-auto bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 md:p-8 hidden">
+        
+        <header class="text-center border-b border-white/20 pb-4 mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-white text-shadow mb-4">
+                لعبة الترتيب
+            </h1>
+            <!-- مجموعة الأزرار العلوية -->
+            <div class="flex flex-wrap justify-center gap-2">
+                <button id="settings-button" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold text-sm hover:bg-blue-400 transition duration-200">
+                    الإعدادات
+                </button>
+                <button id="reveal-all-button" class="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-red-500 transition duration-200">
+                    كشف كل الإجابات
+                </button>
+                <button id="change-game-button" class="px-4 py-2 bg-yellow-500 text-black rounded-lg font-semibold text-sm hover:bg-yellow-400 transition duration-200">
+                    تغيير الجولة
+                </button>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- العمود الأوسط (الأساسي): اللعب والنتائج -->
+            <div class="lg:col-span-2 flex flex-col">
+                <!-- عرض السؤال -->
+                <div id="question-container" class="mb-6 text-center">
+                    <h2 class="text-2xl font-semibold text-cyan-300 text-shadow min-h-[64px] flex items-center justify-center" id="question-text"></h2>
+                </div>
+
+                <!-- لوحة النتائج والفرق (قابلة للضغط) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
+                    <div id="team-1-card" class="p-4 bg-white/5 backdrop-blur-sm rounded-xl border-4 border-white/10 cursor-pointer transition-all duration-300">
+                        <h3 id="team-1-name" class="text-xl font-semibold text-red-400">الفريق 1</h3>
+                        <p class="text-4xl font-bold text-red-300" id="team-1-score">0</p>
+                    </div>
+                    <div id="team-2-card" class="p-4 bg-white/5 backdrop-blur-sm rounded-xl border-4 border-white/10 cursor-pointer transition-all duration-300">
+                        <h3 id="team-2-name" class="text-xl font-semibold text-green-400">الفريق 2</h3>
+                        <p class="text-4xl font-bold text-green-300" id="team-2-score">0</p>
+                    </div>
+                    <div id="team-3-card" class="p-4 bg-white/5 backdrop-blur-sm rounded-xl border-4 border-white/10 cursor-pointer transition-all duration-300">
+                        <h3 id="team-3-name" class="text-xl font-semibold text-blue-400">الفريق 3</h3>
+                        <p class="text-4xl font-bold text-blue-300" id="team-3-score">0</p>
+                    </div>
+                </div>
+
+                <!-- منطقة اللعب (الإدخال والدور) -->
+                <div class="mb-6 p-4 bg-black/20 rounded-lg">
+                    <h3 class="text-lg font-semibold text-center mb-4 text-gray-200">الدور على: <span id="current-turn-text" class="font-bold text-white"></span></h3>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="answer-input" placeholder="اكتب إجابتك هنا..." class="flex-grow p-3 bg-white/10 border-2 border-white/20 text-white placeholder-gray-400 rounded-lg text-lg text-right focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400">
+                        <button id="submit-button" class="p-3 bg-emerald-500 text-black font-bold rounded-lg text-lg hover:bg-emerald-400 transition duration-200 shadow-lg">
+                            إرسال
+                        </button>
+                    </div>
+                    <p id="message-text" class="text-center text-sm mt-3 h-5 font-medium"></p>
+                </div>
+            </div>
+
+            <!-- العمود الأيمن (الجانبي): المؤقت -->
+            <div class="bg-black/20 rounded-lg shadow-inner p-4 flex flex-col items-center">
+                <!-- (جديد) تصميم المؤقت الدائري (مُعاد بناؤه) -->
+                <!-- (تعديل) تم إصلاح حجم SVG ليكون مرناً -->
+                <div class="relative w-full max-w-[224px] aspect-square flex items-center justify-center mb-4">
+                    <!-- الحلقة الخلفية -->
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" stroke-width="8" class="text-cyan-900/70" stroke="currentColor"></circle>
+                        <!-- الحلقة الأمامية (التقدم) -->
+                        <!-- (تعديل) تم إصلاح التعليق الخاطئ -->
+                        <circle id="timer-progress-circle" cx="50" cy="50" r="45" stroke-width="8" 
+                                class="text-cyan-400 timer-progress-ring"
+                                stroke="currentColor"
+                                transform="rotate(-90 50 50)">
+                        </circle>
+                    </svg>
+                    <!-- النص (الوقت) -->
+                    <div id="timer-display" class="absolute text-5xl font-bold text-white text-shadow tabular-nums" style="font-variant-numeric: tabular-nums;">
+                        00:30
+                    </div>
+                </div>
+
+                <!-- أزرار التحكم -->
+                <div class="flex gap-2 justify-center mb-4">
+                    <button id="timer-start" class="px-5 py-2 bg-transparent border-2 border-green-500 text-green-400 rounded-lg font-semibold hover:bg-green-500 hover:text-black transition duration-200">
+                        بدء
+                    </button>
+                    <button id="timer-pause" class="px-5 py-2 bg-transparent border-2 border-yellow-500 text-yellow-400 rounded-lg font-semibold hover:bg-yellow-500 hover:text-black transition duration-200">
+                        إيقاف
+                    </button>
+                    <button id="timer-reset" class="px-5 py-2 bg-transparent border-2 border-red-600 text-red-500 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition duration-200">
+                        إعادة
+                    </button>
+                </div>
+
+                <!-- إعدادات المؤقت -->
+                <div class="flex flex-col items-center gap-3 w-full">
+                    <select id="timer-select" class="w-full bg-white/10 border-2 border-white/20 text-white rounded-lg p-2 text-base focus:outline-none focus:ring-2 focus:ring-cyan-400">
+                        <option value="15">15 ثانية</option>
+                        <option value="30" selected>30 ثانية</option>
+                        <option value="45">45 ثانية</option>
+                        <option value="60">60 ثانية</option>
+                        <option value="90">90 ثانية</option>
+                    </select>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" id="timer-auto-switch" class="w-4 h-4 text-cyan-600 bg-gray-700 border-gray-600 rounded focus:ring-cyan-500 ml-2">
+                        <label for="timer-auto-switch" class="text-sm font-medium text-gray-300">تبديل الدور تلقائياً</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- (تعديل) الصف السفلي: قائمة الإجابات -->
+            <div class="lg:col-span-3 bg-black/20 rounded-lg shadow-inner p-4">
+                <h3 class="text-xl font-semibold text-center mb-4 text-gray-200">الأجوبة (الأسهل للأصعب)</h3>
+                <!-- (تعديل) 3 أعمدة، والـ 10 يمتد -->
+                <div id="answers-list" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- سيتم ملء هذه القائمة بواسطة JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- (جديد) رسالة إعلان الفائز (Modal) -->
+    <div id="winner-announcement-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 rounded-lg p-8 text-center shadow-xl border border-white/20 relative">
+            <button id="close-winner-modal" class="absolute top-3 left-4 text-gray-400 hover:text-white text-3xl font-bold">&times;</button>
+            <h2 class="text-3xl font-bold text-emerald-400 mb-4">انتهت الجولة!</h2>
+            <p class="text-2xl text-white mb-6" id="winner-announcement-text">المتصدر الحالي هو...</p>
+        </div>
+    </div>
+
+    <!-- شاشة الإعدادات (Modal) -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 rounded-2xl p-6 shadow-xl border border-white/20 w-full max-w-lg text-center relative">
+            <button id="close-settings-button" class="absolute top-4 left-4 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+            <h2 class="text-3xl font-bold text-cyan-300 mb-6 text-shadow">الإعدادات</h2>
+            
+            <div class="settings-modal-body">
+                <!-- تغيير أسماء الفرق -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-3">تعديل أسماء الفرق</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="team-1-name-input" class="text-red-400 block text-right mb-1">الفريق 1:</label>
+                            <input type="text" id="team-1-name-input" class="w-full p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-right">
+                        </div>
+                        <div>
+                            <label for="team-2-name-input" class="text-green-400 block text-right mb-1">الفريق 2:</label>
+                            <input type="text" id="team-2-name-input" class="w-full p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-right">
+                        </div>
+                        <div>
+                            <label for="team-3-name-input" class="text-blue-400 block text-right mb-1">الفريق 3:</label>
+                            <input type="text" id="team-3-name-input" class="w-full p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-right">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تعديل النقاط -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-3">تعديل النقاط (يدوي)</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label for="team-1-score-input" class="text-red-400">الفريق 1</label>
+                            <input type="number" id="team-1-score-input" class="w-full mt-1 p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-center">
+                        </div>
+                        <div>
+                            <label for="team-2-score-input" class="text-green-400">الفريق 2</label>
+                            <input type="number" id="team-2-score-input" class="w-full mt-1 p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-center">
+                        </div>
+                        <div>
+                            <label for="team-3-score-input" class="text-blue-400">الفريق 3</label>
+                            <input type="number" id="team-3-score-input" class="w-full mt-1 p-2 bg-white/10 border-2 border-white/20 text-white rounded-lg text-center">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-white/20 my-6">
+
+                <!-- تصفير النقاط -->
+                <div>
+                    <h3 class="text-xl font-semibold text-white mb-3">إدارة النقاط</h3>
+                    <button id="reset-all-scores-button" class="w-full px-6 py-2 bg-red-600 text-white rounded-lg font-semibold text-lg hover:bg-red-500 transition duration-200">
+                        تصفير جميع النقاط (نهائي)
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2">سيؤدي هذا إلى تصفير النقاط لجميع الفرق في كل الجولات.</p>
+                </div>
+            </div>
+
+            <button id="save-settings-button" class="w-full px-6 py-3 bg-emerald-500 text-black rounded-lg font-semibold text-lg hover:bg-emerald-400 transition duration-200 mt-6">
+                حفظ وخروج
+            </button>
+        </div>
+    </div>
+
+    <!-- (جديد) نافذة "X" للإجابة الخاطئة -->
+    <div id="wrong-answer-overlay" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[999] pointer-events-none">
+        <span id="wrong-answer-x" class="text-red-500 text-shadow" style="font-size: 30rem; line-height: 1;">
+            &times;
+        </span>
+    </div>
+
+
+    <script>
+        // (جديد) تغليف كل الكود لضمان تحميل الصفحة أولاً
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. بيانات جميع الجولات ---
+            const allGameData = [
+                {
+                    question: "اذكر اكبر ١٠ دول من حيث المساحة",
+                    answers: [
+                        { name: "روسيا", points: 1, found: false, aliases: ["روسيا"] },
+                        { name: "كندا", points: 2, found: false, aliases: ["كندا"] },
+                        { name: "الصين", points: 3, found: false, aliases: ["الصين"] },
+                        { name: "الولايات المتحدة", points: 4, found: false, aliases: ["الولايات المتحدة", "امريكا", "أمريكا", "اميركا", "الولايات المتحده"] },
+                        { name: "البرازيل", points: 5, found: false, aliases: ["البرازيل"] },
+                        { name: "أستراليا", points: 6, found: false, aliases: ["أستراليا", "استراليا"] },
+                        { name: "الهند", points: 7, found: false, aliases: ["الهند"] },
+                        { name: "الأرجنتين", points: 8, found: false, aliases: ["الأرجنتين", "الارجنتين"] },
+                        { name: "كازاخستان", points: 9, found: false, aliases: ["كازاخستان", "كازخستان"] },
+                        { name: "الجزائر", points: 10, found: false, aliases: ["الجزائر", "الجزاير"] }
+                    ]
+                },
+                {
+                    question: "أكثر 10 سور في القرآن الكريم من حيث عدد الآيات",
+                    answers: [
+                        { name: "البقرة", points: 1, found: false, aliases: ["البقرة", "البقره"] },
+                        { name: "الشعراء", points: 2, found: false, aliases: ["الشعراء", "الشعرا"] },
+                        { name: "الأعراف", points: 3, found: false, aliases: ["الأعراف", "الاعراف"] },
+                        { name: "آل عمران", points: 4, found: false, aliases: ["آل عمران", "ال عمران"] },
+                        { name: "الصافات", points: 5, found: false, aliases: ["الصافات"] },
+                        { name: "النساء", points: 6, found: false, aliases: ["النساء"] },
+                        { name: "الأنعام", points: 7, found: false, aliases: ["الأنعام", "الانعام"] },
+                        { name: "طه", points: 8, found: false, aliases: ["طه"] },
+                        { name: "التوبة", points: 9, found: false, aliases: ["التوبة", "التوبه"] }, 
+                        { name: "النحل", points: 10, found: false, aliases: ["النحل"] } 
+                    ]
+                },
+                {
+                    question: "أكثر 10 تطبيقات تواصل اجتماعي استخدامًا (السعودية)",
+                    answers: [
+                        { name: "واتساب", points: 1, found: false, aliases: ["واتساب", "واتس اب", "الواتس"] },
+                        { name: "يوتيوب", points: 2, found: false, aliases: ["يوتيوب", "يوتوب"] },
+                        { name: "سناب شات", points: 3, found: false, aliases: ["سناب شات", "سناب"] },
+                        { name: "تيك توك", points: 4, found: false, aliases: ["تيك توك", "تكتك"] },
+                        { name: "تويتر (X)", points: 5, found: false, aliases: ["تويتر (X)", "تويتر", "اكس", "x"] },
+                        { name: "إنستقرام", points: 6, found: false, aliases: ["إنستقرام", "انستجرام", "انستقرام", "الانستا"] },
+                        { name: "فيسبوك", points: 7, found: false, aliases: ["فيسبوك", "فيس بوك", "الفيس"] },
+                        { name: "لينكدإن", points: 8, found: false, aliases: ["لينكدإن", "لينكد ان"] },
+                        { name: "تيليقرام", points: 9, found: false, aliases: ["تيليقرام", "تليجرام", "تلقرام"] },
+                        { name: "فيسبوك ماسنجر", points: 10, found: false, aliases: ["فيسبوك ماسنجر", "ماسنجر", "المسنجر"] } 
+                    ]
+                },
+                {
+                    question: "أشهر 10 رياضات في العالم",
+                    answers: [
+                        { name: "كرة القدم", points: 1, found: false, aliases: ["كرة القدم", "الكوره", "الكورة", "القدم"] },
+                        { name: "الكريكت", points: 2, found: false, aliases: ["الكريكت", "كريكت"] },
+                        { name: "كرة السلة", points: 3, found: false, aliases: ["كرة السلة", "السله", "كرة السله"] },
+                        { name: "التنس الأرضي", points: 4, found: false, aliases: ["التنس الأرضي", "تنس", "التنس"] },
+                        { name: "كرة الطائرة", points: 5, found: false, aliases: ["كرة الطائرة", "الطايره", "الطائرة"] },
+                        { name: "تنس الطاولة", points: 6, found: false, aliases: ["تنس الطاولة", "تنس طاوله", "بينج بونج"] },
+                        { name: "البيسبول", points: 7, found: false, aliases: ["البيسبول", "بيسبول"] },
+                        { name: "الهوكي", points: 8, found: false, aliases: ["الهوكي", "هوكي"] },
+                        { name: "الغولف", points: 9, found: false, aliases: ["الغولف", "جولف", "غولف"] },
+                        { name: "الرجبي", points: 10, found: false, aliases: ["الرجبي", "رجبي", "رغبي", "الرغبي"] }, // (تعديل) إضافة الأسماء المستعارة
+                    ]
+                },
+                {
+                    question: "أشهر 10 أصناف على سفرة رمضان",
+                    answers: [
+                        { name: "التمر", points: 1, found: false, aliases: ["التمر", "تمر", "رطب"] },
+                        { name: "السمبوسة", points: 2, found: false, aliases: ["السمبوسة", "سمبوسه", "سنبوسه"] },
+                        { name: "الفيمتو", points: 3, found: false, aliases: ["الفيمتو", "فيمتو", "مويه + فيمتو", "مويه", "ماء", "مويا"] },
+                        { name: "سوبيا", points: 4, found: false, aliases: ["سوبيا"] },
+                        { name: "الشوربة", points: 5, found: false, aliases: ["الشوربة", "شوربة", "شوربه", "شربه"] },
+                        { name: "الفول", points: 6, found: false, aliases: ["الفول", "فول"] },
+                        { name: "لقيمات", points: 7, found: false, aliases: ["لقيمات"] },
+                        { name: "قطايف", points: 8, found: false, aliases: ["قطايف", "قطائف"] },
+                        { name: "بيتزا", points: 9, found: false, aliases: ["بيتزا"] },
+                        { name: "الجريش", points: 10, found: false, aliases: ["الجريش", "جريش", "هريس"] }
+                    ]
+                },
+                {
+                    question: "أكثر 10 أنبياء ذكراً في القرآن الكريم",
+                    answers: [
+                        { name: "موسى", points: 1, found: false, aliases: ["موسى", "موسي"] },
+                        { name: "إبراهيم", points: 2, found: false, aliases: ["إبراهيم", "ابراهيم"] },
+                        { name: "نوح", points: 3, found: false, aliases: ["نوح"] },
+                        { name: "لوط", points: 4, found: false, aliases: ["لوط"] },
+                        { name: "يوسف", points: 5, found: false, aliases: ["يوسف"] },
+                        { name: "آدم", points: 6, found: false, aliases: ["آدم", "ادم"] },
+                        { name: "عيسى", points: 7, found: false, aliases: ["عيسى", "عيسي"] },
+                        { name: "هارون", points: 8, found: false, aliases: ["هارون"] }, // (إصلاح) تصحيح الخطأ الإملائي
+                        { name: "داود", points: 9, found: false, aliases: ["داود", "داوود"] },
+                        { name: "سليمان", points: 10, found: false, aliases: ["سليمان"] }
+                    ]
+                },
+                {
+                    question: "أكثر 10 لغات انتشاراً في العالم",
+                    answers: [
+                        { name: "الإنجليزية", points: 1, found: false, aliases: ["الإنجليزية", "الانجليزية", "الانجليزيه", "انجليزي"] },
+                        { name: "الصينية (الماندرين)", points: 2, found: false, aliases: ["الصينية الماندرين", "الصينية", "الماندرين", "صيني"] },
+                        { name: "الهندية", points: 3, found: false, aliases: ["الهندية", "الهنديه", "هندي"] },
+                        { name: "الإسبانية", points: 4, found: false, aliases: ["الإسبانية", "الاسبانية", "الاسبانيه", "اسباني"] },
+                        { name: "الفرنسية", points: 5, found: false, aliases: ["الفرنسية", "الفرنسيه", "فرنسي"] },
+                        { name: "العربية", points: 6, found: false, aliases: ["العربية", "العربيه", "عربي"] },
+                        { name: "البنغالية", points: 7, found: false, aliases: ["البنغالية", "البنغاليه", "بنغالي"] },
+                        { name: "البرتغالية", points: 8, found: false, aliases: ["البرتغالية", "البرتغاليه", "برتغالي"] },
+                        { name: "الروسية", points: 9, found: false, aliases: ["الروسية", "الروسيه", "روسي"] },
+                        { name: "الأردية", points: 10, found: false, aliases: ["الأردية", "الاردية", "الارديه", "اردو"] }
+                    ]
+                },
+                {
+                    // (تعديل) قائمة الحيوانات المحدثة
+                    question: "اسرع 10 حيوانات برية على وجه الأرض",
+                    answers: [
+                        { name: "الفهد", points: 1, found: false, aliases: ["الفهد", "فهد"] },
+                        { name: "الظبي الأمريكي", points: 2, found: false, aliases: ["الظبي الأمريكي", "الظبي الامريكي", "ظبي امريكي", "برونجهورن", "ظبي"] },
+                        { name: "غزال طومسون", points: 3, found: false, aliases: ["غزال طومسون", "غزال", "طومسون"] },
+                        { name: "الأسد / اللبؤة", points: 4, found: false, aliases: ["الأسد / اللبؤة", "الأسد", "اسد", "لبؤة", "اللبؤة"] },
+                        { name: "الأرنب البري", points: 5, found: false, aliases: ["الأرنب البري", "ارنب بري", "أرنب", "ارنب"] },
+                        { name: "الكلب البري", points: 6, found: false, aliases: ["الكلب البري", "كلب بري", "الكلب الافريقي", "كلب"] },
+                        { name: "الذئب الرمادي", points: 7, found: false, aliases: ["الذئب الرمادي", "الذئب", "ذئب", "ذيب رمادي", "ذيب"] },
+                        { name: "الحصان", points: 8, found: false, aliases: ["الحصان", "حصان", "خيل"] },
+                        { name: "الحمار الوحشي", points: 9, found: false, aliases: ["الحمار الوحشي", "حمار وحشي", "حمار"] }, // (إصلاح) تصحيح الخطأ الإملائي
+                        { name: "الضبع المرقط", points: 10, found: false, aliases: ["الضبع المرقط", "ضبع مرقط", "الضبع", "ضبع"] }
+                    ]
+                }
+            ];
+            
+            let currentGameData = {}; // سيحتوي على بيانات الجولة المختارة
+            
+            // --- 2. حالة اللعبة (المتغيرات) ---
+            
+            // (جديد) تقسيم الذاكرة
+            let sessionState = {
+                scores: { team1: 0, team2: 0, team3: 0 },
+                teamNames: { team1: "الفريق 1", team2: "الفريق 2", team3: "الفريق 3" }
+            };
+
+            let roundState = {
+                currentTurn: 1, 
+                answersFound: 0,
+                gameOver: false,
+                currentGameIndex: -1 
+            };
+            
+            // (جديد) حالة المؤقت
+            let timerState = {
+                intervalId: null,
+                timeRemaining: 30, // القيمة الاftراضية
+                isRunning: false,
+                selectedDuration: 30,
+                totalDuration: 30, // (جديد) لتتبع مدة SVG
+                circumference: 0 // (جديد) محيط الدائرة
+            };
+
+            // --- 3. عناصر الواجهة (DOM Elements) ---
+            const gameSelectionModal = document.getElementById('game-selection-modal');
+            const gameSelectionList = document.getElementById('game-selection-list');
+            const mainGameContainer = document.getElementById('main-game-container');
+            
+            const questionText = document.getElementById('question-text');
+            const answersList = document.getElementById('answers-list');
+            const answerInput = document.getElementById('answer-input');
+            const submitButton = document.getElementById('submit-button');
+            const messageText = document.getElementById('message-text');
+            
+            const teamCards = {
+                1: document.getElementById('team-1-card'),
+                2: document.getElementById('team-2-card'),
+                3: document.getElementById('team-3-card')
+            };
+            const teamScores = {
+                1: document.getElementById('team-1-score'),
+                2: document.getElementById('team-2-score'),
+                3: document.getElementById('team-3-score')
+            };
+            const teamNames = {
+                1: document.getElementById('team-1-name'),
+                2: document.getElementById('team-2-name'),
+                3: document.getElementById('team-3-name')
+            };
+            const currentTurnText = document.getElementById('current-turn-text');
+            
+            // (تعديل) عناصر نافذة الفائز الجديدة
+            const winnerAnnouncementModal = document.getElementById('winner-announcement-modal');
+            const winnerAnnouncementText = document.getElementById('winner-announcement-text');
+            const closeWinnerModalButton = document.getElementById('close-winner-modal');
+            
+            const changeGameButton = document.getElementById('change-game-button'); 
+            const revealAllButton = document.getElementById('reveal-all-button'); 
+
+            // (جديد) عناصر نافذة الإعدادات
+            const settingsModal = document.getElementById('settings-modal');
+            const settingsButton = document.getElementById('settings-button');
+            const closeSettingsButton = document.getElementById('close-settings-button');
+            const saveSettingsButton = document.getElementById('save-settings-button');
+            const resetAllScoresButton = document.getElementById('reset-all-scores-button');
+            const teamNameInputs = {
+                1: document.getElementById('team-1-name-input'),
+                2: document.getElementById('team-2-name-input'),
+                3: document.getElementById('team-3-name-input')
+            };
+            const teamScoreInputs = {
+                1: document.getElementById('team-1-score-input'),
+                2: document.getElementById('team-2-score-input'),
+                3: document.getElementById('team-3-score-input')
+            };
+
+            // (جديد) عناصر المؤقت
+            const timerDisplay = document.getElementById('timer-display');
+            const timerProgressCircle = document.getElementById('timer-progress-circle'); // (جديد) SVG circle
+            const timerStartButton = document.getElementById('timer-start');
+            const timerPauseButton = document.getElementById('timer-pause');
+            const timerResetButton = document.getElementById('timer-reset');
+            const timerSelect = document.getElementById('timer-select');
+            const timerAutoSwitch = document.getElementById('timer-auto-switch');
+
+            // (جديد) عناصر تأثير الإجابة الخاطئة
+            const wrongAnswerOverlay = document.getElementById('wrong-answer-overlay');
+            const wrongAnswerX = document.getElementById('wrong-answer-x');
+
+            // --- 4. الوظائف الأساسية (Core Functions) ---
+
+            function createGameSelectionScreen() {
+                gameSelectionList.innerHTML = '';
+                allGameData.forEach((game, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = game.question;
+                    button.classList.add(
+                        'w-full', 'p-4', 'bg-white/10', 'rounded-lg', 'text-white', 'font-semibold',
+                        'hover:bg-cyan-500', 'hover:text-black', 'transition-all', 'duration-200',
+                        'border', 'border-white/20', 'text-lg'
+                    );
+                    button.addEventListener('click', () => {
+                        initGame(index);
+                        gameSelectionModal.classList.add('hidden');
+                        mainGameContainer.classList.remove('hidden');
+                        document.body.style.overflow = 'auto';
+                    });
+                    gameSelectionList.appendChild(button);
+                });
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function initGame(gameIndex) {
+                roundState.currentGameIndex = gameIndex;
+                // استخدام deep copy لضمان عدم تعديل البيانات الأصلية
+                currentGameData = JSON.parse(JSON.stringify(allGameData[gameIndex])); 
+
+                // (تعديل) تصفير ذاكرة الجولة فقط
+                roundState.currentTurn = 1;
+                roundState.answersFound = 0;
+                roundState.gameOver = false;
+                
+                questionText.textContent = currentGameData.question;
+                answerInput.disabled = false;
+                submitButton.disabled = false;
+                revealAllButton.disabled = false; 
+                winnerAnnouncementModal.classList.add('hidden'); // (تعديل) إخفاء النافذة الجديدة
+                
+                updateScoresDisplay(); 
+                updateTeamNamesDisplay(); 
+                updateAnswersListDisplay();
+                updateTurnDisplay();
+                answerInput.focus();
+                
+                resetTimer(); // (جديد) إعادة المؤقت مع بدء الجولة
+
+                document.body.style.overflow = 'auto';
+            }
+
+            function updateAnswersListDisplay() {
+                answersList.innerHTML = ''; 
+                currentGameData.answers.forEach((answer, index) => {
+                    const li = document.createElement('div');
+                    li.classList.add(
+                        'p-4', 'rounded-lg', 'flex', 'justify-between', 'items-center', // (تعديل) تكبير الحشو
+                        'text-xl', 'font-medium', 'transition-all', 'duration-300', // (تعديل) تكبير الخط
+                        'border-l-4'
+                    );
+                    
+                    // (جديد) إضافة شرط لجعل العنصر العاشر يمتد
+                    if (index === 9) { // الإجابة رقم 10
+                        li.classList.add('md:col-span-3');
+                    }
+                    
+                    if (answer.found) {
+                        li.classList.add('bg-emerald-800/60', 'text-white', 'border-emerald-400');
+                        li.innerHTML = `
+                            <span class="text-2xl">${index + 1}. ${answer.name}</span> <!-- (تعديل) تكبير الخط -->
+                            <span class="text-base font-bold bg-emerald-400 text-black px-3 py-1 rounded-full">${answer.points} نقاط</span> <!-- (تعديل) تكبير الخط -->
+                        `;
+                        
+                        // (جديد) إضافة كلاس التأثير وحذفه
+                        if (answer.justFound) {
+                            li.classList.add('animate-reveal');
+                            delete answer.justFound; // حذف العلم لكي لا يتكرر التأثير
+                        }
+                    } else {
+                        li.classList.add('bg-white/5', 'text-gray-300', 'border-gray-500');
+                        li.innerHTML = `
+                            <span class="text-2xl">${index + 1}.</span> <!-- (تعديل) تكبير الخط -->
+                            <span class="text-base font-bold bg-gray-600 text-gray-100 px-3 py-1 rounded-full">${answer.points} نقاط</span> <!-- (تعديل) تكبير الخط -->
+                        `;
+                    }
+                    answersList.appendChild(li);
+                });
+            }
+
+            function updateScoresDisplay() {
+                // (تعديل) استخدام sessionState
+                teamScores[1].textContent = sessionState.scores.team1;
+                teamScores[2].textContent = sessionState.scores.team2;
+                teamScores[3].textContent = sessionState.scores.team3;
+            }
+
+            function updateTeamNamesDisplay() {
+                // (تعديل) استخدام sessionState
+                teamNames[1].textContent = sessionState.teamNames.team1;
+                teamNames[2].textContent = sessionState.teamNames.team2;
+                teamNames[3].textContent = sessionState.teamNames.team3;
+                updateTurnDisplay(); 
+            }
+
+            function updateTurnDisplay() {
+                // (تعديل) استخدام sessionState و roundState
+                currentTurnText.textContent = sessionState.teamNames['team' + roundState.currentTurn];
+                [1, 2, 3].forEach(teamNum => {
+                    const card = teamCards[teamNum];
+                    if (teamNum === roundState.currentTurn) {
+                        card.classList.add('border-cyan-400', 'scale-105');
+                        card.classList.remove('border-white/10');
+                    } else {
+                        card.classList.remove('border-cyan-400', 'scale-105');
+                        card.classList.add('border-white/10');
+                    }
+                });
+            }
+
+            function manualSetTurn(teamNumber) {
+                if (roundState.gameOver) return; 
+                roundState.currentTurn = teamNumber;
+                updateTurnDisplay();
+                resetTimer(); // (جديد) إعادة المؤقت عند تغيير الدور يدوياً
+                answerInput.focus();
+            }
+
+            function normalizeString(str) {
+                let s = str.toLowerCase()
+                    .replace(/[\u0622\u0623\u0625]/g, '\u0627') // Alef variants (آ, أ, إ) to (ا)
+                    .replace(/\u0629/g, '\u0647') // Taa Marbuta (ة) to Haa (ه)
+                    .replace(/\u0649/g, '\u064A') // Alef Maqsura (ى) to Yaa (ي)
+                    .replace(/\u0624/g, '\u0648') // Waw with Hamza (ؤ) to Waw (و)
+                    .replace(/\u0626/g, '\u064A') // Yaa with Hamza (ئ) to Yaa (ي)
+                    .replace(/ /g, '') // Remove spaces
+                    .trim();
+                
+                if (s.startsWith('\u0627\u0644')) { // "ال"
+                    s = s.substring(2);
+                }
+                return s;
+            }
+
+            function handleSubmit() {
+                if (roundState.gameOver) return;
+                const rawInput = answerInput.value;
+                const normalizedInput = normalizeString(rawInput);
+                if (normalizedInput === '') {
+                    showMessage('الرجاء إدخال إجابة', 'error');
+                    return;
+                }
+
+                const foundAnswer = currentGameData.answers.find(answer => 
+                    answer.aliases.map(alias => normalizeString(alias)).includes(normalizedInput)
+                );
+
+                if (foundAnswer) {
+                    if (foundAnswer.found) {
+                        showMessage('تم تخمين هذه الإجابة من قبل!', 'warning');
+                    } else {
+                        foundAnswer.found = true;
+                        foundAnswer.justFound = true; // (جديد) إضافة علم مؤقت للتأثير
+                        const points = foundAnswer.points;
+                        // (تعديل) تحديث sessionState
+                        sessionState.scores['team' + roundState.currentTurn] += points;
+                        roundState.answersFound++;
+                        showMessage(`إجابة صحيحة! +${points} نقاط`, 'success');
+                        updateScoresDisplay();
+                        updateAnswersListDisplay();
+                        checkGameOver();
+                    }
+                } else {
+                    showMessage('إجابة خاطئة، حاول مرة أخرى', 'error');
+                    // (جديد) إظهار تأثير "X"
+                    showWrongAnswerEffect();
+                }
+
+                if (!roundState.gameOver) {
+                    switchTurn();
+                }
+                answerInput.value = ''; 
+                answerInput.focus();
+            }
+
+            function switchTurn() {
+                roundState.currentTurn = (roundState.currentTurn % 3) + 1;
+                updateTurnDisplay();
+                resetTimer(); // (جديد) إعادة المؤقت عند تبديل الدور
+            }
+
+            function showMessage(msg, type = 'info') {
+                messageText.textContent = msg;
+                messageText.classList.remove('text-emerald-400', 'text-red-400', 'text-yellow-400');
+                if (type === 'success') messageText.classList.add('text-emerald-400');
+                else if (type === 'error') messageText.classList.add('text-red-400');
+                else if (type === 'warning') messageText.classList.add('text-yellow-400');
+                setTimeout(() => { messageText.textContent = ''; }, 3000);
+            }
+
+            // (جديد) وظيفة لإظهار تأثير "X" عند الإجابة الخاطئة
+            function showWrongAnswerEffect() {
+                if (!wrongAnswerOverlay || !wrongAnswerX) return;
+                wrongAnswerOverlay.classList.remove('hidden');
+                wrongAnswerX.classList.remove('animate-wrong-answer-pop');
+                void wrongAnswerX.offsetWidth; 
+                wrongAnswerX.classList.add('animate-wrong-answer-pop');
+                setTimeout(() => {
+                    wrongAnswerOverlay.classList.add('hidden');
+                    wrongAnswerX.classList.remove('animate-wrong-answer-pop');
+                }, 800); // 800ms (0.8s) هي مدة التأثير
+            }
+            
+            function checkGameOver() {
+                if (roundState.answersFound === currentGameData.answers.length) {
+                    endRound(); 
+                }
+            }
+            
+            // (تعديل) وظيفة نهاية الجولة المحدثة
+            function endRound() {
+                roundState.gameOver = true;
+                answerInput.disabled = true;
+                submitButton.disabled = true;
+                revealAllButton.disabled = true; 
+                pauseTimer(); 
+
+                currentGameData.answers.forEach(answer => answer.found = true);
+                updateAnswersListDisplay();
+                
+                // (جديد) حساب الفائز أو التعادل
+                const scores = sessionState.scores;
+                const teamScoresArray = [
+                    { name: sessionState.teamNames.team1, score: scores.team1 },
+                    { name: sessionState.teamNames.team2, score: scores.team2 },
+                    { name: sessionState.teamNames.team3, score: scores.team3 }
+                ];
+
+                const maxScore = Math.max(...teamScoresArray.map(t => t.score));
+                const winners = teamScoresArray.filter(t => t.score === maxScore);
+
+                if (winners.length > 1) {
+                    // حالة التعادل
+                    const winnerNames = winners.map(w => w.name).join(' و ');
+                    winnerAnnouncementText.textContent = `هناك تعادل! المتصدرون هم: ${winnerNames} برصيد ${maxScore} نقاط.`;
+                } else {
+                    // حالة فائز واحد
+                    winnerAnnouncementText.textContent = `المتصدر الحالي هو: ${winners[0].name} برصيد ${maxScore} نقاط.`;
+                }
+                
+                winnerAnnouncementModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function revealAllAnswers() {
+                if (roundState.gameOver) return;
+                endRound();
+            }
+
+            // --- (جديد) وظائف المؤقت (مع SVG) ---
+
+            // (جديد) حساب المحيط بناءً على نصف القطر 45
+            timerState.circumference = 2 * Math.PI * 45;
+
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timerState.timeRemaining / 60);
+                const seconds = timerState.timeRemaining % 60;
+                
+                if (timerDisplay) {
+                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                // تحديث دائرة SVG
+                const progress = timerState.timeRemaining / timerState.totalDuration;
+                const offset = timerState.circumference * (1 - progress);
+                if (timerProgressCircle) {
+                    timerProgressCircle.style.strokeDashoffset = offset;
+                }
+
+                // (تعديل) إضافة وميض تحذيري مع إخفاء اللون الأزرق
+                if (timerState.timeRemaining <= 5 && timerState.timeRemaining > 0) {
+                    if (timerDisplay) timerDisplay.classList.add('timer-warning-text');
+                    if (timerProgressCircle) {
+                        timerProgressCircle.classList.add('timer-warning-circle');
+                        timerProgressCircle.classList.remove('text-cyan-400'); // (جديد) إخفاء الأزرق
+                    }
+                } else {
+                    if (timerDisplay) timerDisplay.classList.remove('timer-warning-text');
+                    if (timerProgressCircle) {
+                        timerProgressCircle.classList.remove('timer-warning-circle');
+                        timerProgressCircle.classList.add('text-cyan-400'); // (جديد) إظهار الأزرق
+                    }
+                }
+            }
+
+            function startTimer() {
+                if (timerState.isRunning || roundState.gameOver) return;
+                timerState.isRunning = true;
+                
+                timerState.intervalId = setInterval(() => {
+                    timerState.timeRemaining--;
+                    updateTimerDisplay();
+
+                    if (timerState.timeRemaining <= 0) {
+                        pauseTimer(); 
+                        if (timerDisplay) timerDisplay.classList.remove('timer-warning-text');
+                        if (timerProgressCircle) {
+                            timerProgressCircle.classList.remove('timer-warning-circle');
+                            // لا نحتاج لإعادة اللون الأزرق هنا لأنه سيتم عند reset
+                        }
+                        
+                        if (timerAutoSwitch.checked) {
+                            showMessage('انتهى الوقت! تم تبديل الدور', 'error');
+                            switchTurn(); 
+                        } else {
+                            showMessage('انتهى الوقت!', 'error');
+                        }
+                    }
+                }, 1000);
+            }
+
+            function pauseTimer() {
+                if (timerState.intervalId) {
+                    clearInterval(timerState.intervalId);
+                }
+                timerState.isRunning = false;
+            }
+
+            function resetTimer() {
+                pauseTimer();
+                timerState.selectedDuration = parseInt(timerSelect.value);
+                timerState.timeRemaining = timerState.selectedDuration;
+                timerState.totalDuration = timerState.selectedDuration; 
+                
+                // (تعديل) تعيين قيم الدائرة الأولية هنا لضمان رسمها
+                if (timerProgressCircle) {
+                    timerProgressCircle.style.strokeDasharray = timerState.circumference;
+                    timerProgressCircle.style.strokeDashoffset = 0; // البدء ممتلئ
+                    timerProgressCircle.classList.add('text-cyan-400'); // (جديد) التأكد من وجود اللون الأزرق
+                    timerProgressCircle.classList.remove('timer-warning-circle'); // (جديد) إزالة التحذير
+                }
+
+                updateTimerDisplay();
+            }
+            
+            // --- (جديد) وظائف الإعدادات ---
+            function openSettingsModal() {
+                // قراءة من sessionState
+                teamNameInputs[1].value = sessionState.teamNames.team1;
+                teamNameInputs[2].value = sessionState.teamNames.team2;
+                teamNameInputs[3].value = sessionState.teamNames.team3;
+                
+                teamScoreInputs[1].value = sessionState.scores.team1;
+                teamScoreInputs[2].value = sessionState.scores.team2;
+                teamScoreInputs[3].value = sessionState.scores.team3;
+
+                settingsModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; 
+            }
+
+            function closeSettingsModal() {
+                settingsModal.classList.add('hidden');
+                if (!mainGameContainer.classList.contains('hidden')) {
+                    document.body.style.overflow = 'auto';
+                }
+            }
+
+            function saveSettings() {
+                // حفظ في sessionState
+                sessionState.teamNames.team1 = teamNameInputs[1].value.trim() || "الفريق 1";
+                sessionState.teamNames.team2 = teamNameInputs[2].value.trim() || "الفريق 2";
+                sessionState.teamNames.team3 = teamNameInputs[3].value.trim() || "الفريق 3";
+                
+                sessionState.scores.team1 = parseInt(teamScoreInputs[1].value) || 0;
+                sessionState.scores.team2 = parseInt(teamScoreInputs[2].value) || 0;
+                sessionState.scores.team3 = parseInt(teamScoreInputs[3].value) || 0;
+
+                updateTeamNamesDisplay();
+                updateScoresDisplay();
+                closeSettingsModal();
+            }
+
+            function resetAllScores() {
+                // تصفير sessionState
+                sessionState.scores = { team1: 0, team2: 0, team3: 0 };
+                updateScoresDisplay();
+                teamScoreInputs[1].value = 0;
+                teamScoreInputs[2].value = 0;
+                teamScoreInputs[3].value = 0;
+            }
+
+            // --- 5. ربط الأحداث (Event Listeners) ---
+            
+            // إضافة فحص لوجود العناصر قبل ربط الأحداث
+            
+            if (submitButton) {
+                submitButton.addEventListener('click', handleSubmit);
+            }
+            if (answerInput) {
+                answerInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') handleSubmit();
+                });
+            }
+            
+            if (closeWinnerModalButton) {
+                closeWinnerModalButton.addEventListener('click', () => {
+                    winnerAnnouncementModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+            
+            if (changeGameButton) {
+                changeGameButton.addEventListener('click', () => {
+                    mainGameContainer.classList.add('hidden');
+                    gameSelectionModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    pauseTimer(); // إيقاف المؤقت عند تغيير الجولة
+                });
+            }
+            
+            if (revealAllButton) {
+                revealAllButton.addEventListener('click', revealAllAnswers);
+            }
+            
+            if (teamCards[1]) teamCards[1].addEventListener('click', () => manualSetTurn(1));
+            if (teamCards[2]) teamCards[2].addEventListener('click', () => manualSetTurn(2));
+            if (teamCards[3]) teamCards[3].addEventListener('click', () => manualSetTurn(3));
+
+            if (settingsButton) settingsButton.addEventListener('click', openSettingsModal);
+            if (closeSettingsButton) closeSettingsButton.addEventListener('click', closeSettingsModal);
+            if (saveSettingsButton) saveSettingsButton.addEventListener('click', saveSettings);
+            if (resetAllScoresButton) resetAllScoresButton.addEventListener('click', resetAllScores);
+
+            if (timerStartButton) timerStartButton.addEventListener('click', startTimer);
+            if (timerPauseButton) timerPauseButton.addEventListener('click', pauseTimer);
+            if (timerResetButton) timerResetButton.addEventListener('click', resetTimer);
+            if (timerSelect) timerSelect.addEventListener('change', resetTimer); 
+
+
+            // --- 6. بدء التطبيق ---
+            createGameSelectionScreen();
+            updateTeamNamesDisplay(); // عرض الأسماء الافتراضية
+            resetTimer(); // تهيئة شاشة المؤقت عند التحميل
+
+        }); // --- نهاية مستمع DOMContentLoaded ---
+    </script>
+</body>
+</html>
