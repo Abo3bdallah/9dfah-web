@@ -112,6 +112,7 @@
         
         <!-- يظهر عند تسجيل الدخول -->
         <div id="user-info" class="hidden items-center gap-3">
+            <!-- (تعديل) هذا العنصر سيعرض اسم المستخدم الآن -->
             <span id="user-email" class="text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 px-3 py-2 rounded-lg"></span>
             <button id="btn-logout" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition active:scale-95 text-sm font-medium">خروج</button>
         </div>
@@ -222,8 +223,15 @@
                     <label for="auth-email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">البريد الإلكتروني</label>
                     <input type="email" id="auth-email" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                 </div>
+                
+                <!-- (جديد) حقل اسم المستخدم (يظهر عند إنشاء حساب) -->
+                <div id="auth-username-field" class="mb-4 hidden">
+                    <label for="auth-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">اسم المستخدم (سيظهر للجميع)</label>
+                    <input type="text" id="auth-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                </div>
+
                 <div class="mb-6">
-                    <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور</label>
+                    <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
                     <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                 </div>
                 
@@ -770,10 +778,14 @@
             const authError = document.getElementById('auth-error');
             const authSuccess = document.getElementById('auth-success');
             
+            // (جديد) حقول اسم المستخدم
+            const authUsernameField = document.getElementById('auth-username-field');
+            const authUsernameInput = document.getElementById('auth-username');
+            
             // واجهة المستخدم المسجل
             const authLinks = document.getElementById('auth-links');
             const userInfo = document.getElementById('user-info');
-            const userEmail = document.getElementById('user-email');
+            const userEmail = document.getElementById('user-email'); // (ملاحظة) هذا العنصر سيعرض اسم المستخدم الآن
             const btnLogout = document.getElementById('btn-logout');
 
             // جلب عناصر الصفحات
@@ -1035,8 +1047,24 @@
             // (*** تعديل: إعادة ربط أزرار "العودة" للصفحات العادية ***)
             // (مثل صفحة الأدوات، المنافسات، الألعاب، السياسة)
             backButtons.forEach(button => {
-                // جميع أزرار العودة الحالية تهدف للعودة للرئيسية
-                button.addEventListener('click', () => showPage('welcome', true));
+                // (*** تعديل: جعل أزرار العودة تعود للصفحة الصحيحة ***)
+                const parentPage = button.closest('.page');
+                let returnPage = 'welcome'; // الافتراضي هو العودة للرئيسية
+
+                if (parentPage) {
+                    if (parentPage.id === 'page-tools') {
+                        returnPage = 'welcome';
+                    } else if (parentPage.id === 'page-competitions') {
+                        returnPage = 'welcome';
+                    } else if (parentPage.id === 'page-games') {
+                        returnPage = 'welcome';
+                    } else if (parentPage.id === 'page-policy') {
+                        returnPage = 'welcome';
+                    }
+                    // يمكنك إضافة المزيد من القواعد هنا إذا تغيرت الأقسام
+                }
+                
+                button.addEventListener('click', () => showPage(returnPage, true));
             });
             
             // (*** جديد: ربط أزرار الخروج العائمة (X) للعودة للرئيسية ***)
@@ -1072,32 +1100,46 @@
             });
 
             // --- 5. تحديث دالة تحميل الصفحة لتدعم الوضع الليلي ---
+            // (*** إصلاح شامل: هذه الدالة تعالج الآن الشروط، المصادقة، والتحميل العادي ***)
             function handleInitialPageLoad() {
                 // 5.1 - تحديث أيقونات الوضع الليلي عند التحميل
                 updateThemeIcons();
 
                 // 5.2 - باقي منطق تحميل الصفحة والروابط
-                let pageId = window.location.hash.substring(1); //
                 
-                // التحقق إذا كان المستخدم قد وافق
-                if (localStorage.getItem('sodfaTermsAccepted') === 'true') {
-                    // وافق: اعرض الصفحة المطلوبة (أو الرئيسية)
-                    if (!pageId) {
-                        pageId = 'welcome';
-                    }
-                    showPage(pageId, false);
-                    // استبدال الحالة الحالية لضمان أن الحالة الأولى صحيحة
-                    try {
-                        history.replaceState({ page: pageId }, '', `#${pageId}`);
-                    } catch (e) {
-                        console.warn("History API (replaceState) not available in this environment.", e);
-                    }
-                    termsModal.style.display = 'none';
-                } else {
-                    // لم يوافق: اعرض شاشة الموافقة وأخفِ الرئيسية
+                // (*** الخطوة 1: التحقق من الموافقة على الشروط أولاً ***)
+                if (localStorage.getItem('sodfaTermsAccepted') !== 'true') {
+                    // لم يوافق: اعرض شاشة الموافقة وأخفِ كل شيء آخر
                     allPages.forEach(p => { p.style.display = 'none'; p.style.opacity = '0'; }); // تأكد أن كل شيء مخفي
                     termsModal.style.display = 'flex';
                     termsModal.style.opacity = '1';
+                    // أوقف التنفيذ هنا
+                    return; 
+                }
+                
+                // (*** الخطوة 2: إذا وافق، أخفِ الشروط وتحقق من رمز المصادقة ***)
+                termsModal.style.display = 'none';
+
+                // (*** الخطوة 3: التحقق من وجود رمز المصادقة ***)
+                // إذا كان الرابط يحتوي على رمز الدخول، لا تقم بمعالجته كصفحة.
+                // مكتبة Supabase ستلتقطه، و onAuthStateChange سيعمل.
+                if (window.location.hash.includes('access_token=') || window.location.hash.includes('error=')) {
+                    console.log('Auth token detected, waiting for onAuthStateChange...');
+                    // لا تفعل شيئاً، دع onAuthStateChange يتولى الأمر
+                } else {
+                    // (*** الخطوة 4: إذا لم يكن هناك رمز، قم بتحميل الصفحة كالمعتاد ***)
+                    let pageId = window.location.hash.substring(1); 
+
+                    if (!pageId) { 
+                        pageId = 'welcome';
+                    }
+                    showPage(pageId, false); 
+                    try {
+                        // استبدال الحالة لضمان أن الحالة الأولى صحيحة
+                        history.replaceState({ page: pageId }, '', `#${pageId}`); 
+                    } catch (e) {
+                        console.warn("History API (replaceState) not available in this environment.", e);
+                    }
                 }
             }
 
@@ -1126,6 +1168,7 @@
                 authTitle.textContent = 'تسجيل الدخول';
                 btnLoginSubmit.classList.remove('hidden');
                 btnSignupSubmit.classList.add('hidden');
+                authUsernameField.classList.add('hidden'); // (جديد) إخفاء اسم المستخدم
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
                 authModal.style.display = 'flex';
@@ -1136,6 +1179,7 @@
                 authTitle.textContent = 'إنشاء حساب جديد';
                 btnLoginSubmit.classList.add('hidden');
                 btnSignupSubmit.classList.remove('hidden');
+                authUsernameField.classList.remove('hidden'); // (جديد) إظهار اسم المستخدم
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
                 authModal.style.display = 'flex';
@@ -1174,10 +1218,30 @@
                     
                 } else {
                     // --- منطق إنشاء حساب ---
+                    
+                    // (جديد) جلب اسم المستخدم والتحقق منه
+                    const username = authUsernameInput.value.trim();
+                    if (!username) {
+                        showAuthError('الرجاء إدخال اسم مستخدم.');
+                        return; // أوقف العملية
+                    }
+                    if (username.length < 3) {
+                        showAuthError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
+                        return;
+                    }
+
                     showAuthSuccess('يتم إنشاء الحساب...');
+                    
+                    // (تعديل) إضافة اسم المستخدم إلى options.data
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
+                        options: {
+                            data: {
+                                // هذا سيخزن اسم المستخدم في user_metadata
+                                'username': username
+                            }
+                        }
                     });
                     
                     if (error) {
@@ -1195,13 +1259,37 @@
             });
             
             // --- مراقبة حالة المصادقة ---
+            // (*** إصلاح شامل: هذه الدالة تعالج الآن الدخول العادي والدخول عبر رابط التأكيد ***)
             supabase.auth.onAuthStateChange((event, session) => {
+                
+                // (جديد) تحديد إذا كان الرابط الحالي يحتوي على رمز مصادقة
+                let currentPageId = window.location.hash.substring(1);
+                const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
+
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
                     authLinks.classList.add('hidden');
                     userInfo.classList.remove('hidden');
                     userInfo.classList.add('flex');
-                    userEmail.textContent = session.user.email;
+                    
+                    // (تعديل) إظهار اسم المستخدم بدلاً من الإيميل
+                    // إذا كان اسم المستخدم موجوداً، اعرضه. وإلا، اعرض الإيميل.
+                    const displayName = session.user.user_metadata?.username || session.user.email;
+                    userEmail.textContent = displayName;
+                    
+                    // (جديد) إذا كان المستخدم قد سجل دخوله للتو عبر الرابط
+                    // أو كان في الصفحة الرئيسية، اعرض له صفحة 'welcome'.
+                    if (isAuthHash || currentPageId === '' || currentPageId === 'welcome') {
+                         // التأكد من إظهار صفحة 'welcome' بعد تسجيل الدخول الناجح
+                        showPage('welcome', false);
+                        // (جديد) تنظيف الرابط من رمز المصادقة
+                        try {
+                            history.replaceState({ page: 'welcome' }, '', `#welcome`);
+                        } catch(e) {
+                            console.warn("History API (replaceState) not available.", e);
+                        }
+                    }
+                    
                 } else {
                     // المستخدم سجل خروجه
                     authLinks.classList.remove('hidden');
