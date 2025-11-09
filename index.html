@@ -71,7 +71,7 @@
         }
         
         /* كلاس لصفحة التطبيق المدمج (iframe) */
-        #page-tool-remote {
+        .app-page {
             /* إزالة الـ padding لملء الشاشة */
             padding: 0 !important; 
             overflow: hidden; /* إخفاء أي scrollbars */
@@ -85,7 +85,8 @@
     <!-- ======================= -->
     <!--  عناصر واجهة المصادقة     -->
     <!-- ======================= -->
-    <div id="auth-ui" class="fixed top-6 left-6 z-50">
+    <!-- *** إصلاح: تم النقل إلى top-6 right-6 بدلاً من left-6 *** -->
+    <div id="auth-ui" class="fixed top-6 right-6 z-50"> <!-- تم التغيير إلى right-6 -->
         <!-- يظهر عند عدم تسجيل الدخول -->
         <div id="auth-links" class="flex gap-2">
             <button id="btn-show-login" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
@@ -109,7 +110,6 @@
         <!-- أيقونة الشمس (تظهر في الوضع الداكن) -->
         <img id="theme-toggle-light-icon" src="https://i.postimg.cc/PrQXRtL0/sh.png" alt="شمس" class="h-6 w-6 object-contain">
     </button>
-    <!-- تم حذف أيقونة العصا السحرية -->
 
 
     <!-- ======================= -->
@@ -127,12 +127,12 @@
             
             <!-- محتوى السياسة (قابل للتمرير) -->
             <main class="p-6 md:p-8 max-h-[60vh] overflow-y-auto">
+                <!-- *** إصلاح: تم ملء المحتوى الكامل هنا *** -->
                 <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
                 يُعد دخولك إلى الموقع أو استخدامك لأي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام المذكورة أدناه.<br>
                 إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
 
                 <!-- 1. الملكية الفكرية -->
-                <!-- تم إضافة كلاسات الوضع الليلي - تم تخفيف اللون -->
                 <h3 class="text-xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-3 mt-6 dark:text-blue-400">1. الملكية الفكرية</h3>
                 <p class="font-bold mb-2">1.1 الملكية الحصرية:</p>
                 <p class="mb-4">جميع المحتويات، والأكواد المصدرية، والتصاميم، والرسومات، والشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (مثل: صدفة، صناديق الأسئلة، حروف رحال، ريموت، خزنة ربان، حرب البحار، الترتيب العاشر، فكر تربح، مين الملقوف، مافيا) هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
@@ -237,7 +237,6 @@
         <!-- القسم العلوي المرن -->
         <div class="flex-grow flex flex-col justify-center">
             <!-- العنوان الرئيسي -->
-            <!-- *** إصلاح: تمت إضافة pt-12 (padding-top) لمنع العنوان من الانقطاع *** -->
             <header class="text-center mb-16 pt-12"> <!-- زيادة المسافة العلوية -->
                 <!-- تعديل العنوان: تكبير، إضافة حركات، ظل، أنيميشن -->
                 <!-- *** إصلاح: إضافة leading-normal لضمان ظهور الحركات *** -->
@@ -257,7 +256,6 @@
             <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
                 <!-- اختيار 1: أدوات المقدم -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
                 <div id="btn-tools" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-blue-500 
                                       hover:scale-105 hover:shadow-xl 
@@ -269,7 +267,6 @@
                 </div>
 
                 <!-- اختيار 2: منصة التنافس -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
                 <div id="btn-competitions" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                             border-2 border-transparent hover:border-green-500 
                                             hover:scale-105 hover:shadow-xl 
@@ -281,7 +278,6 @@
                 </div>
 
                 <!-- اختيار 3: ألعاب اجتماعية -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
                 <div id="btn-games" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-red-500 
                                       hover:scale-105 hover:shadow-xl 
@@ -322,24 +318,27 @@
 
         <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
-            <!-- بطاقة 1: صدفة -->
-            <a href="https://9odfah6.netlify.app/#wheel" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
+            
+            <!-- بطاقة 1: صدفة (أصبحت زراً داخلياً) -->
+            <div id="btn-tool-sodfa" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">1. صدفة</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">موقع يجمع 6 أنواع مختلفة من القرع تساعد الميسر في شتى المجالات.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
-            </a>
-            <!-- بطاقة 2: صناديق الأسئلة -->
-            <a href="https://bank-alaselh.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
+            </div>
+            
+            <!-- بطاقة 2: صناديق الأسئلة (أصبحت زراً داخلياً) -->
+            <div id="btn-tool-questions" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <img src="https://i.postimg.cc/PJVJmNhK/snadyq.png" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">2. صناديق الأسئلة</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">بنك ضخم تفاعلي فيه 500 سؤال مع خيارات وتأثيرات مختلفة ونظام منافسة.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
-            </a>
+            </div>
+            
             <!-- بطاقة 3: حروف رحال -->
             <a href="https://7rof-questions.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/SR1RWjqL/hrwf.png" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
@@ -349,6 +348,7 @@
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
             </a>
+            
             <!-- بطاقة 4: ريموت (أصبحت زراً داخلياً) -->
             <div id="btn-tool-remote" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <img src="https://i.postimg.cc/2y9y43m0/rymwt.png" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
@@ -478,11 +478,12 @@
         </footer>
     </div>
     
-    <!-- ======================= -->
-    <!--  صفحة أداة ريموت (المدمجة) -->
-    <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
-    <!-- ======================= -->
-    <div id="page-tool-remote" class="page min-h-screen">
+    <!-- ============================== -->
+    <!--  صفحات التطبيقات المدمجة (iframe) -->
+    <!-- ============================== -->
+
+    <!-- صفحة أداة ريموت (المدمجة) -->
+    <div id="page-tool-remote" class="page app-page min-h-screen">
         <!-- رأس الصفحة -->
         <header class="flex justify-between items-center p-4 bg-zinc-100 dark:bg-zinc-900">
             <h2 class="text-xl font-bold border-r-4 border-blue-500 pr-3">أداة ريموت</h2>
@@ -493,9 +494,34 @@
         
         <!-- إطار التضمين -->
         <!-- *** إصلاح: هذا هو التعديل الأخير لضمان ملء الشاشة *** -->
-        <!-- استخدام `flex-1` على `main` و `h-full` على `iframe` داخل حاوية `flex` -->
         <main class="flex-1 relative"> <!-- *** الإصلاح: إضافة relative *** -->
             <iframe id="remote-iframe" src="about:blank" class="absolute top-0 left-0 w-full h-full border-none"></iframe> <!-- *** الإصلاح: إضافة absolute *** -->
+        </main>
+    </div>
+
+    <!-- صفحة أداة صدفة (المدمجة) -->
+    <div id="page-tool-sodfa" class="page app-page min-h-screen">
+        <header class="flex justify-between items-center p-4 bg-zinc-100 dark:bg-zinc-900">
+            <h2 class="text-xl font-bold border-r-4 border-blue-500 pr-3">أداة صدفة</h2>
+            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+                العودة للأدوات
+            </button>
+        </header>
+        <main class="flex-1 relative">
+            <iframe id="sodfa-iframe" src="about:blank" class="absolute top-0 left-0 w-full h-full border-none"></iframe>
+        </main>
+    </div>
+
+    <!-- صفحة أداة صناديق الأسئلة (المدمجة) -->
+    <div id="page-tool-questions" class="page app-page min-h-screen">
+        <header class="flex justify-between items-center p-4 bg-zinc-100 dark:bg-zinc-900">
+            <h2 class="text-xl font-bold border-r-4 border-blue-500 pr-3">أداة صناديق الأسئلة</h2>
+            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+                العودة للأدوات
+            </button>
+        </header>
+        <main class="flex-1 relative">
+            <iframe id="questions-iframe" src="about:blank" class="absolute top-0 left-0 w-full h-full border-none"></iframe>
         </main>
     </div>
 
@@ -516,6 +542,7 @@
         <!-- المحتوى الرئيسي للسياسة - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="flex-grow bg-white rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto 
                      dark:bg-zinc-800">
+            <!-- *** إصلاح: تم ملء المحتوى الكامل هنا *** -->
             <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
             يُعد دخولك إلى الموقع أو استخدامك لأي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام المذكورة أدناه.<br>
             إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
@@ -579,7 +606,7 @@
         // --- 0. تهيئة Supabase ---
         // استبدل بالقيم الخاصة بك!
         const SUPABASE_URL = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
 
         // استيراد وإنشاء العميل
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -611,6 +638,9 @@
             const userInfo = document.getElementById('user-info');
             const userEmail = document.getElementById('user-email');
             const btnLogout = document.getElementById('btn-logout');
+            
+            // *** إصلاح: جلب العناصر التي سيتم إخفاؤها ***
+            const authUiContainer = document.getElementById('auth-ui');
 
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
@@ -618,7 +648,11 @@
             const pageCompetitions = document.getElementById('page-competitions');
             const pageGames = document.getElementById('page-games');
             const pagePolicy = document.getElementById('page-policy');
-            const pageToolRemote = document.getElementById('page-tool-remote'); // صفحة ريموت المدمجة
+            
+            // تعريف صفحات التطبيقات المدمجة
+            const pageToolRemote = document.getElementById('page-tool-remote');
+            const pageToolSodfa = document.getElementById('page-tool-sodfa');
+            const pageToolQuestions = document.getElementById('page-tool-questions');
             
             // جلب كل الصفحات (لإخفائها)
             const allPages = document.querySelectorAll('.page');
@@ -628,9 +662,15 @@
             const btnCompetitions = document.getElementById('btn-competitions');
             const btnGames = document.getElementById('btn-games');
             
-            // جلب أزرار الأدوات المدمجة
+            // جلب أزرار الأدوات المدمجة وإطاراتها
             const btnToolRemote = document.getElementById('btn-tool-remote');
             const remoteIframe = document.getElementById('remote-iframe');
+            
+            const btnToolSodfa = document.getElementById('btn-tool-sodfa');
+            const sodfaIframe = document.getElementById('sodfa-iframe');
+            
+            const btnToolQuestions = document.getElementById('btn-tool-questions');
+            const questionsIframe = document.getElementById('questions-iframe');
             
             // جلب جميع أزرار "العودة"
             const backButtons = document.querySelectorAll('.btn-back');
@@ -699,6 +739,17 @@
 
             // متغير لتخزين الصفحة الظاهرة حالياً
             let currentPage = null;
+            
+            // *** إصلاح: دالة لإظهار/إخفاء الأزرار العائمة ***
+            function setFloatingButtonsVisible(visible) {
+                if (visible) {
+                    authUiContainer.style.display = 'block';
+                    themeToggle.style.display = 'block';
+                } else {
+                    authUiContainer.style.display = 'none';
+                    themeToggle.style.display = 'none';
+                }
+            }
 
             // دالة لإظهار صفحة معينة وتحديث التاريخ
             // pageId هو (welcome, tools, games, etc.)
@@ -706,6 +757,8 @@
             function showPage(pageId, updateHistory = false) {
                 
                 let pageToShow = null;
+                let isAppPage = false; // *** إصلاح: متغير لتتبع إذا كانت صفحة تطبيق مدمج ***
+                
                 switch(pageId) {
                     case 'tools':
                         pageToShow = pageTools;
@@ -721,9 +774,24 @@
                         break;
                     case 'tool-remote': // صفحة ريموت
                         pageToShow = pageToolRemote;
+                        isAppPage = true; // *** إصلاح: هذه صفحة تطبيق مدمج ***
                         // تحميل الإطار عند عرض الصفحة
                         if (remoteIframe.src === 'about:blank') {
                             remoteIframe.src = 'remot-app.html';
+                        }
+                        break;
+                    case 'tool-sodfa': // صفحة صدفة
+                        pageToShow = pageToolSodfa;
+                        isAppPage = true;
+                        if (sodfaIframe.src === 'about:blank') {
+                            sodfaIframe.src = 'sodfa-app.html';
+                        }
+                        break;
+                    case 'tool-questions': // صفحة صناديق الأسئلة
+                        pageToShow = pageToolQuestions;
+                        isAppPage = true;
+                        if (questionsIframe.src === 'about:blank') {
+                            questionsIframe.src = 'questions-bank-app.html';
                         }
                         break;
                     case 'welcome':
@@ -735,16 +803,25 @@
 
                 // لا تفعل شيئاً إذا كانت الصفحة المطلوبة هي نفسها الظاهرة
                 if (pageToShow === currentPage) return;
+                
+                // *** إصلاح: إخفاء/إظهار الأزرار العائمة ***
+                if (isAppPage) {
+                    setFloatingButtonsVisible(false); // إخفاء الأزرار عند دخول التطبيق
+                } else {
+                    setFloatingButtonsVisible(true); // إظهار الأزرار في الصفحات الأخرى
+                }
 
                 // 1. إخفاء الصفحة الحالية (إذا كانت موجودة)
                 if (currentPage) {
                     currentPage.style.opacity = '0';
                     
-                    // إيقاف "ريموت" عند مغادرة صفحته
+                    // إيقاف التطبيقات عند مغادرة صفحتها
                     if (currentPage === pageToolRemote) {
-                        setTimeout(() => {
-                            remoteIframe.src = 'about:blank'; // إفراغ الإطار لإيقاف الأصوات
-                        }, 300); // إيقاف بعد انتهاء الانتقال
+                        setTimeout(() => { remoteIframe.src = 'about:blank'; }, 300);
+                    } else if (currentPage === pageToolSodfa) {
+                        setTimeout(() => { sodfaIframe.src = 'about:blank'; }, 300);
+                    } else if (currentPage === pageToolQuestions) {
+                        setTimeout(() => { questionsIframe.src = 'about:blank'; }, 300);
                     }
                 }
 
@@ -796,13 +873,15 @@
             btnCompetitions.addEventListener('click', () => showPage('competitions', true));
             btnGames.addEventListener('click', () => showPage('games', true));
 
-            // ربط زر "ريموت" المدمج
+            // ربط أزرار التطبيقات المدمجة
             btnToolRemote.addEventListener('click', () => showPage('tool-remote', true));
+            btnToolSodfa.addEventListener('click', () => showPage('tool-sodfa', true));
+            btnToolQuestions.addEventListener('click', () => showPage('tool-questions', true));
 
             // ربط أحداث النقر على جميع أزرار "العودة"
             backButtons.forEach(button => {
-                // زر العودة في "ريموت" يعود إلى "الأدوات"
-                if (button.closest('#page-tool-remote')) {
+                // أزرار العودة في صفحة "الأدوات" تعود إلى "الأدوات"
+                if (button.closest('#page-tool-remote') || button.closest('#page-tool-sodfa') || button.closest('#page-tool-questions')) {
                     button.addEventListener('click', () => showPage('tools', true));
                 } 
                 // باقي الأزرار تعود للرئيسية

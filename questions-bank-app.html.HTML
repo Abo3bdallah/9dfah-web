@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بنك الصناديق القافية - النسخة المحسّنة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Amiri', serif;
+        }
+
+        /* Animate the modal on entry */
+        .question-card, .settings-card, .message-card {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Animation for a correct answer selection */
+        .correct-answer {
+            animation: correctPulse 0.8s ease-out;
+        }
+
+        /* Animation for a wrong answer selection */
+        .wrong-answer {
+            animation: wrongShake 0.6s ease-out;
+        }
+
+        /* Animation to reveal the correct answer after a wrong one */
+        .show-correct {
+            animation: showCorrect 0.5s ease-out 0.3s both;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(34, 197, 94, 0.6); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes showCorrect {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Effects for the correct answer celebration */
+        .celebration-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fbbf24;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: celebrate 1.5s ease-out forwards;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(0.8) rotate(360deg) translateY(-120px); opacity: 0; }
+        }
+
+        /* Screen flash for correct/wrong answers */
+        .success-flash {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(34, 197, 94, 0.1);
+            pointer-events: none;
+            animation: successFlash 0.6s ease-out;
+            z-index: 40;
+        }
+
+        .error-flash {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(239, 68, 68, 0.1);
+            pointer-events: none;
+            animation: errorFlash 0.6s ease-out;
+            z-index: 40;
+        }
+
+        @keyframes successFlash {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes errorFlash {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Floating text effect for score updates */
+        .floating-text {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 50;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1); }
+        }
+
+        /* Ripple effect on button click */
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Spinner Styling */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive grid adjustments for boxes */
+        #boxesGrid {
+            /* Default: 6 columns for mobile screens (increased density for better fit) */
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.5rem; /* Reduced gap */
+        }
+
+        @media (min-width: 768px) {
+            #boxesGrid {
+                /* 10 columns for desktop/tablet screens */
+                grid-template-columns: repeat(10, minmax(0, 1fr));
+                gap: 0.5rem; /* Reduced gap */
+            }
+        }
+        
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-800 via-gray-800 to-slate-900 min-h-screen p-4">
+    <div class="container mx-auto max-w-7xl relative">
+        <!-- Header -->
+        <div class="text-center mb-8 relative">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">بنك الصناديق الثقافية</h1>
+            <p class="text-xl text-gray-300">احمد الذبياني</p>
+            
+            <!-- Settings Button (Icon changed to Gear) -->
+            <button id="openSettingsBtn" class="absolute top-0 left-0 bg-white/20 hover:bg-white/30 p-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110">
+                <!-- Settings Gear Icon SVG (lucide-react: Settings) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-white">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.44a2 2 0 0 1-2 2h-.44a2 2 0 0 0-2 2v.44a2 2 0 0 1-2 2H2v.44a2 2 0 0 0 2 2h.44a2 2 0 0 1 2 2v.44a2 2 0 0 0 2 2h.44a2 2 0 0 1 2 2v.44a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.44a2 2 0 0 1 2-2h.44a2 2 0 0 0 2-2v-.44a2 2 0 0 1 2-2H22v-.44a2 2 0 0 0-2-2h-.44a2 2 0 0 1-2-2v-.44a2 2 0 0 0-2-2h-.44a2 2 0 0 1-2-2V2z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Global Stats -->
+        <div id="globalStatsContainer" class="flex justify-center gap-4 md:gap-8 mb-8 flex-wrap">
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 md:px-6 py-3">
+                <span class="text-white text-sm md:text-lg">الصناديق المفتوحة: </span>
+                <span id="openedCount" class="text-blue-300 font-bold text-lg md:text-xl">0</span>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 md:px-6 py-3">
+                <span class="text-white text-sm md:text-lg">المتبقي: </span>
+                <span id="remainingCount" class="text-blue-300 font-bold text-lg md:text-xl">500</span>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 md:px-6 py-3">
+                <span class="text-white text-sm md:text-lg">الإجابات الصحيحة: </span>
+                <span id="correctCount" class="text-green-300 font-bold text-lg md:text-xl">0</span>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 md:px-6 py-3">
+                <span class="text-white text-sm md:text-lg">الإجابات الخاطئة: </span>
+                <span id="wrongCount" class="text-red-300 font-bold text-lg md:text-xl">0</span>
+            </div>
+        </div>
+        
+        <!-- Team Stats Container (New) -->
+        <div id="teamStatsContainer" class="flex flex-col items-center justify-center gap-4 md:gap-8 mb-8 hidden p-4 bg-white/5 rounded-xl shadow-lg border border-gray-700/50">
+            <!-- Current Team Indicator -->
+            <div class="bg-blue-900/40 w-full text-center p-3 rounded-lg border-b border-blue-400/50">
+                <span class="text-white text-md md:text-xl">الدور الآن على: </span>
+                <span id="currentTeamDisplay" class="font-bold text-xl md:text-3xl text-yellow-300 transition-colors duration-500 cursor-pointer" onclick="document.getElementById('openSettingsBtn').click()"></span>
+            </div>
+            <!-- Individual Team Scores -->
+            <div id="individualTeamScores" class="flex flex-wrap justify-center gap-4 w-full">
+                <!-- Scores go here -->
+            </div>
+        </div>
+
+        
+        <!-- Loading Indicator -->
+        <div id="loading" class="text-center text-white text-xl mb-4 flex items-center justify-center gap-3">
+            <div class="spinner"></div>
+            <span>جاري تحميل حالة اللعبة...</span>
+        </div>
+
+        <!-- Boxes Grid: Responsive columns: 6 (mobile), 10 (desktop) with reduced gap -->
+        <div id="boxesGrid" class="grid grid-cols-6 md:grid-cols-10 gap-2 mb-8 opacity-0 transition-opacity duration-500">
+            <!-- Boxes will be generated by JavaScript -->
+        </div>
+
+        <!-- Question Modal -->
+        <div id="questionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto question-card">
+                <div class="p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">صندوق رقم <span id="boxNumber"></span></h2>
+                        <button id="closeQuestionModal" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="bg-blue-50 border-r-4 border-blue-500 p-4 rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-2">السؤال:</h3>
+                            <p id="questionText" class="text-gray-700 text-lg leading-relaxed"></p>
+                        </div>
+                        
+                        <!-- Multiple Choice Options -->
+                        <div id="optionsContainer" class="space-y-3 mb-4">
+                            <!-- Options will be generated by JavaScript -->
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        <button id="nextQuestionBtn" class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1">
+                            صندوق آخر (عشوائي)
+                        </button>
+                        <button id="closeModalBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                            إغلاق
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full settings-card">
+                <div class="p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">إعدادات اللعبة</h2>
+                        <button id="closeSettingsModalBtn" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- Team Mode Selection (New Dropdown) -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <label for="teamCountSelect" class="block text-gray-700 font-semibold mb-2">عدد الفرق:</label>
+                            <select id="teamCountSelect" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 text-gray-700">
+                                <option value="0">وضع فردي (بدون فرق)</option>
+                                <option value="2">2 فرق</option>
+                                <option value="3">3 فرق</option>
+                                <option value="4">4 فرق</option>
+                                <option value="5">5 فرق</option>
+                                <option value="6">6 فرق</option>
+                            </select>
+                            <p class="text-sm text-gray-500 mt-1">اختر 0 للعب الفردي أو اختر عدد الفرق للمنافسة.</p>
+                            <button id="applyTeamSettingsBtn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 w-full mt-3">
+                                حفظ إعدادات الفرق (تصفير النقاط فقط)
+                            </button>
+                        </div>
+                        
+                        <!-- Reset General Scores -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <p class="text-gray-700 mb-3 font-semibold">تصفير الإحصائيات العامة:</p>
+                            <button id="resetGeneralScoresBtn" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 w-full">
+                                مسح الإجابات الصحيحة/الخاطئة
+                            </button>
+                        </div>
+
+
+                        <!-- Reset Specific Box - Select List -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <label for="resetBoxSelect" class="block text-gray-700 font-semibold mb-2">إعادة تعيين صندوق محدد (مفتوح):</label>
+                            <div class="flex gap-3">
+                                <select id="resetBoxSelect" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-150 text-gray-700">
+                                    <option value="">اختر رقم الصندوق...</option>
+                                </select>
+                                <button id="resetSelectedBoxBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-3 rounded-lg font-semibold transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                    إعادة تعيين
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Open All Boxes -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <p class="text-gray-700 mb-3">تخطي باقي الصناديق:</p>
+                            <button id="openAllBoxesBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-300 w-full">
+                                فتح جميع الصناديق المتبقية
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generic Message Modal (Replaces alert/confirm) -->
+        <div id="messageModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-[99]">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full message-card">
+                <div class="p-6 md:p-8 text-center">
+                    <p id="messageText" class="text-gray-800 text-lg mb-6"></p>
+                    <div id="messageButtons" class="flex justify-center gap-4">
+                        <button id="messageCloseBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition duration-300">موافق</button>
+                        <button id="messageCancelBtn" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 hidden">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- تهيئة Firebase ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db = null;
+        let auth = null;
+        let userId = null;
+        let isAuthReady = false;
+        const GAME_STATE_DOC_ID = 'game-state';
+        
+        // --- متغيرات الحالة الثابتة ---
+        const TEAM_COLORS = ['text-red-400', 'text-blue-400', 'text-green-400', 'text-yellow-400', 'text-pink-400', 'text-indigo-400']; 
+        const MAX_TOTAL_BOXES = 500; // 500 سؤال
+        
+        // --- متغيرات حالة اللعبة القابلة للتغيير ---
+        let openedBoxes = new Set();
+        let remainingQuestionIndices = []; 
+        let currentQuestion = null;
+        let selectedAnswer = null;
+        let correctAnswers = 0; // الإجمالي العام
+        let wrongAnswers = 0;   // الإجمالي العام
+        let teamModeEnabled = false; 
+        let teamCount = 0; // عدد الفرق الحالي
+        let teams = [];              
+        let currentTeamIndex = 0; 
+        
+        // قاعدة بيانات الأسئلة الجديدة (500 سؤال)
+        const questionsDB = [
+            { q: "ما مقدار نسبة الماء في جسم الإنسان تقريباً؟", options: ["0.7", "0.2", "0.45", "0.75"], correct: 0 }, // تم التعديل
+            { q: "في أي عام اخترع الأخوان رايت الطائرة؟", options: ["1890", "1910", "1950", "1903"], correct: 3 },
+            { q: "ما هي أكبر الكائنات الحية حجماً؟", options: ["الزرافة", "سمك القرش", "الفيل", "الحوت الأزرق"], correct: 3 },
+            { q: "ما اسم العضو الذي يختزن فيه الطائر الطعام؟", options: ["الأمعاء", "المرئ", "المعدة", "الحوصلة"], correct: 3 },
+            { q: "إذا فقد شخص إحدى عينيه فإن نسبة ما يفقده من بصره؟", options: ["ثلاثة أرباع", "العشر", "الربع", "الخُمس"], correct: 3 },
+            { q: "ما هو عدد المجالات التي تمنح فيها جائزة نوبل؟", options: ["5", "7", "10", "6"], correct: 3 },
+            { q: "الشوشب هو من أسماء أي الحيوانات؟", options: ["الضب", "السلحفاة", "الثعبان", "العقرب"], correct: 0 },
+            { q: "كم سجدة في جزء عم؟", options: ["4", "1", "3", "2"], correct: 1 },
+            { q: "ماذا يعني وجود (ج) بين الآيات في القرآن الكريم؟", options: ["جواز الوقف", "المد", "وجوب الوصل", "وجوب الوقف"], correct: 0 },
+            { q: "من أول من قال: \"لا إله إلا الله الواحد القهار\"؟", options: ["يعقوب", "إبراهيم", "آدم", "نوح"], correct: 3 },
+            { q: "ما هي الأعداد الثلاثة التي يساوي حاصل ضربها حاصل جمعها؟", options: ["5,1,2", "2,1,4", "4,3,2", "3,2,1"], correct: 3 },
+            { q: "الشمس أكبر من الأرض بـ؟", options: ["50,000", "1,000,000", "100", "1,300,000"], correct: 3 },
+            { q: "كم سنة ظل القرآن ينزل في المدينة بعد الهجرة؟", options: ["8", "11", "9", "10 سنوات"], correct: 3 },
+            { q: "كم بايت في الكيلوبايت؟", options: ["1000 بايت", "1024 ميجا", "1000 كيلوبايت", "1024 بايت"], correct: 3 },
+            { q: "كم يوماً تزيد السنة الشمسية عن القمرية؟", options: ["15", "10", "12", "11 يوماً"], correct: 3 },
+            { q: "بعد كم سنة يحتفل باليوبيل الفضي؟", options: ["100", "50", "75", "25 سنة"], correct: 3 },
+            { q: "كم عدد التكبيرات في الركعة الأولى في صلاة العيد؟", options: ["5", "8", "6", "7"], correct: 3 },
+            { q: "كم ثانية في ربع ساعة؟", options: ["550", "800", "600", "900"], correct: 3 },
+            { q: "ما هو أكثر الحروف الإنجليزية استخداماً؟", options: ["E", "V", "C", "U"], correct: 0 },
+            { q: "يخصك أنت وكل الناس تستعمله إلا أنت؟", options: ["قلمك", "بيتك", "ثوبك", "اسمك"], correct: 3 },
+            { q: "ما أعلى قمة في جبال العالم؟", options: ["آجا", "سودة", "الهملايا", "إفرست"], correct: 3 },
+            { q: "ما الجرم السماوي الذي يمكن رؤيته ليلاً ونهاراً بالعين؟", options: ["المريخ", "القمر", "الشمس", "الأرض"], correct: 1 }, // تم التعديل
+            { q: "كله ثقوب ويحفظ الماء؟", options: ["الشبكة", "البحر", "الحفرة", "الإسفنج"], correct: 3 },
+            { q: "الدولة العربية الوحيدة التي يحمل علمها نجمة سباعية؟", options: ["سوريا", "اليمن", "مصر", "الأردن"], correct: 3 },
+            { q: "كم عدد الغزوات التي قاتل فيها الرسول ﷺ؟", options: ["7", "10", "8", "9"], correct: 3 },
+            { q: "ماذا كان يطلق العرب على الذهب؟", options: ["العسجد", "العيار الثقيل", "نقد الخالص", "الأصفر الرنان"], correct: 3 }, // تم التعديل
+            { q: "ما اسم المدينة الجزائرية التي أصابها الزلزال المدمر؟", options: ["وهران", "تلمسان", "معسكر", "الشلف"], correct: 3 }, // تم التعديل
+            { q: "ما أشهر كتب الإمام الشافعي في الفقه؟", options: ["بداية المجتهد", "الأم", "السياسة الشرعية", "كشف الأسرار"], correct: 1 },
+            { q: "كم عدد بحور الشعر؟", options: ["17", "10", "12", "16"], correct: 3 },
+            { q: "لحمُه من الخارج وشعره من الداخل؟", options: ["الرأس", "القدم", "العين", "الأنف"], correct: 3 },
+            { q: "ما هي السورة التي تعادل ثلث القرآن؟", options: ["البقرة", "العصر", "الفاتحة", "الإخلاص"], correct: 3 },
+            { q: "ماذا تعني كلمة الإنجيل؟", options: ["ليس لها معنى", "الكتاب", "الأخبار", "البشارة"], correct: 3 },
+            { q: "ما هي أطول سورة في القرآن الكريم؟", options: ["الكهف", "النساء", "آل عمران", "البقرة"], correct: 3 },
+            { q: "المدينة الإيطالية التي يستخدم فيها الجندول؟", options: ["تورينو", "فينيسيا", "روما", "البندقية"], correct: 3 },
+            { q: "في أي تقويم تسمى السنوات بأسماء الحيوانات؟", options: ["البريطاني", "الروسي", "الياباني", "الصيني"], correct: 3 },
+            { q: "ما هي السورة التي تسمى براءة؟", options: ["الأحقاف", "الإسراء", "الكهف", "التوبة"], correct: 3 },
+            { q: "ما المقصود بكلمة الغوغاء؟", options: ["الذباب", "الزحام", "الفوضى", "الجراد الصغير"], correct: 3 },
+            { q: "من هو صاحب معجم \"العين\"؟", options: ["بطرس البستاني", "ابن منظور", "فيروز آبادي", "الخليل بن أحمد"], correct: 3 },
+            { q: "ما الشيء الذي ليس له بداية ولا نهاية؟", options: ["البحر", "الخط", "الطريق", "الدائرة"], correct: 3 },
+            { q: "كم عدد سجدات التلاوة في القرآن؟", options: ["16", "20", "12", "15"], correct: 3 },
+            { q: "أول ما يقضى به بين الناس يوم القيامة؟", options: ["الظلم", "العهود", "الدين", "الدماء"], correct: 3 },
+            { q: "من أول من سل سيفاً في الإسلام؟", options: ["أبو بكر", "عثمان", "عمر", "الزبير بن العوام"], correct: 3 },
+            { q: "حامل ومحمول نصفه ناشف ونصفه مبلول؟", options: ["الطريق", "السيارة", "البحر", "السفينة"], correct: 3 },
+            { q: "كم عدد خزنة جهنم؟", options: ["4", "8", "11", "19"], correct: 3 },
+            { q: "ما الشيء الذي من خارجه عظام ومن داخله لحم؟", options: ["الخنافس", "الثعبان", "البطريق", "السلحفاة"], correct: 3 },
+            { q: "ما الميتتان اللتان أحلهما الله؟", options: ["الجراد والضان", "السمك والجمال", "الخروف والبقر", "السمك والجراد"], correct: 3 },
+            { q: "ما الشيء الذي ورد في القرآن أنه يتنفس بلا روح؟", options: ["الجبال", "البغال", "الليل", "الصبح"], correct: 3 },
+            { q: "في أي عام وقعت معركة القادسية؟", options: ["هـ13", "هـ20", "هـ16", "هـ14"], correct: 3 },
+            { q: "أكبر صحراء في العالم؟", options: ["صحراء الهند الغربية", "النفوذ", "الربع الخالي", "الصحراء الكبرى"], correct: 3 },
+            { q: "ما هي أقدم لغة مكتوبة؟", options: ["رموز مبهمة", "الهيروغليفية", "الفرعونية", "الصينية"], correct: 1 },
+            { q: "يخترق الزجاج ولا يكسره؟", options: ["الماء", "الزجاج", "الحديد", "الضوء"], correct: 3 },
+            { q: "ما هي الوليمة؟", options: ["طعام القادم من السفر", "طعام الضيف", "طعام سابع المولود", "الطعام في العرس"], correct: 3 },
+            { q: "الاسم الذي يطلق على تاجر اللؤلؤ في الخليج؟", options: ["النوخذة", "الدنجل", "النهام", "الطواش"], correct: 3 },
+            { q: "ماذا يسمى الطعام الذي يقدم في سابع المولود؟", options: ["الخرس", "المأدبة", "الوليمة", "العقيقة"], correct: 3 },
+            { q: "فصل الدين عن الدولة شعار أي حركة؟", options: ["البهائية", "الوجودية", "الماسونية", "العلمانية"], correct: 3 },
+            { q: "الأنفال كلمة وردت في القرآن، ماذا تعني؟", options: ["الأرزاق", "الجبال", "الطرق", "الغنائم"], correct: 3 },
+            { q: "ما هو البليون؟", options: ["500 مليون", "5 مليون", "100 مليون", "1000 مليون"], correct: 3 },
+            { q: "إذا وضعناه في الثلاجة لا يبرد؟", options: ["الملح", "السكر", "الثلج", "الفلفل"], correct: 3 },
+            { q: "أصابع خمس وليس فيها لحم ولا عظم؟", options: ["القدم", "المروحة", "اليدي", "القفاز"], correct: 3 },
+            { q: "ورد في القرآن، ماذا كان المعدود 11؟", options: ["أهل الكهف", "حملة العرش", "خزنة جهنم", "الكواكب"], correct: 3 },
+            { q: "ترى كل شيء وليس لها عيون؟", options: ["المنظار", "العدسة", "العين", "المرآة"], correct: 3 },
+            { q: "ما هو أكبر كوكب؟", options: ["عطارد", "الزهرة", "المريخ", "المشتري"], correct: 3 },
+            { q: "ما اسم الفرقة التي أثارت مسألة خلق القرآن؟", options: ["الصوفية", "المرجئة", "الخوارج", "المعتزلة"], correct: 3 },
+            { q: "له كفان وليس هو إنسان؟", options: ["الشجر", "الكأس", "الملعقة", "الميزان"], correct: 3 },
+            { q: "ما الشيء يأكل ولا يشبع وإذا شرب مات؟", options: ["الشمس", "الحطب", "الماء", "النار"], correct: 3 },
+            { q: "في أي سورة وردت \"الطامة\"؟", options: ["البقرة", "الأعلى", "القيامة", "النازعات"], correct: 3 },
+            { q: "من الطيور لا تموت ولكنها تنتحر بسبب المرض؟", options: ["الحمام", "البوم", "الصقور", "النسور"], correct: 1 },
+            { q: "الترمَيت هو الاسم العلمي لأي الكائنات؟", options: ["السمك", "النحل", "العنكبوت", "النمل الأبيض"], correct: 3 },
+            { q: "معنى اسم جعفر؟", options: ["مجرى السيل", "البحر الزاخر", "الجبل", "النهر"], correct: 3 },
+            { q: "من صاحب كتاب \"رياض الصالحين\"؟", options: ["ابن تيمية", "العسقلاني", "الغزالي", "النووي"], correct: 3 },
+            { q: "من أول من عرف التدخين؟", options: ["الصينيون", "الأوروبيون", "الأمريكان", "الهنود الحمر"], correct: 3 },
+            { q: "طائر يلد ولا يبيض؟", options: ["البومة", "النعامة", "الأوز", "الوطواط"], correct: 3 },
+            { q: "ما اسم العملة الأوروبية الموحدة؟", options: ["الدينار", "الين", "الدولار", "اليورو"], correct: 3 },
+            { q: "زهرة تضاعف نفسها وملأت الحوض في اليوم العاشر، متى كان نصفه؟", options: ["السابع", "العاشر", "الثامن", "التاسع"], correct: 3 },
+            { q: "من صاحب كتاب \"إحياء علوم الدين\"؟", options: ["ابن القيم", "ابن تيمية", "ابن حجر العسقلاني", "الغزالي"], correct: 3 },
+            { q: "من صاحب كتاب \"الأغاني\"؟", options: ["ابن حجر العسقلاني", "ابن طفيل", "الجاحظ", "أبو الفرج الأصفهاني"], correct: 3 },
+            { q: "ما عدة الأرملة غير الحامل؟", options: ["4 أشهر و7 أيام", "5 أشهر", "4 أشهر", "4 أشهر و10 أيام"], correct: 3 },
+            { q: "من هي الصحابية ذات النطاقين؟", options: ["أم حارثة", "عائشة", "أسماء بنت عمير", "أسماء بنت أبي بكر"], correct: 3 },
+            { q: "من الصحابي الذي استمعت إليه الملائكة وهو يقرأ البقرة؟", options: ["زيد بن سهل", "أبو العاص بن الربيع", "حكيم بن حزام", "أسيد بن حضير"], correct: 3 },
+            { q: "من صاحب كتاب \"طوق الحمامة\"؟", options: ["المتنبي", "ابن حجر", "ابن طفيل", "ابن حزم الأندلسي"], correct: 3 },
+            { q: "من صاحب كتاب \"حي بن يقظان\"؟", options: ["ابن خلدون", "الجاحظ", "ابن رشد", "ابن طفيل"], correct: 3 },
+            { q: "ما هو الإعجاز القرآني في \"بلى قادرين على أن نسوي بنانه\"؟", options: ["خلق الأصابع", "تحريك الأصابع", "تطابق الأصابع", "اختلاف بصمات الأصابع"], correct: 3 },
+            { q: "ماذا تسمى الباء في \"هذا بذاك فما ملام عليك\"؟", options: ["باء من الكلمة", "باء الجر", "باء العطف", "باء البدل"], correct: 3 },
+            { q: "أكمل: كالمستجير من الرمضاء …؟", options: ["بالظل", "بالحر", "باللهب", "بالنار"], correct: 3 },
+            { q: "أكمل: على أهلها جنت …؟", options: ["هند", "سماء", "ليلى", "براقش"], correct: 3 },
+            { q: "ما أول دولة استخدمت طوابع البريد؟", options: ["اليابان", "النمسا", "الهند", "بريطانيا"], correct: 3 },
+            { q: "أي مدينة تسمى دار السلام؟", options: ["القدس", "حيفا", "دمشق", "بغداد"], correct: 3 },
+            { q: "ما هو أبعد كوكب عن الشمس؟", options: ["الزهرة", "المشتري", "عطارد", "بلوتو"], correct: 3 },
+            { q: "ما اسم الخنساء؟", options: ["ماوية", "ليلى الأخيلية", "هند بنت عمرو", "تماضر بنت عمرو"], correct: 3 },
+            { q: "أكمل القاعدة: درء المفاسد مقدم على …؟", options: ["العلوم", "المنافع", "الإتيان بالفوائد", "جلب المنافع"], correct: 3 },
+            { q: "ما معنى أورشليم؟", options: ["الطاهرة", "أرض الرسالة", "المسلمة", "حامية السلام"], correct: 3 },
+            { q: "ما المدينة التي تسمى جلق؟", options: ["القاهرة", "حلب", "بغداد", "دمشق"], correct: 3 },
+            { q: "ما عاصمة مملكة سبأ؟", options: ["يافع", "عدن", "صنعاء", "مأرب"], correct: 3 },
+            { q: "من هي أول ممرضة في الإسلام؟", options: ["أسماء بنت عمير", "الخنساء", "زينب بنت جحش", "رفيدة بنت سعد"], correct: 3 },
+            { q: "من هي أول ملكة في الإسلام؟", options: ["نفرتيتي", "بلقيس", "زبيدة", "شجرة الدر"], correct: 3 },
+            { q: "أكبر شركة فندقية عالمية تمتلك 1863 فندقاً؟", options: ["ماريوت", "هيلتون", "هوليداي إن", "حياة"], correct: 2 },
+            { q: "من الأديب البريطاني الملقب بأمير القصة العالمية؟", options: ["شكسبير", "ديكنز", "هارد", "جين أوستن"], correct: 1 },
+            { q: "ما الاسم الذي كان يطلق على يوم السبت في الجاهلية؟", options: ["العروبة", "شيار", "أهون", "دبار"], correct: 1 },
+            { q: "ما هو الشادن؟", options: ["صغير الأسد", "صغير الحصان", "صغير الغزال", "صغير النمر"], correct: 2 },
+            { q: "ما الصلاة التي يركع فيها المصلي أربع مرات ويسجد أربع مرات؟", options: ["الجمعة", "العيدين", "الجنازة", "صلاة الكسوف والخسوف"], correct: 3 },
+            { q: "أول أمين عام لجامعة الدول العربية؟", options: ["محمد نجيب", "عبد الرحمن عزام", "علي ماهر باشا", "ناصف أيوب"], correct: 1 },
+            { q: "من الصحابي أصدق الأمة حياء؟", options: ["أبو بكر", "عمر", "عثمان بن عفان", "علي"], correct: 2 },
+            { q: "في عهد أي خليفة فتحت القدس؟", options: ["أبو بكر", "عمر بن الخطاب", "عثمان", "علي"], correct: 1 },
+            { q: "من قال: \"لا أمل ثوبي ما وسعني…\"؟", options: ["عمر بن الخطاب", "أبو بكر الصديق", "علي بن أبي طالب", "عثمان بن عفان"], correct: 2 },
+            { q: "ما اسم المعركة التي انتصر فيها المماليك على المغول 1260هـ؟", options: ["الزلاقة", "حطين", "عين جالوت", "ذات الصواري"], correct: 2 },
+            { q: "أين ألقيت ثاني قنبلة ذرية في التاريخ؟", options: ["هيروشيما", "طوكيو", "ناغازاكي (اليابان)", "برلين"], correct: 2 },
+            { q: "ما حروف القلقلة؟", options: ["ص، ض، ط، ظ", "ق، ط، ب، ج، د", "س، ش، ص، ض", "ل، م، ن، و، ي"], correct: 1 },
+            { q: "من أين يستخرج العنبر؟", options: ["نبات الميرمية", "كبد الحوت", "أمعاء البقر", "مغارة جبلية"], correct: 1 },
+            { q: "ما معنى اسم درويش؟", options: ["القوي", "الشجاع", "الفقير", "العالم"], correct: 2 },
+            { q: "لماذا تطفو البيضة الفاسدة؟", options: ["لزيادة كثافتها", "لتراكم البروتين", "لوجود غازات فاسدة", "لصغر حجمها"], correct: 2 },
+            { q: "كم مطاراً دولياً في السعودية؟", options: ["11", "12", "13", "14"], correct: 2 }, // تم التعديل
+            { q: "ماذا تقال عن عضة النحلة؟", options: ["وخزة", "قضمة", "لسعة", "لدغة"], correct: 2 },
+            { q: "من هو الملك الموكل بالنار؟", options: ["جبريل", "إسرافيل", "ميكائيل", "مالك"], correct: 3 },
+            { q: "ما اسم زوجة حاتم الطائي المذكورة في شعره؟", options: ["ليلى", "هند", "ماوية", "الخنساء"], correct: 2 },
+            { q: "ما المعركة التي استشهد فيها الحسين بن علي؟", options: ["الجمل", "صفين", "كربلاء", "اليرموك"], correct: 2 },
+            { q: "ما هي أكبر مكتبة في العالم؟", options: ["مكتبة الإسكندرية", "المكتبة البريطانية", "مكتبة الكونجرس الأمريكي", "المكتبة الوطنية الفرنسية"], correct: 2 },
+            { q: "كلمة \"ريال\" أصلها إسباني، ماذا تعني؟", options: ["النقد", "الذهب", "ملكي", "القيمة"], correct: 2 },
+            { q: "من أين يستخرج المرجان؟", options: ["من الأرض", "من البحر", "من الجبل", "من الأشجار"], correct: 1 },
+            { q: "أي نهر تقع عليه باريس؟", options: ["نهر الرون", "نهر اللوار", "نهر السين", "نهر الراين"], correct: 2 },
+            { q: "من هو سيف الله المسلول؟", options: ["حمزة بن عبد المطلب", "عمر بن الخطاب", "علي بن أبي طالب", "خالد بن الوليد"], correct: 3 },
+            { q: "كم سنة استغرق تنزيل القرآن الكريم؟", options: ["20", "21", "22", "23"], correct: 3 },
+            { q: "في أي سنة ميلادية وُلد النبي ﷺ؟", options: ["570", "571", "572", "573"], correct: 1 },
+            { q: "كم آية في القرآن الكريم؟", options: ["6236", "6000", "6230", "6240"], correct: 0 },
+            { q: "كم كلمة في القرآن الكريم؟", options: ["79000", "78000", "80000", "77000"], correct: 0 },
+            { q: "كم حرفًا في القرآن الكريم؟", options: ["323670", "320000", "310000", "330000"], correct: 0 },
+            { q: "كم عدد أحزاب القرآن الكريم؟", options: ["60", "50", "40", "30"], correct: 0 }, // تم التعديل
+            { q: "من زوجة النبي ﷺ الأولى؟", options: ["عائشة", "حفصة", "خديجة", "ميمونة"], correct: 2 },
+            { q: "من آخر زوجة للنبي ﷺ؟", options: ["صفية", "أم سلمة", "جويرية", "ميمونة"], correct: 3 },
+            { q: "من المرأة الوحيدة التي ذكر اسمها بالقرآن؟", options: ["صفية", "مريم", "خديجة", "فاطمة"], correct: 1 }, // تم التعديل
+            { q: "كم عدد سور القرآن الكريم؟", options: ["112", "113", "114", "115"], correct: 2 },
+            { q: "على من أنزل الزبور؟", options: ["موسى", "عيسى", "داود", "إبراهيم"], correct: 2 },
+            { q: "من القائد الذي فتح جزيرة صقلية؟", options: ["طارق بن زياد", "أسد بن الفرات", "عقبة بن نافع", "محمد بن القاسم"], correct: 1 },
+            { q: "من النبي المسمى \"ذي النون\"؟", options: ["موسى", "نوح", "يونس", "هارون"], correct: 2 },
+            { q: "من نقيب بني عبد الأشهل؟", options: ["أسيد بن الحضير", "سعد بن معاذ", "أبو أيوب", "عبادة بن الصامت"], correct: 0 },
+            { q: "في أي يوم تُذبح أضحية العيد؟", options: ["قبل صلاة العيد", "بعد صلاة العيد", "في أي وقت", "اليوم الثاني فقط"], correct: 1 },
+            { q: "في أي سنة بدأ التاريخ الهجري؟", options: ["620", "621", "622", "623"], correct: 2 },
+            { q: "من النبي الذي صام ثلاثة أيام ليرزقه الله ولداً؟", options: ["إبراهيم", "زكريا", "نوح", "لوط"], correct: 1 },
+            { q: "ما هي قبة الصخرة؟", options: ["مسجد", "حصن", "الصخرة التي عُرج منها النبي ﷺ", "مكان دفن"], correct: 2 },
+            { q: "من أول من أمّ المسلمين في صلاتهم بالمدينة؟", options: ["عمر", "مصعب بن عمير", "أبو بكر", "معاذ"], correct: 1 },
+            { q: "من الذي آمن بنبوة محمد ﷺ قبل أن يُبعث؟", options: ["بحيرا الراهب", "ورقة بن نوفل", "زيد بن عمرو", "سلمان الفارسي"], correct: 1 },
+            { q: "من الملقب بصقر قريش؟", options: ["عبد الملك", "معاوية", "عبد الرحمن بن معاوية", "الوليد"], correct: 2 },
+            { q: "من باني الكعبة المشرفة؟", options: ["نوح", "موسى", "إبراهيم وإسماعيل", "محمد ﷺ"], correct: 2 },
+            { q: "من أول من أسلم من الرجال؟", options: ["علي", "عثمان", "أبو بكر", "حمزة"], correct: 2 },
+            { q: "من واضع المعجم المفهرس لكلمات القرآن؟", options: ["ابن منظور", "محمد فؤاد عبد الباقي", "الزركشي", "السيوطي"], correct: 1 },
+            { q: "من مولى النبي ﷺ؟", options: ["زيد بن ثابت", "أنس بن مالك", "أسامة بن زيد", "بلال بن رباح"], correct: 2 },
+            { q: "من الملقب بسيف الله المسلول؟", options: ["عمر", "علي", "خالد بن الوليد", "حمزة"], correct: 2 },
+            { q: "من آخر من مات من العشرة المبشرين بالجنة؟", options: ["سعد بن أبي وقاص", "علي", "طلحة", "الزبير"], correct: 0 },
+            { q: "متى فرضت زكاة الفطر؟", options: ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "الرابعة"], correct: 1 },
+            { q: "على أي صلاة يُطلق اسم البردين؟", options: ["الفجر والعشاء", "الظهر والعصر", "العصر والفجر", "المغرب والعشاء"], correct: 2 },
+            { q: "ما السورة التي خُتمت باسم نبيين؟", options: ["الأعراف", "الأعلى", "الصافات", "الأنبياء"], correct: 1 },
+            { q: "من أبو هريرة؟", options: ["عبد الله بن عمر", "عبد الرحمن بن صخر", "أنس بن مالك", "جابر بن عبد الله"], correct: 1 },
+            { q: "أي سورة بدأت باسم فاكهة؟", options: ["التين", "النخل", "العنب", "الزيتون"], correct: 0 },
+            { q: "من أول من هاجر إلى الحبشة؟", options: ["أبو بكر", "عثمان بن عفان", "جعفر الطيار", "عبد الله بن مسعود"], correct: 1 },
+            { q: "كم تساوي الصلاة في المسجد الأقصى؟", options: ["100", "250", "500", "1000"], correct: 2 },
+            { q: "كم تساوي الصلاة في المسجد النبوي؟", options: ["100", "500", "1000", "2000"], correct: 2 },
+            { q: "من أول خليفة لُقب بأمير المؤمنين؟", options: ["أبو بكر", "عمر", "عثمان", "علي"], correct: 1 },
+            { q: "من المرأة التي تزوجت أربعة من أصحاب النبي ﷺ كلهم استشهدوا؟", options: ["أم سلمة", "عاتكة بنت زيد", "حفصة", "جويرية"], correct: 1 },
+            { q: "أول مسجد شُيد في الإسلام؟", options: ["الأقصى", "قباء", "النبوي", "الحرام"], correct: 1 },
+            { q: "من الصحابية التي قتلت سبعة من الروم؟", options: ["نسيبة", "خولة بنت الأزور", "أم حكيم المخزومية", "أسماء بنت يزيد"], correct: 2 },
+            { q: "من الخليفة الأموي الذي بنى قبة الصخرة؟", options: ["معاوية", "يزيد", "عبد الملك بن مروان", "الوليد بن عبد الملك"], correct: 2 },
+            { q: "من النبي الذي أُلقي في النار؟", options: ["إبراهيم", "موسى", "نوح", "عيسى"], correct: 0 },
+            { q: "من النبي الذي فُتن بالمال والجمال؟", options: ["سليمان", "يوسف", "داود", "أيوب"], correct: 1 },
+            { q: "من هو الصحابي الذي نام في فراش النبي وقت الهجرة؟", options: ["عمر", "علي بن أبي طالب", "الزبير بن العوام", "حمزة"], correct: 1 }, // تم التعديل
+            { q: "ما السورة التي لا تبدأ بالبسملة؟", options: ["التوبة", "الفاتحة", "الإخلاص", "الناس"], correct: 0 },
+            { q: "أي البلاد يطلق عليها أرض الكنغر؟", options: ["البرازيل", "أستراليا", "كندا", "الهند"], correct: 1 },
+            { q: "أي البلاد يطلق عليها أرض الأرز؟", options: ["لبنان", "سوريا", "تركيا", "فلسطين"], correct: 0 },
+            { q: "أي البلاد يطلق عليها أرض النيل؟", options: ["السودان", "مصر", "أوغندا", "إثيوبيا"], correct: 1 },
+            { q: "ما هي أول جامعة في العالم؟", options: ["الأزهر", "الزيتونة", "القرويين", "بغداد"], correct: 2 },
+            { q: "من أول من أنشأ أسطولاً بحريًا إسلاميًا؟", options: ["عمر", "معاوية بن أبي سفيان", "عثمان", "علي"], correct: 1 },
+            { q: "في أي غزوة كان أول ظهور للرماة؟", options: ["بدر", "أحد", "الخندق", "مؤتة"], correct: 1 },
+            { q: "أي مدينة تُعرف بمدينة الشمس؟", options: ["القاهرة", "بعلبك", "دمشق", "بغداد"], correct: 1 },
+            { q: "أي مدينة تُعرف بالمدينة البيضاء؟", options: ["دمشق", "فاس", "مراكش", "القاهرة"], correct: 0 },
+            { q: "من الصحابي الذي لقب بأبي المساكين؟", options: ["جعفر بن أبي طالب", "أبو هريرة", "سلمان الفارسي", "المقداد"], correct: 0 },
+            { q: "من هو أول مولود في الإسلام بالمدينة؟", options: ["عبد الله بن الزبير", "عبد الله بن عمر", "عبد الله بن جعفر", "عبد الله بن عباس"], correct: 0 },
+            { q: "كم عدد أبواب الجنة؟", options: ["6", "7", "8", "9"], correct: 2 },
+            { q: "كم عدد أبواب النار؟", options: ["6", "7", "8", "9"], correct: 1 },
+            { q: "ما الحيوان الذي إذا قُطعت يده نبتت مرة أخرى؟", options: ["الحرباء", "الأخطبوط", "التمساح", "السحلية"], correct: 1 },
+            { q: "من النبي الذي كان يسمى بشرى؟", options: ["يعقوب", "يوسف", "موسى", "يحيى"], correct: 0 },
+            { q: "ما هو أطول نهر في آسيا؟", options: ["اليانغتسي", "الميكونغ", "الغانج", "السند"], correct: 0 },
+            { q: "ما عاصمة النمسا؟", options: ["فيينا", "برلين", "براغ", "بودابست"], correct: 0 },
+            { q: "ما عاصمة كندا؟", options: ["أوتاوا", "مونتريال", "فانكوفر", "تورنتو"], correct: 0 },
+            { q: "ما عاصمة البرازيل؟", options: ["ساو باولو", "ريو دي جانيرو", "برازيليا", "مونتيفيديو"], correct: 2 },
+            { q: "من هو مكتشف الدورة الدموية الكبرى؟", options: ["ابن سينا", "ابن النفيس", "وليام هارفي", "جالينوس"], correct: 2 },
+            { q: "من مكتشف الدورة الدموية الصغرى؟", options: ["ابن النفيس", "ابن سينا", "هارفي", "الرازي"], correct: 0 },
+            { q: "أي المعادن يطلق عليه الذهب الأبيض؟", options: ["الفضة", "البلاتين", "الألمنيوم", "الحديد"], correct: 1 },
+            { q: "أي المعادن يطلق عليه الذهب الأسود؟", options: ["الفحم", "النفط", "الغاز", "الرصاص"], correct: 1 },
+            { q: "ما الحيوان الذي لا يشرب الماء؟", options: ["الكنغر الصحراوي", "الجمل", "الفأر الكنغري", "السلحفاة"], correct: 2 },
+            { q: "من هو مخترع الطائرة؟", options: ["الأخوان رايت", "توماس إديسون", "جراهام بيل", "ماجلان"], correct: 0 },
+            { q: "من هو مخترع الراديو؟", options: ["إديسون", "ماركوني", "بيل", "تيسلا"], correct: 1 },
+            { q: "ما أقوى عضلة في جسم الإنسان؟", options: ["الفخذ", "اللسان", "الذراع", "القلب"], correct: 1 },
+            { q: "ما عدد أسنان الإنسان البالغ؟", options: ["28", "30", "32", "34"], correct: 2 },
+            { q: "ما الحيوان الذي يسمى سيد قشطة؟", options: ["فرس النهر", "التمساح", "الجاموس", "وحيد القرن"], correct: 0 },
+            { q: "من العالم الذي اكتشف البنسلين؟", options: ["باستير", "ألكسندر فلمنج", "روبرت كوخ", "لافوازييه"], correct: 1 },
+            { q: "من العالم الذي اكتشف الجاذبية الأرضية؟", options: ["كبلر", "نيوتن", "جاليليو", "أرخميدس"], correct: 1 },
+            { q: "ما وحدة قياس شدة الصوت؟", options: ["فولت", "ديسيبل", "وات", "أمبير"], correct: 1 },
+            { q: "ما وحدة قياس الطاقة؟", options: ["جول", "نيوتن", "أمبير", "فولت"], correct: 0 },
+            { q: "ما وحدة قياس القوة؟", options: ["جول", "نيوتن", "أمبير", "فولت"], correct: 1 },
+            { q: "ما وحدة قياس الشحنة الكهربائية؟", options: ["فولت", "كولوم", "أمبير", "واط"], correct: 1 },
+            { q: "ما أكبر كواكب المجموعة الشمسية؟", options: ["زحل", "المشتري", "أورانوس", "نبتون"], correct: 1 },
+            { q: "ما أصغر كواكب المجموعة الشمسية؟", options: ["عطارد", "بلوتو", "المريخ", "الزهرة"], correct: 0 },
+            { q: "ما أسرع الكواكب دورانًا حول نفسه؟", options: ["المشتري", "زحل", "عطارد", "المريخ"], correct: 0 },
+            { q: "ما أبطأ الكواكب دورانًا حول نفسه؟", options: ["الزهرة", "عطارد", "نبتون", "زحل"], correct: 0 },
+            { q: "أي الكواكب يُسمى الكوكب الأحمر؟", options: ["عطارد", "الزهرة", "المريخ", "المشتري"], correct: 2 },
+            { q: "أي الكواكب يُسمى الكوكب الأزرق؟", options: ["أورانوس", "نبتون", "الأرض", "زحل"], correct: 1 },
+            { q: "أي الكواكب يُسمى توأم الأرض؟", options: ["المريخ", "الزهرة", "عطارد", "أورانوس"], correct: 1 },
+            { q: "أي الكواكب يُسمى عملاق الغاز؟", options: ["المشتري", "زحل", "أورانوس", "نبتون"], correct: 0 },
+            { q: "ما اسم المجرة التي تقع فيها مجموعتنا الشمسية؟", options: ["أندروميدا", "درب التبانة", "الصياد", "القوس"], correct: 1 },
+            { q: "ما أقرب نجم إلى الأرض؟", options: ["الشعرى", "بروكسيما سنتوري", "ألفا سنتوري", "الشمس"], correct: 3 },
+            { q: "كم يستغرق ضوء الشمس ليصل إلى الأرض؟", options: ["3 دقائق", "5 دقائق", "8 دقائق", "10 دقائق"], correct: 2 },
+            { q: "من العالم الذي اكتشف الذرة؟", options: ["دالتون", "رذرفورد", "طومسون", "بوهر"], correct: 0 },
+            { q: "من العالم الذي اكتشف البروتون؟", options: ["دالتون", "رذرفورد", "طومسون", "بوهر"], correct: 1 },
+            { q: "من العالم الذي اكتشف الإلكترون؟", options: ["دالتون", "رذرفورد", "طومسون", "بوهر"], correct: 2 },
+            { q: "من العالم الذي وضع نموذج الكواكب للإلكترون؟", options: ["دالتون", "رذرفورد", "طومسون", "بوهر"], correct: 3 },
+            { q: "ما الغاز الذي يُعرف بغاز الضحك؟", options: ["أكسيد النيتروز", "ثاني أكسيد الكربون", "الأوزون", "الميثان"], correct: 0 },
+            { q: "ما الغاز الذي يُعرف بغاز المستنقعات؟", options: ["الميثان", "النيتروجين", "ثاني أكسيد الكربون", "الأكسجين"], correct: 0 },
+            { q: "ما الغاز الذي يحمي الأرض من الأشعة فوق البنفسجية؟", options: ["ثاني أكسيد الكربون", "الأوزون", "النيتروجين", "الأكسجين"], correct: 1 },
+            { q: "ما الغاز الذي يكوّن حوالي 78% من الغلاف الجوي؟", options: ["النيتروجين", "الأكسجين", "ثاني أكسيد الكربون", "الهيليوم"], correct: 0 },
+            { q: "ما الغاز الذي نتنفسه للبقاء أحياء؟", options: ["النيتروجين", "الأكسجين", "ثاني أكسيد الكربون", "الهيدروجين"], correct: 1 },
+            { q: "ما الغاز الذي يخرجه الإنسان في الزفير؟", options: ["النيتروجين", "الأكسجين", "ثاني أكسيد الكربون", "الهيدروجين"], correct: 2 },
+            { q: "ما الغاز المستخدم في إطفاء الحرائق؟", options: ["الهيليوم", "الأكسجين", "ثاني أكسيد الكربون", "النيتروجين"], correct: 2 },
+            { q: "ما الغاز المستخدم في ملء البالونات الطائرة؟", options: ["الهيليوم", "الهيدروجين", "الأكسجين", "النيتروجين"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Fe؟", options: ["النحاس", "الحديد", "الفضة", "الزنك"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Na؟", options: ["الكالسيوم", "الصوديوم", "النيتروجين", "النيكل"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ K؟", options: ["الكالسيوم", "البوتاسيوم", "الكربون", "الكبريت"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Ca؟", options: ["الكالسيوم", "الكادميوم", "الكوبالت", "الكربون"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ C؟", options: ["الكالسيوم", "الكربون", "النحاس", "الكوبالت"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ O؟", options: ["الأكسجين", "الأوزون", "الأوسميوم", "الأوكسالات"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ N؟", options: ["النيتروجين", "النيكل", "النوبليوم", "النيون"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ H؟", options: ["الهيليوم", "الهيدروجين", "الهولميوم", "الهفنيوم"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ He؟", options: ["الهيدروجين", "الهيليوم", "الهولميوم", "الهفنيوم"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Au؟", options: ["الفضة", "النحاس", "الذهب", "الألومنيوم"], correct: 2 },
+            { q: "ما العنصر الذي يرمز له بـ Ag؟", options: ["الفضة", "النحاس", "الذهب", "الألومنيوم"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Cu؟", options: ["الفضة", "النحاس", "الذهب", "الألومنيوم"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Zn؟", options: ["الزنك", "الزركونيوم", "الزينون", "الزرنيخ"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Pb؟", options: ["الرصاص", "البلاديوم", "البوتاسيوم", "البزموت"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Hg؟", options: ["الهيدروجين", "الزئبق", "الهولميوم", "الهيليوم"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Si؟", options: ["السيلينيوم", "السيزيوم", "السيليكون", "السيريوم"], correct: 2 },
+            { q: "ما العنصر الذي يرمز له بـ S؟", options: ["الكبريت", "السيزيوم", "السيريوم", "السيلينيوم"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Cl؟", options: ["الكلور", "الكوبالت", "الكالسيوم", "الكربون"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ P؟", options: ["الفسفور", "البوتاسيوم", "البلاتين", "الباليوم"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Al؟", options: ["الألومنيوم", "الأكتينيوم", "الأرجون", "الأرسنيك"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Mn؟", options: ["الماغنسيوم", "المنغنيز", "الموليبدنوم", "النيكل"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Mg؟", options: ["الماغنسيوم", "المنغنيز", "الموليبدنوم", "النيكل"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Ni؟", options: ["النيتروجين", "النيكل", "النوبليوم", "النيون"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Co؟", options: ["الكوبالت", "الكادميوم", "الكالسيوم", "الكربون"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Cr؟", options: ["الكروم", "الكوبالت", "الكربون", "الكالسيوم"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Pt؟", options: ["البلاتين", "البوتاسيوم", "الفسفور", "البلاديوم"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بـ Pd؟", options: ["البلاتين", "البلاديوم", "البزموت", "البوتاسيوم"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Sn؟", options: ["الصوديوم", "القصدير", "الكبريت", "السيليكون"], correct: 1 },
+            { q: "ما العنصر الذي يرمز له بـ Ti؟", options: ["الثوريوم", "الثاليوم", "التيتانيوم", "التيلوريوم"], correct: 2 },
+            { q: "من العالم الذي اكتشف البترول؟", options: ["إدوين دريك", "توماس إديسون", "ألبرت أينشتاين", "نيوتن"], correct: 0 },
+            { q: "من العالم الذي اكتشف الكهرباء؟", options: ["توماس إديسون", "بنجامين فرانكلين", "نيكولا تيسلا", "ألبرت أينشتاين"], correct: 1 },
+            { q: "من العالم الذي اخترع المصباح الكهربائي؟", options: ["توماس إديسون", "نيكولا تيسلا", "ألكسندر جراهام بيل", "جيمس وات"], correct: 0 },
+            { q: "من العالم الذي اخترع الهاتف؟", options: ["توماس إديسون", "ألكسندر جراهام بيل", "نيكولا تيسلا", "جيمس وات"], correct: 1 },
+            { q: "من العالم الذي اخترع التلغراف؟", options: ["توماس إديسون", "صموئيل مورس", "ألكسندر جراهام بيل", "نيكولا تيسلا"], correct: 1 },
+            { q: "ما أكبر محيط في العالم؟", options: ["الأطلسي", "الهندي", "الهادي", "المتجمد الشمالي"], correct: 2 },
+            { q: "ما أصغر محيط في العالم؟", options: ["الأطلسي", "الهندي", "الهادي", "المتجمد الشمالي"], correct: 3 },
+            { q: "ما أعمق خندق في العالم؟", options: ["خندق ماريانا", "خندق الفلبين", "خندق بورتوريكو", "خندق اليابان"], correct: 0 },
+            { q: "ما أكبر بحر مغلق في العالم؟", options: ["البحر المتوسط", "البحر الأسود", "بحر قزوين", "البحر الأحمر"], correct: 2 },
+            { q: "ما أكبر جزيرة في العالم؟", options: ["أستراليا", "جرينلاند", "مدغشقر", "بورنيو"], correct: 1 },
+            { q: "ما عدد أوجه المكعب؟", options: ["4", "6", "8", "12"], correct: 1 },
+            { q: "من اخترع الويب (World Wide Web)؟", options: ["تيم برنرز-لي", "ألان تورينج", "ستيف جوبز", "توني هيوز"], correct: 0 },
+            { q: "ما وحدة قياس المجال المغناطيسي في النظام الدولي؟", options: ["تسلا", "واط", "أمبير", "نيوتن"], correct: 0 },
+            { q: "ما اسم أكبر كونغرس للأمم لم يكن في القرن العشرين بل أُسس عام 1945؟", options: ["الأمم المتحدة", "جامعة الدول", "منظمة التعاون الإسلامي", "حلف الناتو"], correct: 0 },
+            { q: "أي غاز نبيل يُستخدم عادةً في مصابيح التفريغ والإضاءة الزخرفية؟", options: ["هليوم", "نيون", "أرغون", "كريبتون"], correct: 1 },
+            { q: "ما المدينة التي يُعرف عنها أنها \"مدينة الفن\" في إيطاليا وتحتوي على متحف الأوير؟", options: ["ميلانو", "بولونيا", "فلورنسا", "البندقية"], correct: 2 },
+            { q: "أي من هذه الرياضات هو أقدم رياضة أولمبية حديثة؟", options: ["كرة السلة", "سباق 100 متر", "المصارعة", "التنس"], correct: 2 },
+            { q: "ما اسم الموجة الضوئية ذات الطول الموجي الأقصر ضمن الطيف المرئي؟", options: ["الأحمر", "الأخضر", "البنفسجي", "البرتقالي"], correct: 2 },
+            { q: "ما اسم العملية التي تتحوّل فيها المادة من الحالة الصلبة إلى الغاز دون المرور بالسائل؟", options: ["انصهار", "تبخر", "ترسب", "تصعيد (تسامي)"], correct: 3 },
+            { q: "أي من هذه الدول تقع كلها في شبه الجزيرة الإيبيرية؟", options: ["فرنسا", "إسبانيا", "إيطاليا", "كرواتيا"], correct: 1 },
+            { q: "ما اسم العضو في النبات المسؤول عن التبادل الغازي الرئيسي؟", options: ["الزهرة", "الجذر", "الساق", "الورقة"], correct: 3 },
+            { q: "أي من هذه الأعداد هو عدد زوايا مثلث قائم الزاوية؟", options: ["2", "3", "4", "1"], correct: 1 },
+            { q: "ما اسم الكائن الحي الذي يستخدم \"الأصداف\" كهيكل خارجي؟", options: ["الأخطبوط", "سرطان البحر", "الحوت", "الدولفين"], correct: 1 },
+            { q: "أي عنصر يُستخدم كوقود في محطات الطاقة النووية من النوع الشائع؟", options: ["بلوتونيوم", "يورانيوم", "ثوريوم", "كيليوم"], correct: 1 },
+            { q: "ما اسم الدرجة الموسيقية التي تفصل بين نغمتين متتاليتين في السلم الغربي؟", options: ["أوكتاف", "نصف نغمة", "خامس", "تيرس"], correct: 1 },
+            { q: "من هو مؤلف رواية \"الجريمة والعقاب\"؟", options: ["دوستويفسكي", "تولستوي", "دوستويفسكي", "تشيخوف"], correct: 0 }, 
+            { q: "ما اسم وحدة مقاومة الكهرباء؟", options: ["فولت", "أوم", "أمبير", "واط"], correct: 1 },
+            { q: "أي من البحيرات التالية هي أعمق بحيرة على وجه الأرض؟", options: ["بحيرة فيكتوريا", "بحيرة بايكال", "بحيرة سوبيريور", "بحيرة تنجانيقا"], correct: 1 },
+            { q: "ما اسم البروتين الرئيسي في شعر الإنسان؟", options: ["كولاجين", "إنزيم", "كيراتين", "أكتين"], correct: 2 },
+            { q: "أي دولة استخدمت اليورو كعملة أول مرة من بين التالية؟", options: ["فرنسا", "ألمانيا", "إسبانيا", "المملكة المتحدة"], correct: 0 }, 
+            { q: "ما الاسم الآخر لظاهرة \"الشفق القطبي\" في القطب الشمالي؟", options: ["أورورا أورينتاليس", "أورورا", "شفق جبلي", "شفق قطبي"], correct: 1 },
+            { q: "أي جهاز يقيس الضغط الجوي؟", options: ["حمّاس", "بارومتر", "ترمومتر", "هيدرومتر"], correct: 1 },
+            { q: "ما اسم أعلى جبل في أفريقيا؟", options: ["جبل كليمنجارو", "جبل كينيا", "جبل إيفرست", "جبل توبقال"], correct: 0 },
+            { q: "من هو مؤسس علم الجبر كما يُنسب إليه غالباً؟", options: ["الخوارزمي", "ابن سينا", "بطليموس", "ابن خلدون"], correct: 0 },
+            { q: "ما اسم الجهاز الذي يقيس الزلازل؟", options: ["سيزموجراف", "بارومتر", "هجينومتر", "مقياس السرعة"], correct: 0 },
+            { q: "أي من هذه الفواكه تحتوي على أعلى نسبة فيتامين ج؟", options: ["الموز", "البرتقال", "الفراولة", "التفاح"], correct: 2 }, 
+            { q: "ما اسم العملية التي تحول السكر إلى طاقة داخل الخلايا؟", options: ["التمثيل الضوئي", "التنفس الخلوي", "التخمر", "الانقسام الخلوي"], correct: 1 },
+            { q: "ما اسم المكتشف الذي وصف الدورة الدموية الصغرى؟", options: ["ابن النفيس", "ابن سينا", "ويليام هارفي", "جالينوس"], correct: 0 },
+            { q: "أي لون ينتج من مزج الضوء الأحمر والأخضر في نظام الألوان الضوئية؟", options: ["أصفر", "أزرق", "بنفسجي", "أخضر فاتح"], correct: 0 },
+            { q: "ما اسم أكبر مركز فضاء تابع لوكالة ناسا في فلوريدا؟", options: ["مركز كينيدي للفضاء", "مركز جونسون", "مركز غودارد", "مركز مارشال"], correct: 0 },
+            { q: "أي دولة نالت أول بطولة كأس عالم لكرة القدم؟", options: ["البرازيل", "إنجلترا", "أورجواي", "إيطاليا"], correct: 2 },
+            { q: "ما اسم الجهاز الذي يحوّل الطاقة الكهربائية إلى طاقة ميكانيكية؟", options: ["المولد", "المحرك الكهربائي", "المحول", "المقاومة"], correct: 1 },
+            { q: "ما اسم المخترع الذي طوّر أول محرك احتراق داخلي عملي؟", options: ["جوتليب دايملر", "توماس إديسون", "نيكولا تسلا", "ألكسندر غراهام بيل"], correct: 0 },
+            { q: "أي من هذه اللغات ينتمي إلى عائلة اللغات الجرمانية؟", options: ["العربية", "الألمانية", "التركية", "الفارسية"], correct: 1 },
+            { q: "ما اسم الجذر الكيميائي المستخدم كمادة معقمة في العديد من المطهرات مثل بيروكسيد الهيدروجين؟", options: ["OH", "O₂", "H₂O₂", "Cl₂"], correct: 2 },
+            { q: "ما اسم الرجل الذي اكتشف البنسلين؟", options: ["لوي باستور", "ألكسندر فلمنج", "روبرت كوخ", "إدوارد جينر"], correct: 1 },
+            { q: "ما اسم أكبر قارة من حيث المساحة؟", options: ["أفريقيا", "آسيا", "أمريكا الشمالية", "أوروبا"], correct: 1 },
+            { q: "أي من هذه الأشكال الهندسية له طول قطرين غير متساويين يقطعهما في المنتصف؟", options: ["المستطيل", "المربع", "المعين", "متوازي أضلاع"], correct: 2 },
+            { q: "ما اسم الطائر الذي يطير للخلف؟", options: ["الصقر", "الطاووس", "طائر الطنان", "النسر"], correct: 2 },
+            { q: "ما اسم المادة التي تُستخدم كمادة ناقلة في عملية الطباعة ثلاثية الألوان في الحبر؟", options: ["ماء", "كحول", "زيت", "أسيتون"], correct: 0 },
+            { q: "ما اسم أول قمر صناعي أُرسل إلى الفضاء؟", options: ["سبوتنيك-1", "أبولو", "فوياجر", "هابل"], correct: 0 },
+            { q: "أي من هذه الآلات الموسيقية تُعزف بأنواط على أوتارها؟", options: ["الطبل", "البيانو", "الناي", "الكمنجة"], correct: 1 },
+            { q: "ما اسم أسرع حيوان بري على سطح الأرض؟", options: ["الفهد", "الأسد", "الغزال", "الزرافة"], correct: 0 },
+            { q: "ما اسم المُركب العضوي الذي يحمل التعليمات الوراثية في الخلايا؟", options: ["ريبوزوم", "إنزيم", "حمض نووي ريبوزي منقوص الأكسجين (DNA)", "لبروتين"], correct: 2 },
+            { q: "من هو مؤلف \"الأوديسة\" في الأدب اليوناني القديم؟", options: ["هوميروس", "سقراط", "أرسطو", "هيسيود"], correct: 0 },
+            { q: "ما اسم القوة التي تجذب الأجسام نحو الأرض؟", options: ["القوة الكهربائية", "القوة النووية", "الجاذبية", "الاحتكاك"], correct: 2 },
+            { q: "أي من هذه البلدان ليست جزيرة؟", options: ["اليابان", "إندونيسيا", "الهند", "أيسلندا"], correct: 2 },
+            { q: "ما اسم أصغر وحدة في النظام الشمسي بالنسبة للمسافة بين النجوم؟", options: ["الكوكب", "النجم", "النظام الشمسي", "الفلكة"], correct: 0 },
+            { q: "ما اسم المادة الصلبة التي تكون نواة الفحم؟", options: ["سيلكا", "كربون", "هيدروجين", "نيتروجين"], correct: 1 },
+            { q: "أي من هذه الفواكه ليس من فصيلة الحمضيات؟", options: ["الليمون", "البرتقال", "التفاح", "الجريب فروت"], correct: 2 },
+            { q: "ما اسم الوحدة الزمنية التي تعادل ألف جزء من الثانية؟", options: ["مللي ثانية", "ميكروثانية", "نانو ثانية", "ثانية"], correct: 0 },
+            { q: "ما اسم البحر الواقع بين أوروبا وأفريقيا ويعتبر ممرًا بحريًا هامًا؟", options: ["البحر الأسود", "البحر المتوسط", "بحر قزوين", "بحر البلطيق"], correct: 1 },
+            { q: "أي من هذه الروايات كتبها نجيب محفوظ؟", options: ["رجال في الشمس", "أولاد حارتنا", "المعلقات", "الغريب"], correct: 1 },
+            { q: "ما اسم العلم الذي يدرس الطبقات الأرضية وصخور القشرة؟", options: ["علم الأحياء", "علم الجيولوجيا", "علم الفلك", "علم الكيمياء"], correct: 1 },
+            { q: "أي من هذه الألوان لا ينتمي إلى نظام ألوان الطباعة CMYK؟", options: ["سماوي", "بنفسجي", "أصفر", "أسود"], correct: 1 },
+            { q: "ما اسم أكبر بحيرة مالحة مغلقة في العالم؟", options: ["البحر الأحمر", "بحر قزوين", "بحر قزوين", "بحيرة سوبيريور"], correct: 1 }, 
+            { q: "من هو مكتشف قانون الجاذبية الكونية الشهير؟", options: ["كبلر", "إسحاق نيوتن", "غاليليو", "أينشتاين"], correct: 1 },
+            { q: "أي من هذه المواد يُعد موصلا كهربائيا جيدا؟", options: ["خشب", "نحاس", "بلاستيك", "زجاج"], correct: 1 },
+            { q: "ما اسم الكوكب الذي يُعرف بـ\"عملاق الغاز\" الأكبر؟", options: ["زحل", "المشتري", "أورانوس", "نبتون"], correct: 1 },
+            { q: "أي من هذه الألعاب تُلعب بواسطة مضرب وكرة وتُلعب على ملعب مستطيل مع شبكة؟", options: ["كرة القدم", "التنس", "الهوكي", "السلة"], correct: 1 },
+            { q: "ما الاسم العلمي لمرض السكر الشائع؟", options: ["أنيميا", "داء السكري", "الربو", "التهاب كبدي"], correct: 1 },
+            { q: "أي من هذه الدول ليست عضواً في حلف الناتو؟", options: ["فرنسا", "ألمانيا", "جورجيا", "الولايات المتحدة"], correct: 2 }, // تم التعديل
+            { q: "ما اسم النبات الذي يستخدم في صنع \"اللبان\" التقليدي؟", options: ["اللباب", "اللبان (شجرة البوسويليا)", "النخيل", "الصبار"], correct: 1 },
+            { q: "ما اسم أكبر مركز مالي في العالم غالبًا بحسب الأسواق؟", options: ["لندن", "نيويورك", "طوكيو", "هونغ كونغ"], correct: 1 },
+            { q: "ما اسم العضو الذي ينتج الصفراء في جسم الإنسان؟", options: ["الكبد", "الطحال", "البنكرياس", "المعدة"], correct: 0 },
+            { q: "ما اسم الشاعر العربي الذي لقب بـ\"أمير الشعراء\" في العصر الحديث؟", options: ["المتنبي", "نزار قباني", "محمود درويش", "أحمد شوقي"], correct: 3 },
+            { q: "أي من هذه المركبات عضوية؟", options: ["H₂O", "CO₂", "C₆H₁₂O₆", "NaCl"], correct: 2 },
+            { q: "ما اسم وحدة قياس الشدة الضوئية في النظام الدولي؟", options: ["لومن", "كانديلا", "لوكس", "وات"], correct: 1 },
+            { q: "ما البلد المنشأ لرقصة السامبا؟", options: ["إسبانيا", "البرازيل", "المكسيك", "الأرجنتين"], correct: 1 },
+            { q: "ما اسم العضلة الكبيرة في الجزء الأمامي من الفخذ؟", options: ["ربلة الساق", "أوتار الركبة", "العضلة الرباعية الفخذ", "الساق الخلفية"], correct: 2 },
+            { q: "أي من هذه الحضارات بنَت الأهرامات الشهيرة في الجيزة؟", options: ["الإغريق", "الرومان", "المصريون القدماء", "السومريون"], correct: 2 },
+            { q: "ما اسم أول امرأة فازت بجائزة نوبل؟", options: ["ماري كوري", "ميلدريد تيلور", "ماري وولستونكرافت", "روزا لوكسمبورغ"], correct: 0 },
+            { q: "ما اسم أكبر غابة استوائية في العالم؟", options: ["غابة الكونغو", "غابات الأمازون", "الغابات المطيرة في ماليزيا", "الغابات المطيرة الأسترالية"], correct: 1 },
+            { q: "ما اسم الكوكب الذي لديه حلقات واضحة حوله؟", options: ["المريخ", "زحل", "عطارد", "الأرض"], correct: 1 },
+            { q: "ما اسم الجهاز الذي يستخدم لقياس درجة حرارة الجسم؟", options: ["بارومتر", "ترمومتر", "هيدروجراف", "أومومتر"], correct: 1 },
+            { q: "من هو مؤلف كتاب \"الثروة الوطنية\" الشهير في الاقتصاد الكلاسيكي؟", options: ["آدم سميث", "كارل ماركس", "جون ماينارد كينز", "ديفيد ريكاردو"], correct: 0 },
+            { q: "ما اسم العضو في العين الذي يمنحها اللون؟", options: ["العدسة", "القرنية", "الحدقة", "القزحية"], correct: 3 },
+            { q: "أي من هذه المواد يقع في الحالة الغازية عند درجة حرارة الغرفة؟", options: ["الحديد", "نيتروجين", "زجاج", "خشب"], correct: 1 },
+            { q: "ما اسم الأداة التي تُستخدم لرسم الخرائط الطبوغرافية عادة؟", options: ["البوصلة", "المنقلة", "الرافعة", "التراستر"], correct: 0 },
+            { q: "أي من هذه الرياضات تُلعب على الجليد باستخدام عصي وكرة أو قرص؟", options: ["الهوكي", "التنس", "كرة السلة", "الريشة الطائرة"], correct: 0 },
+            { q: "ما اسم الشيفرة الثنائية المستخدمة في الحوسبة؟", options: ["الديسمل", "الثنائي (باينري)", "العشري", "الهيكساديسمل"], correct: 1 },
+            { q: "ما اسم الشهيرة التي تُعطى للنجم الأقرب للأرض بعد الشمس؟", options: [" بروكسيما سنتوري", "سيريوس", "ألفا سنتوري", "بولاريس"], correct: 0 },
+            { q: "ما اسم المركب الكيميائي الذي يتكون من ذرتي هيدروجين وذرة أكسجين؟", options: ["ثاني أكسيد الكربون", "الماء", "الأمونيا", "الميثان"], correct: 1 },
+            { q: "ما اسم العملة الرسمية في اليابان؟", options: ["الين", "الدولار", "اليورو", "الجنيه"], correct: 0 },
+            { q: "أي من هذه الكواكب يدور حول محوره أسرع وقت؟", options: ["عطارد", "المشتري", "الزهرة", "الأرض"], correct: 1 },
+            { q: "ما اسم أكبر محيط في العالم؟", options: ["الأطلسي", "الهندي", "الهادئ", "المتجمد الشمالي"], correct: 2 },
+            { q: "من هو مؤلف \"ألف ليلة وليلة\" بالنسخة العربية المعروفة؟", options: ["مجهول/مجموعة من الحكائين", "جلجامش", "نجيب محفوظ", "ابن بطوطة"], correct: 0 },
+            { q: "ما اسم ذاك النبات الذي يستخدم في إنتاج السكر الأبيض التجاري أساسًا؟", options: ["القصب", "التفاح", "البطاطس", "الشعير"], correct: 0 },
+            { q: "ما اسم أول حاسوب إلكتروني رقمي عملي واسع الانتشار؟", options: ["إينياك", "آي بي إم 701", "آبل I", "كومودور 64"], correct: 0 },
+            { q: "أي من هذه الأجسام ليس مجرة؟", options: ["درب التبانة", "أندروميدا", "سحابة ماجلان الكبرى", "القمر"], correct: 3 },
+            { q: "ما اسم العملية التي تقوم بها النباتات لتحويل ضوء الشمس إلى طاقة كيميائية؟", options: ["التنفس الخلوي", "التمثيل الضوئي", "التخمر", "التحلل"], correct: 1 },
+            { q: "ما اسم القارة التي تضم أكثر دول العالم من حيث العدد؟", options: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الجنوبية"], correct: 0 },
+            { q: "أي من هذه الأطعمة مصدر غني بالبروتين النباتي؟", options: ["العدس", "السكر", "الزيت", "الخبز الأبيض"], correct: 0 },
+            { q: "ما اسم أقرب مجرة كبيرة إلى درب التبانة؟", options: ["مجرة السلحفاة", "أندروميدا", "مجرة الصياد", "مجرة المرأة المسلسلة"], correct: 1 },
+            { q: "من هو مخترع الهاتف كما يُنسب عادة؟", options: ["توماس إديسون", "ألكسندر غراهام بيل", "نيكولا تسلا", "غولييلمو ماركوني"], correct: 1 },
+            { q: "ما اسم مركبة الفضاء التي حملت أول إنسان إلى سطح القمر؟", options: ["أبولو 11", "المركبة الفضائية فوياجر", "سبوتنيك", "شاتل ديسكفري"], correct: 0 },
+            { q: "أي من هذه يمكن وصفه بأنه \"سائل غير نيوتوني\" عندما يتصرف كثيفًا وصلبًا تحت ضغط؟", options: ["الماء", "الطين", "محلول نشا الذرة والماء", "الزئبق"], correct: 2 },
+            { q: "ما اسم البحر الذي يفصل شبه الجزيرة العربية عن قارة أفريقيا؟", options: ["البحر الأحمر", "بحر قزوين", "البحر الأسود", "البحر المتوسط"], correct: 0 },
+            { q: "ما معنى كلمة \"أديم\" في المصطلحات الجغرافية؟", options: ["سطح الأرض", "باطن الأرض", "الماء", "الهواء"], correct: 0 },
+            { q: "أي من هذه الأعداد هو عدد القارات التقليدي؟", options: ["5", "6", "7", "8"], correct: 2 },
+            { q: "ما اسم أكثر المعادن وفرة في قشرة الأرض؟", options: ["الحديد", "الألومنيوم", "السيليكون", "الأوكسجين"], correct: 3 },
+            { q: "أي من هذه الرياضات تعتمد على جهاز يسمى \"الرافعة\" في الألعاب الأولمبية؟", options: ["الملاكمة", "رفع الأثقال", "الفروسية", "الغولف"], correct: 1 },
+            { q: "ما اسم الأثر الذي يظهر عندما يمر جرم سماوي أمام نجم ويخفض إضاءته بشكل دوري؟", options: ["كسوف", "اهتزاز", "عبور (Transit)", "انفجار"], correct: 2 },
+            { q: "ما اسم العالم الذي قدم النظرية النسبية العامة؟", options: ["نيوتن", "أينشتاين", "ماكسويل", "بور"], correct: 1 },
+            { q: "أي من هذه المواد يُستخدم عادةً في صناعة البطاريات القابلة لإعادة الشحن من نوع ليثيوم أيون؟", options: ["زنك", "ليثيوم", "ذهب", "نحاس"], correct: 1 },
+            { q: "ما اسم الصيغة الرياضية لمحيط الدائرة؟", options: ["2πr", "πr²", "r²", "πr"], correct: 0 },
+            { q: "أي من هذه الدول ليس لها حدود برية مع البحر؟", options: ["ليبيا", "تشاد", "مصر", "الجزائر"], correct: 1 },
+            { q: "ما اسم الجهاز الذي يحوّل الإشارات الكهربائية إلى صوت في الهاتف التقليدي؟", options: ["الميكروفون", "السماعة", "المحول", "الميكسر"], correct: 1 },
+            { q: "ما اسم العلم الذي يدرس سلوك المواد عند درجات حرارة منخفضة جداً؟", options: ["الكيمياء العضوية", "الديناميكا الحرارية", "الفيزياء الدقيقة", "الفيزياء منخفضة الحرارة (علم التبريد)"], correct: 3 },
+            { q: "أي من هذه الحيوانات يعتبر من الثدييات البحرية؟", options: ["قرش", "حوت", "سمك أبو سيف", "نجمة بحر"], correct: 1 },
+            { q: "ما اسم اللوحة الشهيرة التي رسمها ليوناردو دافنشي وتبتسم غموضًا؟", options: ["العشاء الأخير", "الموناليزا", "صرخة", "مدرسة أثينا"], correct: 1 },
+            { q: "أي من هذه الأجهزة يُستخدم لقياس التيار الكهربائي؟", options: ["فولتميتر", "أميتر", "أوم متر", "واط متر"], correct: 1 },
+            { q: "ما اسم أسرع حشرة طيران معروفة تقريبا؟", options: ["الذبابة", "الفراشة", "اليعسوب", "النحلة"], correct: 2 },
+            { q: "ما اسم الحالة التي تتحول فيها المادة من سائلة إلى صلبة؟", options: ["تبخر", "تجمد", "انصهار", "تأين"], correct: 1 },
+            { q: "أي من هذه الروايات كتبها غابرييل غارسيا ماركيز؟", options: ["الحاج أحمد", "مائة عام من العزلة", "الحرب والسلام", "الخيميائي"], correct: 1 },
+            { q: "ما اسم الطائر الذي يرمز إلى السلام في الثقافات الغربية؟", options: ["الصقر", "الحمامة", "النسر", "الغراب"], correct: 1 },
+            { q: "أي من هذه العمليات تُستخدم لتنقية الماء من الأملاح عبر تحولها إلى بخار ثم تكثيفها؟", options: ["الترشيح", "التناضح العكسي", "التحلية بالتقطير", "التبريد"], correct: 2 },
+            { q: "ما اسم أكبر جزيرة في البحر الأبيض المتوسط؟", options: ["صقلية", "كورسيكا", "سردينيا", "كريت"], correct: 0 },
+            { q: "أي من هذه المواد يُعد غازاً أثقل من الهواء ويُستخدم في بعض المصابيح؟", options: ["هيدروجين", "هيليوم", "أركون", "نتروجين"], correct: 2 },
+            { q: "ما اسم أسرع وسيلة نقل بحاليًا من بين التالية؟", options: ["القطار", "الطائرة", "الصاروخ", "السفينة"], correct: 2 },
+            { q: "أي من هذه الرياضات تُلعب في ملاعب دائرية باستخدام عصا ومضرب صغير وقضبان هدف؟", options: ["الكريكت", "كرة القدم", "الرجبي", "السلة"], correct: 0 },
+            { q: "ما اسم المادة التي تعطي الطماطم لونها الأحمر؟", options: ["كلوروفيل", "كاروتين", "لايكوبين", "أنثوسيانين"], correct: 2 },
+            { q: "أي من هذه الدول تُعد الأكبر من حيث عدد السكان؟", options: ["الولايات المتحدة", "الهند", "روسيا", "أستراليا"], correct: 1 },
+            { q: "ما اسم العضو الذي ينتج الأنسولين في جسم الإنسان؟", options: ["البنكرياس", "الكبد", "الطحال", "الكلية"], correct: 0 },
+            { q: "أي من هذه المواد يُستخدم كمذيب شائع في المختبرات العضوية؟", options: ["الماء", "الإيثانول", "البنزين", "جميع ما سبق (اعتمادًا على الذائبية)"], correct: 3 },
+            { q: "ما اسم أول دولة أطلقت حكماً ذاتياً لحقوق المرأة من بين الدول الغربية تقليديًا؟", options: ["السويد", "بريطانيا", "الولايات المتحدة", "فرنسا"], correct: 1 },
+            { q: "أي من هذه العمليات يُعتبر من طرق التكاثر اللاجنسي؟", options: ["الانقسام الثنائي", "الإخصاب", "التلقيح", "الانصهار"], correct: 0 },
+            { q: "ما اسم أعلى شلال في العالم؟", options: ["شلالات نياجرا", "شلال أنجل", "شلال إيغوازو", "شلال فيكتوريا"], correct: 1 },
+            { q: "أي من هذه العملات كانت تُستخدم في الإمبراطورية العثمانية؟", options: ["الريال", "الليرة", "الدراهم", "الدينار"], correct: 1 },
+            { q: "ما اسم الفرضية التي تقول بأن الأنواع تتطور عبر الانتقاء الطبيعي؟", options: ["نظرية النسبيات", "نظرية التطور", "قانون الجاذبية", "نظرية الكم"], correct: 1 },
+            { q: "أي من هذه الرياضات لا تدخل ضمن ألعاب القوى؟", options: ["رمي القرص", "الوثب العالي", "الجمباز", "سباق 100 متر"], correct: 2 },
+            { q: "ما اسم العضو في النبات الذي يمتص الماء والمعادن من التربة؟", options: ["الجذر", "الورقة", "الساق", "الزهرة"], correct: 0 },
+            { q: "أي من هذه البحيرات مالحـة جدا ويُغطى سطحها أحيانا بالبركة الملحية؟", options: ["بحيرة سوبيريور", "بحيرة المالحة الكبرى (Great Salt Lake)", "بحيرة بايكال", "بحيرة فيكتوريا"], correct: 1 },
+            { q: "ما اسم العالم الذي اكتشف الميكروبات المسببة للأمراض كما في ملاحظات التلوث؟", options: ["راسمول", "لويس باستور", "فلمنج", "فان هيولن"], correct: 1 },
+            { q: "ما اسم أقدم كتابة معروفة استُخدمت في بلاد الرافدين؟", options: ["الهيروغليفية", "المسمارية", "الأبجدية الفينيقية", "الصينية القديمة"], correct: 1 },
+            { q: "أي من هذه الأنهار يعتبر الأطول في أفريقيا؟", options: ["نهر النيل", "نهر الكونغو", "نهر النيجر", "نهر الزمبيزي"], correct: 0 },
+            { q: "ما اسم الأداة التي تُستخدم لمعرفة اتجاه الشمال؟", options: ["البوصلة", "المنقلة", "المقياس", "الرادار"], correct: 0 },
+            { q: "ما اسم أول من رسم خريطة العالم المعروفة باسم كتاب \"المصور\" في العصور الوسطى العربية؟", options: ["الإدريسي", "بطليموس", "الخوارزمي", "ابن بطوطة"], correct: 0 },
+            { q: "أي من هذه المعادن يُستخرج من خام يسمى \"بوكسيت\"؟", options: ["الحديد", "الالمنيوم", "النحاس", "الرصاص"], correct: 1 },
+            { q: "ما اسم أصغر ضلع في القفص الصدري للإنسان الذي ينبع من عظمة القص؟", options: ["الضلع الأول", "الضلع الرابع", "الضلع السابع", "الضلع الثاني"], correct: 0 },
+            { q: "ما نسبة البحار إلى اليابسة في الكرة الأرضية؟", options: ["50%", "60%", "70%", "80%"], correct: 2 },
+            { q: "ما عاصمة المناذرة؟", options: ["الحيرة", "الكوفة", "دمشق", "صنعاء"], correct: 0 },
+            { q: "ما وحدة قياس شدة التيار الكهربائي؟", options: ["واط", "أمبير", "فولت", "جول"], correct: 1 },
+            { q: "من أول من وضع النقاط على الحروف العربية؟", options: ["الخليل بن أحمد", "أبو الأسود الدؤلي", "سيبويه", "الكسائي"], correct: 1 },
+            { q: "ما أطول آية في القرآن الكريم؟", options: ["آية الدين", "آية الكرسي", "آية النور", "آية المباهلة"], correct: 0 },
+            { q: "من النبي الذي سأل رؤية ربه؟", options: ["عيسى عليه السلام", "نوح عليه السلام", "موسى عليه السلام", "إبراهيم عليه السلام"], correct: 2 },
+            { q: "أي من الكواكب يُسمى الكوكب الأزرق؟", options: ["الأرض", "المريخ", "الزهرة", "زحل"], correct: 0 },
+            { q: "كم عدد أركان الصلاة؟", options: ["10", "12", "14", "15"], correct: 2 },
+            { q: "من أول من جهر بالقرآن في مكة؟", options: ["أبو بكر الصديق", "عمر بن الخطاب", "عبد الله بن مسعود", "عثمان بن عفان"], correct: 2 },
+            { q: "ما اسم الغدة التي تفرز الأنسولين؟", options: ["البنكرياس", "الكبد", "الغدة الدرقية", "الغدة النخامية"], correct: 0 },
+            { q: "ما معنى اسم \"أحمد\"؟", options: ["كثير الحمد", "الشجاع", "الحكيم", "المكرم"], correct: 0 },
+            { q: "ما أول ما خلق الله؟", options: ["العرش", "اللوح", "الماء", "القلم"], correct: 0 },
+            { q: "ما أكبر قارات العالم سكانًا؟", options: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الجنوبية"], correct: 1 },
+            { q: "من هو أول من هاجر إلى المدينة من الصحابة؟", options: ["عمر بن الخطاب", "أبو بكر الصديق", "مصعب بن عمير", "حمزة بن عبد المطلب"], correct: 2 },
+            { q: "ما الحيوان الذي يُلقب بسفينة الصحراء؟", options: ["الجمل", "الحصان", "البغل", "الثور"], correct: 0 },
+            { q: "ما الدولة التي تُعرف ببلاد الرافدين؟", options: ["العراق", "اليمن", "سوريا", "مصر"], correct: 0 },
+            { q: "كم عدد سور القرآن الكريم المكية؟", options: ["70", "80", "86", "90"], correct: 2 },
+            { q: "من أول من صنف الحديث الصحيح؟", options: ["البخاري", "مسلم", "أبو داود", "الترمذي"], correct: 0 },
+            { q: "ما أسرع الطيور في العالم؟", options: ["الصقر الجوال", "النسر", "الغراب", "الطاووس"], correct: 0 },
+            { q: "كم عدد الخلفاء الراشدين؟", options: ["3", "4", "5", "6"], correct: 1 },
+            { q: "ما البحر الذي يفصل بين أوروبا وإفريقيا؟", options: ["البحر الأحمر", "البحر الأسود", "البحر المتوسط", "بحر قزوين"], correct: 2 },
+            { q: "من النبي الذي التقطه آل فرعون وهو رضيع؟", options: ["يوسف", "موسى", "عيسى", "هارون"], correct: 1 },
+            { q: "أي المعادن يُعتبر الأكثر توصيلًا للكهرباء؟", options: ["النحاس", "الفضة", "الألومنيوم", "الذهب"], correct: 1 },
+            { q: "ما عاصمة الأنباط؟", options: ["تيماء", "البتراء", "الكوفة", "بصرى"], correct: 1 },
+            { q: "من أول مؤذن في الإسلام؟", options: ["عبد الله بن مسعود", "بلال بن رباح", "أبو هريرة", "سعد بن أبي وقاص"], correct: 1 },
+            { q: "كم عدد أسماء الله الحسنى؟", options: ["99", "100", "101", "114"], correct: 0 },
+            { q: "ما الحيوان الذي إذا قطعت ذيله نبت مرة أخرى؟", options: ["السحلية", "القنفذ", "الأرنب", "الحرباء"], correct: 0 },
+            { q: "ما اسم أول كتاب نزل من السماء؟", options: ["الزبور", "التوراة", "الإنجيل", "القرآن"], correct: 1 },
+            { q: "ما اللغة التي نزل بها القرآن؟", options: ["العبرية", "السريانية", "العربية", "الفارسية"], correct: 2 },
+            { q: "ما أطول أنهار العالم؟", options: ["الأمازون", "النيل", "الميسيسيبي", "اليانغتسي"], correct: 1 },
+            { q: "من هو الصحابي الملقب بالفاروق؟", options: ["عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب", "الزبير بن العوام"], correct: 0 },
+            { q: "ما اسم القارة التي تُسمى القارة السوداء؟", options: ["أفريقيا", "آسيا", "أوروبا", "أستراليا"], correct: 0 },
+            { q: "كم عدد أركان الإيمان؟", options: ["4", "5", "6", "7"], correct: 2 },
+            { q: "من النبي الذي ابتلاه الله بالمرض فصبر؟", options: ["نوح", "أيوب", "يوسف", "يونس"], correct: 1 },
+            { q: "أي المعادن يُسمى الذهب الأسود؟", options: ["الفحم", "النفط", "الرصاص", "الغاز"], correct: 1 },
+            { q: "ما السورة التي فيها أطول كلمة في القرآن؟", options: ["الأعراف", "البقرة", "المائدة", "النور"], correct: 0 },
+            { q: "من هو خامس الخلفاء الراشدين بلقب العلماء؟", options: ["عمر بن عبد العزيز", "معاوية", "يزيد", "المأمون"], correct: 0 },
+            { q: "ما الحيوان الذي يعيش في الماء والبر؟", options: ["البطريق", "التمساح", "الفيل", "الأرنب"], correct: 1 },
+            { q: "أي الكواكب أقرب إلى الشمس؟", options: ["عطارد", "الزهرة", "الأرض", "المريخ"], correct: 0 },
+            { q: "من أول من خط بالقلم؟", options: ["إدريس عليه السلام", "نوح", "إبراهيم", "موسى"], correct: 0 },
+            { q: "ما السورة التي تُعرف بعروس القرآن؟", options: ["النحل", "الرحمن", "يس", "الملك"], correct: 1 },
+            { q: "ما اسم الغزوة التي سميت بالأحزاب؟", options: ["بدر", "أحد", "الخندق", "مؤتة"], correct: 2 },
+            { q: "ما اسم أول جبل وُضع في الأرض؟", options: ["أحد", "الطور", "أبي قبيس", "عرفات"], correct: 2 },
+            { q: "من الذي سمّي بالذبيح؟", options: ["إسماعيل", "إسحاق", "يوسف", "يعقوب"], correct: 0 },
+            { q: "ما السورة التي تسمى قلب القرآن؟", options: ["البقرة", "يس", "الفاتحة", "الكهف"], correct: 1 },
+            { q: "ما اسم الحشرة التي أمر النبي ﷺ بقتلها؟", options: ["الصرصور", "الوزغ", "الذباب", "النمل"], correct: 1 },
+            { q: "كم عدد أبواب المسجد النبوي أيام النبي ﷺ؟", options: ["2", "3", "4", "5"], correct: 1 },
+            { q: "من أول من لقب بأمير المؤمنين؟", options: ["أبو بكر", "عمر", "عثمان", "علي"], correct: 1 },
+            { q: "أي العبادات تُسمى جهاد النفس؟", options: ["الحج", "الصيام", "الزكاة", "الصلاة"], correct: 1 },
+            { q: "ما الدولة التي يمر بها خط الاستواء أكثر من غيرها؟", options: ["البرازيل", "مصر", "إندونيسيا", "كينيا"], correct: 0 },
+            { q: "ما اسم زوجة فرعون التي آمنت بموسى؟", options: ["مريم", "آسيا", "خديجة", "سارة"], correct: 1 },
+            { q: "من أول من أسلم من الصبيان؟", options: ["زيد بن حارثة", "علي بن أبي طالب", "الحسن بن علي", "عبد الله بن عباس"], correct: 1 },
+            { q: "ما العضو الذي يضخ الدم في جسم الإنسان؟", options: ["الكبد", "الرئة", "القلب", "الكلية"], correct: 2 },
+            { q: "كم عدد سور القرآن الكريم؟", options: ["112", "113", "114", "115"], correct: 2 },
+            { q: "من النبي الذي التقمه الحوت؟", options: ["نوح", "يونس", "أيوب", "عيسى"], correct: 1 },
+            { q: "ما الغاز الذي يتنفسه الإنسان للبقاء على قيد الحياة؟", options: ["الهيدروجين", "الأكسجين", "ثاني أكسيد الكربون", "النيتروجين"], correct: 1 },
+            { q: "ما الدولة التي تُعرف بأرض الكنغر؟", options: ["نيوزيلندا", "أستراليا", "الهند", "الصين"], correct: 1 },
+            { q: "من أول الخلفاء الراشدين؟", options: ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], correct: 0 },
+            { q: "ما أقصر سورة في القرآن الكريم؟", options: ["الكوثر", "العصر", "الفلق", "الناس"], correct: 0 },
+            { q: "من مخترع المصباح الكهربائي؟", options: ["جراهام بيل", "إديسون", "نيوتن", "باستير"], correct: 1 },
+            { q: "ما الحيوان الذي له ثلاثة قلوب؟", options: ["الأخطبوط", "التمساح", "السلحفاة", "الفيل"], correct: 0 },
+            { q: "كم عدد الصلوات المفروضة في اليوم والليلة؟", options: ["ثلاث", "أربع", "خمس", "ست"], correct: 2 },
+            { q: "من الذي بنى الكعبة مع إبراهيم؟", options: ["إسماعيل", "إسحاق", "يعقوب", "لوط"], correct: 0 },
+            { q: "ما العنصر الذي يرمز له بالرمز O؟", options: ["ذهب", "فضة", "أكسجين", "حديد"], correct: 2 },
+            { q: "من أول من آمن بالنبي ﷺ من النساء؟", options: ["عائشة", "خديجة", "فاطمة", "أم سلمة"], correct: 1 },
+            { q: "أي الكواكب له حلقات بارزة حوله؟", options: ["زحل", "المريخ", "عطارد", "نبتون"], correct: 0 },
+            { q: "ما السورة التي تبدأ بلفظ \"اقرأ\"؟", options: ["العلق", "البقرة", "الفاتحة", "النحل"], correct: 0 },
+            { q: "من الصحابي الملقب بسيف الله المسلول؟", options: ["خالد بن الوليد", "سعد بن أبي وقاص", "الزبير بن العوام", "طلحة بن عبيد الله"], correct: 0 },
+            { q: "ما اسم البحر الذي لا تجري فيه أي أنهار؟", options: ["البحر الأحمر", "البحر الأسود", "البحر المتوسط", "بحر قزوين"], correct: 0 },
+            { q: "من النبي الذي ولد من غير أب؟", options: ["موسى", "عيسى", "يوسف", "إسحاق"], correct: 1 },
+            { q: "ما الحيوان الذي يُعتبر أضخم حيوان على وجه الأرض؟", options: ["الحوت الأزرق", "الفيل", "القرش", "الزرافة"], correct: 0 },
+            { q: "من مؤسس علم الجبر؟", options: ["ابن سينا", "الخوارزمي", "الفارابي", "الرازي"], correct: 1 },
+            { q: "أي السور تُسمى أحيانًا المنجية؟", options: ["الملك", "يس", "الفاتحة", "الصافات"], correct: 0 },
+            { q: "ما الدولة التي يمر بها نهر النيل أولاً؟", options: ["أوغندا", "السودان", "مصر", "إثيوبيا"], correct: 0 },
+            { q: "من هو أول من جمع القرآن بين دفتين؟", options: ["عمر بن الخطاب", "أبو بكر الصديق", "عثمان بن عفان", "علي بن أبي طالب"], correct: 1 },
+            { q: "ما الغاز الذي يخرج من التنفس؟", options: ["الأكسجين", "ثاني أكسيد الكربون", "النيتروجين", "الهيدروجين"], correct: 1 },
+            { q: "من الصحابي الذي نام في فراش النبي ليلة الهجرة؟", options: ["علي بن أبي طالب", "حمزة بن عبد المطلب", "سعد بن أبي وقاص", "أنس بن مالك"], correct: 0 },
+            { q: "ما أقوى الحيوانات ذاكرة؟", options: ["الحصان", "الجمل", "الفيل", "الكلب"], correct: 2 },
+            { q: "ما السورة التي نزلت كاملة في مكة؟", options: ["الأنعام", "البقرة", "آل عمران", "النساء"], correct: 0 },
+            { q: "من هو مكتشف الجاذبية؟", options: ["نيوتن", "جاليليو", "أينشتاين", "باستير"], correct: 0 },
+            { q: "ما الكوكب الأحمر؟", options: ["المريخ", "عطارد", "الزهرة", "زحل"], correct: 0 },
+            { q: "من آخر الأنبياء والمرسلين؟", options: ["عيسى", "محمد ﷺ", "موسى", "يوسف"], correct: 1 },
+            { q: "ما أول سورة في القرآن الكريم؟", options: ["الفاتحة", "البقرة", "آل عمران", "الناس"], correct: 0 },
+            { q: "من هو أول خليفة أموي؟", options: ["معاوية بن أبي سفيان", "يزيد بن معاوية", "عبد الملك بن مروان", "الوليد بن عبد الملك"], correct: 0 },
+            { q: "ما العضو الذي يستهلك أكثر الأكسجين في الجسم؟", options: ["الكبد", "الدماغ", "القلب", "الرئة"], correct: 1 },
+            { q: "أي الصحابة دُفن بجوار النبي ﷺ وأبي بكر؟", options: ["عثمان", "عمر", "علي", "طلحة"], correct: 1 },
+            { q: "ما اسم أكبر صحراء في العالم؟", options: ["الربع الخالي", "الصحراء الكبرى", "صحراء جوبي", "صحراء كالهاري"], correct: 1 },
+            { q: "من مؤلف صحيح مسلم؟", options: ["مسلم بن الحجاج", "البخاري", "الترمذي", "النسائي"], correct: 0 },
+            { q: "ما المدينة التي بناها الإسكندر الأكبر؟", options: ["القاهرة", "الإسكندرية", "بغداد", "دمشق"], correct: 1 },
+            { q: "كم عدد الأسنان الدائمة عند الإنسان البالغ؟", options: ["28", "30", "32", "34"], correct: 2 },
+            { q: "من النبي الذي بشر به عيسى عليه السلام؟", options: ["نوح", "محمد ﷺ", "موسى", "داود"], correct: 1 },
+            { q: "ما العضو الذي يُنقّي الدم؟", options: ["الكلية", "الكبد", "الرئة", "الطحال"], correct: 0 },
+            { q: "من القائل: \"إذا الشعب يومًا أراد الحياة\"؟", options: ["أحمد شوقي", "أبو القاسم الشابي", "نزار قباني", "المتنبي"], correct: 1 },
+            { q: "ما السورة التي ورد فيها اسم هارون؟", options: ["طه", "يس", "الكهف", "الحجر"], correct: 0 },
+            { q: "من هو الصحابي الذي لقب بالصدّيق؟", options: ["عمر", "عثمان", "أبو بكر", "علي"], correct: 2 },
+            { q: "ما وحدة قياس القوة؟", options: ["فولت", "نيوتن", "جول", "واط"], correct: 1 },
+            { q: "من النبي الذي نزلت عليه التوراة؟", options: ["موسى", "عيسى", "داود", "إبراهيم"], correct: 0 },
+            { q: "ما اسم أصغر قارات العالم؟", options: ["أوروبا", "أستراليا", "أفريقيا", "أمريكا الجنوبية"], correct: 1 },
+            { q: "من الصحابي الملقب بذي النورين؟", options: ["عثمان بن عفان", "علي بن أبي طالب", "عبد الرحمن بن عوف", "طلحة"], correct: 0 },
+            { q: "ما هي سورة التوحيد؟", options: ["الفلق", "الإخلاص", "العصر", "الكوثر"], correct: 1 } // تم التعديل
+        ];
+
+        // تهيئة Firebase والمصادقة
+        async function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                await setPersistence(auth, browserLocalPersistence);
+
+                await new Promise(resolve => {
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                            userId = auth.currentUser.uid;
+                        } else {
+                            const anonymousUser = await signInAnonymously(auth);
+                            userId = anonymousUser.user.uid;
+                        }
+                        isAuthReady = true;
+                        await loadGameState();
+                        resolve();
+                    });
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                document.getElementById('loading').innerHTML = '<span class="text-red-400">فشل تحميل بيانات الحفظ، سيتم بدء لعبة جديدة.</span>';
+                // بدلاً من resetGame، سنقوم بتهيئة بسيطة بدون حفظ عند فشل التحميل
+                resetGame(false); 
+            }
+        }
+        
+        function getGameDataRef() {
+            return doc(db, `artifacts/${appId}/users/${userId}/game_data`, GAME_STATE_DOC_ID);
+        }
+
+        async function saveGameState() {
+            if (!isAuthReady || !db) return;
+
+            const gameState = {
+                openedBoxes: Array.from(openedBoxes),
+                correctAnswers: correctAnswers,
+                wrongAnswers: wrongAnswers,
+                remainingQuestionIndices: remainingQuestionIndices,
+                teamModeEnabled: teamModeEnabled, 
+                teamCount: teamCount,          
+                teams: teams,                  
+                currentTeamIndex: currentTeamIndex, 
+                lastUpdated: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(getGameDataRef(), gameState);
+            } catch (error) {
+                console.error("Error saving game state:", error);
+            }
+        }
+
+        async function loadGameState() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('boxesGrid').classList.add('opacity-0');
+
+            try {
+                const docRef = getGameDataRef();
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().remainingQuestionIndices.length <= MAX_TOTAL_BOXES) {
+                    const data = docSnap.data();
+                    openedBoxes = new Set(data.openedBoxes || []);
+                    correctAnswers = data.correctAnswers || 0;
+                    wrongAnswers = data.wrongAnswers || 0;
+                    remainingQuestionIndices = data.remainingQuestionIndices || []; 
+                    
+                    teamCount = data.teamCount || 0; 
+                    teamModeEnabled = teamCount > 1;
+                    teams = data.teams || [];
+                    currentTeamIndex = data.currentTeamIndex || 0;
+
+                    // التأكد من تهيئة الفرق إذا كان الوضع مفعلاً ولم يتم تهيئتها بعد
+                    if (teamModeEnabled && teams.length !== teamCount) {
+                        initTeams(teamCount);
+                    }
+                    
+                } else {
+                    resetGame(false);
+                    return;
+                }
+            } catch (error) {
+                console.error("Error loading game state:", error);
+                resetGame(false);
+                return; 
+            }
+            
+            applyLoadedStateToUI();
+            
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('boxesGrid').classList.remove('opacity-0');
+        }
+
+        function initTeams(count, shouldResetScores = true) {
+            teams = [];
+            for (let i = 0; i < count; i++) {
+                // عند تغيير عدد الفرق، يتم تصفير النقاط دائماً للفِرق الجديدة
+                teams.push({ id: i + 1, score: 0, name: `الفريق ${i + 1}` });
+            }
+            currentTeamIndex = 0;
+
+            // إذا كان وضع الفرق غير مفعل (count = 0)، نعيد تصفير النقاط العامة
+            if (count === 0 && shouldResetScores) {
+                correctAnswers = 0;
+                wrongAnswers = 0;
+            }
+        }
+
+        function resetGame(shouldSave = true) {
+            // إعادة تعيين حالة الصناديق والأسئلة فقط عند إعادة التشغيل الكاملة
+            openedBoxes.clear();
+            
+            // إعادة تعيين مصفوفة المؤشرات لـ 500 سؤال
+            remainingQuestionIndices = [...Array(MAX_TOTAL_BOXES).keys()];
+            shuffleArray(remainingQuestionIndices);
+
+            // يجب إعادة تعيين النقاط عند إعادة التشغيل الكاملة
+            correctAnswers = 0;
+            wrongAnswers = 0;
+
+            // إعادة تهيئة الفرق (نقاطها صفر)
+            initTeams(teamCount, false); 
+            teamModeEnabled = teamCount > 1; 
+
+            createBoxes(); 
+            updateStats();
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('boxesGrid').classList.remove('opacity-0');
+            
+            if (shouldSave) saveGameState(); 
+        }
+
+        // دالة جديدة لتطبيق إعدادات الفرق دون إعادة تعيين الصناديق
+        function applyTeamSettingsWithoutReset(newTeamCount, oldTeamCount) {
+            teamCount = newTeamCount;
+            teamModeEnabled = teamCount > 1;
+
+            if (newTeamCount === 0) {
+                // إذا تحول إلى وضع فردي، يتم تصفير النقاط العامة
+                correctAnswers = 0;
+                wrongAnswers = 0;
+                teams = [];
+                currentTeamIndex = 0;
+                showMessage('تم التحول إلى **الوضع الفردي**. تم تصفير النقاط الخاصة بالفرق.');
+            } else if (newTeamCount >= 2) {
+                // إذا تم تفعيل وضع الفرق، يتم تهيئة الفرق وتصفير نقاطها فقط
+                initTeams(newTeamCount);
+                showMessage(`تم تفعيل **وضع الفرق** بنجاح (${newTeamCount} فرق). تم تصفير نقاط الفرق لبدء تحدي جديد.`);
+            }
+
+            updateStats();
+            saveGameState();
+        }
+
+
+        function applyLoadedStateToUI() {
+            createBoxes();
+            const allBoxes = document.querySelectorAll('#boxesGrid > div');
+            
+            openedBoxes.forEach(boxNumber => {
+                const boxElement = allBoxes[boxNumber - 1];
+                if (boxElement) {
+                    // تحديث فئات الصندوق المفتوح
+                    boxElement.className = `
+                        w-full h-16 sm:h-16
+                        bg-gradient-to-br from-gray-500 to-gray-600
+                        rounded-xl shadow-md cursor-default
+                        flex items-center justify-center 
+                        text-gray-300 font-bold text-sm sm:text-base
+                        transform transition-all duration-300
+                        border border-gray-400
+                        opacity-60
+                    `;
+                    boxElement.onclick = null;
+                }
+            });
+            // تحديث حالة اختيار الفرق في الإعدادات
+            document.getElementById('teamCountSelect').value = teamCount.toString();
+            updateStats();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function resetBoxAppearance(boxNumber) {
+             const allBoxes = document.querySelectorAll('#boxesGrid > div');
+             const box = allBoxes[boxNumber - 1];
+             if (box) {
+                box.className = `
+                    w-full h-16 sm:h-16 
+                    bg-gradient-to-br from-slate-600 to-slate-700
+                    hover:from-slate-500 hover:to-slate-600
+                    hover:scale-105 hover:shadow-lg
+                    rounded-xl shadow-md cursor-pointer 
+                    flex items-center justify-center 
+                    text-white font-bold text-sm sm:text-base
+                    transform transition-all duration-300
+                    border border-slate-500
+                    box-hover
+                `;
+                box.onclick = () => openBox(boxNumber, box);
+                box.textContent = boxNumber;
+             }
+        }
+
+        function createBoxes() {
+            const grid = document.getElementById('boxesGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= MAX_TOTAL_BOXES; i++) {
+                const box = document.createElement('div');
+                
+                // تم تعديل أحجام الصناديق لتكون متناسبة وأكبر قليلاً مع تقليل المسافة
+                box.className = `
+                    w-full h-16 sm:h-16 
+                    bg-gradient-to-br from-slate-600 to-slate-700
+                    hover:from-slate-500 hover:to-slate-600
+                    hover:scale-105 hover:shadow-lg
+                    rounded-xl shadow-md cursor-pointer 
+                    flex items-center justify-center 
+                    text-white font-bold text-sm sm:text-base
+                    transform transition-all duration-300
+                    border border-slate-500
+                    box-hover
+                `;
+                
+                box.textContent = i;
+                box.onclick = () => openBox(i, box);
+                grid.appendChild(box);
+            }
+        }
+
+        function getRandomQuestion() {
+            if (remainingQuestionIndices.length === 0) {
+                return null;
+            }
+            const questionIndex = remainingQuestionIndices.pop(); 
+            return questionsDB[questionIndex];
+        }
+
+        function openBox(boxNumber, boxElement) {
+            // التحقق هنا يمنع فتح الصندوق إذا كان قد تمت الإجابة عليه بالفعل
+            if (openedBoxes.has(boxNumber)) {
+                showMessage(`الصندوق رقم ${boxNumber} مفتوح بالفعل.`);
+                return; 
+            }
+            if (boxNumber > questionsDB.length) {
+                showMessage("هذا الصندوق خارج نطاق الأسئلة المتاحة.");
+                return; 
+            }
+            
+            // نحتاج لحفظ رقم الصندوق الذي نفتحه حالياً في متغير مؤقت
+            const boxNumberElement = document.getElementById('boxNumber');
+            boxNumberElement.dataset.currentBox = boxNumber;
+
+
+            // تحديث فئات الصندوق لتبدو كـ "مفتوح مؤقتاً"
+            boxElement.className = `
+                w-full h-16 sm:h-16
+                bg-gradient-to-br from-gray-500 to-gray-600
+                rounded-xl shadow-md cursor-default
+                flex items-center justify-center 
+                text-gray-300 font-bold text-sm sm:text-base
+                transform transition-all duration-300
+                border border-gray-400
+                opacity-60
+            `;
+            
+            boxElement.textContent = boxNumber;
+            boxElement.onclick = null;
+
+            // الحصول على السؤال من قاعدة البيانات بناءً على رقم الصندوق 
+            const question = questionsDB[boxNumber - 1]; 
+            
+            if (question) {
+                // لا نضيفه إلى openedBoxes هنا، ننتظر الإجابة
+                showQuestionModal(boxNumber, question);
+            } else {
+                showMessage("حدث خطأ: السؤال غير موجود لهذا الصندوق.", false, closeModal);
+                resetBoxAppearance(boxNumber);
+            }
+        }
+
+        function showQuestionModal(boxNumber, question) {
+            currentQuestion = question;
+            selectedAnswer = null;
+            
+            document.getElementById('boxNumber').textContent = boxNumber;
+            document.getElementById('questionText').textContent = question.q;
+            
+            createOptions(question.options);
+            
+            document.getElementById('questionModal').classList.remove('hidden');
+            document.getElementById('questionModal').classList.add('flex');
+        }
+
+        function createOptions(options) {
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = `
+                    bg-white border-2 border-gray-200 rounded-lg p-4 cursor-pointer 
+                    hover:border-blue-400 hover:bg-blue-50 transition-all duration-300
+                    transform hover:scale-[1.02] option-button
+                `;
+                optionDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center ml-3 option-circle">
+                            <span class="text-gray-600 font-bold">${String.fromCharCode(65 + index)}</span>
+                        </div>
+                        <span class="text-gray-700 text-lg">${option}</span>
+                    </div>
+                `;
+                
+                optionDiv.onclick = () => selectOption(index, optionDiv);
+                container.appendChild(optionDiv);
+            });
+        }
+
+        function selectOption(index, element) {
+            const currentBoxNumber = parseInt(document.getElementById('boxNumber').dataset.currentBox);
+
+            document.querySelectorAll('.option-button').forEach(btn => btn.style.pointerEvents = 'none');
+            
+            selectedAnswer = index;
+            
+            const isCorrect = selectedAnswer === currentQuestion.correct;
+            
+            if (isCorrect) {
+                correctAnswers++;
+                if (teamModeEnabled && teams.length > 0) {
+                    teams[currentTeamIndex].score++;
+                }
+                createScreenFlash('success');
+                createFloatingText('ممتاز!', '#10b981');
+            } else {
+                wrongAnswers++;
+                createScreenFlash('error');
+                createFloatingText('خطأ!', '#ef4444');
+            }
+
+            // يتم وسم الصندوق كـ"مفتوح" وحذف السؤال من قائمة العشوائية هنا فقط بعد الإجابة
+            openedBoxes.add(currentBoxNumber);
+            const indexToRemove = remainingQuestionIndices.indexOf(currentBoxNumber - 1);
+            if (indexToRemove > -1) {
+                remainingQuestionIndices.splice(indexToRemove, 1);
+            }
+            
+            // تبديل دور الفريق
+            if (teamModeEnabled && teams.length > 0) {
+                currentTeamIndex = (currentTeamIndex + 1) % teams.length;
+                updateTeamTurn(); // تحديث الدور فوراً
+            }
+            
+            document.querySelectorAll('.option-button').forEach((btn, optionIndex) => {
+                btn.classList.remove('border-blue-500', 'bg-blue-100');
+                btn.querySelector('.option-circle').classList.remove('bg-blue-500', 'text-white');
+                
+                if (optionIndex === selectedAnswer && isCorrect) {
+                    btn.classList.add('border-green-500', 'bg-green-100', 'correct-answer');
+                    btn.querySelector('.option-circle').classList.add('bg-green-500', 'text-white');
+                    createCelebrationParticles(btn);
+                } else if (optionIndex === selectedAnswer && !isCorrect) {
+                    btn.classList.add('border-red-500', 'bg-red-100', 'wrong-answer');
+                    btn.querySelector('.option-circle').classList.add('bg-red-500', 'text-white');
+                } else if (optionIndex === currentQuestion.correct && !isCorrect) {
+                    setTimeout(() => {
+                        btn.classList.add('border-yellow-500', 'bg-yellow-100', 'show-correct');
+                        btn.querySelector('.option-circle').classList.add('bg-yellow-500', 'text-white');
+                    }, 300);
+                }
+            });
+            
+            updateStats();
+            saveGameState(); 
+        }
+
+        // --- تأثيرات بصرية وواجهة مستخدم ---
+
+        function createScreenFlash(type) {
+            const flash = document.createElement('div');
+            flash.className = type === 'success' ? 'success-flash' : 'error-flash';
+            document.body.appendChild(flash);
+            setTimeout(() => { if (flash.parentNode) { flash.parentNode.removeChild(flash); } }, 600);
+        }
+
+        function createFloatingText(text, color) {
+            const floatingText = document.createElement('div');
+            floatingText.className = 'floating-text';
+            floatingText.textContent = text;
+            floatingText.style.color = color;
+            floatingText.style.left = '50%';
+            floatingText.style.top = '40%';
+            floatingText.style.transform = 'translateX(-50%)';
+            document.body.appendChild(floatingText);
+            setTimeout(() => { if (floatingText.parentNode) { floatingText.parentNode.removeChild(floatingText); } }, 2000);
+        }
+
+        function createCelebrationParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'celebration-particle';
+                const angle = (i * 30) * Math.PI / 180;
+                const distance = 60 + Math.random() * 40;
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+                particle.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+                const colors = ['#fbbf24', '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(particle);
+                setTimeout(() => { if (particle.parentNode) { particle.parentNode.removeChild(particle); } }, 1500);
+            }
+        }
+        
+        function updateTeamTurn() {
+             if (teamModeEnabled && teams.length > 0) {
+                const currentTeamDisplay = document.getElementById('currentTeamDisplay');
+                currentTeamDisplay.textContent = teams[currentTeamIndex].name;
+                currentTeamDisplay.className = `font-bold text-xl md:text-3xl ${TEAM_COLORS[currentTeamIndex % TEAM_COLORS.length]} transition-colors duration-500 cursor-pointer`;
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('openedCount').textContent = openedBoxes.size;
+            document.getElementById('remainingCount').textContent = MAX_TOTAL_BOXES - openedBoxes.size;
+            document.getElementById('correctCount').textContent = correctAnswers;
+            document.getElementById('wrongCount').textContent = wrongAnswers;
+
+            const globalStatsContainer = document.getElementById('globalStatsContainer');
+            const teamStatsContainer = document.getElementById('teamStatsContainer');
+            const individualTeamScores = document.getElementById('individualTeamScores');
+            
+
+            if (teamModeEnabled && teams.length > 0) {
+                globalStatsContainer.classList.add('hidden');
+                teamStatsContainer.classList.remove('hidden');
+                individualTeamScores.innerHTML = '';
+                updateTeamTurn(); 
+
+                teams.forEach((team, index) => {
+                    const teamColorClass = TEAM_COLORS[index % TEAM_COLORS.length];
+                    
+                    const teamElement = document.createElement('div');
+                    teamElement.className = `
+                        bg-white/10 backdrop-blur-sm rounded-lg px-3 py-3
+                        text-white text-sm md:text-lg border ${index === currentTeamIndex ? 'border-yellow-500 ring-2 ring-yellow-300' : 'border-gray-700'}
+                        shadow-md transition-all duration-300 flex items-center justify-between space-x-3 flex-1 cursor-pointer
+                        min-w-[100px] sm:min-w-[120px]
+                    `;
+
+                    // نقر على منطقة الفريق لتغيير الدور
+                    teamElement.onclick = () => setCurrentTeam(index);
+
+                    teamElement.innerHTML = `
+                        <!-- Team Info and Score -->
+                        <div class="flex flex-col items-start space-y-1">
+                            <p class="${teamColorClass} font-bold text-lg leading-none">${team.name}</p>
+                            <p class="font-bold text-2xl text-white/90 leading-none">${team.score}</p>
+                        </div>
+                        
+                        <!-- Score Adjustment Buttons (Stacked on the left) -->
+                        <div class="flex flex-col items-center space-y-1">
+                            <!-- Up Arrow Button -->
+                            <button class="bg-green-500/80 hover:bg-green-600 p-1 rounded-full leading-none transition-transform duration-100 active:scale-90" onclick="event.stopPropagation(); adjustScoreManual(${index}, 1);">
+                                <!-- Up Arrow SVG -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                            </button>
+                            
+                            <!-- Down Arrow Button -->
+                            <button class="bg-red-500/80 hover:bg-red-600 p-1 rounded-full leading-none transition-transform duration-100 active:scale-90" onclick="event.stopPropagation(); adjustScoreManual(${index}, -1);">
+                                <!-- Down Arrow SVG -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                        </div>
+                    `;
+                    individualTeamScores.appendChild(teamElement);
+                });
+
+
+            } else {
+                globalStatsContainer.classList.remove('hidden');
+                teamStatsContainer.classList.add('hidden');
+            }
+
+
+            if (openedBoxes.size === MAX_TOTAL_BOXES) {
+                 setTimeout(() => {
+                    showMessage("لقد أكملت جميع الأسئلة! تهانينا.", false, resetGame);
+                 }, 1000); 
+            }
+
+            // تحديث قائمة الصناديق القابلة لإعادة التعيين
+            updateResetBoxSelect();
+            // تحديث قائمة التحكم بالفرق
+            // تم حذف دالة updateTeamControlOptions() لأنها لم تعد مطلوبة في التصميم الجديد
+        }
+
+        // --- دوال التحكم في النوافذ المنبثقة والرسائل ---
+
+        const questionModal = document.getElementById('questionModal');
+        const settingsModal = document.getElementById('settingsModal');
+        const messageModal = document.getElementById('messageModal');
+        const messageText = document.getElementById('messageText');
+        const messageCloseBtn = document.getElementById('messageCloseBtn');
+        const messageCancelBtn = document.getElementById('messageCancelBtn');
+        const teamCountSelect = document.getElementById('teamCountSelect');
+        const applyTeamSettingsBtn = document.getElementById('applyTeamSettingsBtn');
+        const resetBoxSelect = document.getElementById('resetBoxSelect');
+        const resetSelectedBoxBtn = document.getElementById('resetSelectedBoxBtn');
+        // تم حذف nextTeamSelect, scoreAdjustSelect, teamControlSection لأنها لم تعد مستخدمة في الإعدادات
+
+
+        function closeModal() {
+             const currentBoxNumber = parseInt(document.getElementById('boxNumber').dataset.currentBox);
+
+            // الشرط الأساسي: إذا لم يتم اختيار إجابة بعد
+            if (selectedAnswer === null && currentBoxNumber) {
+                
+                // 1. إزالة الصندوق من openedBoxes (لأنه لم يتم الإجابة عليه)
+                openedBoxes.delete(currentBoxNumber);
+
+                // 2. إعادة مؤشر السؤال إلى القائمة العشوائية (لأنه لم يُستهلك)
+                const questionIndex = currentBoxNumber - 1;
+                if (!remainingQuestionIndices.includes(questionIndex)) {
+                     remainingQuestionIndices.push(questionIndex);
+                }
+                
+                // 3. إعادة مظهر الصندوق إلى حالته المغلقة والقابلة للنقر
+                resetBoxAppearance(currentBoxNumber);
+
+                // 4. حفظ الحالة
+                saveGameState();
+            }
+
+            questionModal.classList.add('hidden');
+            questionModal.classList.remove('flex');
+            updateStats(); // تحديث الإحصائيات (خاصة عدد المتبقي/المفتوح)
+        }
+
+        function openSettingsModal() {
+            // تحديث حالة اختيار الفرق عند فتح الإعدادات
+            teamCountSelect.value = teamCount.toString();
+            updateResetBoxSelect(); // تحديث قائمة الصناديق المفتوحة
+            // تم حذف استدعاء updateTeamControlOptions() لأنه لم يعد مطلوباً
+            
+            settingsModal.classList.remove('hidden');
+            settingsModal.classList.add('flex');
+        }
+
+        function closeSettingsModal() {
+            settingsModal.classList.add('hidden');
+            settingsModal.classList.remove('flex');
+        }
+
+        // دالة عرض رسالة (بديل لـ alert) أو تأكيد (بديل لـ confirm)
+        function showMessage(message, isConfirm = false, onConfirm = () => {}, onCancel = () => {}) {
+            messageText.textContent = message;
+            messageCancelBtn.classList.add('hidden');
+            
+            messageCloseBtn.onclick = null;
+            messageCancelBtn.onclick = null;
+
+            if (isConfirm) {
+                messageCloseBtn.textContent = 'تأكيد';
+                messageCancelBtn.classList.remove('hidden');
+                
+                messageCloseBtn.onclick = () => {
+                    messageModal.classList.add('hidden');
+                    onConfirm();
+                };
+                messageCancelBtn.onclick = () => {
+                    messageModal.classList.add('hidden');
+                    onCancel();
+                };
+            } else {
+                messageCloseBtn.textContent = 'موافق';
+                messageCloseBtn.onclick = () => {
+                    messageModal.classList.add('hidden');
+                    onConfirm(); 
+                };
+            }
+            
+            messageModal.classList.remove('hidden');
+            messageModal.classList.add('flex');
+        }
+
+        // --- منطق الإعدادات المضافة ---
+
+        // تحديث القائمة المنسدلة للصناديق المفتوحة
+        function updateResetBoxSelect() {
+            resetBoxSelect.innerHTML = '<option value="">اختر رقم الصندوق...</option>';
+            
+            if (openedBoxes.size === 0) {
+                resetSelectedBoxBtn.disabled = true;
+                return;
+            }
+
+            const sortedBoxes = Array.from(openedBoxes).sort((a, b) => a - b);
+            
+            sortedBoxes.forEach(boxNumber => {
+                const option = document.createElement('option');
+                option.value = boxNumber;
+                option.textContent = `صندوق رقم ${boxNumber}`;
+                resetBoxSelect.appendChild(option);
+            });
+            
+            resetSelectedBoxBtn.disabled = false;
+        }
+
+
+        applyTeamSettingsBtn.onclick = () => {
+            const newTeamCount = parseInt(teamCountSelect.value);
+            const oldTeamCount = teamCount;
+
+            if (newTeamCount !== oldTeamCount) {
+                let confirmationMessage = '';
+                if (newTeamCount === 0) {
+                    confirmationMessage = 'هل أنت متأكد من التحول إلى **الوضع الفردي**؟ سيتم تصفير النقاط العامة ونقاط الفرق.';
+                } else if (oldTeamCount === 0) {
+                    confirmationMessage = `هل أنت متأكد من تفعيل **وضع الفرق (${newTeamCount} فرق)**؟ سيتم تصفير نقاط الفرق لبدء تحدي جديد.`;
+                } else {
+                    confirmationMessage = `هل أنت متأكد من تغيير عدد الفرق من ${oldTeamCount} إلى ${newTeamCount}؟ سيتم تصفير نقاط الفرق الحالية.`;
+                }
+
+                showMessage(
+                    confirmationMessage,
+                    true,
+                    () => {
+                        // نستخدم الدالة الجديدة لتطبيق التغيير دون إعادة تعيين الصناديق
+                        applyTeamSettingsWithoutReset(newTeamCount, oldTeamCount); 
+                        closeSettingsModal(); // إغلاق الإعدادات بعد التأكيد
+                    },
+                    () => {
+                        teamCountSelect.value = oldTeamCount.toString(); // إعادة القيمة القديمة إذا ألغى المستخدم
+                    }
+                );
+            } else {
+                closeSettingsModal();
+            }
+        };
+
+        // وظيفة فتح جميع الصناديق
+        function openAllBoxes() {
+            showMessage(
+                'هل أنت متأكد من أنك تريد فتح جميع الصناديق المتبقية؟ لا يمكن التراجع عن هذا الإجراء.',
+                true, // isConfirm
+                () => { // onConfirm
+                    const allBoxes = document.querySelectorAll('#boxesGrid > div');
+                    let boxesOpenedCount = 0;
+
+                    for (let i = 1; i <= MAX_TOTAL_BOXES; i++) {
+                        if (!openedBoxes.has(i)) {
+                            openedBoxes.add(i);
+                            boxesOpenedCount++;
+                            
+                            const boxElement = allBoxes[i - 1];
+                            boxElement.className = `
+                                w-full h-16 sm:h-16
+                                bg-gradient-to-br from-gray-500 to-gray-600
+                                rounded-xl shadow-md cursor-default
+                                flex items-center justify-center 
+                                text-gray-300 font-bold text-sm sm:text-base
+                                transform transition-all duration-300
+                                border border-gray-400
+                                opacity-60
+                            `;
+                            boxElement.onclick = null;
+                        }
+                    }
+                    
+                    if (boxesOpenedCount > 0) {
+                        remainingQuestionIndices = []; 
+                        updateStats();
+                        saveGameState();
+                        showMessage('تم فتح جميع الصناديق! يمكنك إعادة تشغيل اللعبة للبدء من جديد.');
+                    } else {
+                         showMessage('جميع الصناديق مفتوحة بالفعل.');
+                    }
+                    closeSettingsModal();
+                },
+                () => { // onCancel
+                    closeSettingsModal();
+                }
+            );
+        }
+
+        // الوظيفة الجديدة: إعادة تعيين صندوق محدد (جعله مغلقاً مجدداً)
+        function resetSelectedBox() {
+            const boxNumber = parseInt(resetBoxSelect.value);
+            const questionIndex = boxNumber - 1;
+
+            if (isNaN(boxNumber) || boxNumber < 1 || boxNumber > MAX_TOTAL_BOXES) {
+                showMessage(`الرجاء اختيار صندوق صحيح من القائمة.`);
+                return;
+            }
+            
+            // 1. إزالة الصندوق من مجموعة الصناديق المفتوحة (المجيب عليها)
+            openedBoxes.delete(boxNumber);
+            
+            // 2. إعادة مؤشر السؤال إلى قائمة الأسئلة العشوائية (إذا لم يكن موجوداً)
+            if (remainingQuestionIndices.indexOf(questionIndex) === -1) {
+                 remainingQuestionIndices.push(questionIndex);
+            }
+            
+            // 3. إعادة شكل الصندوق إلى حالته المغلقة على الشبكة
+            resetBoxAppearance(boxNumber);
+
+            // 4. حفظ الحالة وتحديث الواجهة (بدون إغلاق الإعدادات أو طلب تأكيد)
+            updateStats();
+            saveGameState();
+            
+            // تلميح للمستخدم بأن العملية نجحت دون إخراجه من القائمة
+            const statusMessage = document.createElement('p');
+            statusMessage.textContent = `✓ تم إعادة تعيين الصندوق ${boxNumber}`;
+            statusMessage.className = 'text-green-600 text-sm mt-2 text-right';
+            
+            // إظهار الرسالة أسفل الزر لبضع ثوان
+            const resetContainer = resetBoxSelect.closest('.pt-4');
+            const existingStatus = resetContainer.querySelector('.text-green-600');
+            if (existingStatus) { existingStatus.remove(); }
+            resetContainer.appendChild(statusMessage);
+            setTimeout(() => statusMessage.remove(), 3000); 
+
+            // إعادة تعيين القائمة وتحديثها
+            resetBoxSelect.value = '';
+            resetSelectedBoxBtn.disabled = true;
+        }
+
+        // الوظيفة: تعيين الدور يدوياً (عبر النقر على الفريق في الإحصائيات)
+        function setCurrentTeam(index) {
+            if (teamModeEnabled && teams.length > 0) {
+                currentTeamIndex = index;
+                updateStats();
+                saveGameState();
+            }
+        }
+        
+        // الوظيفة: تعديل النقاط يدوياً (عبر الأزرار المباشرة)
+        function adjustScoreManual(index, adjustment) {
+            if (teamModeEnabled && teams.length > 0 && index >= 0 && index < teams.length) {
+                teams[index].score = Math.max(0, teams[index].score + adjustment); // النقاط لا تقل عن صفر
+                updateStats();
+                saveGameState();
+                // تلميح للنجاح
+                const adjustmentText = adjustment > 0 ? `+${adjustment}` : adjustment;
+                createFloatingText(`${teams[index].name} ${adjustmentText}`, adjustment > 0 ? '#10b981' : '#ef4444');
+            }
+        }
+
+        // ربط دالة التحكم بالنقر المباشر خارج نطاق الموديول
+        window.setCurrentTeam = setCurrentTeam;
+        window.adjustScoreManual = adjustScoreManual;
+
+
+        // وظيفة تصفير الإحصائيات العامة (الصحيحة/الخاطئة)
+        document.getElementById('resetGeneralScoresBtn').onclick = () => {
+            showMessage(
+                'هل أنت متأكد من مسح جميع الإحصائيات العامة (الإجابات الصحيحة/الخاطئة)؟',
+                true,
+                () => {
+                    correctAnswers = 0;
+                    wrongAnswers = 0;
+                    updateStats();
+                    saveGameState();
+                    showMessage('تم مسح الإحصائيات العامة بنجاح.');
+                }
+            );
+        };
+
+
+        // --- معالجات الأحداث العامة ---
+
+        document.getElementById('openSettingsBtn').onclick = openSettingsModal;
+        document.getElementById('closeSettingsModalBtn').onclick = closeSettingsModal;
+
+        document.getElementById('openAllBoxesBtn').onclick = openAllBoxes;
+        document.getElementById('resetSelectedBoxBtn').onclick = resetSelectedBox;
+
+        // تفعيل زر الإعادة عند اختيار صندوق من القائمة المنسدلة
+        resetBoxSelect.onchange = function() {
+            resetSelectedBoxBtn.disabled = !this.value;
+        };
+
+
+        document.getElementById('closeQuestionModal').onclick = closeModal;
+        document.getElementById('closeModalBtn').onclick = closeModal;
+
+        // منطق "صندوق آخر" العشوائي
+        document.getElementById('nextQuestionBtn').onclick = function() {
+            closeModal();
+            
+            const closedBoxNumbers = [];
+            for (let i = 1; i <= MAX_TOTAL_BOXES; i++) {
+                if (!openedBoxes.has(i)) {
+                    closedBoxNumbers.push(i);
+                }
+            }
+
+            if (closedBoxNumbers.length > 0) {
+                const randomIndex = Math.floor(Math.random() * closedBoxNumbers.length);
+                const randomBoxNumber = closedBoxNumbers[randomIndex];
+                
+                const allBoxes = document.querySelectorAll('#boxesGrid > div');
+                const boxElement = allBoxes[randomBoxNumber - 1];
+                
+                openBox(randomBoxNumber, boxElement);
+            } else {
+                 showMessage("لا توجد صناديق مغلقة متبقية.");
+            }
+        };
+
+        // إغلاق النوافذ عند النقر على الخلفية
+        [questionModal, settingsModal, messageModal].forEach(modal => {
+            modal.onclick = function(e) {
+                const contentSelector = '.question-card, .settings-card, .message-card';
+                const modalContent = modal.querySelector(contentSelector);
+                if (e.target === this || (modalContent && !modalContent.contains(e.target))) {
+                    if (modal.id === 'questionModal') closeModal();
+                    else if (modal.id === 'settingsModal') closeSettingsModal();
+                    else if (modal.id === 'messageModal') messageModal.classList.add('hidden');
+                }
+            };
+        });
+
+        // بدء اللعبة
+        initFirebase();
+    </script>
+</body>
+</html>
