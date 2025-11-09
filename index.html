@@ -494,8 +494,8 @@
         <!-- إطار التضمين -->
         <!-- *** إصلاح: هذا هو التعديل الأخير لضمان ملء الشاشة *** -->
         <!-- استخدام `flex-1` على `main` و `h-full` على `iframe` داخل حاوية `flex` -->
-        <main class="flex-1"> <!-- تم التغيير من flex-grow -->
-            <iframe id="remote-iframe" src="about:blank" class="w-full h-full border-none"></iframe> <!-- تم الإبقاء على h-full -->
+        <main class="flex-1 relative"> <!-- *** الإصلاح: إضافة relative *** -->
+            <iframe id="remote-iframe" src="about:blank" class="absolute top-0 left-0 w-full h-full border-none"></iframe> <!-- *** الإصلاح: إضافة absolute *** -->
         </main>
     </div>
 
