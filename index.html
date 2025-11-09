@@ -498,6 +498,7 @@
         </header>
         
         <!-- إطار التضمين -->
+        <!-- *** إصلاح: إضافة flex-grow لضمان تمدد الإطار *** -->
         <main class="flex-grow">
             <iframe id="remote-iframe" src="about:blank" class="w-full h-full border-none"></iframe>
         </main>
@@ -815,7 +816,7 @@
                 }
             });
 
-            // ربط أحداث النقر على جميع أزرار "سياسة الاستخدام" (مع تحديث التاريخ)
+            // ربط أحداث النقر على جميع أزرار "سياسة الاستخدام" (الموجودة في التذييلات)
             policyButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault(); // منع الرابط من القفز (#)
