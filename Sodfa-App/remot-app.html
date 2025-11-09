@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاشة الإجابات التفاعلية</title>
+    <!-- Google Fonts for a nice look --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Basic styles for the body and to reset margins */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Cairo', sans-serif; /* Using a modern Arabic font */
+            overflow: hidden; /* Prevent scrollbars */
+            background-color: #121212;
+        }
+
+        /* The main display screen that will be colored */
+        #mainScreen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #121212; /* A dark, modern background color */
+            color: white;
+            /* Aesthetic transition for color changes within the animation */
+            transition: background-color 0.08s ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Timer display style */
+        #timer {
+            font-size: 30vw; /* Very large font size for visibility */
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Add a shadow to the text */
+            user-select: none; /* Prevent text selection */
+            position: relative; /* Needed for glitch effect */
+        }
+
+        /* Static color states for after the animation */
+        #mainScreen.correct {
+            background-color: #28a745; /* Green */
+        }
+
+        #mainScreen.incorrect {
+            background-color: #dc3545; /* Red */
+        }
+        
+        /* Flashing animation for when time is up */
+        @keyframes flashBlackAndWhite {
+            0%, 100% { background-color: #121212; color: white; } /* Black */
+            25% { background-color: #ffffff; color: black; } /* White */
+            50% { background-color: #121212; color: white; } /* Black */
+            75% { background-color: #ffffff; color: black; } /* White */
+        }
+
+        #mainScreen.times-up {
+            animation: flashBlackAndWhite 0.5s 4; /* Flash rapidly for 2 seconds */
+        }
+        
+        /* --- VISUAL EFFECTS --- */
+        
+        /* Keyframe for screen shake */
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* Effect for CORRECT answer: Flashes then short hold */
+        @keyframes flashAndGlow {
+            0% { background-color: #121212; }
+            10% { background-color: #dc3545; }
+            20% { background-color: #28a745; }
+            30% { background-color: #dc3545; }
+            40% { background-color: #28a745; }
+            50% { background-color: #dc3545; }
+            60% { background-color: #28a745; }
+            70% { background-color: #dc3545; }
+            80% { background-color: #28a745; }
+            90%, 100% { background-color: #28a745; box-shadow: inset 0 0 100px 30px rgba(255,255,255,0.3); } /* Final green with glow, short hold */
+        }
+        .effect-flash-glow { animation: flashAndGlow 2.2s forwards; }
+
+        /* Effect for INCORRECT answer: Flashes then short hold */
+        @keyframes flashAndShake {
+            0% { background-color: #121212; transform: translate(0, 0); }
+            10% { background-color: #28a745; }
+            20% { background-color: #dc3545; }
+            30% { background-color: #28a745; }
+            40% { background-color: #dc3545; }
+            50% { background-color: #28a745; }
+            60% { background-color: #dc3545; }
+            70% { background-color: #dc3545; transform: translate(-3px, 0px) rotate(1deg); }
+            80% { background-color: #dc3545; transform: translate(3px, 2px) rotate(0deg); }
+            90% { background-color: #dc3545; transform: translate(-1px, 2px) rotate(-1deg); }
+            100% { background-color: #dc3545; transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .effect-flash-shake { animation: flashAndShake 2.2s forwards; }
+
+
+        /* Container for control buttons */
+        .controls {
+            position: fixed;
+            bottom: 20px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 1200px;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            align-items: center;
+            gap: 15px; 
+            z-index: 2; 
+            background-color: rgba(0, 0, 0, 0.3); 
+            border-radius: 15px;
+            transition: opacity 0.4s ease, transform 0.4s ease; 
+        }
+
+        .controls.hidden {
+            opacity: 0;
+            transform: translate(-50%, 150%); 
+            pointer-events: none; 
+        }
+
+        /* Button styling */
+        .btn {
+            flex-grow: 1; 
+            padding: 15px 20px;
+            font-size: 24px; /* Increased font size for emojis */
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            min-width: 100px; /* Adjusted min-width */
+        }
+
+        .btn:hover {
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98); 
+        }
+
+        #greenButton {
+            background: linear-gradient(45deg, #28a745, #218838);
+        }
+
+        #redButton {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+        
+        #startButton {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+        }
+
+        #resetButton {
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+        }
+        
+        #musicButton {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+        }
+
+        /* Styling for the timer input and checkbox containers */
+        .timer-input-container, .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #ccc;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #timeInput {
+            width: 70px;
+            font-size: 20px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            border: none;
+            background: transparent;
+            color: white;
+            border-bottom: 2px solid #007bff;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        
+        #musicWithTimerCheckbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        #toggleButtonContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 3; 
+        }
+
+        #toggleControlsBtn {
+            width: 60px;
+            height: 60px;
+            font-size: 28px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #toggleControlsBtn:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* --- NEW: Help Button --- */
+        #helpButton {
+            position: fixed;
+            top: 20px;
+            left: 20px; /* Top-left for RTL */
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        #helpButton:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* --- NEW: Help Modal --- */
+        .modal-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #2a2a2a;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            left: 20px; /* Top-left for RTL */
+            font-size: 30px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .modal-close-btn:hover {
+            color: white;
+        }
+        .modal-content h2 {
+            text-align: center;
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .help-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .help-table th, .help-table td {
+            padding: 12px;
+            border-bottom: 1px solid #444;
+            text-align: right;
+        }
+        .help-table th {
+            background-color: #333;
+        }
+        .help-table kbd { /* Style for key buttons */
+            background-color: #444;
+            border: 1px solid #666;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: monospace;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="mainScreen">
+        <div id="timer">10</div>
+    </div>
+
+    <!-- NEW: Help Button -->
+    <button id="helpButton">❓</button>
+
+    <!-- NEW: Help Modal -->
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal-content">
+            <span id="closeModalBtn" class="modal-close-btn">&times;</span>
+            <h2>دليل الاختصارات</h2>
+            <table class="help-table">
+                <thead>
+                    <tr>
+                        <th>الوظيفة</th>
+                        <th>الاختصار</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>إجابة صحيحة</td>
+                        <td><kbd>↑</kbd> أو <kbd>G</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>إجابة خاطئة</td>
+                        <td><kbd>↓</kbd> أو <kbd>R</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>بدء / إيقاف / استئناف المؤقت</td>
+                        <td><kbd>Spacebar</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>إعادة تعيين</td>
+                        <td><kbd>Escape</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>تشغيل / إيقاف الموسيقى</td>
+                        <td><kbd>M</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>إخفاء / إظهار القائمة</td>
+                        <td><kbd>Shift</kbd></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="backgroundMusic" src="https://github.com/Abo3bdallah/my-saond/raw/refs/heads/main/totr.m4a" loop></audio>
+    <audio id="correctSound" src="https://github.com/Abo3bdallah/my-saond/raw/refs/heads/main/tro.m4a"></audio>
+    <audio id="incorrectSound" src="https://github.com/Abo3bdallah/my-saond/raw/refs/heads/main/rong.m4a"></audio>
+
+    <div class="controls">
+        <button id="greenButton" class="btn">✅</button>
+        <button id="redButton" class="btn">❌</button>
+        <button id="startButton" class="btn">▶️</button>
+        <button id="resetButton" class="btn">🔄</button>
+        <button id="musicButton" class="btn">🎵</button>
+        <div class="timer-input-container">
+            <label for="timeInput">الوقت:</label>
+            <input type="number" id="timeInput" value="10" min="1">
+        </div>
+        <div class="checkbox-container">
+            <input type="checkbox" id="musicWithTimerCheckbox" checked>
+            <label for="musicWithTimerCheckbox">ربط الصوت</label>
+        </div>
+    </div>
+
+    <div id="toggleButtonContainer">
+        <button id="toggleControlsBtn" title="إخفاء/إظهار القائمة">👁️</button>
+    </div>
+
+    <script>
+        // Accessing page elements
+        const mainScreen = document.getElementById('mainScreen');
+        const timerDisplay = document.getElementById('timer');
+        const greenButton = document.getElementById('greenButton');
+        const redButton = document.getElementById('redButton');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const timeInput = document.getElementById('timeInput');
+        const controlsContainer = document.querySelector('.controls');
+        const toggleControlsBtn = document.getElementById('toggleControlsBtn');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const correctSound = document.getElementById('correctSound');
+        const incorrectSound = document.getElementById('incorrectSound');
+        const musicButton = document.getElementById('musicButton');
+        const musicWithTimerCheckbox = document.getElementById('musicWithTimerCheckbox');
+
+        // NEW: Help Modal Elements
+        const helpButton = document.getElementById('helpButton');
+        const helpModal = document.getElementById('helpModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        let timeLeft = parseInt(timeInput.value, 10);
+        let timerInterval;
+        let audioCtx;
+        let isAnimating = false;
+        let isTimerRunning = false;
+        let isMusicPlaying = false;
+
+        function playSound(type) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            const soundMap = {
+                timeout: { gain: 0.3, type: 'triangle', freq: 329.63, dur: 0.8 },
+                tick: { gain: 0.1, type: 'sine', freq: 1000, dur: 0.1 }
+            };
+            const s = soundMap[type];
+            if (!s) return;
+
+            gainNode.gain.setValueAtTime(s.gain, audioCtx.currentTime);
+            oscillator.type = s.type;
+            oscillator.frequency.setValueAtTime(s.freq, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + s.dur);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + s.dur);
+        }
+
+        function updateTimer() {
+            timerDisplay.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isTimerRunning = false;
+                backgroundMusic.pause();
+                mainScreen.classList.add('times-up');
+                playSound('timeout');
+                setTimeout(() => mainScreen.classList.remove('times-up'), 2000);
+            } else {
+                playSound('tick');
+                timeLeft--;
+            }
+        }
+        
+        function resetMainScreen() {
+            mainScreen.className = '';
+            mainScreen.style.animation = '';
+            mainScreen.style.backgroundColor = '';
+        }
+
+        function stopTimerAndMusic() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isTimerRunning = false;
+            if (musicWithTimerCheckbox.checked) {
+                 backgroundMusic.pause();
+            }
+        }
+
+        greenButton.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            resetMainScreen();
+            stopTimerAndMusic();
+            
+            mainScreen.classList.add('effect-flash-glow');
+            setTimeout(() => { 
+                mainScreen.className = 'correct'; 
+                correctSound.currentTime = 0;
+                correctSound.play();
+                isAnimating = false; 
+            }, 2200);
+        });
+
+        redButton.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            resetMainScreen();
+            stopTimerAndMusic();
+            
+            mainScreen.classList.add('effect-flash-shake');
+            setTimeout(() => { 
+                mainScreen.className = 'incorrect'; 
+                incorrectSound.currentTime = 0;
+                incorrectSound.play();
+                isAnimating = false; 
+            }, 2200);
+        });
+        
+        startButton.addEventListener('click', () => {
+            if (timerInterval || isAnimating) return; 
+            resetMainScreen();
+            timeLeft = parseInt(timeInput.value, 10);
+            timerDisplay.textContent = timeLeft;
+            isTimerRunning = true;
+            timerInterval = setInterval(updateTimer, 1000);
+
+            if (musicWithTimerCheckbox.checked) {
+                backgroundMusic.currentTime = 0;
+                backgroundMusic.play().catch(error => console.error("Audio play failed:", error));
+            }
+            
+            // Automatically hide controls on start
+            controlsContainer.classList.add('hidden');
+        });
+
+        resetButton.addEventListener('click', () => {
+            resetMainScreen();
+            stopTimerAndMusic();
+            timeLeft = parseInt(timeInput.value, 10);
+            timerDisplay.textContent = timeLeft;
+            isAnimating = false;
+        });
+        
+        musicButton.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicButton.textContent = '🎵';
+            } else {
+                backgroundMusic.play().catch(error => console.error("Audio play failed:", error));
+                musicButton.textContent = '🔇';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+
+        timeInput.addEventListener('change', () => {
+            if (!timerInterval && !isAnimating) {
+                timeLeft = parseInt(timeInput.value, 10);
+                timerDisplay.textContent = timeLeft;
+            }
+        });
+
+        toggleControlsBtn.addEventListener('click', () => {
+            controlsContainer.classList.toggle('hidden');
+        });
+
+        // --- NEW: Help Modal Logic ---
+        helpButton.addEventListener('click', () => {
+            helpModal.style.display = 'flex';
+        });
+        closeModalBtn.addEventListener('click', () => {
+            helpModal.style.display = 'none';
+        });
+        // Close modal if user clicks on the overlay (outside the content)
+        helpModal.addEventListener('click', (event) => {
+            if (event.target === helpModal) {
+                helpModal.style.display = 'none';
+            }
+        });
+
+
+        window.addEventListener('keydown', (event) => {
+            const keyMap = {
+                'ArrowUp': greenButton, 'g': greenButton, 'G': greenButton,
+                'ArrowDown': redButton, 'r': redButton, 'R': redButton,
+                'Escape': resetButton,
+                'Shift': toggleControlsBtn,
+                'm': musicButton, 'M': musicButton
+            };
+            const button = keyMap[event.key];
+            if (button) {
+                button.click();
+            }
+
+            // Handle spacebar separately for start/pause/resume functionality
+            if (event.key === ' ') {
+                event.preventDefault();
+                if (isTimerRunning) {
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        backgroundMusic.pause();
+                    } else {
+                        timerInterval = setInterval(updateTimer, 1000);
+                        if (musicWithTimerCheckbox.checked || isMusicPlaying) {
+                             backgroundMusic.play().catch(error => console.error("Audio play failed:", error));
+                        }
+                    }
+                } else {
+                    startButton.click();
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>
