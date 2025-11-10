@@ -192,9 +192,9 @@
     <!-- ======================= -->
     <!--  شاشة الموافقة (تُستدعى الآن عند الضغط على الرابط)  -->
     <!-- (style="display: none;" لإخفائها افتراضياً) -->
-    <!-- (تعديل) زيادة z-index ليظهر فوق شاشة المصادقة -->
+    <!-- (إصلاح) تمت زيادة z-index إلى 120 ليظهر فوق شاشة الضيف -->
     <!-- ======================= -->
-    <div id="terms-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75 
+    <div id="terms-modal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black bg-opacity-75 
                                 opacity-0 transition-opacity duration-300" style="display: none;">
         <!-- تم إضافة كلاسات الوضع الليلي - تم التغيير إلى zinc -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1.2 max-w-3xl overflow-hidden 
@@ -359,6 +359,20 @@
                     <strong class="text-red-600 dark:text-red-400">لن تتمكن</strong>
                     من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية.
                 </p>
+
+                <!-- (جديد) حقل الموافقة على الشروط للضيف -->
+                <div id="guest-terms-field" class="mb-6">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="guest-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
+                        <label for="guest-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
+                            <button type="button" id="btn-show-terms-from-guest" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- (جديد) رسالة الخطأ للضيف -->
+                <div id="guest-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
+
                 <div class="flex flex-col gap-4">
                     <button id="btn-guest-continue" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
                         المتابعة كضيف
@@ -501,7 +515,7 @@
         <header class="flex justify-between items-center mb-12">
             <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">أدوات المقدم</h2>
             <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
-                العودة للرئيسية
+                العودة للRئيسية
             </button>
         </header>
 
@@ -670,8 +684,8 @@
 
     <!-- صفحة أداة ريموت (المدمجة) -->
     <div id="page-tool-remote" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -686,8 +700,8 @@
     
     <!-- (جديد) صفحة أداة صدفة -->
     <div id="page-tool-sodfa" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -702,8 +716,8 @@
     
     <!-- (جديد) صفحة أداة صناديق الأسئلة -->
     <div id="page-tool-questions" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -718,8 +732,8 @@
     
     <!-- (جديد) صفحة أداة حروف رحال -->
     <div id="page-tool-letters" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -734,8 +748,8 @@
     
     <!-- (جديد) صفحة لعبة خزنة ربان -->
     <div id="page-game-captain" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -750,8 +764,8 @@
 
     <!-- (جديد) صفحة لعبة حرب البحار -->
     <div id="page-game-seawar" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -766,8 +780,8 @@
     
     <!-- (جديد) صفحة لعبة الترتيب العاشر -->
     <div id="page-game-topten" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -782,8 +796,8 @@
     
     <!-- (جديد) صفحة لعبة فكر تربح -->
     <div id="page-game-thinkwin" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -798,8 +812,8 @@
     
     <!-- (جديد) صفحة لعبة مين الملقوف -->
     <div id="page-game-malkoof" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -814,8 +828,8 @@
     
     <!-- (جديد) صفحة لعبة مافيا -->
     <div id="page-game-mafia" class="page min-h-screen page-iframe-container">
-        <!-- (جديد) زر الخروج العائم (للجوال والكمبيوتر) -->
-        <button class="btn-close-iframe flex items-center justify-center 
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
                        fixed top-6 left-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
@@ -951,6 +965,11 @@
             const guestWarningModal = document.getElementById('guest-warning-modal');
             const btnGuestContinue = document.getElementById('btn-guest-continue');
             const btnGuestGoBackToLogin = document.getElementById('btn-guest-go-back-to-login');
+            // (جديد) عناصر شروط الضيف
+            const guestTermsCheckbox = document.getElementById('guest-terms-agree');
+            const btnShowTermsFromGuest = document.getElementById('btn-show-terms-from-guest');
+            const guestError = document.getElementById('guest-error');
+
 
             // عناصر القائمة الجانبية
             const btnOpenSidebar = document.getElementById('btn-open-sidebar');
@@ -1076,15 +1095,21 @@
                 setTimeout(() => {
                     termsModal.style.display = 'none';
                 }, 300); // مطابقة مدة الانتقال
-                authTermsCheckbox.checked = true; // (جديد) تفعيل الموافقة
+                authTermsCheckbox.checked = true; // تفعيل موافقة إنشاء الحساب
+                guestTermsCheckbox.checked = true; // (جديد) تفعيل موافقة الضيف
             });
             
-            // (جديد) زر فتح الشروط من داخل شاشة المصادقة
-            btnShowTermsFromAuth.addEventListener('click', () => {
+            // (جديد) دالة لفتح نافذة الشروط
+            function openTermsModal() {
                 termsModal.style.display = 'flex'; // (تعديل) إظهار
                 void termsModal.offsetWidth; // Trigger reflow
                 termsModal.classList.remove('opacity-0'); // (تعديل) استخدام كلاس للظهور
-            });
+            }
+            
+            // (جديد) زر فتح الشروط من داخل شاشة المصادقة
+            btnShowTermsFromAuth.addEventListener('click', openTermsModal);
+            // (جديد) زر فتح الشروط من داخل شاشة الضيف
+            btnShowTermsFromGuest.addEventListener('click', openTermsModal);
 
 
             // --- 3. منطق التنقل بين الصفحات (مع History API وتأثير الفيد) ---
@@ -1299,13 +1324,23 @@
 
             // (جديد) ربط أحداث وضع الضيف
             btnShowGuestWarning.addEventListener('click', () => {
+                guestError.classList.add('hidden'); // (جديد) إخفاء الخطأ عند الفتح
+                guestTermsCheckbox.checked = false; // (جديد) إلغاء تحديد المربع
                 guestWarningModal.style.display = 'flex';
             });
             btnGuestGoBackToLogin.addEventListener('click', () => {
                 guestWarningModal.style.display = 'none';
             });
             btnGuestContinue.addEventListener('click', () => {
-                sessionStorage.setItem('isGuest', 'true'); // (جديد) تتبع الضيف في الجلسة
+                // (جديد) التحقق من الموافقة على الشروط
+                if (!guestTermsCheckbox.checked) {
+                    guestError.textContent = 'يجب الموافقة على شروط الاستخدام أولاً.';
+                    guestError.classList.remove('hidden');
+                    return; // إيقاف المتابعة
+                }
+
+                guestError.classList.add('hidden'); // إخفاء الخطأ إذا تم الموافقة
+                sessionStorage.setItem('isGuest', 'true'); // تتبع الضيف في الجلسة
                 guestWarningModal.style.display = 'none';
                 authModal.style.display = 'none';
                 
