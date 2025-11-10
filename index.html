@@ -572,27 +572,21 @@
         <!-- القسم العلوي المرن -->
         <div class="flex-grow flex flex-col justify-center">
             
-            <!-- (تعديل) العنوان الرئيسي داخل "بوكس" منفصل -->
-            <header class="mb-12 md:mb-16">
-                <div class="rounded-xl shadow-2xl p-8 md:p-12 text-center 
-                            transform transition-all duration-300 
+            <!-- (تعديل) العنوان الرئيسي كتصميم جاهز (مع وضع داكن/فاتح) -->
+            <header class="mb-12 md:mb-16 flex justify-center">
+                <!-- نسخة الوضع الفاتح -->
+                <img src="https://i.postimg.cc/8zpvHPyt/2.png" 
+                     alt="عنوان صدفة" 
+                     class="w-full max-w-2xl rounded-xl shadow-2xl 
                             [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.05))]
-                            dark:[filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]
-                            flex justify-center items-center
-                            bg-cover bg-center
-                            bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
-                            dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة صور الخلفية وإزالة الألوان الثابتة -->
-                    
-                    <h1 class="text-7xl sm:text-8xl md:text-9xl font-bold 
-                               bg-gradient-to-r from-blue-600 to-green-500 
-                               text-transparent bg-clip-text
-                               animate-gradient-animation
-                               bg-[size:200%_200%]
-                               pb-3
-                               leading-normal md:leading-snug"> <!-- تعديل: تحسين استجابة حجم الخط والمسافة -->
-                        صُدْفَة
-                    </h1>
-                </div>
+                            dark:hidden"> <!-- إظهار في الفاتح، إخفاء في الداكن -->
+                
+                <!-- نسخة الوضع الداكن -->
+                <img src="https://i.postimg.cc/t4q65CrM/3.png" 
+                     alt="عنوان صدفة (داكن)" 
+                     class="w-full max-w-2xl rounded-xl shadow-2xl 
+                            [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]
+                            hidden dark:block"> <!-- إخفاء في الفاتح، إظهار في الداكن -->
             </header>
 
             <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
