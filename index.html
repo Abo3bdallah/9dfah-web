@@ -574,10 +574,14 @@
             
             <!-- (تعديل) العنوان الرئيسي داخل "بوكس" منفصل -->
             <header class="mb-12 md:mb-16">
-                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl p-8 md:p-12 text-center 
+                <div class="rounded-xl shadow-2xl p-8 md:p-12 text-center 
                             transform transition-all duration-300 
                             [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.05))]
-                            dark:[filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]">
+                            dark:[filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]
+                            flex justify-center items-center
+                            bg-cover bg-center
+                            bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
+                            dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة صور الخلفية وإزالة الألوان الثابتة -->
                     
                     <h1 class="text-7xl sm:text-8xl md:text-9xl font-bold 
                                bg-gradient-to-r from-blue-600 to-green-500 
@@ -594,40 +598,55 @@
             <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
             <main class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"> <!-- تعديل: تقليل المسافة على الجوال -->
                 
-                <!-- اختيار 1: أدوات المقدم -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
-                <div id="btn-tools" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- (تعديل) اختيار 1: أدوات المقدم - إضافة الخلفية + طبقة شفافة -->
+                <div id="btn-tools" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
+                                      rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-blue-500 
                                       hover:scale-105 hover:shadow-xl 
                                       active:scale-95
-                                      dark:bg-zinc-800 dark:hover:border-blue-400">
-                    <img src="https://i.postimg.cc/66M7Z6Wx/3.png" alt="أدوات المقدم" class="w-16 h-16 mx-auto mb-4 object-contain">
-                    <h2 class="text-2xl font-bold text-blue-600 mb-2 dark:text-blue-400">أدوات المقدم</h2>
-                    <p class="text-zinc-600 dark:text-zinc-400">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
+                                      dark:hover:border-blue-400
+                                      bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
+                                      dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
+                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
+                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                        <img src="https://i.postimg.cc/66M7Z6Wx/3.png" alt="أدوات المقدم" class="w-16 h-16 mx-auto mb-4 object-contain">
+                        <h2 class="text-2xl font-bold text-blue-600 mb-2 dark:text-blue-400">أدوات المقدم</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
+                    </div>
                 </div>
 
-                <!-- اختيار 2: منصة التنافس -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
-                <div id="btn-competitions" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- (تعديل) اختيار 2: منصة التنافس - إضافة الخلفية + طبقة شفافة -->
+                <div id="btn-competitions" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
+                                            rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                             border-2 border-transparent hover:border-green-500 
                                             hover:scale-105 hover:shadow-xl 
                                             active:scale-95
-                                            dark:bg-zinc-800 dark:hover:border-green-400">
-                    <img src="https://i.postimg.cc/y6LJR61K/4.png" alt="منصة التنافس" class="w-16 h-16 mx-auto mb-4 object-contain">
-                    <h2 class="text-2xl font-bold text-green-600 mb-2 dark:text-green-400">منصة التنافس</h2>
-                    <p class="text-zinc-600 dark:text-zinc-400">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
+                                            dark:hover:border-green-400
+                                            bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
+                                            dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
+                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
+                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                        <img src="https://i.postimg.cc/y6LJR61K/4.png" alt="منصة التنافس" class="w-16 h-16 mx-auto mb-4 object-contain">
+                        <h2 class="text-2xl font-bold text-green-600 mb-2 dark:text-green-400">منصة التنافس</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
+                    </div>
                 </div>
 
-                <!-- اختيار 3: ألعاب اجتماعية -->
-                <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
-                <div id="btn-games" class="bg-white p-8 rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- (تعديل) اختيار 3: ألعاب اجتماعية - إضافة الخلفية + طبقة شفافة -->
+                <div id="btn-games" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
+                                      rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-red-500 
                                       hover:scale-105 hover:shadow-xl 
                                       active:scale-95
-                                      dark:bg-zinc-800 dark:hover:border-red-400">
-                    <img src="https://i.postimg.cc/sfTBWfjr/5.png" alt="ألعاب اجتماعية" class="w-16 h-16 mx-auto mb-4 object-contain">
-                    <h2 class="text-2xl font-bold text-red-600 mb-2 dark:text-red-400">ألعاب اجتماعية</h2>
-                    <p class="text-zinc-600 dark:text-zinc-400">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
+                                      dark:hover:border-red-400
+                                      bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
+                                      dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
+                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
+                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                        <img src="https://i.postimg.cc/sfTBWfjr/5.png" alt="ألعاب اجتماعية" class="w-16 h-16 mx-auto mb-4 object-contain">
+                        <h2 class="text-2xl font-bold text-red-600 mb-2 dark:text-red-400">ألعاب اجتماعية</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
+                    </div>
                 </div>
             </main>
         </div>
