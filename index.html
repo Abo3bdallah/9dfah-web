@@ -392,9 +392,8 @@
         </div>
     </div>
 
-
     <!-- ======================= -->
-    <!-- (جديد) شاشة التحذير للضيف -->
+    <!-- (جديد) شاشة التحذير للضيف (تمت إعادتها) -->
     <!-- ======================= -->
     <div id="guest-warning-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
@@ -439,9 +438,47 @@
 
 
     <!-- ======================= -->
-    <!-- (تم الحذف) شاشة إعادة تعيين كلمة المرور -->
-    <!-- تم حذف هذه الشاشة بالكامل لتبسيط العملية -->
+    <!-- (جديد) شاشة تأكيد حذف الحساب -->
     <!-- ======================= -->
+    <div id="delete-account-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-red-100 p-5 text-center relative dark:bg-red-900/50">
+                <h2 class="text-2xl font-bold text-red-700 dark:text-red-300">هل أنت متأكد؟</h2>
+                <button id="btn-close-delete-confirm" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+            </header>
+            
+            <!-- المحتوى -->
+            <div class="p-8">
+                <p class="text-lg text-center text-zinc-700 dark:text-zinc-300 mb-6">
+                    هذه العملية
+                    <strong class="text-red-600 dark:text-red-400">دائمة ولا يمكن التراجع عنها</strong>.
+                    سيتم حذف حسابك وجميع بياناتك المرتبطة به.
+                </p>
+                <p class="text-sm text-center text-zinc-600 dark:text-zinc-400 mb-4">
+                    للتأكيد، يرجى كتابة اسم المستخدم الخاص بك:
+                    <strong id="delete-confirm-username" class="text-blue-600 dark:text-blue-400">...</strong>
+                </p>
+
+                <input type="text" id="delete-confirm-input" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white mb-4">
+
+                <!-- (جديد) رسالة الخطأ للحذف -->
+                <div id="delete-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
+                <!-- (جديد) رسالة النجاح/الانتظار للحذف -->
+                <div id="delete-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
+
+                <div class="flex flex-col-reverse sm:flex-row gap-4">
+                    <button id="btn-cancel-delete-confirm" class="w-full sm:w-1/2 bg-zinc-200 text-zinc-700 font-bold py-3 px-10 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition active:scale-95">
+                        إلغاء
+                    </button>
+                    <button id="btn-confirm-delete" class="w-full sm:w-1/2 bg-red-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-red-700 transition shadow-lg active:scale-95">
+                        أفهم العواقب، احذف حسابي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- ======================= -->
@@ -480,18 +517,34 @@
                     <div class="mb-6 border-t border-zinc-200 dark:border-zinc-700 pt-6 mt-6">
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور (أثناء تسجيل الدخول)</label>
                         
-                        <div class="mb-4">
-                            <label for="settings-new-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
-                            <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <!-- (جديد) زر لإظهار الحقول -->
+                        <button id="btn-show-password-fields" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
+                            إظهار خيارات تغيير كلمة المرور
+                        </button>
+                        
+                        <!-- (جديد) حاوية للحقول، مخفية افتراضياً -->
+                        <div id="password-fields-container" class="hidden mt-4">
+                            <div class="mb-4">
+                                <label for="settings-new-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
+                                <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            </div>
+            
+                            <div class="mb-4">
+                                <label for="settings-confirm-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">تأكيد كلمة المرور الجديدة</label>
+                                <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            </div>
+            
+                            <button id="btn-update-password" class="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium active:scale-95">
+                                حفظ كلمة المرور الجديدة
+                            </button>
                         </div>
-        
-                        <div class="mb-4">
-                            <label for="settings-confirm-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">تأكيد كلمة المرور الجديدة</label>
-                            <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-        
-                        <button id="btn-update-password" class="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium active:scale-95">
-                            حفظ كلمة المرور الجديدة
+                    </div>
+
+                    <!-- (جديد) قسم: حذف الحساب -->
+                    <div class="mb-6 border-t border-red-300 dark:border-red-700 pt-6 mt-6">
+                        <label class="block text-sm font-medium text-red-700 dark:text-red-400 mb-2">المنطقة الخطرة</label>
+                        <button id="btn-show-delete-confirm" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900/80 transition text-sm font-medium">
+                            حذف الحساب نهائياً
                         </button>
                     </div>
                 </div>
@@ -744,7 +797,7 @@
             <div id="btn-game-mafia" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https.placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
-                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. مافيا</h3>
+                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. ماfيا</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
@@ -1090,6 +1143,20 @@
             const btnUpdatePassword = document.getElementById('btn-update-password');
             const settingsNewPassword = document.getElementById('settings-new-password');
             const settingsConfirmPassword = document.getElementById('settings-confirm-password');
+            // (جديد) عناصر إظهار/إخفاء كلمة المرور
+            const btnShowPasswordFields = document.getElementById('btn-show-password-fields');
+            const passwordFieldsContainer = document.getElementById('password-fields-container');
+
+            // (جديد) عناصر شاشة تأكيد الحذف
+            const deleteAccountModal = document.getElementById('delete-account-modal');
+            const btnShowDeleteConfirm = document.getElementById('btn-show-delete-confirm');
+            const btnCloseDeleteConfirm = document.getElementById('btn-close-delete-confirm');
+            const btnCancelDeleteConfirm = document.getElementById('btn-cancel-delete-confirm');
+            const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+            const deleteConfirmInput = document.getElementById('delete-confirm-input');
+            const deleteConfirmUsername = document.getElementById('delete-confirm-username');
+            const deleteError = document.getElementById('delete-error');
+            const deleteSuccess = document.getElementById('delete-success');
 
 
             // (تم الحذف) عناصر شاشة إعادة تعيين كلمة المرور
@@ -1507,6 +1574,16 @@
                 settingsError.classList.add('hidden');
                 settingsSuccess.classList.add('hidden');
                 
+                // (جديد) إعادة تعيين قسم كلمة المرور للحالة الافتراضية
+                passwordFieldsContainer.classList.add('hidden'); // إخفاء الحقول
+                btnShowPasswordFields.classList.remove('hidden'); // إظهار الزر
+                settingsNewPassword.value = '';
+                settingsConfirmPassword.value = '';
+                
+                // (جديد) إغلاق نافذة الحذف إذا كانت مفتوحة ومسح الحقل
+                deleteAccountModal.style.display = 'none'; 
+                deleteConfirmInput.value = '';
+                
                 // (جديد) إعادة تعيين التبويب إلى "الحساب" عند الفتح
                 settingsTabButtons.forEach(btn => btn.classList.remove('active'));
                 settingsTabContents.forEach(content => content.classList.remove('active'));
@@ -1560,6 +1637,72 @@
                 });
             });
 
+            // (جديد) إظهار حقول كلمة المرور عند الضغط على الزر
+            btnShowPasswordFields.addEventListener('click', (e) => {
+                e.preventDefault();
+                passwordFieldsContainer.classList.remove('hidden'); // إظهار الحقول
+                btnShowPasswordFields.classList.add('hidden'); // إخفاء الزر
+            });
+
+            // (جديد) منطق شاشة تأكيد حذف الحساب
+            btnShowDeleteConfirm.addEventListener('click', (e) => {
+                e.preventDefault();
+                const currentUsername = sidebarUsername.textContent;
+                deleteConfirmUsername.textContent = currentUsername; // إظهار الاسم للتأكيد
+                deleteConfirmInput.value = '';
+                deleteError.classList.add('hidden');
+                deleteSuccess.classList.add('hidden');
+                deleteAccountModal.style.display = 'flex';
+                // إخفاء نافذة الإعدادات مؤقتاً
+                settingsModal.style.display = 'none';
+            });
+
+            function closeDeleteModal() {
+                deleteAccountModal.style.display = 'none';
+                // إعادة إظهار نافذة الإعدادات
+                settingsModal.style.display = 'flex';
+            }
+            btnCloseDeleteConfirm.addEventListener('click', closeDeleteModal);
+            btnCancelDeleteConfirm.addEventListener('click', closeDeleteModal);
+
+            btnConfirmDelete.addEventListener('click', async (e) => {
+                e.preventDefault();
+                deleteError.classList.add('hidden');
+                const currentUsername = sidebarUsername.textContent;
+                const inputUsername = deleteConfirmInput.value;
+
+                if (inputUsername !== currentUsername) {
+                    deleteError.textContent = 'اسم المستخدم غير متطابق.';
+                    deleteError.classList.remove('hidden');
+                    return;
+                }
+
+                deleteSuccess.textContent = 'جاري حذف الحساب...';
+                deleteSuccess.classList.remove('hidden');
+                btnConfirmDelete.disabled = true; // منع الضغط المتكرر
+                btnCancelDeleteConfirm.disabled = true;
+
+                try {
+                    // ملاحظة: أنت بحاجة إلى إنشاء Edge Function باسم "delete-user" في Supabase
+                    // هذا الكود يستدعيها
+                    const { error } = await supabase.functions.invoke('delete-user');
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    // عند النجاح، onAuthStateChange سيتكفل بالباقي
+                    deleteSuccess.textContent = 'تم حذف الحساب بنجاح. جاري تسجيل الخروج...';
+                    // سيتم إغلاق النافذة تلقائياً عند تسجيل الخروج (event)
+                    
+                } catch (error) {
+                    deleteSuccess.classList.add('hidden');
+                    deleteError.textContent = `فشل حذف الحساب: ${error.message}.`;
+                    deleteError.classList.remove('hidden');
+                    btnConfirmDelete.disabled = false; // إعادة تفعيل الأزرار عند الخطأ
+                    btnCancelDeleteConfirm.disabled = false;
+                }
+            });
 
             // تحديث اسم المستخدم
             btnUpdateUsername.addEventListener('click', async (e) => {
@@ -1688,9 +1831,10 @@
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
                     
-                    // 2. إخفاء نوافذ المصادقة
+                    // 2. إخفاء نوافذ المصادقة (و الحذف)
                     authModal.style.display = 'none';
                     guestWarningModal.style.display = 'none';
+                    deleteAccountModal.style.display = 'none'; // (جديد) إخفاء نافذة الحذف
                     
                     // 3. تحديث القائمة الجانبية
                     sidebarLoggedOut.classList.add('hidden');
