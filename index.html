@@ -20,7 +20,7 @@
             darkMode: 'class', // أو 'media'
             theme: {
                 extend: {
-                    // (جديد) إضافة الأنيميشن الخاص بالعنوان
+                    // (تعديل) إزالة الأنيميشن الذي سيتم نقله
                     animation: {
                         'gradient-animation': 'gradient-animation 3s ease infinite',
                     },
@@ -28,7 +28,8 @@
                         'gradient-animation': {
                             '0%, 100%': { backgroundPosition: '0% 50%' },
                             '50%': { backgroundPosition: '100% 50%' },
-                        }
+                        },
+                        // (تعديل) إزالة الكي فريم الذي سيتم نقله
                     }
                 }
             }
@@ -51,26 +52,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- (جديد) Google Analytics 4 (GA4) Snippet -->
-    <!-- 1. استبدل "G-XXXXXXXXXX" بمعرف القياس الخاص بك (من الخطوة 1) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X3CFQ7QJ6R"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-    
-        // 2. إيقاف "page_view" التلقائي لأننا نتعامل معه يدويًا في (SPA)
-        gtag('config', 'G-X3CFQ7QJ6R', {
-            'send_page_view': false 
-        }); 
-    </script>
-    <!-- نهاية Google Analytics Snippet -->
-
     <style>
         /* تطبيق الخط المخصص على كامل الصفحة */
         body {
             font-family: 'Tajawal', sans-serif;
+            /* (جديد) تحديد الخلفية الثابتة للجسم (ستغطيها الخلفية المتحركة) */
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .dark body {
+            background-color: #020617; /* slate-950 */
         }
         
         /* 4. إعداد الصفحات للانتقال الناعم (Fade Transition) */
@@ -109,35 +99,23 @@
             border: none;
         }
 
-        /* (جديد) ستايل لأزرار التبويب في الإعدادات */
-        .settings-tab-btn {
-            flex: 1;
-            padding: 0.75rem 1rem; /* 12px 16px */
-            font-size: 0.875rem; /* 14px */
-            font-weight: 500;
-            color: #6b7280; /* text-zinc-500 */
-            background-color: #f4f4f5; /* bg-zinc-100 */
+        /* (جديد) تبويبات الإعدادات */
+        .settings-tab {
+            /* (معدل) تعديل ألوان التبويبات لتتناسب مع Slate */
             border-bottom: 2px solid transparent;
-            transition: all 0.2s;
+            color: #64748b; /* slate-500 */
         }
-        .settings-tab-btn.active {
-            color: #2563eb; /* text-blue-600 */
-            background-color: #ffffff; /* bg-white */
-            border-bottom-color: #2563eb; /* border-blue-600 */
+        .settings-tab.active {
+            border-bottom-color: #0ea5e9; /* sky-500 */
+            color: #0f172a; /* slate-900 */
         }
-        
-        /* الوضع الليلي للتبويبات */
-        .dark .settings-tab-btn {
-            color: #a1a1aa; /* dark:text-zinc-400 */
-            background-color: #3f3f46; /* dark:bg-zinc-700 */
+        .dark .settings-tab {
+            color: #94a3b8; /* slate-400 */
         }
-        .dark .settings-tab-btn.active {
-            color: #60a5fa; /* dark:text-blue-400 */
-            background-color: #27272a; /* dark:bg-zinc-800 */
-            border-bottom-color: #60a5fa; /* dark:border-blue-400 */
+        .dark .settings-tab.active {
+            border-bottom-color: #38bdf8; /* sky-400 */
+            color: #f1f5f9; /* slate-100 */
         }
-
-        /* (جديد) لإخفاء محتوى التبويب غير النشط */
         .settings-tab-content {
             display: none; /* مخفي افتراضياً */
         }
@@ -145,18 +123,120 @@
             display: block; /* يظهر عند تفعيله */
         }
 
+        /* (جديد) ستايل الخلفية المتدرجة الدوارة */
+        .gradient-bg-container {
+            position: fixed; /* تثبيت في الخلفية */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -10; /* خلف كل المحتوى */
+            overflow: hidden; /* منع التجاوز */
+            
+            /* (معدل) خلفية فاتحة متدرجة بألوان الموقع */
+            background: linear-gradient(
+                135deg,
+                #dbeafe, /* blue-100 */
+                #dcfce7  /* green-100 */
+            );
+        }
+
+        /* (جديد) خلفية داكنة متدرجة */
+        .dark .gradient-bg-container {
+            background: linear-gradient(
+                135deg,
+                #0f172a, /* slate-900 */
+                #172554  /* blue-950 */
+            );
+        }
+
+        /* (جديد) الطبقات الدوارة */
+        .gradient-bg-container::before,
+        .gradient-bg-container::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            /* (معدل) ألوان الوضع الفاتح (أزرق، أخضر، أحمر) */
+            background: conic-gradient(
+                from 0deg,
+                #93c5fd, /* blue-300 */
+                #86efac, /* green-300 */
+                #fca5a5, /* red-300 */
+                #cbd5e1, /* slate-300 */
+                #93c5fd  /* blue-300 */
+            );
+            transform: translate(-50%, -50%);
+            animation: rotate 8s linear infinite; /* (تعديل) استدعاء الأنيميشن */
+            filter: blur(50px); /* ضبابية ناعمة */
+            opacity: 0.8;
+        }
+
+        /* (جديد) الطبقة الثانية */
+        .gradient-bg-container::after {
+            width: 180%;
+            height: 180%;
+            animation: rotate-reverse 10s linear infinite; /* (تعديل) استدعاء الأنيميشن */
+            opacity: 0.6;
+        }
+
+        /* (جديد) ألوان الطبقات للوضع الداكن */
+        .dark .gradient-bg-container::before,
+        .dark .gradient-bg-container::after {
+            /* (معدل) ألوان داكنة (أزرق، أخضر، أحمر) */
+            background: conic-gradient(
+                from 0deg,
+                #1d4ed8, /* blue-700 */
+                #15803d, /* green-700 */
+                #b91c1c, /* red-700 */
+                #334155, /* slate-700 */
+                #1d4ed8  /* blue-700 */
+            );
+            opacity: 0.6; /* أقل حدة في الظلام */
+        }
+
+        .dark .gradient-bg-container::after {
+            opacity: 0.4;
+        }
+
+        /* (جديد) تعريفات الأنيميشن (تم نقلها هنا) */
+        @keyframes rotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes rotate-reverse {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(-360deg);
+            }
+        }
 
     </style>
 </head>
-<!-- إضافة كلاسات الوضع الليلي إلى body - تم التغيير إلى zinc -->
+<!-- إضافة كلاسات الوضع الليلي إلى body - تم التغيير إلى slate -->
 <!-- (إصلاح 1) إضافة min-h-screen لضمان ملء الشاشة دائماً -->
-<body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 min-h-screen">
+<!-- (تعديل) إزالة كلاسات الخلفية القديمة -->
+<body class="text-slate-800 dark:text-slate-200 min-h-screen overflow-x-hidden"> 
+
+    <!-- (جديد) حاوية الخلفية الدوارة -->
+    <div class="gradient-bg-container"></div>
+
 
     <!-- ======================= -->
     <!--  (جديد) زر القائمة الجانبية (الحساب)     -->
     <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
     <!-- ======================= -->
-    <button id="btn-open-sidebar" class="fixed top-6 right-6 z-50 p-2 rounded-full bg-white/50 dark:bg-zinc-800/50 text-zinc-800 dark:text-zinc-200 shadow hover:bg-white/70 dark:hover:bg-zinc-800/70 transition-all active:scale-95 hidden">
+    <!-- (تعديل) تغيير الألوان إلى slate -->
+    <button id="btn-open-sidebar" class="fixed top-6 right-6 z-50 p-2 rounded-full bg-white/50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 shadow hover:bg-white/70 dark:hover:bg-slate-800/70 transition-all active:scale-95 hidden">
         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
@@ -170,13 +250,14 @@
     <!-- ======================= -->
     <!-- (جديد) القائمة الجانبية للحساب -->
     <!-- ======================= -->
-    <div id="sidebar-menu" class="fixed top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-zinc-800 shadow-lg z-[101] 
+    <!-- (تعديل) تغيير الألوان إلى slate -->
+    <div id="sidebar-menu" class="fixed top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-slate-800 shadow-lg z-[101] 
                                 transform translate-x-full transition-transform duration-300">
         
         <!-- رأس القائمة -->
-        <div class="flex justify-between items-center p-4 border-b dark:border-zinc-700">
+        <div class="flex justify-between items-center p-4 border-b dark:border-slate-700">
             <h2 class="text-xl font-bold">الحساب والإعدادات</h2>
-            <button id="btn-close-sidebar" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+            <button id="btn-close-sidebar" class="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -188,7 +269,7 @@
             
             <!-- 1. حالة تسجيل الخروج (أو الضيف) -->
             <div id="sidebar-logged-out" class="hidden">
-                <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
+                <p class="text-slate-600 dark:text-slate-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
                 <div class="flex flex-col gap-3">
                     <button id="btn-sidebar-login" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
                     <button id="btn-sidebar-signup" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
@@ -198,14 +279,14 @@
             <!-- 2. حالة تسجيل الدخول -->
             <div id="sidebar-logged-in" class="hidden">
                 <!-- معلومات المستخدم -->
-                <div class="mb-6 p-3 bg-zinc-100 dark:bg-zinc-700 rounded-lg">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">مرحباً بعودتك،</p>
+                <div class="mb-6 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">مرحباً بعودتك،</p>
                     <p id="sidebar-username" class="text-lg font-bold text-blue-600 dark:text-blue-400 truncate">...</p>
                 </div>
                 
                 <!-- أزرار الإعدادات -->
                 <nav class="flex flex-col gap-2">
-                    <button id="btn-sidebar-settings" class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
+                    <button id="btn-sidebar-settings" class="w-full flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -214,7 +295,7 @@
                     
                     <!-- (يمكنك إضافة المزيد من الأزرار هنا مستقبلاً) -->
 
-                    <hr class="dark:border-zinc-600 my-2">
+                    <hr class="dark:border-slate-600 my-2">
                     
                     <button id="btn-sidebar-logout" class="w-full flex items-center gap-3 px-4 py-3 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/80 transition-colors">
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -228,9 +309,9 @@
     </div>
 
 
-    <!-- إضافة زر تبديل الوضع الليلي (عائم) - تم التغيير إلى zinc -->
+    <!-- إضافة زر تبديل الوضع الليلي (عائم) - تم التغيير إلى slate -->
     <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
-    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
+    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
         <!-- أيقونة القمر (تظهر في الوضع الفاتح) -->
         <svg id="theme-toggle-dark-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18.25 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.267-2.595.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-6.248Z" />
@@ -248,9 +329,9 @@
     <!-- ======================= -->
     <div id="terms-modal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black bg-opacity-75 
                                 opacity-0 transition-opacity duration-300" style="display: none;">
-        <!-- تم إضافة كلاسات الوضع الليلي - تم التغيير إلى zinc -->
+        <!-- تم إضافة كلاسات الوضع الليلي - تم التغيير إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1.2 max-w-3xl overflow-hidden 
-                    dark:bg-zinc-800">
+                    dark:bg-slate-800">
             <!-- رأس الشاشة -->
             <header class="bg-gradient-to-r from-blue-600 to-green-500 text-white p-6 text-center">
                 <h2 class="text-2xl font-bold">شروط الاستخدام لموقع "صدفة"</h2>
@@ -306,7 +387,8 @@
             </main>
 
             <!-- (تعديل) هذا الزر يغلق النافذة ويؤشر على الموافقة -->
-            <footer class="bg-zinc-100 p-6 text-center dark:bg-zinc-700">
+            <!-- (تعديل) تغيير الألوان إلى slate -->
+            <footer class="bg-slate-100 p-6 text-center dark:bg-slate-700">
                 <button id="btn-accept-terms" class="w-full md:w-auto bg-green-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-green-700 transition-all duration-100 shadow-lg active:scale-95">
                     أوافق على الشروط وأرغب في المتابعة
                 </button>
@@ -319,39 +401,40 @@
     <!--  شاشة المصادقة (Auth)  -->
     <!-- (تعديل) ستظهر هذه الشاشة افتراضياً الآن -->
     <!-- ======================= -->
-    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900" style="display: none;">
+    <!-- (تعديل) تغيير الألوان إلى slate -->
+    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-100 dark:bg-slate-900" style="display: none;">
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
+                    dark:bg-slate-800">
             <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 id="auth-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تسجيل الدخول</h2>
+            <header class="bg-slate-100 p-5 text-center relative dark:bg-slate-700">
+                <h2 id="auth-title" class="text-2xl font-bold text-slate-800 dark:text-slate-100">تسجيل الدخول</h2>
                 <!-- (تعديل) زر الإغلاق سيتم إخفاؤه/إظهاره عبر JS -->
-                <button id="btn-close-auth" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl hidden">&times;</button>
+                <button id="btn-close-auth" class="absolute top-3 left-4 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition text-2xl hidden">&times;</button>
             </header>
             
             <!-- نموذج الإدخال -->
             <form id="auth-form" class="p-8">
                 <div class="mb-4">
-                    <label for="auth-email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">البريد الإلكتروني</label>
-                    <input type="email" id="auth-email" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    <label for="auth-email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">البريد الإلكتروني</label>
+                    <input type="email" id="auth-email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                 </div>
                 
                 <!-- (جديد) حقل اسم المستخدم (يظهر عند إنشاء حساب) -->
                 <div id="auth-username-field" class="mb-4 hidden">
-                    <label for="auth-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">اسم المستخدم (سيظهر للجميع)</label>
-                    <input type="text" id="auth-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    <label for="auth-username" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">اسم المستخدم (سيظهر للجميع)</label>
+                    <input type="text" id="auth-username" minlength="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                 </div>
 
                 <div class="mb-6">
-                    <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
-                    <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    <label for="auth-password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
+                    <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                 </div>
 
                 <!-- (جديد) حقل الموافقة على الشروط (يظهر عند إنشاء حساب) -->
                 <div id="auth-terms-field" class="mb-6 hidden">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="auth-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
-                        <label for="auth-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
+                        <input type="checkbox" id="auth-terms-agree" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600">
+                        <label for="auth-terms-agree" class="text-sm text-slate-700 dark:text-slate-300">أوافق على
                             <button type="button" id="btn-show-terms-from-auth" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
                         </label>
                     </div>
@@ -383,8 +466,8 @@
                 </div>
 
                 <!-- (جديد) زر المتابعة كضيف -->
-                <div class="mt-4 text-center border-t border-zinc-200 dark:border-zinc-700 pt-4">
-                    <button type="button" id="btn-show-guest-warning" class="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:underline">
+                <div class="mt-4 text-center border-t border-slate-200 dark:border-slate-700 pt-4">
+                    <button type="button" id="btn-show-guest-warning" class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:underline">
                         المتابعة كضيف
                     </button>
                 </div>
@@ -392,20 +475,22 @@
         </div>
     </div>
 
+
     <!-- ======================= -->
-    <!-- (جديد) شاشة التحذير للضيف (تمت إعادتها) -->
+    <!-- (جديد) شاشة التحذير للضيف -->
     <!-- ======================= -->
     <div id="guest-warning-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <!-- (تعديل) تغيير الألوان إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
+                    dark:bg-slate-800">
             <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تنبيه: وضع الضيف</h2>
+            <header class="bg-slate-100 p-5 text-center relative dark:bg-slate-700">
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">تنبيه: وضع الضيف</h2>
             </header>
             
             <!-- المحتوى -->
             <div class="p-8">
-                <p class="text-lg text-center text-zinc-700 dark:text-zinc-300 mb-6">
+                <p class="text-lg text-center text-slate-700 dark:text-slate-300 mb-6">
                     بالمتابعة كضيف، ستتمكن من تصفح الألعاب، لكنك
                     <strong class="text-red-600 dark:text-red-400">لن تتمكن</strong>
                     من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية.
@@ -414,8 +499,8 @@
                 <!-- (جديد) حقل الموافقة على الشروط للضيف -->
                 <div id="guest-terms-field" class="mb-6">
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" id="guest-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
-                        <label for="guest-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
+                        <input type="checkbox" id="guest-terms-agree" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600">
+                        <label for="guest-terms-agree" class="text-sm text-slate-700 dark:text-slate-300">أوافق على
                             <button type="button" id="btn-show-terms-from-guest" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
                         </label>
                     </div>
@@ -428,52 +513,8 @@
                     <button id="btn-guest-continue" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
                         المتابعة كضيف
                     </button>
-                    <button id="btn-guest-go-back-to-login" class="w-full bg-zinc-200 text-zinc-700 font-bold py-3 px-10 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition active:scale-95">
+                    <button id="btn-guest-go-back-to-login" class="w-full bg-slate-200 text-slate-700 font-bold py-3 px-10 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition active:scale-95">
                         العودة لتسجيل الدخول
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ======================= -->
-    <!-- (جديد) شاشة تأكيد حذف الحساب -->
-    <!-- ======================= -->
-    <div id="delete-account-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
-            <!-- رأس الشاشة -->
-            <header class="bg-red-100 p-5 text-center relative dark:bg-red-900/50">
-                <h2 class="text-2xl font-bold text-red-700 dark:text-red-300">هل أنت متأكد؟</h2>
-                <button id="btn-close-delete-confirm" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
-            </header>
-            
-            <!-- المحتوى -->
-            <div class="p-8">
-                <p class="text-lg text-center text-zinc-700 dark:text-zinc-300 mb-6">
-                    هذه العملية
-                    <strong class="text-red-600 dark:text-red-400">دائمة ولا يمكن التراجع عنها</strong>.
-                    سيتم حذف حسابك وجميع بياناتك المرتبطة به.
-                </p>
-                <p class="text-sm text-center text-zinc-600 dark:text-zinc-400 mb-4">
-                    للتأكيد، يرجى كتابة اسم المستخدم الخاص بك:
-                    <strong id="delete-confirm-username" class="text-blue-600 dark:text-blue-400">...</strong>
-                </p>
-
-                <input type="text" id="delete-confirm-input" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white mb-4">
-
-                <!-- (جديد) رسالة الخطأ للحذف -->
-                <div id="delete-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-                <!-- (جديد) رسالة النجاح/الانتظار للحذف -->
-                <div id="delete-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
-
-                <div class="flex flex-col-reverse sm:flex-row gap-4">
-                    <button id="btn-cancel-delete-confirm" class="w-full sm:w-1/2 bg-zinc-200 text-zinc-700 font-bold py-3 px-10 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition active:scale-95">
-                        إلغاء
-                    </button>
-                    <button id="btn-confirm-delete" class="w-full sm:w-1/2 bg-red-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-red-700 transition shadow-lg active:scale-95">
-                        أفهم العواقب، احذف حسابي
                     </button>
                 </div>
             </div>
@@ -485,79 +526,106 @@
     <!-- (جديد) شاشة الإعدادات -->
     <!-- ======================= -->
     <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <!-- (تعديل) تغيير الألوان إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
+                    dark:bg-slate-800">
             <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 id="settings-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">الإعدادات</h2>
-                <button id="btn-close-settings" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+            <header class="bg-slate-100 p-5 text-center relative dark:bg-slate-700">
+                <h2 id="settings-title" class="text-2xl font-bold text-slate-800 dark:text-slate-100">الإعدادات</h2>
+                <button id="btn-close-settings" class="absolute top-3 left-4 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition text-2xl">&times;</button>
             </header>
             
-            <!-- (جديد) شريط التبويب -->
-            <div class="flex border-b border-zinc-200 dark:border-zinc-700">
-                <button id="btn-tab-account" data-tab="account" class="settings-tab-btn active">الحساب</button>
-                <button id="btn-tab-general" data-tab="general" class="settings-tab-btn">عام</button>
-            </div>
+            <!-- (جديد) تبويبات الإعدادات -->
+            <nav class="flex border-b dark:border-slate-700">
+                <button id="btn-tab-account" data-tab="account" class="settings-tab flex-1 py-3 px-4 font-medium text-center transition-colors duration-150 active">الحساب</button>
+                <button id="btn-tab-general" data-tab="general" class="settings-tab flex-1 py-3 px-4 font-medium text-center transition-colors duration-150">عام</button>
+            </nav>
 
-            <!-- نموذج الإعدادات -->
-            <form id="settings-form" class="p-8">
-
-                <!-- (جديد) محتوى تبويب الحساب -->
-                <div id="tab-content-account" class="settings-tab-content active">
+            <!-- محتوى التبويبات -->
+            <div class="p-8">
+                <!-- تبويب 1: الحساب -->
+                <form id="settings-tab-content-account" data-content="account" class="settings-tab-content active">
                     <!-- قسم: تعديل اسم المستخدم -->
                     <div class="mb-6">
-                        <label for="settings-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تعديل اسم المستخدم</label>
+                        <label for="settings-username" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">تعديل اسم المستخدم</label>
                         <div class="flex gap-2">
-                            <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                             <button type="submit" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
                         </div>
                     </div>
 
-                    <!-- (تعديل) قسم: تغيير كلمة المرور -->
-                    <div class="mb-6 border-t border-zinc-200 dark:border-zinc-700 pt-6 mt-6">
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور (أثناء تسجيل الدخول)</label>
-                        
-                        <!-- (جديد) زر لإظهار الحقول -->
-                        <button id="btn-show-password-fields" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
-                            إظهار خيارات تغيير كلمة المرور
-                        </button>
-                        
-                        <!-- (جديد) حاوية للحقول، مخفية افتراضياً -->
-                        <div id="password-fields-container" class="hidden mt-4">
-                            <div class="mb-4">
-                                <label for="settings-new-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
-                                <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                            </div>
-            
-                            <div class="mb-4">
-                                <label for="settings-confirm-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">تأكيد كلمة المرور الجديدة</label>
-                                <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                            </div>
-            
-                            <button id="btn-update-password" class="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium active:scale-95">
-                                حفظ كلمة المرور الجديدة
-                            </button>
+                    <!-- قسم: تغيير كلمة المرور (مبسط) -->
+                    <!-- (جديد) زر إظهار الخيارات -->
+                    <button type="button" id="btn-show-password-fields" class="w-full px-3 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium">
+                        إظهار خيارات تغيير كلمة المرور
+                    </button>
+                    <!-- (جديد) الحقول المخفية -->
+                    <div id="password-fields-container" class="hidden space-y-4 mt-4">
+                        <div class="mb-4">
+                            <label for="settings-new-password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">كلمة المرور الجديدة</label>
+                            <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
                         </div>
+                        <div class="mb-6">
+                            <label for="settings-confirm-password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">تأكيد كلمة المرور الجديدة</label>
+                            <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                        </div>
+                        <button type="button" id="btn-update-password" class="w-full px-5 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">حفظ كلمة المرور الجديدة</button>
                     </div>
 
                     <!-- (جديد) قسم: حذف الحساب -->
-                    <div class="mb-6 border-t border-red-300 dark:border-red-700 pt-6 mt-6">
-                        <label class="block text-sm font-medium text-red-700 dark:text-red-400 mb-2">المنطقة الخطرة</label>
-                        <button id="btn-show-delete-confirm" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900/80 transition text-sm font-medium">
+                    <div class="mt-8 border-t border-red-200 dark:border-red-900/50 pt-6">
+                        <label class="block text-sm font-medium text-red-600 dark:text-red-400 mb-2">منطقة الخطر</label>
+                        <button type="button" id="btn-show-delete-account" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900 transition text-sm font-medium">
                             حذف الحساب نهائياً
                         </button>
                     </div>
+                </form>
+
+                <!-- تبويب 2: عام -->
+                <div id="settings-tab-content-general" data-content="general" class="settings-tab-content">
+                    <p class="text-slate-600 dark:text-slate-400">لا توجد إعدادات عامة حالياً.</p>
                 </div>
 
-                <!-- (جديد) محتوى تبويب عام -->
-                <div id="tab-content-general" class="settings-tab-content">
-                    <p class="text-zinc-600 dark:text-zinc-400 text-center">سيتم إضافة إعدادات عامة هنا قريباً.</p>
-                </div>
+                <!-- رسائل الحالة (مشتركة) -->
+                <div id="settings-error" class="hidden text-red-600 text-center text-sm mt-4"></div>
+                <div id="settings-success" class="hidden text-green-600 text-center text-sm mt-4"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- (جديد) شاشة تأكيد حذف الحساب -->
+    <div id="delete-account-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <!-- (تعديل) تغيير الألوان إلى slate -->
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-slate-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-red-100 p-5 text-center relative dark:bg-red-900/50">
+                <h2 class="text-2xl font-bold text-red-700 dark:text-red-400">تأكيد حذف الحساب</h2>
+            </header>
+            
+            <!-- المحتوى -->
+            <form id="delete-account-form" class="p-8">
+                <p class="text-lg text-slate-700 dark:text-slate-300 mb-4">
+                    هل أنت متأكد من رغبتك في حذف حسابك؟
+                    <strong class="text-red-600 dark:text-red-400">هذه العملية نهائية ولا يمكن التراجع عنها.</strong>
+                </p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">
+                    للتأكيد، يرجى كتابة اسم المستخدم الخاص بك "<strong id="delete-confirm-username" class="text-blue-600 dark:text-blue-400">...</strong>" في الحقل أدناه:
+                </p>
+                
+                <input type="text" id="delete-confirm-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" autocomplete="off">
                 
                 <!-- رسالة الخطأ -->
-                <div id="settings-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-                <!-- رسالة النجاح -->
-                <div id="settings-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
+                <div id="delete-error" class="hidden text-red-600 text-center text-sm mt-4"></div>
+
+                <div class="flex gap-4 mt-6">
+                    <button type="button" id="btn-cancel-delete" class="w-full bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition active:scale-95">
+                        إلغاء
+                    </button>
+                    <button type="submit" id="btn-confirm-delete" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition shadow-lg active:scale-95 opacity-50 cursor-not-allowed" disabled>
+                        أفهم العواقب، احذف حسابي
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -567,87 +635,108 @@
     <!--     الصفحة الرئيسية       -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen flex flex-col"> <!-- تعديل: إزالة المسافة العلوية وإضافة flex -->
+    <!-- (تعديل) تبسيط الـ Page، الاعتماد على relative z-index -->
+    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen relative z-10">
 
-        <!-- القسم العلوي المرن -->
-        <div class="flex-grow flex flex-col justify-center">
+        <!-- القسم العلوي المرن (معدل) -->
+        <div class="flex-grow flex flex-col justify-center gap-12"> <!-- (جديد) إضافة gap -->
             
-            <!-- (تعديل) العنوان الرئيسي كتصميم جاهز (مع وضع داكن/فاتح) -->
-            <header class="mb-12 md:mb-16 flex justify-center">
-                <!-- نسخة الوضع الفاتح -->
-                <img src="https://i.postimg.cc/8zpvHPyt/2.png" 
-                     alt="عنوان صدفة" 
-                     class="w-full max-w-2xl rounded-xl shadow-2xl 
-                            [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.05))]
-                            dark:hidden"> <!-- إظهار في الفاتح، إخفاء في الداكن -->
+            <!-- (تعديل) بوكس العنوان أصبح صورة -->
+            <div class="w-full max-w-2xl mx-auto rounded-xl shadow-2xl overflow-hidden
+                        bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm">
+                <!-- (جديد) صورة للوضع الفاتح -->
+                <img id="logo-light" src="https://i.postimg.cc/8zpvHPyt/2.png" alt="شعار صدفة - فاتح" 
+                     class="w-full h-auto block dark:hidden" 
+                     onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
+                <!-- (جديد) صورة للوضع الداكن -->
+                <img id="logo-dark" src="https://i.postimg.cc/t4q65CrM/3.png" alt="شعار صدفة - داكن" 
+                     class="w-full h-auto hidden dark:block"
+                     onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
                 
-                <!-- نسخة الوضع الداكن -->
-                <img src="https://i.postimg.cc/t4q65CrM/3.png" 
-                     alt="عنوان صدفة (داكن)" 
-                     class="w-full max-w-2xl rounded-xl shadow-2xl 
-                            [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]
-                            hidden dark:block"> <!-- إخفاء في الفاتح، إظهار في الداكن -->
-            </header>
+                <!-- (جديد) عنوان احتياطي في حال فشل تحميل الصور -->
+                <div id="logo-fallback" class="hidden text-center p-12">
+                    <h1 class="text-7xl md:text-9xl font-bold 
+                               bg-gradient-to-r from-blue-600 to-green-500 
+                               text-transparent bg-clip-text
+                               animate-gradient-animation
+                               bg-[size:200%_200%]
+                               pb-3
+                               leading-normal
+                               [filter:drop-shadow(0_4px_4px_rgba(0,0,0,0.1))]
+                               dark:[filter:drop-shadow(0_4px_4px_rgba(0,0,0,0.3))]">
+                        صُدْفَة
+                    </h1>
+                </div>
+            </div>
+
 
             <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
-            <main class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"> <!-- تعديل: تقليل المسافة على الجوال -->
+            <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <!-- (تعديل) اختيار 1: أدوات المقدم - إضافة الخلفية + طبقة شفافة -->
-                <div id="btn-tools" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
-                                      rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- اختيار 1: أدوات المقدم -->
+                <!-- (تعديل) إضافة خلفية زجاجية شفافة -->
+                <div id="btn-tools" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-blue-500 
                                       hover:scale-105 hover:shadow-xl 
                                       active:scale-95
-                                      dark:hover:border-blue-400
-                                      bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
-                                      dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
-                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
-                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                                      overflow-hidden
+                                      dark:hover:border-blue-400"
+                                      style="background-image: url('https://i.postimg.cc/4d8jFdGW/kh.png');">
+                    <!-- طبقة داكنة للوضع الليلي -->
+                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('https://i.postimg.cc/mk9fz4xX/d.png');"></div>
+                    <!-- (جديد) طبقة زجاجية للمحتوى -->
+                    <div class="relative z-10 p-8 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
                         <img src="https://i.postimg.cc/66M7Z6Wx/3.png" alt="أدوات المقدم" class="w-16 h-16 mx-auto mb-4 object-contain">
                         <h2 class="text-2xl font-bold text-blue-600 mb-2 dark:text-blue-400">أدوات المقدم</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
+                        <p class="text-slate-600 dark:text-slate-400">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
                     </div>
                 </div>
 
-                <!-- (تعديل) اختيار 2: منصة التنافس - إضافة الخلفية + طبقة شفافة -->
-                <div id="btn-competitions" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
-                                            rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- اختيار 2: منصة التنافس -->
+                <!-- (تعديل) إضافة خلفية زجاجية شفافة -->
+                <div id="btn-competitions" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                             border-2 border-transparent hover:border-green-500 
                                             hover:scale-105 hover:shadow-xl 
                                             active:scale-95
-                                            dark:hover:border-green-400
-                                            bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
-                                            dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
-                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
-                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                                            overflow-hidden
+                                            dark:hover:border-green-400"
+                                            style="background-image: url('https://i.postimg.cc/4d8jFdGW/kh.png');">
+                    <!-- طبقة داكنة للوضع الليلي -->
+                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('https://i.postimg.cc/mk9fz4xX/d.png');"></div>
+                    <!-- (جديد) طبقة زجاجية للمحتوى -->
+                    <div class="relative z-10 p-8 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
                         <img src="https://i.postimg.cc/y6LJR61K/4.png" alt="منصة التنافس" class="w-16 h-16 mx-auto mb-4 object-contain">
                         <h2 class="text-2xl font-bold text-green-600 mb-2 dark:text-green-400">منصة التنافس</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
+                        <p class="text-slate-600 dark:text-slate-400">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
                     </div>
                 </div>
 
-                <!-- (تعديل) اختيار 3: ألعاب اجتماعية - إضافة الخلفية + طبقة شفافة -->
-                <div id="btn-games" class="bg-cover bg-center p-0 overflow-hidden <!-- (تعديل) إزالة p-8 -->
-                                      rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
+                <!-- اختيار 3: ألعاب اجتماعية -->
+                <!-- (تعديل) إضافة خلفية زجاجية شفافة -->
+                <div id="btn-games" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
                                       border-2 border-transparent hover:border-red-500 
                                       hover:scale-105 hover:shadow-xl 
                                       active:scale-95
-                                      dark:hover:border-red-400
-                                      bg-[url('https://i.postimg.cc/4d8jFdGW/kh.png')] 
-                                      dark:bg-[url('https://i.postimg.cc/mk9fz4xX/d.png')]"> <!-- (تعديل) إضافة الخلفيات وإزالة الألوان -->
-                    <!-- (جديد) إضافة طبقة شبه شفافة لتحسين القراءة -->
-                    <div class="p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full w-full transition-colors duration-300">
+                                      overflow-hidden
+                                      dark:hover:border-red-400"
+                                      style="background-image: url('https://i.postimg.cc/4d8jFdGW/kh.png');">
+                    <!-- طبقة داكنة للوضع الليلي -->
+                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('https://i.postimg.cc/mk9fz4xX/d.png');"></div>
+                    <!-- (جديد) طبقة زجاجية للمحتوى -->
+                    <div class="relative z-10 p-8 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm">
                         <img src="https://i.postimg.cc/sfTBWfjr/5.png" alt="ألعاب اجتماعية" class="w-16 h-16 mx-auto mb-4 object-contain">
                         <h2 class="text-2xl font-bold text-red-600 mb-2 dark:text-red-400">ألعاب اجتماعية</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
+                        <p class="text-slate-600 dark:text-slate-400">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
                     </div>
                 </div>
             </main>
         </div>
 
-        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-24 pt-6 border-t border-zinc-200 
-                       dark:text-zinc-400 dark:border-zinc-700">
+        <!-- تذييل الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <footer class="text-center text-slate-700 mt-24 pt-6 
+                       dark:text-slate-400 
+                       bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <p class="text-sm">
                 جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
                 <span class="mx-2">|</span>
@@ -662,57 +751,65 @@
     <!--     صفحة أدوات المقدم    -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-tools" class="page container mx-auto p-6 md:p-12 min-h-screen">
+    <!-- (تعديل) إضافة z-index -->
+    <div id="page-tools" class="page container mx-auto p-6 md:p-12 min-h-screen relative z-10">
         <!-- رأس الصفحة - تم تخفيف اللون -->
-        <header class="flex justify-between items-center mb-12">
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <header class="flex justify-between items-center mb-12 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">أدوات المقدم</h2>
-            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
-                العودة للRئيسية
+            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900/50 dark:text-blue-200 dark:hover:bg-blue-900">
+                العودة للرئيسية
             </button>
         </header>
 
-        <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
+        <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: صدفة (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-sodfa" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-tool-sodfa" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">1. صدفة</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">موقع يجمع 6 أنواع مختلفة من القرع تساعد الميسر في شتى المجالات.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">موقع يجمع 6 أنواع مختلفة من القرع تساعد الميسر في شتى المجالات.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: صناديق الأسئلة (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-questions" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-tool-questions" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/PJVJmNhK/snadyq.png" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">2. صناديق الأسئلة</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">بنك ضخم تفاعلي فيه 500 سؤال مع خيارات وتأثيرات مختلفة ونظام منافسة.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">بنك ضخم تفاعلي فيه 500 سؤال مع خيارات وتأثيرات مختلفة ونظام منافسة.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 3: حروف رحال (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-letters" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-tool-letters" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/SR1RWjqL/hrwf.png" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">3. حروف رحال</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">بنك أسئلة ضخم بأكثر من 800 سؤال مقسمة على الحروف مع نظام منافسة.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">بنك أسئلة ضخم بأكثر من 800 سؤال مقسمة على الحروف مع نظام منافسة.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
             </div>
             <!-- بطاقة 4: ريموت (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-remote" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-tool-remote" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/2y9y43m0/rymwt.png" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">4. ريموت</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">موقع جاهز لإظهار شاشة صحيحة (خضراء) أو خاطئة (حمراء) بشكل تفاعلي.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">موقع جاهز لإظهار شاشة صحيحة (خضراء) أو خاطئة (حمراء) بشكل تفاعلي.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للعرض على الشاشات</span>
                 </div>
             </div>
         </main>
-        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
-                       dark:text-zinc-400 dark:border-zinc-700">
+        <!-- تذييل الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <footer class="text-center text-slate-700 mt-16 pt-6 
+                       dark:text-slate-400 
+                       bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <p class="text-sm">
                 جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
                 <span class="mx-2">|</span>
@@ -725,57 +822,65 @@
     <!--    صفحة منصة التنافس     -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-competitions" class="page container mx-auto p-6 md:p-12 min-h-screen">
+    <!-- (تعديل) إضافة z-index -->
+    <div id="page-competitions" class="page container mx-auto p-6 md:p-12 min-h-screen relative z-10">
         <!-- رأس الصفحة - تم تخفيف اللون -->
-        <header class="flex justify-between items-center mb-12">
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <header class="flex justify-between items-center mb-12 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <h2 class="text-3xl font-bold border-r-4 border-green-500 pr-4">منصة التنافس</h2>
-            <button class="btn-back bg-green-100 text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-green-200 transition-all duration-100 active:scale-95 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800">
+            <button class="btn-back bg-green-100 text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-green-200 transition-all duration-100 active:scale-95 dark:bg-green-900/50 dark:text-green-200 dark:hover:bg-green-900">
                 العودة للرئيسية
             </button>
         </header>
         
-        <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
+        <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: خزنة ربان (أصبحت زراً داخلياً) -->
-            <div id="btn-game-captain" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-captain" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/8z9yZbtp/khznt.png" alt="صورة مسابقة خزنة ربان" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">1. مسابقة خزنة ربان</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">قالب مسابقة جاهز مكون من 50 خزنة قابل للهيكلة بشكل كامل.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">قالب مسابقة جاهز مكون من 50 خزنة قابل للهيكلة بشكل كامل.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: حرب البحار (أصبحت زراً داخلياً) -->
-            <div id="btn-game-seawar" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-seawar" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/RCjfNbsR/hrb-albhar.png" alt="صورة مسابقة حرب البحار" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">2. حرب البحار</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة تنافسية بين ثلاثة فرق لإخفاء وكشف السفن مع تخصيص كامل.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">لعبة تنافسية بين ثلاثة فرق لإخفاء وكشف السفن مع تخصيص كامل.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 3: الترتيب العاشر (أصبحت زراً داخلياً) -->
-            <div id="btn-game-topten" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-topten" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/TPrN4DKt/altrtyb.png" alt="صورة مسابقة الترتيب العاشر" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">3. الترتيب العاشر</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">مسابقة توقع إجابات وكلما كان المركز أبعد كانت النقاط أعلى.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">مسابقة توقع إجابات وكلما كان المركز أبعد كانت النقاط أعلى.</p>
                     <span class="inline-block bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-yellow-900 dark:text-yellow-200">للشاشات (تعمل على الجوال)</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 4: فكر تربح (أصبحت زراً داخلياً) -->
-            <div id="btn-game-thinkwin" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-thinkwin" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/Gpkg5y4S/trbh.png" alt="صورة لعبة فكر تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">4. فكر تربح</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة "اربع تربح" ولكن بنسخة خماسية مع أسئلة ثقافية ومنافسة.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">لعبة "اربع تربح" ولكن بنسخة خماسية مع أسئلة ثقافية ومنافسة.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
             </div>
         </main>
-        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
-                       dark:text-zinc-400 dark:border-zinc-700">
+        <!-- تذييل الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <footer class="text-center text-slate-700 mt-16 pt-6 
+                       dark:text-slate-400 
+                       bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <p class="text-sm">
                 جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
                 <span class="mx-2">|</span>
@@ -788,39 +893,45 @@
     <!--    صفحة ألعاب اجتماعية   -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-games" class="page container mx-auto p-6 md:p-12 min-h-screen">
+    <!-- (تعديل) إضافة z-index -->
+    <div id="page-games" class="page container mx-auto p-6 md:p-12 min-h-screen relative z-10">
         <!-- رأس الصفحة - تم تخفيف اللون -->
-        <header class="flex justify-between items-center mb-12">
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <header class="flex justify-between items-center mb-12 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <h2 class="text-3xl font-bold border-r-4 border-red-500 pr-4">ألعاب اجتماعية</h2>
-            <button class="btn-back bg-red-100 text-red-600 font-bold py-2 px-6 rounded-lg hover:bg-red-200 transition-all duration-100 active:scale-95 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+            <button class="btn-back bg-red-100 text-red-600 font-bold py-2 px-6 rounded-lg hover:bg-red-200 transition-all duration-100 active:scale-95 dark:bg-red-900/50 dark:text-red-200 dark:hover:bg-red-900">
                 العودة للرئيسية
             </button>
         </header>
 
-        <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
+        <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: مين الملقوف (أصبحت زراً داخلياً) -->
-            <div id="btn-game-malkoof" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-malkoof" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
                 <img src="https://i.postimg.cc/m2B9YF4M/7.png" alt="صورة لعبة مين الملقوف" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">1. مين الملقوف</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة لتحديد كلمة يعلمها الجميع عدى "الملقوف" الذي يحاول توقعها.</p>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">لعبة لتحديد كلمة يعلمها الجميع عدى "الملقوف" الذي يحاول توقعها.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: مافيا (أصبحت زراً داخلياً) -->
-            <div id="btn-game-mafia" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
-                <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https.placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+            <!-- (تعديل) إضافة خلفية شفافة -->
+            <div id="btn-game-mafia" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+                <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
-                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. ماfيا</h3>
-                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
+                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. مافيا</h3>
+                    <p class="text-slate-600 mb-4 dark:text-slate-400">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
             </div>
         </main>
-        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
-                       dark:text-zinc-400 dark:border-zinc-700">
+        <!-- تذييل الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <footer class="text-center text-slate-700 mt-16 pt-6 
+                       dark:text-slate-400 
+                       bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <p class="text-sm">
                 جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
                 <span class="mx-2">|</span>
@@ -999,18 +1110,20 @@
     <!-- صفحة سياسة الاستخدام (مدمجة) -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-policy" class="page container mx-auto p-6 md:p-12 min-h-screen">
-        <!-- رأس الصفحة - تم التغيير إلى zinc -->
-        <header class="flex justify-between items-center mb-12">
-            <h2 class="text-3xl font-bold border-r-4 border-zinc-500 pr-4">سياسة الاستخدام والخصوصية</h2>
-            <button class="btn-back bg-zinc-200 text-zinc-700 font-bold py-2 px-6 rounded-lg hover:bg-zinc-300 transition-all duration-100 active:scale-95 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600">
+    <!-- (تعديل) إضافة z-index -->
+    <div id="page-policy" class="page container mx-auto p-6 md:p-12 min-h-screen relative z-10">
+        <!-- رأس الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <header class="flex justify-between items-center mb-12 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
+            <h2 class="text-3xl font-bold border-r-4 border-slate-500 pr-4">سياسة الاستخدام والخصوصية</h2>
+            <button class="btn-back bg-slate-200 text-slate-700 font-bold py-2 px-6 rounded-lg hover:bg-slate-300 transition-all duration-100 active:scale-95 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600">
                 العودة للرئيسية
             </button>
         </header>
 
         <!-- (جديد) المحتوى الرئيسي للسياسة - مأخوذ من الشاشة المنبثقة -->
-        <main class="flex-grow bg-white rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto 
-                     dark:bg-zinc-800">
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <main class="flex-grow bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto">
             <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
             يُعد دخولك إلى الموقع أو استخدامك لأي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام المذكورة أدناه.<br>
             إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
@@ -1057,9 +1170,11 @@
             <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
         </main>
 
-        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
-                       dark:text-zinc-400 dark:border-zinc-700">
+        <!-- تذييل الصفحة - تم التغيير إلى slate -->
+        <!-- (تعديل) إضافة خلفية شفافة -->
+        <footer class="text-center text-slate-700 mt-16 pt-6 
+                       dark:text-slate-400 
+                       bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm rounded-lg p-4">
             <p class="text-sm">
                 جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
             </p>
@@ -1139,45 +1254,32 @@
             // عناصر شاشة الإعدادات
             const settingsModal = document.getElementById('settings-modal');
             const btnCloseSettings = document.getElementById('btn-close-settings');
-            const settingsForm = document.getElementById('settings-form');
+            // (جديد) عناصر التبويبات
+            const settingsTabs = document.querySelectorAll('.settings-tab');
+            const settingsTabContents = document.querySelectorAll('.settings-tab-content');
+            // عناصر تبويب الحساب
             const settingsUsernameInput = document.getElementById('settings-username');
             const btnUpdateUsername = document.getElementById('btn-update-username');
-            // const btnResetPassword = document.getElementById('btn-reset-password'); // (تم الحذف)
-            const settingsError = document.getElementById('settings-error');
-            const settingsSuccess = document.getElementById('settings-success');
-
-            // (جديد) عناصر تبويبات الإعدادات
-            const settingsTabButtons = document.querySelectorAll('.settings-tab-btn');
-            const settingsTabContents = document.querySelectorAll('.settings-tab-content');
-            const tabBtnAccount = document.getElementById('btn-tab-account');
-            const tabBtnGeneral = document.getElementById('btn-tab-general');
-            const tabContentAccount = document.getElementById('tab-content-account');
-            const tabContentGeneral = document.getElementById('tab-content-general');
-
-            // (جديد) عناصر تغيير كلمة المرور في الإعدادات
-            const btnUpdatePassword = document.getElementById('btn-update-password');
-            const settingsNewPassword = document.getElementById('settings-new-password');
-            const settingsConfirmPassword = document.getElementById('settings-confirm-password');
-            // (جديد) عناصر إظهار/إخفاء كلمة المرور
+            // (جديد) عناصر تغيير كلمة المرور
             const btnShowPasswordFields = document.getElementById('btn-show-password-fields');
             const passwordFieldsContainer = document.getElementById('password-fields-container');
-
-            // (جديد) عناصر شاشة تأكيد الحذف
+            const newPasswordInput = document.getElementById('settings-new-password');
+            const confirmPasswordInput = document.getElementById('settings-confirm-password');
+            const btnUpdatePassword = document.getElementById('btn-update-password');
+            // عناصر رسائل الحالة
+            const settingsError = document.getElementById('settings-error');
+            const settingsSuccess = document.getElementById('settings-success');
+            
+            // (جديد) عناصر حذف الحساب
+            const btnShowDeleteAccount = document.getElementById('btn-show-delete-account');
             const deleteAccountModal = document.getElementById('delete-account-modal');
-            const btnShowDeleteConfirm = document.getElementById('btn-show-delete-confirm');
-            const btnCloseDeleteConfirm = document.getElementById('btn-close-delete-confirm');
-            const btnCancelDeleteConfirm = document.getElementById('btn-cancel-delete-confirm');
-            const btnConfirmDelete = document.getElementById('btn-confirm-delete');
-            const deleteConfirmInput = document.getElementById('delete-confirm-input');
+            const deleteAccountForm = document.getElementById('delete-account-form');
             const deleteConfirmUsername = document.getElementById('delete-confirm-username');
+            const deleteConfirmInput = document.getElementById('delete-confirm-input');
+            const btnCancelDelete = document.getElementById('btn-cancel-delete');
+            const btnConfirmDelete = document.getElementById('btn-confirm-delete');
             const deleteError = document.getElementById('delete-error');
-            const deleteSuccess = document.getElementById('delete-success');
-
-
-            // (تم الحذف) عناصر شاشة إعادة تعيين كلمة المرور
-            // const resetPasswordModal = document.getElementById('reset-password-modal');
-            // ...
-
+            let currentUsernameForDelete = ''; // لتخزين اسم المستخدم للتأكيد
 
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
@@ -1259,6 +1361,19 @@
             const darkIcon = document.getElementById('theme-toggle-dark-icon'); // قمر
             const lightIcon = document.getElementById('theme-toggle-light-icon'); // شمس
 
+            // (جديد) تعريف المعرّف الخاص بـ Google Analytics
+            const GA_MEASUREMENT_ID = 'G-X3CFQ7QJ6R';
+            
+            // (جديد) دالة لإرسال الأحداث إلى Google Analytics
+            function gtag_report_pageview(page_path) {
+                if (window.gtag) {
+                    window.gtag('event', 'page_view', {
+                        page_path: page_path
+                    });
+                }
+            }
+
+
             // --- 7. دالة لتبديل الأيقونات (الوضع الليلي 2 حالة) ---
             function updateThemeIcons() {
                 const isDark = document.documentElement.classList.contains('dark');
@@ -1272,10 +1387,6 @@
                 localStorage.theme = isDark ? 'dark' : 'light';
                 updateThemeIcons();
             });
-
-            // (تم الحذف) ربط نموذج إعادة تعيين كلمة المرور
-            // resetPasswordForm.addEventListener('submit', ...);
-
 
             // --- 2. (تعديل) منطق شاشة الموافقة ---
             // (تعديل) هذا الزر الآن يغلق النافذة ويؤشر على الموافقة
@@ -1332,21 +1443,6 @@
                 const pageToShow = pageConfig.element;
                 if (!pageToShow || pageToShow === currentPage) return;
 
-                // (جديد) إرسال "page_view" يدويًا إلى Google Analytics
-                // هذا ضروري لتطبيقات الصفحة الواحدة (SPA)
-                if (typeof gtag === 'function' && pageConfig) {
-                    const pagePath = `/${pageId}`;
-                    // محاولة جلب عنوان الصفحة من رأس الصفحة (h2) أو استخدام العنوان الافتراضي
-                    const pageTitle = (pageConfig.element.querySelector('h2') ? pageConfig.element.querySelector('h2').textContent : `صدفة - ${pageId}`);
-                    
-                    gtag('event', 'page_view', {
-                        page_path: pagePath,
-                        page_title: pageTitle,
-                        page_location: window.location.origin + window.location.pathname + `#${pageId}`
-                    });
-                }
-                // نهاية كود Google Analytics
-
                 // إخفاء/إظهار الواجهة الرئيسية
                 if (pageConfig.iframe) {
                     btnOpenSidebar.classList.add('hidden');
@@ -1396,6 +1492,9 @@
                         console.warn("History API (pushState) not available.", e);
                     }
                 }
+                
+                // (جديد) إرسال تقرير مشاهدة الصفحة إلى Google Analytics
+                gtag_report_pageview(`#${pageId}`);
             }
 
             // ربط أحداث النقر على أزرار اختيار الأقسام
@@ -1479,6 +1578,12 @@
                 settingsSuccess.classList.remove('hidden');
                 settingsSuccess.textContent = message;
             }
+            // (جديد) دالة لإخفاء رسائل الإعدادات
+            function hideSettingsMessages() {
+                settingsError.classList.add('hidden');
+                settingsSuccess.classList.add('hidden');
+            }
+
 
             // دوال فتح/إغلاق القائمة الجانبية
             function openSidebar() {
@@ -1580,31 +1685,28 @@
                 closeSidebar(); 
             });
 
-            btnSidebarSettings.addEventListener('click', async () => { // <-- إضافة async
-                // (ملاحظة: هذا الزر لن يظهر للضيف لأنه في sidebar-logged-in)
-                const { data: { user } } = await supabase.auth.getUser(); // <-- إضافة await
+            // (تعديل) منطق زر الإعدادات
+            btnSidebarSettings.addEventListener('click', async () => {
+                const { data: { user } } = await supabase.auth.getUser(); // (تعديل) استخدام async/await
+
                 if (user && user.user_metadata?.username) {
                     settingsUsernameInput.value = user.user_metadata.username;
+                    currentUsernameForDelete = user.user_metadata.username; // (جديد) تخزين الاسم للحذف
                 }
-                settingsError.classList.add('hidden');
-                settingsSuccess.classList.add('hidden');
                 
-                // (جديد) إعادة تعيين قسم كلمة المرور للحالة الافتراضية
-                passwordFieldsContainer.classList.add('hidden'); // إخفاء الحقول
-                btnShowPasswordFields.classList.remove('hidden'); // إظهار الزر
-                settingsNewPassword.value = '';
-                settingsConfirmPassword.value = '';
-                
-                // (جديد) إغلاق نافذة الحذف إذا كانت مفتوحة ومسح الحقل
-                deleteAccountModal.style.display = 'none'; 
-                deleteConfirmInput.value = '';
-                
-                // (جديد) إعادة تعيين التبويب إلى "الحساب" عند الفتح
-                settingsTabButtons.forEach(btn => btn.classList.remove('active'));
+                // (جديد) إعادة تعيين حالة التبويبات
+                settingsTabs.forEach(tab => tab.classList.remove('active'));
                 settingsTabContents.forEach(content => content.classList.remove('active'));
-                tabBtnAccount.classList.add('active');
-                tabContentAccount.classList.add('active');
+                document.getElementById('btn-tab-account').classList.add('active');
+                document.getElementById('settings-tab-content-account').classList.add('active');
                 
+                // (جديد) إعادة تعيين حالة حقول كلمة المرور
+                passwordFieldsContainer.classList.add('hidden');
+                btnShowPasswordFields.classList.remove('hidden');
+                newPasswordInput.value = '';
+                confirmPasswordInput.value = '';
+                
+                hideSettingsMessages(); // إخفاء الرسائل القديمة
                 settingsModal.style.display = 'flex';
                 closeSidebar(); 
             });
@@ -1626,131 +1728,76 @@
             btnCloseSettings.addEventListener('click', () => {
                 settingsModal.style.display = 'none';
             });
-
-            // (جديد) منطق التبديل بين تبويبات الإعدادات
-            settingsTabButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault(); // منع إرسال الفورم
-                    const tabId = button.dataset.tab;
-
-                    // 1. تحديث الأزرار
-                    settingsTabButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-
-                    // 2. إظهار المحتوى
+            
+            // (جديد) منطق تبويبات الإعدادات
+            settingsTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    
+                    // تحديث أزرار التبويبات
+                    settingsTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // إظهار المحتوى المطابق
                     settingsTabContents.forEach(content => {
-                        if (content.id === `tab-content-${tabId}`) {
+                        if (content.dataset.content === tabId) {
                             content.classList.add('active');
                         } else {
                             content.classList.remove('active');
                         }
                     });
                     
-                    // 3. إخفاء الرسائل عند التبديل
-                    settingsError.classList.add('hidden');
-                    settingsSuccess.classList.add('hidden');
+                    // إخفاء الرسائل عند التبديل
+                    hideSettingsMessages();
                 });
-            });
-
-            // (جديد) إظهار حقول كلمة المرور عند الضغط على الزر
-            btnShowPasswordFields.addEventListener('click', (e) => {
-                e.preventDefault();
-                passwordFieldsContainer.classList.remove('hidden'); // إظهار الحقول
-                btnShowPasswordFields.classList.add('hidden'); // إخفاء الزر
-            });
-
-            // (جديد) منطق شاشة تأكيد حذف الحساب
-            btnShowDeleteConfirm.addEventListener('click', (e) => {
-                e.preventDefault();
-                const currentUsername = sidebarUsername.textContent;
-                deleteConfirmUsername.textContent = currentUsername; // إظهار الاسم للتأكيد
-                deleteConfirmInput.value = '';
-                deleteError.classList.add('hidden');
-                deleteSuccess.classList.add('hidden');
-                deleteAccountModal.style.display = 'flex';
-                // إخفاء نافذة الإعدادات مؤقتاً
-                settingsModal.style.display = 'none';
-            });
-
-            function closeDeleteModal() {
-                deleteAccountModal.style.display = 'none';
-                // إعادة إظهار نافذة الإعدادات
-                settingsModal.style.display = 'flex';
-            }
-            btnCloseDeleteConfirm.addEventListener('click', closeDeleteModal);
-            btnCancelDeleteConfirm.addEventListener('click', closeDeleteModal);
-
-            btnConfirmDelete.addEventListener('click', async (e) => {
-                e.preventDefault();
-                deleteError.classList.add('hidden');
-                const currentUsername = sidebarUsername.textContent;
-                const inputUsername = deleteConfirmInput.value;
-
-                if (inputUsername !== currentUsername) {
-                    deleteError.textContent = 'اسم المستخدم غير متطابق.';
-                    deleteError.classList.remove('hidden');
-                    return;
-                }
-
-                deleteSuccess.textContent = 'جاري حذف الحساب...';
-                deleteSuccess.classList.remove('hidden');
-                btnConfirmDelete.disabled = true; // منع الضغط المتكرر
-                btnCancelDeleteConfirm.disabled = true;
-
-                try {
-                    // ملاحظة: أنت بحاجة إلى إنشاء Edge Function باسم "delete-user" في Supabase
-                    // هذا الكود يستدعيها
-                    const { error } = await supabase.functions.invoke('delete-user');
-
-                    if (error) {
-                        throw error;
-                    }
-
-                    // عند النجاح، onAuthStateChange سيتكفل بالباقي
-                    deleteSuccess.textContent = 'تم حذف الحساب بنجاح. جاري تسجيل الخروج...';
-                    // سيتم إغلاق النافذة تلقائياً عند تسجيل الخروج (event)
-                    
-                } catch (error) {
-                    deleteSuccess.classList.add('hidden');
-                    deleteError.textContent = `فشل حذف الحساب: ${error.message}.`;
-                    deleteError.classList.remove('hidden');
-                    btnConfirmDelete.disabled = false; // إعادة تفعيل الأزرار عند الخطأ
-                    btnCancelDeleteConfirm.disabled = false;
-                }
             });
 
             // تحديث اسم المستخدم
             btnUpdateUsername.addEventListener('click', async (e) => {
                 e.preventDefault(); 
+                hideSettingsMessages();
                 const newUsername = settingsUsernameInput.value.trim();
+                
                 if (!newUsername || newUsername.length < 3) {
                     showSettingsError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
                     return;
                 }
+                
+                // (جديد) التحقق إذا كان الاسم لم يتغير
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user && user.user_metadata?.username === newUsername) {
+                    showSettingsError('هذا هو اسم المستخدم الحالي بالفعل.');
+                    return;
+                }
+
                 showSettingsSuccess('يتم تحديث الاسم...');
-                const { data, error } = await supabase.auth.updateUser({ data: { username: newUsername } });
+                const { data: updateData, error } = await supabase.auth.updateUser({ data: { username: newUsername } });
                 if (error) {
                     showSettingsError(error.message);
                 } else {
                     showSettingsSuccess('تم تحديث اسم المستخدم بنجاح!');
                     sidebarUsername.textContent = newUsername; 
+                    currentUsernameForDelete = newUsername; // (جديد) تحديث الاسم المخزن للحذف
                     setTimeout(() => {
-                        // (تعديل) لا نغلق النافذة، فقط نخفي الرسالة
-                        settingsSuccess.classList.add('hidden');
-                    }, 2000);
+                        settingsModal.style.display = 'none';
+                    }, 1500);
                 }
             });
 
-            // (تم الحذف) الزر القديم لإرسال الإيميل
-            // btnResetPassword.addEventListener('click', ...);
+            // (جديد) إظهار/إخفاء حقول كلمة المرور
+            btnShowPasswordFields.addEventListener('click', () => {
+                passwordFieldsContainer.classList.remove('hidden');
+                btnShowPasswordFields.classList.add('hidden');
+                hideSettingsMessages();
+            });
 
-            // (جديد) حفظ كلمة المرور الجديدة (من داخل الإعدادات)
-            btnUpdatePassword.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const newPassword = settingsNewPassword.value;
-                const confirmPassword = settingsConfirmPassword.value;
+            // (تعديل) تحديث كلمة المرور (مبسط)
+            btnUpdatePassword.addEventListener('click', async () => {
+                hideSettingsMessages();
+                const newPassword = newPasswordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
 
-                if (!newPassword || newPassword.length < 6) {
+                if (newPassword.length < 6) {
                     showSettingsError('يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
                     return;
                 }
@@ -1759,22 +1806,94 @@
                     return;
                 }
 
-                showSettingsSuccess('جاري تحديث كلمة المرور...');
-                
+                showSettingsSuccess('يتم تحديث كلمة المرور...');
                 const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-                
+
                 if (error) {
                     showSettingsError(error.message);
                 } else {
                     showSettingsSuccess('تم تحديث كلمة المرور بنجاح!');
-                    // مسح الحقول
-                    settingsNewPassword.value = '';
-                    settingsConfirmPassword.value = '';
+                    // إعادة تعيين الحقول وإخفائها
+                    newPasswordInput.value = '';
+                    confirmPasswordInput.value = '';
+                    passwordFieldsContainer.classList.add('hidden');
+                    btnShowPasswordFields.classList.remove('hidden');
                     setTimeout(() => {
-                        settingsSuccess.classList.add('hidden');
-                    }, 2000);
+                        settingsModal.style.display = 'none';
+                    }, 1500);
                 }
             });
+
+            // (جديد) منطق حذف الحساب
+            btnShowDeleteAccount.addEventListener('click', () => {
+                // ملء اسم المستخدم للتأكيد
+                deleteConfirmUsername.textContent = currentUsernameForDelete;
+                deleteConfirmInput.value = '';
+                deleteError.classList.add('hidden');
+                // تعطيل الزر
+                btnConfirmDelete.disabled = true;
+                btnConfirmDelete.classList.add('opacity-50', 'cursor-not-allowed');
+                // إظهار النافذة
+                deleteAccountModal.style.display = 'flex';
+            });
+
+            btnCancelDelete.addEventListener('click', () => {
+                deleteAccountModal.style.display = 'none';
+            });
+
+            // (جديد) التحقق من تطابق اسم المستخدم أثناء الكتابة
+            deleteConfirmInput.addEventListener('input', () => {
+                if (deleteConfirmInput.value === currentUsernameForDelete) {
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.classList.remove('opacity-50', 'cursor-not-allowed');
+                    deleteError.classList.add('hidden');
+                } else {
+                    btnConfirmDelete.disabled = true;
+                    btnConfirmDelete.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+
+            // (جديد) تأكيد الحذف
+            deleteAccountForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                deleteError.classList.add('hidden');
+                
+                // التأكد مرة أخرى
+                if (deleteConfirmInput.value !== currentUsernameForDelete) {
+                    deleteError.textContent = 'اسم المستخدم غير متطابق.';
+                    deleteError.classList.remove('hidden');
+                    return;
+                }
+
+                // استدعاء الدالة (Edge Function)
+                // (هام: يجب إنشاء دالة باسم 'delete-user' في Supabase)
+                try {
+                    btnConfirmDelete.disabled = true;
+                    btnConfirmDelete.textContent = 'يتم الحذف...';
+                    
+                    const { data, error } = await supabase.functions.invoke('delete-user', {
+                        method: 'POST',
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    // إذا نجحت الدالة، قم بتسجيل الخروج
+                    await supabase.auth.signOut();
+                    // إخفاء النوافذ
+                    deleteAccountModal.style.display = 'none';
+                    settingsModal.style.display = 'none';
+                    // (سيقوم onAuthStateChange بإعادة التوجيه إلى شاشة تسجيل الدخول)
+
+                } catch (error) {
+                    deleteError.textContent = `خطأ: ${error.message}. (تأكد من تفعيل Supabase Edge Function)`;
+                    deleteError.classList.remove('hidden');
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.textContent = 'أفهم العواقب، احذف حسابي';
+                }
+            });
+
 
             // إرسال نموذج المصادقة (تسجيل الدخول / إنشاء حساب)
             authForm.addEventListener('submit', async (e) => {
@@ -1828,28 +1947,31 @@
             // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
             supabase.auth.onAuthStateChange((event, session) => {
                 
-                // (تم الحذف) إزالة منطق PASSWORD_RECOVERY
-                // if (event === 'PASSWORD_RECOVERY' ... ) { ... }
+                // (تعديل) إعطاء الأولوية لـ PASSWORD_RECOVERY
+                if (event === 'PASSWORD_RECOVERY') {
+                    // (ملاحظة: هذا الكود لن يعمل مع الطريقة المبسطة، ولكنه احتياط جيد)
+                    // في حال قررنا إعادة تفعيلها مستقبلاً
+                    // resetPasswordModal.style.display = 'flex';
+                    authModal.style.display = 'none';
+                    guestWarningModal.style.display = 'none';
+                    return; // إيقاف التنفيذ مبكراً
+                }
 
                 let currentPageId = window.location.hash.substring(1);
-                // (تعديل) إزالة التحقق من رابط إعادة التعيين
-                const isAuthHash = (currentPageId.includes('access_token=') || currentPageId.includes('error='));
+                const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
                 const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
                     sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
                     
-                    // (تم الحذف) إزالة إخفاء شاشة إعادة التعيين
-                    
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
                     
-                    // 2. إخفاء نوافذ المصادقة (و الحذف)
+                    // 2. إخفاء نوافذ المصادقة
                     authModal.style.display = 'none';
                     guestWarningModal.style.display = 'none';
-                    deleteAccountModal.style.display = 'none'; // (جديد) إخفاء نافذة الحذف
                     
                     // 3. تحديث القائمة الجانبية
                     sidebarLoggedOut.classList.add('hidden');
@@ -1887,18 +2009,15 @@
                     sidebarUsername.textContent = '';
                     
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
-                    
-                    // (تم الحذف) ...
-                    
                     if (isAuthHash) {
-                        // لا تفعل شيئاً، انتظر معالجة الرابط (هذا لـتأكيد الإيميل)
+                        // لا تفعل شيئاً، انتظر معالجة الرابط
                     } else if (isGuest) {
                         // (جديد) المستخدم اختار أن يكون ضيفاً
                         btnOpenSidebar.classList.remove('hidden');
                         themeToggle.classList.remove('hidden');
                         showPage('welcome', false);
-                    } else { // (تعديل) إزالة التحقق من !isRecoveryHash
-                        // (جديد) مستخدم جديد أو سجل خروج, أظهِر المصادقة الإجبارية
+                    } else {
+                        // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
                         showLoginView();
                         btnCloseAuth.classList.add('hidden');
                         authModal.style.display = 'flex';
