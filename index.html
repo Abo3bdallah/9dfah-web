@@ -439,44 +439,9 @@
 
 
     <!-- ======================= -->
-    <!-- (جديد) شاشة إعادة تعيين كلمة المرور -->
+    <!-- (تم الحذف) شاشة إعادة تعيين كلمة المرور -->
+    <!-- تم حذف هذه الشاشة بالكامل لتبسيط العملية -->
     <!-- ======================= -->
-    <div id="reset-password-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
-            <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">إعادة تعيين كلمة المرور</h2>
-            </header>
-            
-            <!-- نموذج الإدخال -->
-            <form id="reset-password-form" class="p-8">
-                <p class="text-zinc-700 dark:text-zinc-300 mb-6 text-center">أهلاً بك. الرجاء إدخال كلمة المرور الجديدة.</p>
-                
-                <div class="mb-4">
-                    <label for="reset-password-input" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
-                    <input type="password" id="reset-password-input" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                </div>
-
-                <div class="mb-6">
-                    <label for="reset-password-confirm-input" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تأكيد كلمة المرور الجديدة</label>
-                    <input type="password" id="reset-password-confirm-input" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                </div>
-                
-                <!-- رسالة الخطأ -->
-                <div id="reset-password-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-                <!-- رسالة النجاح -->
-                <div id="reset-password-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
-
-                <!-- الأزرار -->
-                <div class="flex flex-col gap-4">
-                    <button type="submit" id="btn-reset-password-submit" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
-                        حفظ كلمة المرور الجديدة
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
 
     <!-- ======================= -->
@@ -511,11 +476,22 @@
                         </div>
                     </div>
 
-                    <!-- قسم: تغيير كلمة المرور -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور</label>
-                        <button id="btn-reset-password" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
-                            إرسال رابط إعادة التعيين إلى بريدي
+                    <!-- (تعديل) قسم: تغيير كلمة المرور -->
+                    <div class="mb-6 border-t border-zinc-200 dark:border-zinc-700 pt-6 mt-6">
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور (أثناء تسجيل الدخول)</label>
+                        
+                        <div class="mb-4">
+                            <label for="settings-new-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
+                            <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+        
+                        <div class="mb-4">
+                            <label for="settings-confirm-password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">تأكيد كلمة المرور الجديدة</label>
+                            <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+        
+                        <button id="btn-update-password" class="w-full px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium active:scale-95">
+                            حفظ كلمة المرور الجديدة
                         </button>
                     </div>
                 </div>
@@ -1098,7 +1074,7 @@
             const settingsForm = document.getElementById('settings-form');
             const settingsUsernameInput = document.getElementById('settings-username');
             const btnUpdateUsername = document.getElementById('btn-update-username');
-            const btnResetPassword = document.getElementById('btn-reset-password');
+            // const btnResetPassword = document.getElementById('btn-reset-password'); // (تم الحذف)
             const settingsError = document.getElementById('settings-error');
             const settingsSuccess = document.getElementById('settings-success');
 
@@ -1110,14 +1086,15 @@
             const tabContentAccount = document.getElementById('tab-content-account');
             const tabContentGeneral = document.getElementById('tab-content-general');
 
-            // (جديد) عناصر شاشة إعادة تعيين كلمة المرور
-            const resetPasswordModal = document.getElementById('reset-password-modal');
-            const resetPasswordForm = document.getElementById('reset-password-form');
-            const btnResetPasswordSubmit = document.getElementById('btn-reset-password-submit');
-            const resetPasswordError = document.getElementById('reset-password-error');
-            const resetPasswordSuccess = document.getElementById('reset-password-success');
-            const resetPasswordInput = document.getElementById('reset-password-input');
-            const resetPasswordConfirmInput = document.getElementById('reset-password-confirm-input');
+            // (جديد) عناصر تغيير كلمة المرور في الإعدادات
+            const btnUpdatePassword = document.getElementById('btn-update-password');
+            const settingsNewPassword = document.getElementById('settings-new-password');
+            const settingsConfirmPassword = document.getElementById('settings-confirm-password');
+
+
+            // (تم الحذف) عناصر شاشة إعادة تعيين كلمة المرور
+            // const resetPasswordModal = document.getElementById('reset-password-modal');
+            // ...
 
 
             // جلب عناصر الصفحات
@@ -1214,47 +1191,8 @@
                 updateThemeIcons();
             });
 
-            // (جديد) ربط نموذج إعادة تعيين كلمة المرور
-            resetPasswordForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const newPassword = resetPasswordInput.value;
-                const confirmPassword = resetPasswordConfirmInput.value;
-
-                if (!newPassword || newPassword.length < 6) {
-                    resetPasswordError.textContent = 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.';
-                    resetPasswordError.classList.remove('hidden');
-                    return;
-                }
-                if (newPassword !== confirmPassword) {
-                    resetPasswordError.textContent = 'كلمتا المرور غير متطابقتين.';
-                    resetPasswordError.classList.remove('hidden');
-                    return;
-                }
-
-                resetPasswordError.classList.add('hidden');
-                resetPasswordSuccess.textContent = 'جاري تحديث كلمة المرور...';
-                resetPasswordSuccess.classList.remove('hidden');
-
-                const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-
-                if (error) {
-                    resetPasswordError.textContent = error.message;
-                    resetPasswordError.classList.remove('hidden');
-                    resetPasswordSuccess.classList.add('hidden');
-                } else {
-                    resetPasswordError.classList.add('hidden');
-                    resetPasswordSuccess.textContent = 'تم تحديث كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.';
-                    
-                    resetPasswordInput.value = '';
-                    resetPasswordConfirmInput.value = '';
-
-                    setTimeout(() => {
-                        resetPasswordModal.style.display = 'none';
-                        showLoginView(); // إظهار نموذج تسجيل الدخول
-                        authModal.style.display = 'flex';
-                    }, 3000);
-                }
-            });
+            // (تم الحذف) ربط نموذج إعادة تعيين كلمة المرور
+            // resetPasswordForm.addEventListener('submit', ...);
 
 
             // --- 2. (تعديل) منطق شاشة الموافقة ---
@@ -1645,20 +1583,38 @@
                 }
             });
 
-            // إعادة تعيين كلمة المرور
-            btnResetPassword.addEventListener('click', async (e) => {
+            // (تم الحذف) الزر القديم لإرسال الإيميل
+            // btnResetPassword.addEventListener('click', ...);
+
+            // (جديد) حفظ كلمة المرور الجديدة (من داخل الإعدادات)
+            btnUpdatePassword.addEventListener('click', async (e) => {
                 e.preventDefault();
-                showSettingsSuccess('يتم إرسال الرابط...'); // <-- تم إصلاح الخطأ الإملائي هنا
-                const { data: { user } } = await supabase.auth.getUser(); // (صحيح) getUser() هي دالة async
-                if (!user) {
-                    showSettingsError('لا يمكن العثور على المستخدم.');
+                const newPassword = settingsNewPassword.value;
+                const confirmPassword = settingsConfirmPassword.value;
+
+                if (!newPassword || newPassword.length < 6) {
+                    showSettingsError('يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
                     return;
                 }
-                const { data, error } = await supabase.auth.resetPasswordForEmail(user.email);
+                if (newPassword !== confirmPassword) {
+                    showSettingsError('كلمتا المرور غير متطابقتين.');
+                    return;
+                }
+
+                showSettingsSuccess('جاري تحديث كلمة المرور...');
+                
+                const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+                
                 if (error) {
                     showSettingsError(error.message);
                 } else {
-                    showSettingsSuccess('تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.');
+                    showSettingsSuccess('تم تحديث كلمة المرور بنجاح!');
+                    // مسح الحقول
+                    settingsNewPassword.value = '';
+                    settingsConfirmPassword.value = '';
+                    setTimeout(() => {
+                        settingsSuccess.classList.add('hidden');
+                    }, 2000);
                 }
             });
 
@@ -1714,45 +1670,19 @@
             // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
             supabase.auth.onAuthStateChange((event, session) => {
                 
-                // (جديد) معالجة حدث إعادة تعيين كلمة المرور
-                // (تعديل) تم نقل هذا الشرط ليكون الأول وله الأولوية القصوى
-                if (event === 'PASSWORD_RECOVERY' && !session) {
-                    // هذا الحدث يشتغل عندما يضغط المستخدم على رابط إعادة التعيين
-                    // يجب إظهار شاشة إدخال كلمة المرور الجديدة
-                    authModal.style.display = 'none'; // إخفاء شاشة الدخول
-                    guestWarningModal.style.display = 'none'; // إخفاء شاشة الضيف
-                    
-                    // إخفاء الواجهة الرئيسية إذا كانت ظاهرة (مثل وضع الضيف)
-                    btnOpenSidebar.classList.add('hidden');
-                    themeToggle.classList.add('hidden');
-                    allPages.forEach(p => { 
-                        p.style.display = 'none'; 
-                        p.style.opacity = '0'; 
-                    });
-                    currentPage = null;
-
-                    resetPasswordModal.style.display = 'flex'; // إظهار شاشة إعادة التعيين
-                    
-                    // تنظيف الرسائل القديمة
-                    resetPasswordError.classList.add('hidden');
-                    resetPasswordSuccess.classList.add('hidden');
-                    resetPasswordInput.value = '';
-                    resetPasswordConfirmInput.value = '';
-                    return; // إيقاف التنفيذ لهذا الحدث
-                }
+                // (تم الحذف) إزالة منطق PASSWORD_RECOVERY
+                // if (event === 'PASSWORD_RECOVERY' ... ) { ... }
 
                 let currentPageId = window.location.hash.substring(1);
-                // (تعديل) فصل رابط إعادة التعيين عن روابط المصادقة الأخرى
-                const isRecoveryHash = currentPageId.includes('type=recovery');
-                const isAuthHash = (currentPageId.includes('access_token=') || currentPageId.includes('error=')) && !isRecoveryHash;
+                // (تعديل) إزالة التحقق من رابط إعادة التعيين
+                const isAuthHash = (currentPageId.includes('access_token=') || currentPageId.includes('error='));
                 const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
                     sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
                     
-                    // (جديد) إخفاء شاشة إعادة التعيين إذا كان المستخدم مسجلاً
-                    resetPasswordModal.style.display = 'none';
+                    // (تم الحذف) إزالة إخفاء شاشة إعادة التعيين
                     
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
@@ -1799,8 +1729,7 @@
                     
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
                     
-                    // (تعديل) تم حذف التحقق من resetPasswordModal.style.display
-                    // لأن الشرط الأول (PASSWORD_RECOVERY) سيتكفل به
+                    // (تم الحذف) ...
                     
                     if (isAuthHash) {
                         // لا تفعل شيئاً، انتظر معالجة الرابط (هذا لـتأكيد الإيميل)
@@ -1809,8 +1738,8 @@
                         btnOpenSidebar.classList.remove('hidden');
                         themeToggle.classList.remove('hidden');
                         showPage('welcome', false);
-                    } else if (!isRecoveryHash) { // (تعديل) لا تظهر الدخول إذا كان الرابط لإعادة التعيين
-                        // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
+                    } else { // (تعديل) إزالة التحقق من !isRecoveryHash
+                        // (جديد) مستخدم جديد أو سجل خروج, أظهِر المصادقة الإجبارية
                         showLoginView();
                         btnCloseAuth.classList.add('hidden');
                         authModal.style.display = 'flex';
