@@ -100,27 +100,84 @@
 <body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
 
     <!-- ======================= -->
-    <!--  عناصر واجهة المصادقة     -->
-    <!-- (جديد) تم النقل إلى اليمين -->
+    <!--  (جديد) زر القائمة الجانبية (الحساب)     -->
+    <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
     <!-- ======================= -->
-    <div id="auth-ui" class="fixed top-6 right-6 z-50"> <!-- تم التغيير إلى right-6 -->
-        <!-- يظهر عند عدم تسجيل الدخول -->
-        <div id="auth-links" class="flex gap-2">
-            <button id="btn-show-login" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
-            <button id="btn-show-signup" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
-        </div>
+    <button id="btn-open-sidebar" class="fixed top-6 right-6 z-50 p-2 rounded-full bg-white/50 dark:bg-zinc-800/50 text-zinc-800 dark:text-zinc-200 shadow hover:bg-white/70 dark:hover:bg-zinc-800/70 transition-all active:scale-95 hidden">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+    </button>
+    
+    <!-- ======================= -->
+    <!-- (جديد) غطاء الخلفية للقائمة الجانبية -->
+    <!-- ======================= -->
+    <div id="sidebar-overlay" class="fixed inset-0 z-[100] bg-black/50 opacity-0 transition-opacity duration-300 hidden"></div>
+
+    <!-- ======================= -->
+    <!-- (جديد) القائمة الجانبية للحساب -->
+    <!-- ======================= -->
+    <div id="sidebar-menu" class="fixed top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-zinc-800 shadow-lg z-[101] 
+                                transform translate-x-full transition-transform duration-300">
         
-        <!-- يظهر عند تسجيل الدخول -->
-        <div id="user-info" class="hidden items-center gap-3">
-            <!-- (تعديل) هذا العنصر سيعرض اسم المستخدم الآن -->
-            <span id="user-email" class="text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 px-3 py-2 rounded-lg"></span>
-            <button id="btn-logout" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition active:scale-95 text-sm font-medium">خروج</button>
+        <!-- رأس القائمة -->
+        <div class="flex justify-between items-center p-4 border-b dark:border-zinc-700">
+            <h2 class="text-xl font-bold">الحساب والإعدادات</h2>
+            <button id="btn-close-sidebar" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- محتوى القائمة (ديناميكي) -->
+        <div class="p-4">
+            
+            <!-- 1. حالة تسجيل الخروج -->
+            <div id="sidebar-logged-out" class="hidden">
+                <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
+                <div class="flex flex-col gap-3">
+                    <button id="btn-sidebar-login" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
+                    <button id="btn-sidebar-signup" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
+                </div>
+            </div>
+
+            <!-- 2. حالة تسجيل الدخول -->
+            <div id="sidebar-logged-in" class="hidden">
+                <!-- معلومات المستخدم -->
+                <div class="mb-6 p-3 bg-zinc-100 dark:bg-zinc-700 rounded-lg">
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">مرحباً بعودتك،</p>
+                    <p id="sidebar-username" class="text-lg font-bold text-blue-600 dark:text-blue-400 truncate">...</p>
+                </div>
+                
+                <!-- أزرار الإعدادات -->
+                <nav class="flex flex-col gap-2">
+                    <button id="btn-sidebar-settings" class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>الإعدادات</span>
+                    </button>
+                    
+                    <!-- (يمكنك إضافة المزيد من الأزرار هنا مستقبلاً) -->
+
+                    <hr class="dark:border-zinc-600 my-2">
+                    
+                    <button id="btn-sidebar-logout" class="w-full flex items-center gap-3 px-4 py-3 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/80 transition-colors">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </nav>
+            </div>
         </div>
     </div>
 
 
     <!-- إضافة زر تبديل الوضع الليلي (عائم) - تم التغيير إلى zinc -->
-    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95">
+    <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
+    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
         <!-- أيقونة القمر (تظهر في الوضع الفاتح) -->
         <svg id="theme-toggle-dark-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18.25 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.267-2.595.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-6.248Z" />
@@ -132,12 +189,12 @@
 
 
     <!-- ======================= -->
-    <!--  شاشة الموافقة الإجبارية  -->
+    <!--  شاشة الموافقة (تُستدعى الآن عند الضغط على الرابط)  -->
     <!-- (style="display: none;" لإخفائها افتراضياً) -->
     <!-- ======================= -->
     <div id="terms-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
         <!-- تم إضافة كلاسات الوضع الليلي - تم التغيير إلى zinc -->
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1/2 max-w-3xl overflow-hidden 
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1.2 max-w-3xl overflow-hidden 
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-gradient-to-r from-blue-600 to-green-500 text-white p-6 text-center">
@@ -193,8 +250,7 @@
                 <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
             </main>
 
-            <!-- زر الموافقة -->
-            <!-- تم إضافة كلاسات الوضع الليلي وتأثير النقر - تم التغيير إلى zinc -->
+            <!-- (تعديل) هذا الزر يغلق النافذة ويؤشر على الموافقة -->
             <footer class="bg-zinc-100 p-6 text-center dark:bg-zinc-700">
                 <button id="btn-accept-terms" class="w-full md:w-auto bg-green-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-green-700 transition-all duration-100 shadow-lg active:scale-95">
                     أوافق على الشروط وأرغب في المتابعة
@@ -206,15 +262,16 @@
     
     <!-- ======================= -->
     <!--  شاشة المصادقة (Auth)  -->
-    <!-- (style="display: none;" لإخفائها افتراضياً) -->
+    <!-- (تعديل) ستظهر هذه الشاشة افتراضياً الآن -->
     <!-- ======================= -->
-    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900" style="display: none;">
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
                 <h2 id="auth-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تسجيل الدخول</h2>
-                <button id="btn-close-auth" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+                <!-- (تعديل) زر الإغلاق سيتم إخفاؤه/إظهاره عبر JS -->
+                <button id="btn-close-auth" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl hidden">&times;</button>
             </header>
             
             <!-- نموذج الإدخال -->
@@ -234,6 +291,16 @@
                     <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
                     <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                 </div>
+
+                <!-- (جديد) حقل الموافقة على الشروط (يظهر عند إنشاء حساب) -->
+                <div id="auth-terms-field" class="mb-6 hidden">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="auth-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
+                        <label for="auth-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
+                            <button type="button" id="btn-show-terms-from-auth" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
+                        </label>
+                    </div>
+                </div>
                 
                 <!-- رسالة الخطأ -->
                 <div id="auth-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
@@ -249,6 +316,56 @@
                         إنشاء حساب جديد
                     </button>
                 </div>
+
+                <!-- (جديد) زر التبديل بين تسجيل الدخول وإنشاء الحساب -->
+                <div class="mt-6 text-center">
+                    <button type="button" id="btn-show-signup-view" class="text-sm text-blue-600 hover:underline dark:text-blue-400">
+                        ليس لديك حساب؟ أنشئ واحداً
+                    </button>
+                    <button type="button" id="btn-show-login-view" class="text-sm text-blue-600 hover:underline dark:text-blue-400 hidden">
+                        لديك حساب بالفعل؟ سجّل الدخول
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ======================= -->
+    <!-- (جديد) شاشة الإعدادات -->
+    <!-- ======================= -->
+    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
+                <h2 id="settings-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">الإعدادات</h2>
+                <button id="btn-close-settings" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+            </header>
+            
+            <!-- نموذج الإعدادات -->
+            <form id="settings-form" class="p-8">
+                <!-- قسم: تعديل اسم المستخدم -->
+                <div class="mb-6">
+                    <label for="settings-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تعديل اسم المستخدم</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <button type="submit" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
+                    </div>
+                </div>
+
+                <!-- قسم: تغيير كلمة المرور -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور</label>
+                    <button id="btn-reset-password" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
+                        إرسال رابط إعادة التعيين إلى بريدي
+                    </button>
+                </div>
+                
+                <!-- رسالة الخطأ -->
+                <div id="settings-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
+                <!-- رسالة النجاح -->
+                <div id="settings-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
             </form>
         </div>
     </div>
@@ -750,7 +867,7 @@
         // --- 0. تهيئة Supabase ---
         // استبدل بالقيم الخاصة بك!
         const SUPABASE_URL = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
 
         // استيراد وإنشاء العميل
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -761,32 +878,55 @@
             
             // --- 1. تعريف العناصر ---
             
-            // شاشة الموافقة الإجبارية
+            // شاشة الموافقة
             const termsModal = document.getElementById('terms-modal');
             const acceptTermsButton = document.getElementById('btn-accept-terms');
             
             // عناصر المصادقة
-            const authUI = document.getElementById('auth-ui'); // (جديد) الحاوية الرئيسية للمصادقة
             const authModal = document.getElementById('auth-modal');
             const authForm = document.getElementById('auth-form');
             const authTitle = document.getElementById('auth-title');
-            const btnShowLogin = document.getElementById('btn-show-login');
-            const btnShowSignup = document.getElementById('btn-show-signup');
             const btnCloseAuth = document.getElementById('btn-close-auth');
             const btnLoginSubmit = document.getElementById('btn-login-submit');
             const btnSignupSubmit = document.getElementById('btn-signup-submit');
             const authError = document.getElementById('auth-error');
             const authSuccess = document.getElementById('auth-success');
             
-            // (جديد) حقول اسم المستخدم
+            // حقول اسم المستخدم
             const authUsernameField = document.getElementById('auth-username-field');
             const authUsernameInput = document.getElementById('auth-username');
             
-            // واجهة المستخدم المسجل
-            const authLinks = document.getElementById('auth-links');
-            const userInfo = document.getElementById('user-info');
-            const userEmail = document.getElementById('user-email'); // (ملاحظة) هذا العنصر سيعرض اسم المستخدم الآن
-            const btnLogout = document.getElementById('btn-logout');
+            // (جديد) حقل الموافقة على الشروط
+            const authTermsField = document.getElementById('auth-terms-field');
+            const authTermsCheckbox = document.getElementById('auth-terms-agree');
+            const btnShowTermsFromAuth = document.getElementById('btn-show-terms-from-auth');
+            
+            // (جديد) أزرار تبديل عرض المصادقة
+            const btnShowSignupView = document.getElementById('btn-show-signup-view');
+            const btnShowLoginView = document.getElementById('btn-show-login-view');
+            
+            // عناصر القائمة الجانبية
+            const btnOpenSidebar = document.getElementById('btn-open-sidebar');
+            const btnCloseSidebar = document.getElementById('btn-close-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const sidebarMenu = document.getElementById('sidebar-menu');
+            const sidebarLoggedOut = document.getElementById('sidebar-logged-out');
+            const sidebarLoggedIn = document.getElementById('sidebar-logged-in');
+            const sidebarUsername = document.getElementById('sidebar-username');
+            const btnSidebarLogin = document.getElementById('btn-sidebar-login');
+            const btnSidebarSignup = document.getElementById('btn-sidebar-signup');
+            const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
+            const btnSidebarLogout = document.getElementById('btn-sidebar-logout');
+
+            // عناصر شاشة الإعدادات
+            const settingsModal = document.getElementById('settings-modal');
+            const btnCloseSettings = document.getElementById('btn-close-settings');
+            const settingsForm = document.getElementById('settings-form');
+            const settingsUsernameInput = document.getElementById('settings-username');
+            const btnUpdateUsername = document.getElementById('btn-update-username');
+            const btnResetPassword = document.getElementById('btn-reset-password');
+            const settingsError = document.getElementById('settings-error');
+            const settingsSuccess = document.getElementById('settings-success');
 
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
@@ -795,7 +935,7 @@
             const pageGames = document.getElementById('page-games');
             const pagePolicy = document.getElementById('page-policy');
             
-            // (جديد) جلب جميع صفحات التطبيقات المدمجة
+            // (*** إصلاح: إضافة تعريفات المتغيرات المفقودة ***)
             const pageToolRemote = document.getElementById('page-tool-remote');
             const pageToolSodfa = document.getElementById('page-tool-sodfa');
             const pageToolQuestions = document.getElementById('page-tool-questions');
@@ -805,9 +945,9 @@
             const pageGameTopTen = document.getElementById('page-game-topten');
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
-            const pageGameMafia = document.getElementById('page-game-mafia');
+            const pageGameMafia = document.getElementById('page-game-mafia'); // <-- هذا هو المتغير الذي كان مفقوداً
             
-            // (جديد) جلب كل الصفحات
+            // جلب كل الصفحات
             const allPages = document.querySelectorAll('.page');
 
             // جلب أزرار الاختيار من الصفحة الرئيسية
@@ -815,7 +955,7 @@
             const btnCompetitions = document.getElementById('btn-competitions');
             const btnGames = document.getElementById('btn-games');
             
-            // (جديد) جلب أزرار الأدوات المدمجة
+            // (*** إصلاح: إضافة تعريفات الأزرار المفقودة ***)
             const btnToolRemote = document.getElementById('btn-tool-remote');
             const btnToolSodfa = document.getElementById('btn-tool-sodfa');
             const btnToolQuestions = document.getElementById('btn-tool-questions');
@@ -827,7 +967,8 @@
             const btnGameMalkoof = document.getElementById('btn-game-malkoof');
             const btnGameMafia = document.getElementById('btn-game-mafia');
 
-            // (جديد) جلب جميع IFrames
+
+            // جلب جميع IFrames
             const iframes = {
                 'tool-remote': document.getElementById('remote-iframe'),
                 'tool-sodfa': document.getElementById('sodfa-iframe'),
@@ -841,7 +982,7 @@
                 'game-mafia': document.getElementById('mafia-iframe')
             };
 
-            // (جديد) ماب لأسماء ملفات IFrames
+            // ماب لأسماء ملفات IFrames
             const iframeSrcMap = {
                 'tool-remote': 'remot-app.html',
                 'tool-sodfa': 'sodfa-app.html',
@@ -855,78 +996,57 @@
                 'game-mafia': 'mafia-app.html'
             };
             
-            // (*** تعديل: جلب أزرار "العودة" للصفحات العادية ***)
+            // جلب أزرار "العودة" للصفحات العادية
             const backButtons = document.querySelectorAll('.btn-back');
             
-            // (*** جديد: جلب أزرار الخروج العائمة (X) ***)
+            // جلب أزرار الخروج العائمة (X)
             const closeIframeButtons = document.querySelectorAll('.btn-close-iframe');
             
-            // جلب جميع أزرار "سياسة الاستخدام" (الموجودة في التذييلات)
+            // جلب جميع أزرار "سياسة الاستخدام"
             const policyButtons = document.querySelectorAll('.btn-policy');
 
-            // --- 6. إضافة عناصر الوضع الليلي (2 حالة) ---
+            // عناصر الوضع الليلي
             const themeToggle = document.getElementById('theme-toggle');
             const darkIcon = document.getElementById('theme-toggle-dark-icon'); // قمر
             const lightIcon = document.getElementById('theme-toggle-light-icon'); // شمس
-            // تم حذف modernIcon
 
             // --- 7. دالة لتبديل الأيقونات (الوضع الليلي 2 حالة) ---
             function updateThemeIcons() {
                 const isDark = document.documentElement.classList.contains('dark');
-                
-                if (isDark) {
-                    // الوضع الليلي: أظهر الشمس
-                    darkIcon.style.display = 'none';
-                    lightIcon.style.display = 'block';
-                } else {
-                    // الوضع النهاري: أظهر القمر
-                    darkIcon.style.display = 'block';
-                    lightIcon.style.display = 'none';
-                }
+                darkIcon.style.display = isDark ? 'none' : 'block';
+                lightIcon.style.display = isDark ? 'block' : 'none';
             }
 
             // --- 8. ربط حدث النقر لزر الوضع الليلي (2 حالة) ---
             themeToggle.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.contains('dark');
-
-                if (isDark) {
-                    // ليلي -> نهاري
-                    document.documentElement.classList.remove('dark');
-                    localStorage.theme = 'light';
-                } else {
-                    // نهاري -> ليلي
-                    document.documentElement.classList.add('dark');
-                    localStorage.theme = 'dark';
-                }
-                
-                // تحديث الأيقونات
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.theme = isDark ? 'dark' : 'light';
                 updateThemeIcons();
             });
 
-            // --- 2. منطق شاشة الموافقة الإجبارية (LocalStorage) ---
-
-            // ماذا يحدث عند الضغط على "أوافق"
+            // --- 2. (تعديل) منطق شاشة الموافقة ---
+            // (تعديل) هذا الزر الآن يغلق النافذة ويؤشر على الموافقة
             acceptTermsButton.addEventListener('click', () => {
-                // 1. احفظ الموافقة في المتصفح
-                localStorage.setItem('sodfaTermsAccepted', 'true');
-                // 2. أخفِ شاشة الموافقة (مع تأثير بسيط)
                 termsModal.style.transition = 'opacity 0.3s ease-out';
                 termsModal.style.opacity = '0';
                 setTimeout(() => {
                     termsModal.style.display = 'none';
                 }, 300);
-                
-                // 3. أظهر الصفحة الرئيسية وحدث الحالة (بدلاً من showPage البسيط)
-                showPage('welcome', true); // استدعاء showPage المحدثة
+                authTermsCheckbox.checked = true; // (جديد) تفعيل الموافقة
+            });
+            
+            // (جديد) زر فتح الشروط من داخل شاشة المصادقة
+            btnShowTermsFromAuth.addEventListener('click', () => {
+                termsModal.style.display = 'flex';
+                void termsModal.offsetWidth; // Trigger reflow
+                termsModal.style.opacity = '1';
             });
 
 
             // --- 3. منطق التنقل بين الصفحات (مع History API وتأثير الفيد) ---
-
-            // متغير لتخزين الصفحة الظاهرة حالياً
             let currentPage = null;
 
-            // (جديد) ماب لربط pageId بالعناصر الخاصة به
+            // (*** إصلاح: تنظيف pageMap ليعتمد على المتغيرات المعرفة ***)
             const pageMap = {
                 'welcome': { element: pageWelcome },
                 'tools': { element: pageTools },
@@ -945,10 +1065,7 @@
                 'game-mafia': { element: pageGameMafia, iframe: iframes['game-mafia'], src: iframeSrcMap['game-mafia'] }
             };
 
-            // دالة لإظهار صفحة معينة وتحديث التاريخ
             function showPage(pageId, updateHistory = false) {
-                
-                // (جديد) جلب الصفحة من الماب
                 let pageConfig = pageMap[pageId] || pageMap['welcome'];
                 if (pageId === 'welcome' || !pageConfig) {
                     pageConfig = pageMap['welcome'];
@@ -956,82 +1073,65 @@
                 }
                 
                 const pageToShow = pageConfig.element;
+                if (!pageToShow || pageToShow === currentPage) return;
 
-                // لا تفعل شيئاً إذا كانت الصفحة المطلوبة هي نفسها الظاهرة
-                if (pageToShow === currentPage) return;
-
-                // (جديد) إخفاء/إظهار عناصر الواجهة الثابتة (تسجيل الدخول والوضع)
-                // إذا كانت الصفحة المدمجة (iframe)، قم بإخفاء الأزرار
+                // إخفاء/إظهار الواجهة الرئيسية
                 if (pageConfig.iframe) {
-                    authUI.classList.add('hidden');
+                    btnOpenSidebar.classList.add('hidden');
                     themeToggle.classList.add('hidden');
                 } else {
-                    authUI.classList.remove('hidden');
+                    btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
                 }
 
-                // 1. إخفاء الصفحة الحالية (إذا كانت موجودة)
+                // إخفاء الصفحة الحالية
                 if (currentPage) {
                     currentPage.style.opacity = '0';
-                    
-                    // (جديد) إيقاف أي iframe كان يعمل
-                    const currentPageConfig = Object.values(pageMap).find(p => p.element === currentPage);
+                    const currentPageConfig = Object.values(pageMap).find(p => p && p.element === currentPage);
                     if (currentPageConfig && currentPageConfig.iframe) {
                         setTimeout(() => {
-                            currentPageConfig.iframe.src = 'about:blank'; // إفراغ الإطار لإيقاف الأصوات
-                        }, 300); // إيقاف بعد انتهاء الانتقال
+                            currentPageConfig.iframe.src = 'about:blank'; 
+                        }, 300); 
                     }
                 }
 
-                // 2. إظهار الصفحة الجديدة
-                if (pageToShow) {
-                    // بعد انتهاء مدة الانتقال (300ms)، قم بتغيير العرض
-                    setTimeout(() => {
-                        if (currentPage) {
-                            currentPage.style.display = 'none'; // إخفاء الصفحة القديمة تماماً
-                        }
+                // إظهار الصفحة الجديدة
+                setTimeout(() => {
+                    if (currentPage) {
+                        currentPage.style.display = 'none'; 
+                    }
+                    pageToShow.style.display = 'flex'; 
 
-                        // إظهار الصفحة الجديدة
-                        pageToShow.style.display = 'flex'; // استخدام flex دائماً
+                    if (pageConfig.iframe && pageConfig.iframe.src === 'about:blank') {
+                        pageConfig.iframe.src = pageConfig.src;
+                    }
 
-                        // (جديد) تحميل الـ iframe إذا كان موجوداً
-                        if (pageConfig.iframe && pageConfig.iframe.src === 'about:blank') {
-                            pageConfig.iframe.src = pageConfig.src;
-                        }
+                    void pageToShow.offsetWidth; 
+                    pageToShow.style.opacity = '1';
+                    currentPage = pageToShow;
 
-                        // فرض إعادة رسم لضمان بدء الانتقال
-                        void pageToShow.offsetWidth; 
-
-                        // بدء التلاشي للظهور
-                        pageToShow.style.opacity = '1';
-                        
-                        // تحديث الصفحة الحالية
-                        currentPage = pageToShow;
-
-                    }, currentPage ? 300 : 0); // 300ms إذا كان هناك صفحة سابقة، 0ms إذا كان التحميل الأول
-                }
+                }, currentPage ? 300 : 0); 
                 
-                // العودة لأعلى الصفحة
                 window.scrollTo(0, 0);
 
-                // تحديث تاريخ المتصفح إذا كان مطلوباً (لتفعيل زر الرجوع)
+                // تحديث التاريخ
                 if (updateHistory) {
                     try {
                         if (window.location.hash !== `#${pageId}`) {
                             history.pushState({ page: pageId }, '', `#${pageId}`);
                         }
                     } catch (e) {
-                        console.warn("History API (pushState) not available in this environment.", e);
+                        console.warn("History API (pushState) not available.", e);
                     }
                 }
             }
 
-            // ربط أحداث النقر على أزرار اختيار الأقسام (مع تحديث التاريخ)
+            // ربط أحداث النقر على أزرار اختيار الأقسام
             btnTools.addEventListener('click', () => showPage('tools', true));
             btnCompetitions.addEventListener('click', () => showPage('competitions', true));
             btnGames.addEventListener('click', () => showPage('games', true));
 
-            // (جديد) ربط جميع أزرار التطبيقات المدمجة
+            // (*** إصلاح: تنظيف أحداث النقر لتعمل مباشرة ***)
             btnToolRemote.addEventListener('click', () => showPage('tool-remote', true));
             btnToolSodfa.addEventListener('click', () => showPage('tool-sodfa', true));
             btnToolQuestions.addEventListener('click', () => showPage('tool-questions', true));
@@ -1044,159 +1144,207 @@
             btnGameMafia.addEventListener('click', () => showPage('game-mafia', true));
 
 
-            // (*** تعديل: إعادة ربط أزرار "العودة" للصفحات العادية ***)
-            // (مثل صفحة الأدوات، المنافسات، الألعاب، السياسة)
+            // ربط أزرار "العودة" للصفحات العادية
             backButtons.forEach(button => {
-                // (*** تعديل: جعل أزرار العودة تعود للصفحة الصحيحة ***)
-                const parentPage = button.closest('.page');
-                let returnPage = 'welcome'; // الافتراضي هو العودة للرئيسية
-
-                if (parentPage) {
-                    if (parentPage.id === 'page-tools') {
-                        returnPage = 'welcome';
-                    } else if (parentPage.id === 'page-competitions') {
-                        returnPage = 'welcome';
-                    } else if (parentPage.id === 'page-games') {
-                        returnPage = 'welcome';
-                    } else if (parentPage.id === 'page-policy') {
-                        returnPage = 'welcome';
-                    }
-                    // يمكنك إضافة المزيد من القواعد هنا إذا تغيرت الأقسام
-                }
-                
-                button.addEventListener('click', () => showPage(returnPage, true));
+                button.addEventListener('click', () => showPage('welcome', true));
             });
             
-            // (*** جديد: ربط أزرار الخروج العائمة (X) للعودة للرئيسية ***)
+            // ربط أزرار الخروج العائمة (X)
             closeIframeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // العودة للصفحة الرئيسية (welcome)
-                    showPage('welcome', true);
-                });
+                button.addEventListener('click', () => showPage('welcome', true));
             });
 
-
-            // ربط أحداث النقر على جميع أزرار "سياسة الاستخدام" (الموجودة في التذييلات)
+            // ربط أزرار "سياسة الاستخدام"
             policyButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    e.preventDefault(); // منع الرابط من القفز (#)
+                    e.preventDefault(); 
                     showPage('policy', true);
                 });
             });
 
             // --- 4. معالجة زر الرجوع وتحميل الصفحة المباشر ---
-
-            // هذا المستمع يعمل عند الضغط على زر الرجوع في المتصفح
             window.addEventListener('popstate', (event) => {
-                let pageId = 'welcome'; // الافتراضي هو العودة للرئيسية
+                let pageId = 'welcome'; 
                 if (event.state && event.state.page) {
                     pageId = event.state.page;
                 } else if (window.location.hash) {
                     pageId = window.location.hash.substring(1) || 'welcome';
                 }
-                
-                // نمرر 'false' لأننا لا نريد إضافة حالة جديدة للتاريخ (نحن نعود للوراء)
-                showPage(pageId, false);
+                // (تعديل) لا تظهر الصفحة إذا كان المستخدم مسجلاً الخروج
+                const { data: { user } } = supabase.auth.getUser();
+                if (user) {
+                    showPage(pageId, false);
+                }
             });
 
-            // --- 5. تحديث دالة تحميل الصفحة لتدعم الوضع الليلي ---
-            // (*** إصلاح شامل: هذه الدالة تعالج الآن الشروط، المصادقة، والتحميل العادي ***)
-            function handleInitialPageLoad() {
-                // 5.1 - تحديث أيقونات الوضع الليلي عند التحميل
-                updateThemeIcons();
-
-                // 5.2 - باقي منطق تحميل الصفحة والروابط
-                
-                // (*** الخطوة 1: التحقق من الموافقة على الشروط أولاً ***)
-                if (localStorage.getItem('sodfaTermsAccepted') !== 'true') {
-                    // لم يوافق: اعرض شاشة الموافقة وأخفِ كل شيء آخر
-                    allPages.forEach(p => { p.style.display = 'none'; p.style.opacity = '0'; }); // تأكد أن كل شيء مخفي
-                    termsModal.style.display = 'flex';
-                    termsModal.style.opacity = '1';
-                    // أوقف التنفيذ هنا
-                    return; 
-                }
-                
-                // (*** الخطوة 2: إذا وافق، أخفِ الشروط وتحقق من رمز المصادقة ***)
-                termsModal.style.display = 'none';
-
-                // (*** الخطوة 3: التحقق من وجود رمز المصادقة ***)
-                // إذا كان الرابط يحتوي على رمز الدخول، لا تقم بمعالجته كصفحة.
-                // مكتبة Supabase ستلتقطه، و onAuthStateChange سيعمل.
-                if (window.location.hash.includes('access_token=') || window.location.hash.includes('error=')) {
-                    console.log('Auth token detected, waiting for onAuthStateChange...');
-                    // لا تفعل شيئاً، دع onAuthStateChange يتولى الأمر
-                } else {
-                    // (*** الخطوة 4: إذا لم يكن هناك رمز، قم بتحميل الصفحة كالمعتاد ***)
-                    let pageId = window.location.hash.substring(1); 
-
-                    if (!pageId) { 
-                        pageId = 'welcome';
-                    }
-                    showPage(pageId, false); 
-                    try {
-                        // استبدال الحالة لضمان أن الحالة الأولى صحيحة
-                        history.replaceState({ page: pageId }, '', `#${pageId}`); 
-                    } catch (e) {
-                        console.warn("History API (replaceState) not available in this environment.", e);
-                    }
-                }
-            }
-
-            // استدعاء الدالة عند تحميل الصفحة
-            handleInitialPageLoad();
+            // --- 5. (محذوف) دالة تحميل الصفحة - تم نقل منطقها إلى onAuthStateChange ---
+            // handleInitialPageLoad();
+            
+            // تحديث أيقونات الوضع عند التحميل الأولي
+            updateThemeIcons();
             
             
             // --- 9. منطق المصادقة (Auth) ---
             
-            // إظهار رسالة خطأ
+            // دوال المساعدة للرسائل
             function showAuthError(message) {
                 authSuccess.classList.add('hidden');
                 authError.classList.remove('hidden');
                 authError.textContent = message;
             }
-            
-            // إظهار رسالة نجاح
             function showAuthSuccess(message) {
                 authError.classList.add('hidden');
                 authSuccess.classList.remove('hidden');
                 authSuccess.textContent = message;
             }
-            
-            // فتح شاشة تسجيل الدخول
-            btnShowLogin.addEventListener('click', () => {
+            function showSettingsError(message) {
+                settingsSuccess.classList.add('hidden');
+                settingsError.classList.remove('hidden');
+                settingsError.textContent = message;
+            }
+            function showSettingsSuccess(message) {
+                settingsError.classList.add('hidden');
+                settingsSuccess.classList.remove('hidden');
+                settingsSuccess.textContent = message;
+            }
+
+            // دوال فتح/إغلاق القائمة الجانبية
+            function openSidebar() {
+                sidebarOverlay.classList.remove('hidden');
+                void sidebarOverlay.offsetWidth; // Trigger reflow
+                sidebarOverlay.classList.remove('opacity-0');
+                sidebarMenu.classList.remove('translate-x-full');
+            }
+
+            function closeSidebar() {
+                sidebarOverlay.classList.add('opacity-0');
+                sidebarMenu.classList.add('translate-x-full');
+                setTimeout(() => {
+                    sidebarOverlay.classList.add('hidden');
+                }, 300); // مطابقة مدة الانتقال
+            }
+
+            // (جديد) دالة لإظهار عرض تسجيل الدخول
+            function showLoginView() {
                 authTitle.textContent = 'تسجيل الدخول';
                 btnLoginSubmit.classList.remove('hidden');
                 btnSignupSubmit.classList.add('hidden');
-                authUsernameField.classList.add('hidden'); // (جديد) إخفاء اسم المستخدم
+                authUsernameField.classList.add('hidden');
+                authTermsField.classList.add('hidden');
+                btnShowSignupView.classList.remove('hidden');
+                btnShowLoginView.classList.add('hidden');
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
-                authModal.style.display = 'flex';
-            });
-            
-            // فتح شاشة إنشاء حساب
-            btnShowSignup.addEventListener('click', () => {
+            }
+
+            // (جديد) دالة لإظهار عرض إنشاء الحساب
+            function showSignupView() {
                 authTitle.textContent = 'إنشاء حساب جديد';
                 btnLoginSubmit.classList.add('hidden');
                 btnSignupSubmit.classList.remove('hidden');
-                authUsernameField.classList.remove('hidden'); // (جديد) إظهار اسم المستخدم
+                authUsernameField.classList.remove('hidden');
+                authTermsField.classList.remove('hidden');
+                btnShowSignupView.classList.add('hidden');
+                btnShowLoginView.classList.remove('hidden');
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
+            }
+
+            // (جديد) ربط أزرار التبديل
+            btnShowSignupView.addEventListener('click', showSignupView);
+            btnShowLoginView.addEventListener('click', showLoginView);
+
+            // ربط أحداث القائمة الجانبية
+            btnOpenSidebar.addEventListener('click', openSidebar);
+            btnCloseSidebar.addEventListener('click', closeSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // ربط أزرار *داخل* القائمة الجانبية
+            btnSidebarLogin.addEventListener('click', () => {
+                showLoginView(); // (تعديل)
+                btnCloseAuth.classList.remove('hidden'); // (جديد) إظهار زر الإغلاق
                 authModal.style.display = 'flex';
+                closeSidebar(); // إغلاق القائمة عند فتح النافذة
+            });
+
+            btnSidebarSignup.addEventListener('click', () => {
+                showSignupView(); // (تعديل)
+                btnCloseAuth.classList.remove('hidden'); // (جديد) إظهار زر الإغلاق
+                authModal.style.display = 'flex';
+                closeSidebar(); // إغلاق القائمة عند فتح النافذة
+            });
+
+            btnSidebarSettings.addEventListener('click', () => {
+                const { data: { user } } = supabase.auth.getUser();
+                if (user && user.user_metadata?.username) {
+                    settingsUsernameInput.value = user.user_metadata.username;
+                }
+                settingsError.classList.add('hidden');
+                settingsSuccess.classList.add('hidden');
+                settingsModal.style.display = 'flex';
+                closeSidebar(); // إغلاق القائمة عند فتح النافذة
             });
             
-            // إغلاق شاشة المصادقة
+            btnSidebarLogout.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+                closeSidebar(); // إغلاق القائمة بعد تسجيل الخروج
+            });
+
+            // --- منطق النوافذ المنبثقة (Modals) ---
+            
+            // إغلاق نافذة المصادقة
             btnCloseAuth.addEventListener('click', () => {
                 authModal.style.display = 'none';
             });
-            
-            // عند إرسال النموذج
+
+            // إغلاق نافذة الإعدادات
+            btnCloseSettings.addEventListener('click', () => {
+                settingsModal.style.display = 'none';
+            });
+
+            // تحديث اسم المستخدم
+            btnUpdateUsername.addEventListener('click', async (e) => {
+                e.preventDefault(); 
+                const newUsername = settingsUsernameInput.value.trim();
+                if (!newUsername || newUsername.length < 3) {
+                    showSettingsError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
+                    return;
+                }
+                showSettingsSuccess('يتم تحديث الاسم...');
+                const { data, error } = await supabase.auth.updateUser({ data: { username: newUsername } });
+                if (error) {
+                    showSettingsError(error.message);
+                } else {
+                    showSettingsSuccess('تم تحديث اسم المستخدم بنجاح!');
+                    sidebarUsername.textContent = newUsername; 
+                    setTimeout(() => {
+                        settingsModal.style.display = 'none';
+                    }, 1500);
+                }
+            });
+
+            // إعادة تعيين كلمة المرور
+            btnResetPassword.addEventListener('click', async (e) => {
+                e.preventDefault();
+                showSettingsSuccess('يتم إرسال الرابط...');
+                const { data: { user } } = supabase.auth.getUser();
+                if (!user) {
+                    showSettingsError('لا يمكن العثور على المستخدم.');
+                    return;
+                }
+                const { data, error } = await supabase.auth.resetPasswordForEmail(user.email);
+                if (error) {
+                    showSettingsError(error.message);
+                } else {
+                    showSettingsSuccess('تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.');
+                }
+            });
+
+            // إرسال نموذج المصادقة (تسجيل الدخول / إنشاء حساب)
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('auth-email').value;
                 const password = document.getElementById('auth-password').value;
-                
-                // تحديد أي زر تم الضغط عليه
                 const isLogin = e.submitter === btnLoginSubmit;
                 
                 if (isLogin) {
@@ -1206,7 +1354,6 @@
                         email: email,
                         password: password,
                     });
-                    
                     if (error) {
                         showAuthError(error.message);
                     } else {
@@ -1215,87 +1362,94 @@
                             authModal.style.display = 'none';
                         }, 1000);
                     }
-                    
                 } else {
                     // --- منطق إنشاء حساب ---
                     
-                    // (جديد) جلب اسم المستخدم والتحقق منه
-                    const username = authUsernameInput.value.trim();
-                    if (!username) {
-                        showAuthError('الرجاء إدخال اسم مستخدم.');
-                        return; // أوقف العملية
+                    // (جديد) التحقق من الموافقة على الشروط
+                    const termsAgreed = authTermsCheckbox.checked;
+                    if (!termsAgreed) {
+                        showAuthError('يجب الموافقة على شروط الاستخدام أولاً.');
+                        return;
                     }
-                    if (username.length < 3) {
+                    
+                    const username = authUsernameInput.value.trim();
+                    if (!username || username.length < 3) {
                         showAuthError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
                         return;
                     }
-
                     showAuthSuccess('يتم إنشاء الحساب...');
-                    
-                    // (تعديل) إضافة اسم المستخدم إلى options.data
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
-                        options: {
-                            data: {
-                                // هذا سيخزن اسم المستخدم في user_metadata
-                                'username': username
-                            }
-                        }
+                        options: { data: { 'username': username } }
                     });
-                    
                     if (error) {
                         showAuthError(error.message);
                     } else {
                         showAuthSuccess('نجح! يرجى مراجعة بريدك الإلكتروني لتأكيد الحساب.');
-                        // لا نغلق الشاشة، ننتظر التأكيد
                     }
                 }
             });
             
-            // --- تسجيل الخروج ---
-            btnLogout.addEventListener('click', async () => {
-                await supabase.auth.signOut();
-            });
-            
-            // --- مراقبة حالة المصادقة ---
-            // (*** إصلاح شامل: هذه الدالة تعالج الآن الدخول العادي والدخول عبر رابط التأكيد ***)
+            // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
             supabase.auth.onAuthStateChange((event, session) => {
                 
-                // (جديد) تحديد إذا كان الرابط الحالي يحتوي على رمز مصادقة
                 let currentPageId = window.location.hash.substring(1);
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
 
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
-                    authLinks.classList.add('hidden');
-                    userInfo.classList.remove('hidden');
-                    userInfo.classList.add('flex');
                     
-                    // (تعديل) إظهار اسم المستخدم بدلاً من الإيميل
-                    // إذا كان اسم المستخدم موجوداً، اعرضه. وإلا، اعرض الإيميل.
+                    // 1. إظهار واجهة التطبيق الرئيسية
+                    btnOpenSidebar.classList.remove('hidden');
+                    themeToggle.classList.remove('hidden');
+                    
+                    // 2. إخفاء نافذة المصادقة
+                    authModal.style.display = 'none';
+                    
+                    // 3. تحديث القائمة الجانبية
+                    sidebarLoggedOut.classList.add('hidden');
+                    sidebarLoggedIn.classList.remove('hidden');
                     const displayName = session.user.user_metadata?.username || session.user.email;
-                    userEmail.textContent = displayName;
+                    sidebarUsername.textContent = displayName;
                     
-                    // (جديد) إذا كان المستخدم قد سجل دخوله للتو عبر الرابط
-                    // أو كان في الصفحة الرئيسية، اعرض له صفحة 'welcome'.
-                    if (isAuthHash || currentPageId === '' || currentPageId === 'welcome') {
-                         // التأكد من إظهار صفحة 'welcome' بعد تسجيل الدخول الناجح
+                    // 4. تحديد الصفحة المراد عرضها
+                    if (isAuthHash || currentPageId === '' || !pageMap[currentPageId]) {
                         showPage('welcome', false);
-                        // (جديد) تنظيف الرابط من رمز المصادقة
                         try {
                             history.replaceState({ page: 'welcome' }, '', `#welcome`);
-                        } catch(e) {
-                            console.warn("History API (replaceState) not available.", e);
-                        }
+                        } catch(e) { console.warn("History API (replaceState) not available.", e); }
+                    } else {
+                        // إذا كان المستخدم مسجلاً دخوله ويفتح رابطاً عميقاً (مثل #tools)
+                        showPage(currentPageId, false);
                     }
                     
                 } else {
-                    // المستخدم سجل خروجه
-                    authLinks.classList.remove('hidden');
-                    userInfo.classList.add('hidden');
-                    userInfo.classList.remove('flex');
-                    userEmail.textContent = '';
+                    // المستخدم سجل خروجه (أو زائر جديد)
+                    
+                    // 1. إخفاء واجهة التطبيق الرئيسية
+                    btnOpenSidebar.classList.add('hidden');
+                    themeToggle.classList.add('hidden');
+                    
+                    // 2. إخفاء جميع الصفحات
+                    allPages.forEach(p => { 
+                        p.style.display = 'none'; 
+                        p.style.opacity = '0'; 
+                    });
+                    currentPage = null;
+                    
+                    // 3. تحديث القائمة الجانبية (للحالة غير المسجلة)
+                    sidebarLoggedIn.classList.add('hidden');
+                    sidebarLoggedOut.classList.remove('hidden');
+                    sidebarUsername.textContent = '';
+                    
+                    // 4. إظهار نافذة المصادقة الإجبارية
+                    // (فقط إذا لم يكن المستخدم قادماً من رابط تأكيد)
+                    if (!isAuthHash) {
+                        showLoginView(); // (تعديل)
+                        btnCloseAuth.classList.add('hidden'); // (جديد) إخفاء زر الإغلاق
+                        authModal.style.display = 'flex';
+                    }
                 }
             });
 
