@@ -97,7 +97,8 @@
     </style>
 </head>
 <!-- إضافة كلاسات الوضع الليلي إلى body - تم التغيير إلى zinc -->
-<body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+<!-- (إصلاح 1) إضافة min-h-screen لضمان ملء الشاشة دائماً -->
+<body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 min-h-screen">
 
     <!-- ======================= -->
     <!--  (جديد) زر القائمة الجانبية (الحساب)     -->
@@ -133,7 +134,7 @@
         <!-- محتوى القائمة (ديناميكي) -->
         <div class="p-4">
             
-            <!-- 1. حالة تسجيل الخروج -->
+            <!-- 1. حالة تسجيل الخروج (أو الضيف) -->
             <div id="sidebar-logged-out" class="hidden">
                 <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
                 <div class="flex flex-col gap-3">
@@ -328,7 +329,45 @@
                         لديك حساب بالفعل؟ سجّل الدخول
                     </button>
                 </div>
+
+                <!-- (جديد) زر المتابعة كضيف -->
+                <div class="mt-4 text-center border-t border-zinc-200 dark:border-zinc-700 pt-4">
+                    <button type="button" id="btn-show-guest-warning" class="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:underline">
+                        المتابعة كضيف
+                    </button>
+                </div>
             </form>
+        </div>
+    </div>
+
+
+    <!-- ======================= -->
+    <!-- (جديد) شاشة التحذير للضيف -->
+    <!-- ======================= -->
+    <div id="guest-warning-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
+                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تنبيه: وضع الضيف</h2>
+            </header>
+            
+            <!-- المحتوى -->
+            <div class="p-8">
+                <p class="text-lg text-center text-zinc-700 dark:text-zinc-300 mb-6">
+                    بالمتابعة كضيف، ستتمكن من تصفح الألعاب، لكنك
+                    <strong class="text-red-600 dark:text-red-400">لن تتمكن</strong>
+                    من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية.
+                </p>
+                <div class="flex flex-col gap-4">
+                    <button id="btn-guest-continue" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
+                        المتابعة كضيف
+                    </button>
+                    <button id="btn-guest-go-back-to-login" class="w-full bg-zinc-200 text-zinc-700 font-bold py-3 px-10 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition active:scale-95">
+                        العودة لتسجيل الدخول
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -898,15 +937,21 @@
             const authUsernameField = document.getElementById('auth-username-field');
             const authUsernameInput = document.getElementById('auth-username');
             
-            // (جديد) حقل الموافقة على الشروط
+            // حقل الموافقة على الشروط
             const authTermsField = document.getElementById('auth-terms-field');
             const authTermsCheckbox = document.getElementById('auth-terms-agree');
             const btnShowTermsFromAuth = document.getElementById('btn-show-terms-from-auth');
             
-            // (جديد) أزرار تبديل عرض المصادقة
+            // أزرار تبديل عرض المصادقة
             const btnShowSignupView = document.getElementById('btn-show-signup-view');
             const btnShowLoginView = document.getElementById('btn-show-login-view');
             
+            // (جديد) عناصر وضع الضيف
+            const btnShowGuestWarning = document.getElementById('btn-show-guest-warning');
+            const guestWarningModal = document.getElementById('guest-warning-modal');
+            const btnGuestContinue = document.getElementById('btn-guest-continue');
+            const btnGuestGoBackToLogin = document.getElementById('btn-guest-go-back-to-login');
+
             // عناصر القائمة الجانبية
             const btnOpenSidebar = document.getElementById('btn-open-sidebar');
             const btnCloseSidebar = document.getElementById('btn-close-sidebar');
@@ -937,7 +982,6 @@
             const pageGames = document.getElementById('page-games');
             const pagePolicy = document.getElementById('page-policy');
             
-            // (*** إصلاح: إضافة تعريفات المتغيرات المفقودة ***)
             const pageToolRemote = document.getElementById('page-tool-remote');
             const pageToolSodfa = document.getElementById('page-tool-sodfa');
             const pageToolQuestions = document.getElementById('page-tool-questions');
@@ -947,7 +991,7 @@
             const pageGameTopTen = document.getElementById('page-game-topten');
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
-            const pageGameMafia = document.getElementById('page-game-mafia'); // <-- هذا هو المتغير الذي كان مفقوداً
+            const pageGameMafia = document.getElementById('page-game-mafia');
             
             // جلب كل الصفحات
             const allPages = document.querySelectorAll('.page');
@@ -957,7 +1001,6 @@
             const btnCompetitions = document.getElementById('btn-competitions');
             const btnGames = document.getElementById('btn-games');
             
-            // (*** إصلاح: إضافة تعريفات الأزرار المفقودة ***)
             const btnToolRemote = document.getElementById('btn-tool-remote');
             const btnToolSodfa = document.getElementById('btn-tool-sodfa');
             const btnToolQuestions = document.getElementById('btn-tool-questions');
@@ -1047,7 +1090,6 @@
             // --- 3. منطق التنقل بين الصفحات (مع History API وتأثير الفيد) ---
             let currentPage = null;
 
-            // (*** إصلاح: تنظيف pageMap ليعتمد على المتغيرات المعرفة ***)
             const pageMap = {
                 'welcome': { element: pageWelcome },
                 'tools': { element: pageTools },
@@ -1132,7 +1174,6 @@
             btnCompetitions.addEventListener('click', () => showPage('competitions', true));
             btnGames.addEventListener('click', () => showPage('games', true));
 
-            // (*** إصلاح: تنظيف أحداث النقر لتعمل مباشرة ***)
             btnToolRemote.addEventListener('click', () => showPage('tool-remote', true));
             btnToolSodfa.addEventListener('click', () => showPage('tool-sodfa', true));
             btnToolQuestions.addEventListener('click', () => showPage('tool-questions', true));
@@ -1147,12 +1188,14 @@
 
             // ربط أزرار "العودة" للصفحات العادية
             backButtons.forEach(button => {
-                button.addEventListener('click', () => showPage('welcome', true));
+                // (إصلاح 2) استخدام history.back() بدلاً من showPage('welcome', true)
+                button.addEventListener('click', () => history.back());
             });
             
             // ربط أزرار الخروج العائمة (X)
             closeIframeButtons.forEach(button => {
-                button.addEventListener('click', () => showPage('welcome', true));
+                // (إصلاح 2) استخدام history.back() بدلاً من showPage('welcome', true)
+                button.addEventListener('click', () => history.back());
             });
 
             // ربط أزرار "سياسة الاستخدام"
@@ -1171,15 +1214,16 @@
                 } else if (window.location.hash) {
                     pageId = window.location.hash.substring(1) || 'welcome';
                 }
-                // (تعديل) لا تظهر الصفحة إذا كان المستخدم مسجلاً الخروج
+                
+                // (تعديل) لا تظهر الصفحة إذا كان المستخدم مسجلاً الخروج أو ضيفاً
                 const { data: { user } } = supabase.auth.getUser();
-                if (user) {
+                const isGuest = sessionStorage.getItem('isGuest') === 'true';
+
+                if (user || isGuest) {
                     showPage(pageId, false);
                 }
+                // إذا لم يكن مسجلاً دخوله وليس ضيفاً، لا تفعل شيئاً (تبقى شاشة المصادقة ظاهرة)
             });
-
-            // --- 5. (محذوف) دالة تحميل الصفحة - تم نقل منطقها إلى onAuthStateChange ---
-            // handleInitialPageLoad();
             
             // تحديث أيقونات الوضع عند التحميل الأولي
             updateThemeIcons();
@@ -1255,6 +1299,28 @@
             btnShowSignupView.addEventListener('click', showSignupView);
             btnShowLoginView.addEventListener('click', showLoginView);
 
+            // (جديد) ربط أحداث وضع الضيف
+            btnShowGuestWarning.addEventListener('click', () => {
+                guestWarningModal.style.display = 'flex';
+            });
+            btnGuestGoBackToLogin.addEventListener('click', () => {
+                guestWarningModal.style.display = 'none';
+            });
+            btnGuestContinue.addEventListener('click', () => {
+                sessionStorage.setItem('isGuest', 'true'); // (جديد) تتبع الضيف في الجلسة
+                guestWarningModal.style.display = 'none';
+                authModal.style.display = 'none';
+                
+                // إظهار واجهة التطبيق يدوياً (لأن onAuthStateChange لن يفعل ذلك)
+                btnOpenSidebar.classList.remove('hidden');
+                themeToggle.classList.remove('hidden');
+                showPage('welcome', false);
+                try {
+                    history.replaceState({ page: 'welcome' }, '', `#welcome`);
+                } catch(e) {}
+            });
+
+
             // ربط أحداث القائمة الجانبية
             btnOpenSidebar.addEventListener('click', openSidebar);
             btnCloseSidebar.addEventListener('click', closeSidebar);
@@ -1262,33 +1328,37 @@
 
             // ربط أزرار *داخل* القائمة الجانبية
             btnSidebarLogin.addEventListener('click', () => {
-                showLoginView(); // (تعديل)
-                btnCloseAuth.classList.remove('hidden'); // (جديد) إظهار زر الإغلاق
+                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
+                showLoginView();
+                btnCloseAuth.classList.remove('hidden'); // إظهار زر الإغلاق
                 authModal.style.display = 'flex';
-                closeSidebar(); // إغلاق القائمة عند فتح النافذة
+                closeSidebar(); 
             });
 
             btnSidebarSignup.addEventListener('click', () => {
-                showSignupView(); // (تعديل)
-                btnCloseAuth.classList.remove('hidden'); // (جديد) إظهار زر الإغلاق
+                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
+                showSignupView();
+                btnCloseAuth.classList.remove('hidden'); // إظهار زر الإغلاق
                 authModal.style.display = 'flex';
-                closeSidebar(); // إغلاق القائمة عند فتح النافذة
+                closeSidebar(); 
             });
 
             btnSidebarSettings.addEventListener('click', () => {
+                // (ملاحظة: هذا الزر لن يظهر للضيف لأنه في sidebar-logged-in)
                 const { data: { user } } = supabase.auth.getUser();
-                if (user && user.user_metadata?.username) {
+                if (user && user.user-metadata?.username) {
                     settingsUsernameInput.value = user.user_metadata.username;
                 }
                 settingsError.classList.add('hidden');
                 settingsSuccess.classList.add('hidden');
                 settingsModal.style.display = 'flex';
-                closeSidebar(); // إغلاق القائمة عند فتح النافذة
+                closeSidebar(); 
             });
             
             btnSidebarLogout.addEventListener('click', async () => {
+                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
                 await supabase.auth.signOut();
-                closeSidebar(); // إغلاق القائمة بعد تسجيل الخروج
+                closeSidebar(); 
             });
 
             // --- منطق النوافذ المنبثقة (Modals) ---
@@ -1365,8 +1435,6 @@
                     }
                 } else {
                     // --- منطق إنشاء حساب ---
-                    
-                    // (جديد) التحقق من الموافقة على الشروط
                     const termsAgreed = authTermsCheckbox.checked;
                     if (!termsAgreed) {
                         showAuthError('يجب الموافقة على شروط الاستخدام أولاً.');
@@ -1397,16 +1465,19 @@
                 
                 let currentPageId = window.location.hash.substring(1);
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
+                const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
+                    sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
                     
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
                     
-                    // 2. إخفاء نافذة المصادقة
+                    // 2. إخفاء نوافذ المصادقة
                     authModal.style.display = 'none';
+                    guestWarningModal.style.display = 'none';
                     
                     // 3. تحديث القائمة الجانبية
                     sidebarLoggedOut.classList.add('hidden');
@@ -1421,7 +1492,6 @@
                             history.replaceState({ page: 'welcome' }, '', `#welcome`);
                         } catch(e) { console.warn("History API (replaceState) not available.", e); }
                     } else {
-                        // إذا كان المستخدم مسجلاً دخوله ويفتح رابطاً عميقاً (مثل #tools)
                         showPage(currentPageId, false);
                     }
                     
@@ -1444,11 +1514,18 @@
                     sidebarLoggedOut.classList.remove('hidden');
                     sidebarUsername.textContent = '';
                     
-                    // 4. إظهار نافذة المصادقة الإجبارية
-                    // (فقط إذا لم يكن المستخدم قادماً من رابط تأكيد)
-                    if (!isAuthHash) {
-                        showLoginView(); // (تعديل)
-                        btnCloseAuth.classList.add('hidden'); // (جديد) إخفاء زر الإغلاق
+                    // 4. إظهار نافذة المصادقة أو واجهة الضيف
+                    if (isAuthHash) {
+                        // لا تفعل شيئاً، انتظر معالجة الرابط
+                    } else if (isGuest) {
+                        // (جديد) المستخدم اختار أن يكون ضيفاً
+                        btnOpenSidebar.classList.remove('hidden');
+                        themeToggle.classList.remove('hidden');
+                        showPage('welcome', false);
+                    } else {
+                        // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
+                        showLoginView();
+                        btnCloseAuth.classList.add('hidden');
                         authModal.style.display = 'flex';
                     }
                 }
