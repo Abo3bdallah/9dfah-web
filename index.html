@@ -439,7 +439,48 @@
 
 
     <!-- ======================= -->
-    <!-- (جديد) شاشة الإعدادات (*** تم التعديل ***) -->
+    <!-- (جديد) شاشة إعادة تعيين كلمة المرور -->
+    <!-- ======================= -->
+    <div id="reset-password-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
+                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">إعادة تعيين كلمة المرور</h2>
+            </header>
+            
+            <!-- نموذج الإدخال -->
+            <form id="reset-password-form" class="p-8">
+                <p class="text-zinc-700 dark:text-zinc-300 mb-6 text-center">أهلاً بك. الرجاء إدخال كلمة المرور الجديدة.</p>
+                
+                <div class="mb-4">
+                    <label for="reset-password-input" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
+                    <input type="password" id="reset-password-input" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                </div>
+
+                <div class="mb-6">
+                    <label for="reset-password-confirm-input" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" id="reset-password-confirm-input" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                </div>
+                
+                <!-- رسالة الخطأ -->
+                <div id="reset-password-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
+                <!-- رسالة النجاح -->
+                <div id="reset-password-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
+
+                <!-- الأزرار -->
+                <div class="flex flex-col gap-4">
+                    <button type="submit" id="btn-reset-password-submit" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
+                        حفظ كلمة المرور الجديدة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ======================= -->
+    <!-- (جديد) شاشة الإعدادات -->
     <!-- ======================= -->
     <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
@@ -450,26 +491,16 @@
                 <button id="btn-close-settings" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
             </header>
             
-            <!-- (جديد) أزرار التبويب (Tabs) -->
+            <!-- (جديد) شريط التبويب -->
             <div class="flex border-b border-zinc-200 dark:border-zinc-700">
-                <button id="btn-tab-account" class="settings-tab-btn active" data-tab="account">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    الحساب
-                </button>
-                <button id="btn-tab-general" class="settings-tab-btn" data-tab="general">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    عام
-                </button>
+                <button id="btn-tab-account" data-tab="account" class="settings-tab-btn active">الحساب</button>
+                <button id="btn-tab-general" data-tab="general" class="settings-tab-btn">عام</button>
             </div>
 
             <!-- نموذج الإعدادات -->
             <form id="settings-form" class="p-8">
-                
-                <!-- (جديد) محتوى تبويب "الحساب" -->
+
+                <!-- (جديد) محتوى تبويب الحساب -->
                 <div id="tab-content-account" class="settings-tab-content active">
                     <!-- قسم: تعديل اسم المستخدم -->
                     <div class="mb-6">
@@ -489,15 +520,11 @@
                     </div>
                 </div>
 
-                <!-- (جديد) محتوى تبويب "عام" -->
+                <!-- (جديد) محتوى تبويب عام -->
                 <div id="tab-content-general" class="settings-tab-content">
-                    <p class="text-zinc-600 dark:text-zinc-400 text-center">
-                        لا توجد إعدادات عامة حالياً.
-                        <br>
-                        (يمكن إضافة إعدادات المظهر هنا مستقبلاً)
-                    </p>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-center">سيتم إضافة إعدادات عامة هنا قريباً.</p>
                 </div>
-
+                
                 <!-- رسالة الخطأ -->
                 <div id="settings-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
                 <!-- رسالة النجاح -->
@@ -1083,6 +1110,16 @@
             const tabContentAccount = document.getElementById('tab-content-account');
             const tabContentGeneral = document.getElementById('tab-content-general');
 
+            // (جديد) عناصر شاشة إعادة تعيين كلمة المرور
+            const resetPasswordModal = document.getElementById('reset-password-modal');
+            const resetPasswordForm = document.getElementById('reset-password-form');
+            const btnResetPasswordSubmit = document.getElementById('btn-reset-password-submit');
+            const resetPasswordError = document.getElementById('reset-password-error');
+            const resetPasswordSuccess = document.getElementById('reset-password-success');
+            const resetPasswordInput = document.getElementById('reset-password-input');
+            const resetPasswordConfirmInput = document.getElementById('reset-password-confirm-input');
+
+
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
             const pageTools = document.getElementById('page-tools');
@@ -1176,6 +1213,49 @@
                 localStorage.theme = isDark ? 'dark' : 'light';
                 updateThemeIcons();
             });
+
+            // (جديد) ربط نموذج إعادة تعيين كلمة المرور
+            resetPasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newPassword = resetPasswordInput.value;
+                const confirmPassword = resetPasswordConfirmInput.value;
+
+                if (!newPassword || newPassword.length < 6) {
+                    resetPasswordError.textContent = 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.';
+                    resetPasswordError.classList.remove('hidden');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    resetPasswordError.textContent = 'كلمتا المرور غير متطابقتين.';
+                    resetPasswordError.classList.remove('hidden');
+                    return;
+                }
+
+                resetPasswordError.classList.add('hidden');
+                resetPasswordSuccess.textContent = 'جاري تحديث كلمة المرور...';
+                resetPasswordSuccess.classList.remove('hidden');
+
+                const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+
+                if (error) {
+                    resetPasswordError.textContent = error.message;
+                    resetPasswordError.classList.remove('hidden');
+                    resetPasswordSuccess.classList.add('hidden');
+                } else {
+                    resetPasswordError.classList.add('hidden');
+                    resetPasswordSuccess.textContent = 'تم تحديث كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.';
+                    
+                    resetPasswordInput.value = '';
+                    resetPasswordConfirmInput.value = '';
+
+                    setTimeout(() => {
+                        resetPasswordModal.style.display = 'none';
+                        showLoginView(); // إظهار نموذج تسجيل الدخول
+                        authModal.style.display = 'flex';
+                    }, 3000);
+                }
+            });
+
 
             // --- 2. (تعديل) منطق شاشة الموافقة ---
             // (تعديل) هذا الزر الآن يغلق النافذة ويؤشر على الموافقة
@@ -1634,13 +1714,34 @@
             // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
             supabase.auth.onAuthStateChange((event, session) => {
                 
+                // (جديد) معالجة حدث إعادة تعيين كلمة المرور
+                if (event === 'PASSWORD_RECOVERY' && !session) {
+                    // هذا الحدث يشتغل عندما يضغط المستخدم على رابط إعادة التعيين
+                    // يجب إظهار شاشة إدخال كلمة المرور الجديدة
+                    authModal.style.display = 'none'; // إخفاء شاشة الدخول
+                    guestWarningModal.style.display = 'none'; // إخفاء شاشة الضيف
+                    resetPasswordModal.style.display = 'flex'; // إظهار شاشة إعادة التعيين
+                    
+                    // تنظيف الرسائل القديمة
+                    resetPasswordError.classList.add('hidden');
+                    resetPasswordSuccess.classList.add('hidden');
+                    resetPasswordInput.value = '';
+                    resetPasswordConfirmInput.value = '';
+                    return; // إيقاف التنفيذ لهذا الحدث
+                }
+
                 let currentPageId = window.location.hash.substring(1);
-                const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
+                // (تعديل) فصل رابط إعادة التعيين عن روابط المصادقة الأخرى
+                const isRecoveryHash = currentPageId.includes('type=recovery');
+                const isAuthHash = (currentPageId.includes('access_token=') || currentPageId.includes('error=')) && !isRecoveryHash;
                 const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
                     sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
+                    
+                    // (جديد) إخفاء شاشة إعادة التعيين إذا كان المستخدم مسجلاً
+                    resetPasswordModal.style.display = 'none';
                     
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
@@ -1686,14 +1787,20 @@
                     sidebarUsername.textContent = '';
                     
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
+                    
+                    // (تعديل) التأكد من أننا لا نتعامل مع إعادة تعيين كلمة المرور
+                    if (resetPasswordModal.style.display === 'flex') {
+                        return; // لا تفعل شيئاً، دع المستخدم يكمل إعادة التعيين
+                    }
+                    
                     if (isAuthHash) {
-                        // لا تفعل شيئاً، انتظر معالجة الرابط
+                        // لا تفعل شيئاً، انتظر معالجة الرابط (هذا لـتأكيد الإيميل)
                     } else if (isGuest) {
                         // (جديد) المستخدم اختار أن يكون ضيفاً
                         btnOpenSidebar.classList.remove('hidden');
                         themeToggle.classList.remove('hidden');
                         showPage('welcome', false);
-                    } else {
+                    } else if (!isRecoveryHash) { // (تعديل) لا تظهر الدخول إذا كان الرابط لإعادة التعيين
                         // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
                         showLoginView();
                         btnCloseAuth.classList.add('hidden');
