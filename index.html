@@ -1449,9 +1449,9 @@
                 closeSidebar(); 
             });
 
-            btnSidebarSettings.addEventListener('click', () => {
+            btnSidebarSettings.addEventListener('click', async () => { // <-- إضافة async
                 // (ملاحظة: هذا الزر لن يظهر للضيف لأنه في sidebar-logged-in)
-                const { data: { user } } = supabase.auth.getUser();
+                const { data: { user } } = await supabase.auth.getUser(); // <-- إضافة await
                 if (user && user.user_metadata?.username) {
                     settingsUsernameInput.value = user.user_metadata.username;
                 }
@@ -1537,8 +1537,8 @@
             // إعادة تعيين كلمة المرور
             btnResetPassword.addEventListener('click', async (e) => {
                 e.preventDefault();
-                showSettingsSuccess('يتم إرسال الرابط...');
-                const { data: { user } } = await supabase.auth.getUser(); // (تعديل) getUser() ليست async
+                showSettingsSuccess('يتم إrsal الرابط...');
+                const { data: { user } } = await supabase.auth.getUser(); // (صحيح) getUser() هي دالة async
                 if (!user) {
                     showSettingsError('لا يمكن العثور على المستخدم.');
                     return;
