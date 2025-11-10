@@ -51,6 +51,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- (جديد) Google Analytics 4 (GA4) Snippet -->
+    <!-- 1. استبدل "G-XXXXXXXXXX" بمعرف القياس الخاص بك (من الخطوة 1) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X3CFQ7QJ6R"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+    
+        // 2. إيقاف "page_view" التلقائي لأننا نتعامل معه يدويًا في (SPA)
+        gtag('config', 'G-X3CFQ7QJ6R', {
+            'send_page_view': false 
+        }); 
+    </script>
+    <!-- نهاية Google Analytics Snippet -->
+
     <style>
         /* تطبيق الخط المخصص على كامل الصفحة */
         body {
@@ -1216,6 +1232,21 @@
                 const pageToShow = pageConfig.element;
                 if (!pageToShow || pageToShow === currentPage) return;
 
+                // (جديد) إرسال "page_view" يدويًا إلى Google Analytics
+                // هذا ضروري لتطبيقات الصفحة الواحدة (SPA)
+                if (typeof gtag === 'function' && pageConfig) {
+                    const pagePath = `/${pageId}`;
+                    // محاولة جلب عنوان الصفحة من رأس الصفحة (h2) أو استخدام العنوان الافتراضي
+                    const pageTitle = (pageConfig.element.querySelector('h2') ? pageConfig.element.querySelector('h2').textContent : `صدفة - ${pageId}`);
+                    
+                    gtag('event', 'page_view', {
+                        page_path: pagePath,
+                        page_title: pageTitle,
+                        page_location: window.location.origin + window.location.pathname + `#${pageId}`
+                    });
+                }
+                // نهاية كود Google Analytics
+
                 // إخفاء/إظهار الواجهة الرئيسية
                 if (pageConfig.iframe) {
                     btnOpenSidebar.classList.add('hidden');
@@ -1537,7 +1568,7 @@
             // إعادة تعيين كلمة المرور
             btnResetPassword.addEventListener('click', async (e) => {
                 e.preventDefault();
-                showSettingsSuccess('يتم إrsal الرابط...');
+                showSettingsSuccess('يتم إرسال الرابط...'); // <-- تم إصلاح الخطأ الإملائي هنا
                 const { data: { user } } = await supabase.auth.getUser(); // (صحيح) getUser() هي دالة async
                 if (!user) {
                     showSettingsError('لا يمكن العثور على المستخدم.');
