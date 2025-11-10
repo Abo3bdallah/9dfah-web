@@ -149,19 +149,25 @@
             z-index: -1; /* خلف المحتوى */
         }
 
-        /* الوضع الداكن */
+        /* --- الوضع الداكن --- */
+        .dark .animated-gradient-background {
+            /* (تعديل) خلفية داكنة جداً كأساس */
+            background: #020617; /* slate-950 */
+        }
+        
         .dark .animated-gradient-background::before,
         .dark .animated-gradient-background::after {
-            /* الوضع الداكن: ألوان الأقسام (أغمق) */
-            background: conic-gradient(
+             /* (تعديل) ألوان داكنة وغنية */
+             background: conic-gradient(
                 from 0deg,
-                #1e3a8a, /* أزرق داكن */
-                #166534, /* أخضر داكن */
-                #991b1b, /* أحمر داكن */
-                #1e3a8a  /* العودة للأزرق */
+                rgba(37, 99, 235, 0.5),   /* blue-600 */
+                rgba(22, 163, 74, 0.5),  /* green-600 */
+                rgba(220, 38, 38, 0.5),  /* red-600 */
+                rgba(37, 99, 235, 0.5)
             );
-            opacity: 0.4; /* شفافية أقل في الوضع الداكن */
-            filter: blur(100px); /* ضبابية أعلى */
+            /* (تعديل) شفافية أقل لتكون الألوان أوضح في الظلام */
+            opacity: 0.3; 
+            filter: blur(120px);
         }
 
         /* الطبقة الثانية للدوران العكسي */
