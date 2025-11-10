@@ -567,30 +567,32 @@
     <!--     الصفحة الرئيسية       -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen pt-12"> <!-- إصلاح المسافة العلوية -->
+    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen flex flex-col"> <!-- تعديل: إزالة المسافة العلوية وإضافة flex -->
 
         <!-- القسم العلوي المرن -->
         <div class="flex-grow flex flex-col justify-center">
-            <!-- العنوان الرئيسي -->
-            <!-- *** إصلاح: تمت إضافة pt-12 (padding-top) لمنع العنوان من الانقطاع *** -->
-            <header class="text-center mb-16 pt-12"> <!-- زيادة المسافة العلوية -->
-                <!-- تعديل العنوان: تكبير، إضافة حركات، ظل، أنيميشن -->
-                <!-- *** إصلاح: إضافة leading-normal لضمان ظهور الحركات *** -->
-                <h1 class="text-7xl md:text-9xl font-bold 
-                           bg-gradient-to-r from-blue-600 to-green-500 
-                           text-transparent bg-clip-text
-                           animate-gradient-animation <!-- (جديد) استخدام الأنيميشن من Tailwind -->
-                           bg-[size:200%_200%] <!-- (جديد) لعمل الأنيميشن -->
-                           pb-3
-                           leading-normal <!-- هنا الإصلاح -->
-                           [filter:drop-shadow(0_4px_4px_rgba(0,0,0,0.1))]
-                           dark:[filter:drop-shadow(0_4px_4px_rgba(0,0,0,0.3))]">
-                    صُدْفَة
-                </h1>
+            
+            <!-- (تعديل) العنوان الرئيسي داخل "بوكس" منفصل -->
+            <header class="mb-12 md:mb-16">
+                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl p-8 md:p-12 text-center 
+                            transform transition-all duration-300 
+                            [filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.05))]
+                            dark:[filter:drop-shadow(0_10px_10px_rgba(0,0,0,0.2))]">
+                    
+                    <h1 class="text-7xl sm:text-8xl md:text-9xl font-bold 
+                               bg-gradient-to-r from-blue-600 to-green-500 
+                               text-transparent bg-clip-text
+                               animate-gradient-animation
+                               bg-[size:200%_200%]
+                               pb-3
+                               leading-normal md:leading-snug"> <!-- تعديل: تحسين استجابة حجم الخط والمسافة -->
+                        صُدْفَة
+                    </h1>
+                </div>
             </header>
 
             <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
-            <main class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <main class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8"> <!-- تعديل: تقليل المسافة على الجوال -->
                 
                 <!-- اختيار 1: أدوات المقدم -->
                 <!-- تم التغيير إلى zinc - تم تخفيف اللون -->
