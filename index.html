@@ -123,6 +123,48 @@
             display: block; /* يظهر عند تفعيله */
         }
 
+        /* (جديد) ستايل زر المفضلة (النجمة) */
+        .btn-favorite-toggle {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 20;
+            padding: 8px;
+            border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            opacity: 0.7; /* إظهارها بشكل خافت افتراضياً */
+        }
+        .btn-favorite-toggle:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .dark .btn-favorite-toggle {
+            background-color: rgba(40, 56, 79, 0.3); /* dark:bg-slate-800/30 */
+        }
+        
+        .btn-favorite-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: #f1f5f9; /* slate-100 (لون الحواف) */
+            stroke-width: 1.5;
+            transition: all 0.2s ease;
+        }
+
+        /* كلاس "المفضلة" يغير لون الأيقونة */
+        .btn-favorite-toggle.favorited svg {
+            fill: #f59e0b; /* yellow-500 */
+            color: #f59e0b; /* yellow-500 */
+            stroke-width: 1;
+        }
+
+        /* (جديد) إخفاء المفضلة للضيف */
+        .guest-mode .btn-favorite-toggle {
+            display: none;
+        }
+
+
         /* (جديد) ستايل الخلفية المتدرجة الدوارة */
         .gradient-bg-container {
             position: fixed; /* تثبيت في الخلفية */
@@ -293,7 +335,13 @@
                         <span>الإعدادات</span>
                     </button>
                     
-                    <!-- (يمكنك إضافة المزيد من الأزرار هنا مستقبلاً) -->
+                    <!-- (جديد) زر المفضلة -->
+                    <button id="btn-sidebar-favorites" class="w-full flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                        </svg>
+                        <span>المفضلة</span>
+                    </button>
 
                     <hr class="dark:border-slate-600 my-2">
                     
@@ -479,8 +527,8 @@
     <!-- ======================= -->
     <!-- (جديد) شاشة التحذير للضيف -->
     <!-- ======================= -->
+    <!-- (تعديل) تغيير الألوان إلى slate -->
     <div id="guest-warning-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <!-- (تعديل) تغيير الألوان إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
                     dark:bg-slate-800">
             <!-- رأس الشاشة -->
@@ -493,7 +541,7 @@
                 <p class="text-lg text-center text-slate-700 dark:text-slate-300 mb-6">
                     بالمتابعة كضيف، ستتمكن من تصفح الألعاب، لكنك
                     <strong class="text-red-600 dark:text-red-400">لن تتمكن</strong>
-                    من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية.
+                    من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية (مثل المفضلة).
                 </p>
 
                 <!-- (جديد) حقل الموافقة على الشروط للضيف -->
@@ -525,8 +573,8 @@
     <!-- ======================= -->
     <!-- (جديد) شاشة الإعدادات -->
     <!-- ======================= -->
+    <!-- (تعديل) تغيير الألوان إلى slate -->
     <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <!-- (تعديل) تغيير الألوان إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
                     dark:bg-slate-800">
             <!-- رأس الشاشة -->
@@ -536,54 +584,67 @@
             </header>
             
             <!-- (جديد) تبويبات الإعدادات -->
-            <nav class="flex border-b dark:border-slate-700">
-                <button id="btn-tab-account" data-tab="account" class="settings-tab flex-1 py-3 px-4 font-medium text-center transition-colors duration-150 active">الحساب</button>
-                <button id="btn-tab-general" data-tab="general" class="settings-tab flex-1 py-3 px-4 font-medium text-center transition-colors duration-150">عام</button>
+            <nav class="flex border-b border-slate-200 dark:border-slate-700">
+                <button id="btn-tab-account" data-tab="account" class="settings-tab flex-1 py-3 px-4 font-medium text-center active">
+                    الحساب
+                </button>
+                <button id="btn-tab-general" data-tab="general" class="settings-tab flex-1 py-3 px-4 font-medium text-center">
+                    عام
+                </button>
             </nav>
 
-            <!-- محتوى التبويبات -->
+            <!-- نموذج الإعدادات -->
             <div class="p-8">
-                <!-- تبويب 1: الحساب -->
-                <form id="settings-tab-content-account" data-content="account" class="settings-tab-content active">
+                <!-- (جديد) محتوى تبويب الحساب -->
+                <div id="settings-tab-content-account" data-content="account" class="settings-tab-content active">
                     <!-- قسم: تعديل اسم المستخدم -->
                     <div class="mb-6">
                         <label for="settings-username" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">تعديل اسم المستخدم</label>
                         <div class="flex gap-2">
                             <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                            <button type="submit" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
+                            <button type="button" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
                         </div>
                     </div>
 
                     <!-- قسم: تغيير كلمة المرور (مبسط) -->
-                    <!-- (جديد) زر إظهار الخيارات -->
-                    <button type="button" id="btn-show-password-fields" class="w-full px-3 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium">
-                        إظهار خيارات تغيير كلمة المرور
-                    </button>
-                    <!-- (جديد) الحقول المخفية -->
-                    <div id="password-fields-container" class="hidden space-y-4 mt-4">
-                        <div class="mb-4">
-                            <label for="settings-new-password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">كلمة المرور الجديدة</label>
-                            <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">تغيير كلمة المرور</label>
+                        <!-- زر لإظهار الحقول -->
+                        <button id="btn-show-password-fields" class="w-full px-3 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition text-sm font-medium">
+                            إظهار خيارات تغيير كلمة المرور
+                        </button>
+                        <!-- الحقول المخفية -->
+                        <div id="password-fields-container" class="hidden mt-2 space-y-4">
+                            <div>
+                                <label for="settings-new-password" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">كلمة المرور الجديدة (6+ أحرف)</label>
+                                <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="settings-confirm-password" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">تأكيد كلمة المرور</label>
+                                <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                            </div>
+                            <button type="button" id="btn-update-password" class="w-full px-5 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">
+                                حفظ كلمة المرور الجديدة
+                            </button>
                         </div>
-                        <div class="mb-6">
-                            <label for="settings-confirm-password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">تأكيد كلمة المرور الجديدة</label>
-                            <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
-                        </div>
-                        <button type="button" id="btn-update-password" class="w-full px-5 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">حفظ كلمة المرور الجديدة</button>
                     </div>
-
-                    <!-- (جديد) قسم: حذف الحساب -->
-                    <div class="mt-8 border-t border-red-200 dark:border-red-900/50 pt-6">
+                    
+                    <!-- (جديد) قسم حذف الحساب -->
+                    <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
                         <label class="block text-sm font-medium text-red-600 dark:text-red-400 mb-2">منطقة الخطر</label>
-                        <button type="button" id="btn-show-delete-account" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900 transition text-sm font-medium">
+                        <button id="btn-show-delete-account" class="w-full px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 dark:bg-red-900/50 dark:text-red-400 dark:hover:bg-red-900 transition text-sm font-medium">
                             حذف الحساب نهائياً
                         </button>
                     </div>
-                </form>
+                </div>
 
-                <!-- تبويب 2: عام -->
+                <!-- (جديد) محتوى تبويب عام -->
                 <div id="settings-tab-content-general" data-content="general" class="settings-tab-content">
-                    <p class="text-slate-600 dark:text-slate-400">لا توجد إعدادات عامة حالياً.</p>
+                    <p class="text-slate-600 dark:text-slate-400 text-center">
+                        (لا توجد إعدادات عامة حالياً)
+                        <br>
+                        يمكن إضافة إعدادات مثل اللغة أو تفضيلات الواجهة هنا مستقبلاً.
+                    </p>
                 </div>
 
                 <!-- رسائل الحالة (مشتركة) -->
@@ -594,8 +655,8 @@
     </div>
     
     <!-- (جديد) شاشة تأكيد حذف الحساب -->
+    <!-- (تعديل) تغيير الألوان إلى slate -->
     <div id="delete-account-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <!-- (تعديل) تغيير الألوان إلى slate -->
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
                     dark:bg-slate-800">
             <!-- رأس الشاشة -->
@@ -604,29 +665,65 @@
             </header>
             
             <!-- المحتوى -->
-            <form id="delete-account-form" class="p-8">
-                <p class="text-lg text-slate-700 dark:text-slate-300 mb-4">
-                    هل أنت متأكد من رغبتك في حذف حسابك؟
-                    <strong class="text-red-600 dark:text-red-400">هذه العملية نهائية ولا يمكن التراجع عنها.</strong>
-                </p>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                    للتأكيد، يرجى كتابة اسم المستخدم الخاص بك "<strong id="delete-confirm-username" class="text-blue-600 dark:text-blue-400">...</strong>" في الحقل أدناه:
-                </p>
-                
-                <input type="text" id="delete-confirm-input" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white" autocomplete="off">
-                
-                <!-- رسالة الخطأ -->
-                <div id="delete-error" class="hidden text-red-600 text-center text-sm mt-4"></div>
+            <form id="delete-account-form">
+                <div class="p-8">
+                    <p class="text-lg text-slate-700 dark:text-slate-300 mb-4">
+                        هذه الخطوة <strong class="text-red-600">نهائية</strong> ولا يمكن التراجع عنها. سيتم حذف جميع بياناتك، بما في ذلك قائمة المفضلة، بشكل دائم.
+                    </p>
+                    <p class="text-slate-700 dark:text-slate-300 mb-4">
+                        لتأكيد الحذف، يرجى كتابة اسم المستخدم الخاص بك:
+                        <br>
+                        <strong id="delete-confirm-username" class="text-blue-600 dark:text-blue-400">...</strong>
+                    </p>
 
-                <div class="flex gap-4 mt-6">
-                    <button type="button" id="btn-cancel-delete" class="w-full bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 transition active:scale-95">
+                    <input type="text" id="delete-confirm-input" placeholder="اكتب اسم المستخدم هنا" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white">
+                    
+                    <!-- رسالة الخطأ -->
+                    <div id="delete-error" class="hidden text-red-600 text-center text-sm mt-4"></div>
+
+                </div>
+                
+                <footer class="bg-slate-100 p-6 flex gap-4 dark:bg-slate-700">
+                    <button type="button" id="btn-cancel-delete" class="w-full bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:bg-slate-600 dark:text-slate-200 dark:hover:bg-slate-500 transition active:scale-95">
                         إلغاء
                     </button>
-                    <button type="submit" id="btn-confirm-delete" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition shadow-lg active:scale-95 opacity-50 cursor-not-allowed" disabled>
+                    <button type="submit" id="btn-confirm-delete" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition shadow-lg active:scale-95">
                         أفهم العواقب، احذف حسابي
                     </button>
-                </div>
+                </footer>
             </form>
+        </div>
+    </div>
+
+
+    <!-- (جديد) شاشة المفضلة -->
+    <div id="favorites-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
+                    dark:bg-slate-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-slate-100 p-5 text-center relative dark:bg-slate-700">
+                <h2 id="favorites-title" class="text-2xl font-bold text-slate-800 dark:text-slate-100">المفضلة</h2>
+                <button id="btn-close-favorites" class="absolute top-3 left-4 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 transition text-2xl">&times;</button>
+            </header>
+            
+            <!-- محتوى المفضلة (سيتم ملؤه بواسطة JS) -->
+            <div id="favorites-list" class="p-6 max-h-96 overflow-y-auto">
+                <!-- مثال على عنصر (سيتم إنشاؤه بواسطة JS) -->
+                <!-- 
+                <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-700 rounded-lg mb-3">
+                    <span class="font-medium text-blue-600 dark:text-blue-400">1. صدفة</span>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm">
+                        تشغيل
+                    </button>
+                </div> 
+                -->
+                <!-- رسالة عند عدم وجود مفضلة -->
+                <p id="favorites-empty" class="text-slate-600 dark:text-slate-400 text-center hidden">
+                    لم تقم بإضافة أي تطبيقات إلى المفضلة بعد.
+                    <br>
+                    ابحث عن أيقونة النجمة ⭐️ على بطاقات التطبيقات لإضافتها.
+                </p>
+            </div>
         </div>
     </div>
 
@@ -765,8 +862,14 @@
         <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: صدفة (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-tool-sodfa" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-tool-sodfa" data-item-id="tool-sodfa" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">1. صدفة</h3>
@@ -775,8 +878,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: صناديق الأسئلة (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-tool-questions" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-tool-questions" data-item-id="tool-questions" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/PJVJmNhK/snadyq.png" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">2. صناديق الأسئلة</h3>
@@ -785,8 +894,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 3: حروف رحال (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-tool-letters" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-tool-letters" data-item-id="tool-letters" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/SR1RWjqL/hrwf.png" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">3. حروف رحال</h3>
@@ -795,8 +910,14 @@
                 </div>
             </div>
             <!-- بطاقة 4: ريموت (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-tool-remote" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-tool-remote" data-item-id="tool-remote" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/2y9y43m0/rymwt.png" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">4. ريموت</h3>
@@ -836,8 +957,14 @@
         <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: خزنة ربان (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-captain" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-captain" data-item-id="game-captain" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/8z9yZbtp/khznt.png" alt="صورة مسابقة خزنة ربان" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">1. مسابقة خزنة ربان</h3>
@@ -846,8 +973,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: حرب البحار (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-seawar" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-seawar" data-item-id="game-seawar" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/RCjfNbsR/hrb-albhar.png" alt="صورة مسابقة حرب البحار" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">2. حرب البحار</h3>
@@ -856,8 +989,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 3: الترتيب العاشر (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-topten" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-topten" data-item-id="game-topten" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/TPrN4DKt/altrtyb.png" alt="صورة مسابقة الترتيب العاشر" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">3. الترتيب العاشر</h3>
@@ -866,8 +1005,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 4: فكر تربح (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-thinkwin" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-thinkwin" data-item-id="game-thinkwin" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/Gpkg5y4S/trbh.png" alt="صورة لعبة فكر تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">4. فكر تربح</h3>
@@ -907,8 +1052,14 @@
         <!-- شبكة عرض البطاقات - تم التغيير إلى slate - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
             <!-- (جديد) بطاقة 1: مين الملقوف (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-malkoof" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-malkoof" data-item-id="game-malkoof" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/m2B9YF4M/7.png" alt="صورة لعبة مين الملقوف" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">1. مين الملقوف</h3>
@@ -917,8 +1068,14 @@
                 </div>
             </div>
             <!-- (جديد) بطاقة 2: مافيا (أصبحت زراً داخلياً) -->
-            <!-- (تعديل) إضافة خلفية شفافة -->
-            <div id="btn-game-mafia" class="block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer">
+            <!-- (تعديل) إضافة relative و data-item-id -->
+            <div id="btn-game-mafia" data-item-id="game-mafia" class="app-card block bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 cursor-pointer relative">
+                <!-- (جديد) زر المفضلة -->
+                <button class="btn-favorite-toggle" aria-label="إضافة للمفضلة">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.337.986l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-3.152a.563.563 0 00-.586 0L6.982 21.03a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.337-.986l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path>
+                    </svg>
+                </button>
                 <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. مافيا</h3>
@@ -949,7 +1106,7 @@
     <div id="page-tool-remote" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -965,7 +1122,7 @@
     <div id="page-tool-sodfa" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -981,7 +1138,7 @@
     <div id="page-tool-questions" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -997,7 +1154,7 @@
     <div id="page-tool-letters" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1013,7 +1170,7 @@
     <div id="page-game-captain" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1029,7 +1186,7 @@
     <div id="page-game-seawar" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1045,7 +1202,7 @@
     <div id="page-game-topten" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1061,7 +1218,7 @@
     <div id="page-game-thinkwin" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1077,7 +1234,7 @@
     <div id="page-game-malkoof" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1093,7 +1250,7 @@
     <div id="page-game-mafia" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
+                       fixed top-6 right-6 z-50 
                        w-10 h-10 bg-black/30 text-white rounded-full 
                        hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1250,6 +1407,13 @@
             const btnSidebarSignup = document.getElementById('btn-sidebar-signup');
             const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
             const btnSidebarLogout = document.getElementById('btn-sidebar-logout');
+            // (جديد) عناصر المفضلة
+            const btnSidebarFavorites = document.getElementById('btn-sidebar-favorites');
+            const favoritesModal = document.getElementById('favorites-modal');
+            const btnCloseFavorites = document.getElementById('btn-close-favorites');
+            const favoritesList = document.getElementById('favorites-list');
+            const favoritesEmpty = document.getElementById('favorites-empty');
+            let userFavorites = []; // (جديد) متغير لتخزين المفضلة
 
             // عناصر شاشة الإعدادات
             const settingsModal = document.getElementById('settings-modal');
@@ -1299,6 +1463,9 @@
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
             const pageGameMafia = document.getElementById('page-game-mafia');
             
+            // (جديد) جلب كل بطاقات التطبيقات
+            const allAppCards = document.querySelectorAll('.app-card');
+
             // جلب كل الصفحات
             const allPages = document.querySelectorAll('.page');
 
@@ -1432,6 +1599,22 @@
                 'game-malkoof': { element: pageGameMalkoof, iframe: iframes['game-malkoof'], src: iframeSrcMap['game-malkoof'] },
                 'game-mafia': { element: pageGameMafia, iframe: iframes['game-mafia'], src: iframeSrcMap['game-mafia'] }
             };
+            
+            // (جديد) تعريف خريطة بيانات التطبيقات (للمفضلة)
+            // (ملاحظة: الأسماء يجب أن تتطابق مع العناوين في HTML)
+            const appDataMap = {
+                'tool-sodfa': { name: '1. صدفة', pageId: 'tool-sodfa', color: 'blue' },
+                'tool-questions': { name: '2. صناديق الأسئلة', pageId: 'tool-questions', color: 'blue' },
+                'tool-letters': { name: '3. حروف رحال', pageId: 'tool-letters', color: 'blue' },
+                'tool-remote': { name: '4. ريموت', pageId: 'tool-remote', color: 'blue' },
+                'game-captain': { name: '1. مسابقة خزنة ربان', pageId: 'game-captain', color: 'green' },
+                'game-seawar': { name: '2. حرب البحار', pageId: 'game-seawar', color: 'green' },
+                'game-topten': { name: '3. الترتيب العاشر', pageId: 'game-topten', color: 'green' },
+                'game-thinkwin': { name: '4. فكر تربح', pageId: 'game-thinkwin', color: 'green' },
+                'game-malkoof': { name: '1. مين الملقوف', pageId: 'game-malkoof', color: 'red' },
+                'game-mafia': { name: '2. مافيا', pageId: 'game-mafia', color: 'red' }
+            };
+
 
             function showPage(pageId, updateHistory = false) {
                 let pageConfig = pageMap[pageId] || pageMap['welcome'];
@@ -1496,6 +1679,67 @@
                 // (جديد) إرسال تقرير مشاهدة الصفحة إلى Google Analytics
                 gtag_report_pageview(`#${pageId}`);
             }
+
+            // (جديد) دالة لتحديث واجهة النجوم
+            function updateFavoriteIconsUI() {
+                allAppCards.forEach(card => {
+                    const itemId = card.dataset.itemId;
+                    const starButton = card.querySelector('.btn-favorite-toggle');
+                    if (starButton) {
+                        if (userFavorites.includes(itemId)) {
+                            starButton.classList.add('favorited');
+                            starButton.setAttribute('aria-label', 'إزالة من المفضلة');
+                        } else {
+                            starButton.classList.remove('favorited');
+                            starButton.setAttribute('aria-label', 'إضافة للمفضلة');
+                        }
+                    }
+                });
+            }
+
+            // (جديد) دالة لحفظ المفضلة في Supabase
+            async function saveFavoritesToSupabase() {
+                // (ملاحظة: هذا يستدعي Supabase في كل مرة، وهو جيد للتحديث الفوري)
+                const { data, error } = await supabase.auth.updateUser({
+                    data: { favorites: userFavorites }
+                });
+                if (error) {
+                    console.error('خطأ في حفظ المفضلة:', error);
+                    // (اختياري) يمكن إرجاع الحالة السابقة إذا فشل الحفظ
+                }
+            }
+
+            // (جديد) معالج النقر على زر النجمة (باستخدام تفويض الأحداث)
+            document.body.addEventListener('click', (e) => {
+                const starButton = e.target.closest('.btn-favorite-toggle');
+                if (starButton) {
+                    e.stopPropagation(); // منع فتح التطبيق عند الضغط على النجمة
+                    e.preventDefault(); // منع أي سلوك افتراضي
+                    
+                    const card = starButton.closest('.app-card');
+                    if (!card) return;
+
+                    const itemId = card.dataset.itemId;
+                    if (!itemId) return;
+
+                    // تحديث القائمة المحلية
+                    const index = userFavorites.indexOf(itemId);
+                    if (index > -1) {
+                        // إزالة من المفضلة
+                        userFavorites.splice(index, 1);
+                    } else {
+                        // إضافة للمفضلة
+                        userFavorites.push(itemId);
+                    }
+
+                    // تحديث الواجهة فوراً
+                    updateFavoriteIconsUI();
+                    
+                    // حفظ التغيير في Supabase
+                    saveFavoritesToSupabase();
+                }
+            });
+
 
             // ربط أحداث النقر على أزرار اختيار الأقسام
             btnTools.addEventListener('click', () => showPage('tools', true));
@@ -1710,6 +1954,74 @@
                 settingsModal.style.display = 'flex';
                 closeSidebar(); 
             });
+
+            // (جديد) منطق نافذة المفضلة
+            btnSidebarFavorites.addEventListener('click', () => {
+                populateFavoritesModal();
+                favoritesModal.style.display = 'flex';
+                closeSidebar();
+            });
+
+            btnCloseFavorites.addEventListener('click', () => {
+                favoritesModal.style.display = 'none';
+            });
+
+            // (جديد) دالة لملء نافذة المفضلة
+            function populateFavoritesModal() {
+                // مسح القائمة القديمة
+                favoritesList.innerHTML = ''; 
+
+                if (userFavorites.length === 0) {
+                    favoritesEmpty.classList.remove('hidden');
+                    return;
+                }
+
+                favoritesEmpty.classList.add('hidden');
+
+                userFavorites.forEach(itemId => {
+                    const appData = appDataMap[itemId];
+                    if (!appData) return; // تخطي إذا لم يتم العثور على البيانات
+
+                    // تحديد ألوان الزر بناءً على القسم
+                    let bgColor, hoverColor, textColor;
+                    switch(appData.color) {
+                        case 'green':
+                            bgColor = 'bg-green-600'; hoverColor = 'hover:bg-green-700'; textColor = 'text-green-600 dark:text-green-400';
+                            break;
+                        case 'red':
+                            bgColor = 'bg-red-600'; hoverColor = 'hover:bg-red-700'; textColor = 'text-red-600 dark:text-red-400';
+                            break;
+                        default: // blue
+                            bgColor = 'bg-blue-600'; hoverColor = 'hover:bg-blue-700'; textColor = 'text-blue-600 dark:text-blue-400';
+                    }
+
+                    // إنشاء عنصر HTML
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-700 rounded-lg mb-3';
+                    
+                    itemDiv.innerHTML = `
+                        <span class="font-medium ${textColor}">${appData.name}</span>
+                        <button data-page-id="${appData.pageId}" class="btn-launch-favorite px-4 py-2 ${bgColor} text-white rounded-lg shadow ${hoverColor} transition active:scale-95 text-sm">
+                            تشغيل
+                        </button>
+                    `;
+                    
+                    favoritesList.appendChild(itemDiv);
+                });
+            }
+
+            // (جديد) معالج النقر على أزرار "تشغيل" داخل المفضلة
+            favoritesList.addEventListener('click', (e) => {
+                const launchButton = e.target.closest('.btn-launch-favorite');
+                if (launchButton) {
+                    const pageId = launchButton.dataset.pageId;
+                    if (pageId) {
+                        showPage(pageId, true);
+                        favoritesModal.style.display = 'none'; // إغلاق النافذة بعد التشغيل
+                    }
+                }
+            });
+
             
             btnSidebarLogout.addEventListener('click', async () => {
                 sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
@@ -1961,6 +2273,15 @@
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
                 const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
+                // (جديد) إضافة كلاس لوضع الضيف للتحكم بالواجهة
+                if (isGuest) {
+                    document.body.classList.add('guest-mode');
+                    btnSidebarFavorites.classList.add('hidden'); // إخفاء زر المفضلة للضيف
+                } else {
+                    document.body.classList.remove('guest-mode');
+                    btnSidebarFavorites.classList.remove('hidden'); // إظهار زر المفضلة للمسجلين
+                }
+
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
                     sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
@@ -1978,6 +2299,10 @@
                     sidebarLoggedIn.classList.remove('hidden');
                     const displayName = session.user.user_metadata?.username || session.user.email;
                     sidebarUsername.textContent = displayName;
+                    
+                    // (جديد) جلب المفضلة وتحديث الواجهة
+                    userFavorites = session.user.user_metadata?.favorites || [];
+                    updateFavoriteIconsUI();
                     
                     // 4. تحديد الصفحة المراد عرضها
                     if (isAuthHash || currentPageId === '' || !pageMap[currentPageId]) {
@@ -2008,6 +2333,10 @@
                     sidebarLoggedOut.classList.remove('hidden');
                     sidebarUsername.textContent = '';
                     
+                    // (جديد) مسح المفضلة عند تسجيل الخروج
+                    userFavorites = [];
+                    updateFavoriteIconsUI();
+
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
                     if (isAuthHash) {
                         // لا تفعل شيئاً، انتظر معالجة الرابط
