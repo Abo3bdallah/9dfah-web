@@ -19,18 +19,7 @@
         tailwind.config = {
             darkMode: 'class', // أو 'media'
             theme: {
-                extend: {
-                    // (جديد) إضافة الأنيميشن الخاص بالعنوان
-                    animation: {
-                        'gradient-animation': 'gradient-animation 3s ease infinite',
-                    },
-                    keyframes: {
-                        'gradient-animation': {
-                            '0%, 100%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                        }
-                    }
-                }
+                extend: {}
             }
         }
     </script>
@@ -65,120 +54,54 @@
             transition: opacity 0.3s ease-out; /* تحديد مدة وسلاسة الانتقال */
         }
 
-        /* 5. إضافة أنيميشن للتدرج اللوني للعنوان (تم نقله إلى tailwind.config) */
-        /* .gradient-animate ... */
+        /* 5. إضافة أنيميشن للتدرج اللوني للعنوان */
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-animate {
+            background-size: 200% 200%;
+            animation: gradient-animation 3s ease infinite;
+        }
         
         /* كلاس لإخفاء العناصر */
         .hidden {
             display: none;
         }
         
-        /* (جديد) كلاس لصفحات التطبيق المدمج (iframe) */
-        .page-iframe-container {
+        /* كلاس لصفحة التطبيق المدمج (iframe) */
+        #page-tool-remote {
+            /* إزالة الـ padding لملء الشاشة */
             padding: 0 !important; 
             overflow: hidden; /* إخفاء أي scrollbars */
         }
-        
-        /* (جديد) إصلاح نهائي لـ iframe ليملأ الشاشة */
-        .page-iframe-container main {
-            position: relative;
-            flex: 1 1 0%; /* السماح بالتمدد */
-        }
-        .page-iframe-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
 
     </style>
 </head>
 <!-- إضافة كلاسات الوضع الليلي إلى body - تم التغيير إلى zinc -->
-<!-- (إصلاح 1) إضافة min-h-screen لضمان ملء الشاشة دائماً -->
-<body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 min-h-screen">
+<body class="bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
 
     <!-- ======================= -->
-    <!--  (جديد) زر القائمة الجانبية (الحساب)     -->
-    <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
+    <!--  عناصر واجهة المصادقة     -->
     <!-- ======================= -->
-    <button id="btn-open-sidebar" class="fixed top-6 right-6 z-50 p-2 rounded-full bg-white/50 dark:bg-zinc-800/50 text-zinc-800 dark:text-zinc-200 shadow hover:bg-white/70 dark:hover:bg-zinc-800/70 transition-all active:scale-95 hidden">
-        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-        </svg>
-    </button>
-    
-    <!-- ======================= -->
-    <!-- (جديد) غطاء الخلفية للقائمة الجانبية -->
-    <!-- ======================= -->
-    <div id="sidebar-overlay" class="fixed inset-0 z-[100] bg-black/50 opacity-0 transition-opacity duration-300 hidden"></div>
-
-    <!-- ======================= -->
-    <!-- (جديد) القائمة الجانبية للحساب -->
-    <!-- ======================= -->
-    <div id="sidebar-menu" class="fixed top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-zinc-800 shadow-lg z-[101] 
-                                transform translate-x-full transition-transform duration-300">
-        
-        <!-- رأس القائمة -->
-        <div class="flex justify-between items-center p-4 border-b dark:border-zinc-700">
-            <h2 class="text-xl font-bold">الحساب والإعدادات</h2>
-            <button id="btn-close-sidebar" class="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+    <div id="auth-ui" class="fixed top-6 left-6 z-50">
+        <!-- يظهر عند عدم تسجيل الدخول -->
+        <div id="auth-links" class="flex gap-2">
+            <button id="btn-show-login" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
+            <button id="btn-show-signup" class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
         </div>
-
-        <!-- محتوى القائمة (ديناميكي) -->
-        <div class="p-4">
-            
-            <!-- 1. حالة تسجيل الخروج (أو الضيف) -->
-            <div id="sidebar-logged-out" class="hidden">
-                <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
-                <div class="flex flex-col gap-3">
-                    <button id="btn-sidebar-login" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
-                    <button id="btn-sidebar-signup" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
-                </div>
-            </div>
-
-            <!-- 2. حالة تسجيل الدخول -->
-            <div id="sidebar-logged-in" class="hidden">
-                <!-- معلومات المستخدم -->
-                <div class="mb-6 p-3 bg-zinc-100 dark:bg-zinc-700 rounded-lg">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">مرحباً بعودتك،</p>
-                    <p id="sidebar-username" class="text-lg font-bold text-blue-600 dark:text-blue-400 truncate">...</p>
-                </div>
-                
-                <!-- أزرار الإعدادات -->
-                <nav class="flex flex-col gap-2">
-                    <button id="btn-sidebar-settings" class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>الإعدادات</span>
-                    </button>
-                    
-                    <!-- (يمكنك إضافة المزيد من الأزرار هنا مستقبلاً) -->
-
-                    <hr class="dark:border-zinc-600 my-2">
-                    
-                    <button id="btn-sidebar-logout" class="w-full flex items-center gap-3 px-4 py-3 bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/80 transition-colors">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                        </svg>
-                        <span>تسجيل الخروج</span>
-                    </button>
-                </nav>
-            </div>
+        
+        <!-- يظهر عند تسجيل الدخول -->
+        <div id="user-info" class="hidden items-center gap-3">
+            <span id="user-email" class="text-sm font-medium text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 px-3 py-2 rounded-lg"></span>
+            <button id="btn-logout" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition active:scale-95 text-sm font-medium">خروج</button>
         </div>
     </div>
 
 
     <!-- إضافة زر تبديل الوضع الليلي (عائم) - تم التغيير إلى zinc -->
-    <!-- (تعديل) إضافة "hidden" ليتم إخفاؤه افتراضياً قبل تسجيل الدخول -->
-    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
+    <button id="theme-toggle" class="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95">
         <!-- أيقونة القمر (تظهر في الوضع الفاتح) -->
         <svg id="theme-toggle-dark-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18.25 15.75 9.75 9.75 0 0 1 8.25 6c0-1.33.267-2.595.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-6.248Z" />
@@ -190,21 +113,19 @@
 
 
     <!-- ======================= -->
-    <!--  شاشة الموافقة (تُستدعى الآن عند الضغط على الرابط)  -->
+    <!--  شاشة الموافقة الإجبارية  -->
     <!-- (style="display: none;" لإخفائها افتراضياً) -->
-    <!-- (إصلاح) تمت زيادة z-index إلى 120 ليظهر فوق شاشة الضيف -->
     <!-- ======================= -->
-    <div id="terms-modal" class="fixed inset-0 z-[120] flex items-center justify-center bg-black bg-opacity-75 
-                                opacity-0 transition-opacity duration-300" style="display: none;">
+    <div id="terms-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
         <!-- تم إضافة كلاسات الوضع الليلي - تم التغيير إلى zinc -->
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1.2 max-w-3xl overflow-hidden 
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 md:w-2/3 lg:w-1/2 max-w-3xl overflow-hidden 
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-gradient-to-r from-blue-600 to-green-500 text-white p-6 text-center">
                 <h2 class="text-2xl font-bold">شروط الاستخدام لموقع "صدفة"</h2>
             </header>
             
-            <!-- (جديد) محتوى السياسة (قابل للتمرير) -->
+            <!-- محتوى السياسة (قابل للتمرير) -->
             <main class="p-6 md:p-8 max-h-[60vh] overflow-y-auto">
                 <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
                 يُعد دخولك إلى الموقع أو استخدامك لأي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام المذكورة أدناه.<br>
@@ -253,7 +174,8 @@
                 <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
             </main>
 
-            <!-- (تعديل) هذا الزر يغلق النافذة ويؤشر على الموافقة -->
+            <!-- زر الموافقة -->
+            <!-- تم إضافة كلاسات الوضع الليلي وتأثير النقر - تم التغيير إلى zinc -->
             <footer class="bg-zinc-100 p-6 text-center dark:bg-zinc-700">
                 <button id="btn-accept-terms" class="w-full md:w-auto bg-green-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-green-700 transition-all duration-100 shadow-lg active:scale-95">
                     أوافق على الشروط وأرغب في المتابعة
@@ -265,16 +187,15 @@
     
     <!-- ======================= -->
     <!--  شاشة المصادقة (Auth)  -->
-    <!-- (تعديل) ستظهر هذه الشاشة افتراضياً الآن -->
+    <!-- (style="display: none;" لإخفائها افتراضياً) -->
     <!-- ======================= -->
-    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900" style="display: none;">
+    <div id="auth-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
         <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
                 <h2 id="auth-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تسجيل الدخول</h2>
-                <!-- (تعديل) زر الإغلاق سيتم إخفاؤه/إظهاره عبر JS -->
-                <button id="btn-close-auth" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl hidden">&times;</button>
+                <button id="btn-close-auth" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
             </header>
             
             <!-- نموذج الإدخال -->
@@ -283,26 +204,9 @@
                     <label for="auth-email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">البريد الإلكتروني</label>
                     <input type="email" id="auth-email" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                 </div>
-                
-                <!-- (جديد) حقل اسم المستخدم (يظهر عند إنشاء حساب) -->
-                <div id="auth-username-field" class="mb-4 hidden">
-                    <label for="auth-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">اسم المستخدم (سيظهر للجميع)</label>
-                    <input type="text" id="auth-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                </div>
-
                 <div class="mb-6">
-                    <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
+                    <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور</label>
                     <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                </div>
-
-                <!-- (جديد) حقل الموافقة على الشروط (يظهر عند إنشاء حساب) -->
-                <div id="auth-terms-field" class="mb-6 hidden">
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="auth-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
-                        <label for="auth-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
-                            <button type="button" id="btn-show-terms-from-auth" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
-                        </label>
-                    </div>
                 </div>
                 
                 <!-- رسالة الخطأ -->
@@ -319,108 +223,6 @@
                         إنشاء حساب جديد
                     </button>
                 </div>
-
-                <!-- (جديد) زر التبديل بين تسجيل الدخول وإنشاء الحساب -->
-                <div class="mt-6 text-center">
-                    <button type="button" id="btn-show-signup-view" class="text-sm text-blue-600 hover:underline dark:text-blue-400">
-                        ليس لديك حساب؟ أنشئ واحداً
-                    </button>
-                    <button type="button" id="btn-show-login-view" class="text-sm text-blue-600 hover:underline dark:text-blue-400 hidden">
-                        لديك حساب بالفعل؟ سجّل الدخول
-                    </button>
-                </div>
-
-                <!-- (جديد) زر المتابعة كضيف -->
-                <div class="mt-4 text-center border-t border-zinc-200 dark:border-zinc-700 pt-4">
-                    <button type="button" id="btn-show-guest-warning" class="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 hover:underline">
-                        المتابعة كضيف
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- ======================= -->
-    <!-- (جديد) شاشة التحذير للضيف -->
-    <!-- ======================= -->
-    <div id="guest-warning-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
-            <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">تنبيه: وضع الضيف</h2>
-            </header>
-            
-            <!-- المحتوى -->
-            <div class="p-8">
-                <p class="text-lg text-center text-zinc-700 dark:text-zinc-300 mb-6">
-                    بالمتابعة كضيف، ستتمكن من تصفح الألعاب، لكنك
-                    <strong class="text-red-600 dark:text-red-400">لن تتمكن</strong>
-                    من حفظ نتائجك، أو تخصيص إعداداتك، أو المشاركة في الميزات التفاعلية.
-                </p>
-
-                <!-- (جديد) حقل الموافقة على الشروط للضيف -->
-                <div id="guest-terms-field" class="mb-6">
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="guest-terms-agree" class="h-4 w-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600">
-                        <label for="guest-terms-agree" class="text-sm text-zinc-700 dark:text-zinc-300">أوافق على
-                            <button type="button" id="btn-show-terms-from-guest" class="text-blue-600 hover:underline dark:text-blue-400">شروط الاستخدام والخصوصية</button>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- (جديد) رسالة الخطأ للضيف -->
-                <div id="guest-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-
-                <div class="flex flex-col gap-4">
-                    <button id="btn-guest-continue" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95">
-                        المتابعة كضيف
-                    </button>
-                    <button id="btn-guest-go-back-to-login" class="w-full bg-zinc-200 text-zinc-700 font-bold py-3 px-10 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition active:scale-95">
-                        العودة لتسجيل الدخول
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ======================= -->
-    <!-- (جديد) شاشة الإعدادات -->
-    <!-- ======================= -->
-    <div id="settings-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
-        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-md overflow-hidden 
-                    dark:bg-zinc-800">
-            <!-- رأس الشاشة -->
-            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 id="settings-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">الإعدادات</h2>
-                <button id="btn-close-settings" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
-            </header>
-            
-            <!-- نموذج الإعدادات -->
-            <form id="settings-form" class="p-8">
-                <!-- قسم: تعديل اسم المستخدم -->
-                <div class="mb-6">
-                    <label for="settings-username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تعديل اسم المستخدم</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="settings-username" minlength="3" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        <button type="submit" id="btn-update-username" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ</button>
-                    </div>
-                </div>
-
-                <!-- قسم: تغيير كلمة المرور -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تغيير كلمة المرور</label>
-                    <button id="btn-reset-password" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
-                        إرسال رابط إعادة التعيين إلى بريدي
-                    </button>
-                </div>
-                
-                <!-- رسالة الخطأ -->
-                <div id="settings-error" class="hidden text-red-600 text-center text-sm mb-4"></div>
-                <!-- رسالة النجاح -->
-                <div id="settings-success" class="hidden text-green-600 text-center text-sm mb-4"></div>
             </form>
         </div>
     </div>
@@ -442,8 +244,7 @@
                 <h1 class="text-7xl md:text-9xl font-bold 
                            bg-gradient-to-r from-blue-600 to-green-500 
                            text-transparent bg-clip-text
-                           animate-gradient-animation <!-- (جديد) استخدام الأنيميشن من Tailwind -->
-                           bg-[size:200%_200%] <!-- (جديد) لعمل الأنيميشن -->
+                           gradient-animate
                            pb-3
                            leading-normal <!-- هنا الإصلاح -->
                            [filter:drop-shadow(0_4px_4px_rgba(0,0,0,0.1))]
@@ -515,39 +316,39 @@
         <header class="flex justify-between items-center mb-12">
             <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">أدوات المقدم</h2>
             <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
-                العودة للRئيسية
+                العودة للرئيسية
             </button>
         </header>
 
         <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
-            <!-- (جديد) بطاقة 1: صدفة (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-sodfa" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- بطاقة 1: صدفة -->
+            <a href="https://9odfah6.netlify.app/#wheel" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">1. صدفة</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">موقع يجمع 6 أنواع مختلفة من القرع تساعد الميسر في شتى المجالات.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 2: صناديق الأسئلة (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-questions" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 2: صناديق الأسئلة -->
+            <a href="https://bank-alaselh.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/PJVJmNhK/snadyq.png" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">2. صناديق الأسئلة</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">بنك ضخم تفاعلي فيه 500 سؤال مع خيارات وتأثيرات مختلفة ونظام منافسة.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 3: حروف رحال (أصبحت زراً داخلياً) -->
-            <div id="btn-tool-letters" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 3: حروف رحال -->
+            <a href="https://7rof-questions.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/SR1RWjqL/hrwf.png" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-blue-600 dark:text-blue-400">3. حروف رحال</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">بنك أسئلة ضخم بأكثر من 800 سؤال مقسمة على الحروف مع نظام منافسة.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900 dark:text-blue-200">للجوال والكمبيوتر</span>
                 </div>
-            </div>
+            </a>
             <!-- بطاقة 4: ريموت (أصبحت زراً داخلياً) -->
             <div id="btn-tool-remote" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <img src="https://i.postimg.cc/2y9y43m0/rymwt.png" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
@@ -584,42 +385,42 @@
         
         <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
-            <!-- (جديد) بطاقة 1: خزنة ربان (أصبحت زراً داخلياً) -->
-            <div id="btn-game-captain" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- بطاقة 1: خزنة ربان -->
+            <a href="https://5znh.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/8z9yZbtp/khznt.png" alt="صورة مسابقة خزنة ربان" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">1. مسابقة خزنة ربان</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">قالب مسابقة جاهز مكون من 50 خزنة قابل للهيكلة بشكل كامل.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 2: حرب البحار (أصبحت زراً داخلياً) -->
-            <div id="btn-game-seawar" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 2: حرب البحار -->
+            <a href="https://sea-war-althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/RCjfNbsR/hrb-albhar.png" alt="صورة مسابقة حرب البحار" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">2. حرب البحار</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة تنافسية بين ثلاثة فرق لإخفاء وكشف السفن مع تخصيص كامل.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 3: الترتيب العاشر (أصبحت زراً داخلياً) -->
-            <div id="btn-game-topten" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 3: الترتيب العاشر -->
+            <a href="https://top10althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/TPrN4DKt/altrtyb.png" alt="صورة مسابقة الترتيب العاشر" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">3. الترتيب العاشر</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">مسابقة توقع إجابات وكلما كان المركز أبعد كانت النقاط أعلى.</p>
                     <span class="inline-block bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-yellow-900 dark:text-yellow-200">للشاشات (تعمل على الجوال)</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 4: فكر تربح (أصبحت زراً داخلياً) -->
-            <div id="btn-game-thinkwin" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 4: فكر تربح -->
+            <a href="https://fkrtrb7.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/Gpkg5y4S/trbh.png" alt="صورة لعبة فكر تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">4. فكر تربح</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة "اربع تربح" ولكن بنسخة خماسية مع أسئلة ثقافية ومنافسة.</p>
                     <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
                 </div>
-            </div>
+            </a>
         </main>
         <!-- تذييل الصفحة - تم التغيير إلى zinc -->
         <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
@@ -647,24 +448,24 @@
 
         <!-- شبكة عرض البطاقات - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 flex-grow">
-            <!-- (جديد) بطاقة 1: مين الملقوف (أصبحت زراً داخلياً) -->
-            <div id="btn-game-malkoof" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            <!-- بطاقة 1: مين الملقوف -->
+            <a href="https://almlgof.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/m2B9YF4M/7.png" alt="صورة لعبة مين الملقوف" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">1. مين الملقوف</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة لتحديد كلمة يعلمها الجميع عدى "الملقوف" الذي يحاول توقعها.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
-            </div>
-            <!-- (جديد) بطاقة 2: مافيا (أصبحت زراً داخلياً) -->
-            <div id="btn-game-mafia" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+            </a>
+            <!-- بطاقة 2: مافيا -->
+            <a href="https://mafia-althebyani.netlify.app/" target="_blank" rel="noopener noreferrer" class="block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800">
                 <img src="https://i.postimg.cc/ZK4N8ymP/8.png" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                 <div class="p-6">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. مافيا</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
-            </div>
+            </a>
         </main>
         <!-- تذييل الصفحة - تم التغيير إلى zinc -->
         <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
@@ -677,168 +478,24 @@
         </footer>
     </div>
     
-    <!-- ============================================== -->
-    <!-- (جديد) صفحات التطبيقات المدمجة (IFRAMES) -->
-    <!-- *** تعديل: تم حذف الهيدر (Header) من جميع الصفحات التالية *** -->
-    <!-- ============================================== -->
-
-    <!-- صفحة أداة ريموت (المدمجة) -->
-    <div id="page-tool-remote" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="remote-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة أداة صدفة -->
-    <div id="page-tool-sodfa" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="sodfa-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة أداة صناديق الأسئلة -->
-    <div id="page-tool-questions" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="questions-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة أداة حروف رحال -->
-    <div id="page-tool-letters" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="letters-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة لعبة خزنة ربان -->
-    <div id="page-game-captain" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="captain-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-
-    <!-- (جديد) صفحة لعبة حرب البحار -->
-    <div id="page-game-seawar" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="seawar-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة لعبة الترتيب العاشر -->
-    <div id="page-game-topten" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="topten-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة لعبة فكر تربح -->
-    <div id="page-game-thinkwin" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="thinkwin-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة لعبة مين الملقوف -->
-    <div id="page-game-malkoof" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="malkoof-iframe" src="about:blank"></iframe>
-        </main>
-    </div>
-    
-    <!-- (جديد) صفحة لعبة مافيا -->
-    <div id="page-game-mafia" class="page min-h-screen page-iframe-container">
-        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-        <main>
-            <iframe id="mafia-iframe" src="about:blank"></iframe>
+    <!-- ======================= -->
+    <!--  صفحة أداة ريموت (المدمجة) -->
+    <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
+    <!-- ======================= -->
+    <div id="page-tool-remote" class="page min-h-screen">
+        <!-- رأس الصفحة -->
+        <header class="flex justify-between items-center p-4 bg-zinc-100 dark:bg-zinc-900">
+            <h2 class="text-xl font-bold border-r-4 border-blue-500 pr-3">أداة ريموت</h2>
+            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+                العودة للأدوات
+            </button>
+        </header>
+        
+        <!-- إطار التضمين -->
+        <!-- *** إصلاح: هذا هو التعديل الأخير لضمان ملء الشاشة *** -->
+        <!-- استخدام `flex-1` على `main` و `h-full` على `iframe` داخل حاوية `flex` -->
+        <main class="flex-1 relative"> <!-- *** الإصلاح: إضافة relative *** -->
+            <iframe id="remote-iframe" src="about:blank" class="absolute top-0 left-0 w-full h-full border-none"></iframe> <!-- *** الإصلاح: إضافة absolute *** -->
         </main>
     </div>
 
@@ -856,7 +513,7 @@
             </button>
         </header>
 
-        <!-- (جديد) المحتوى الرئيسي للسياسة - مأخوذ من الشاشة المنبثقة -->
+        <!-- المحتوى الرئيسي للسياسة - تم التغيير إلى zinc - تم تخفيف اللون -->
         <main class="flex-grow bg-white rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto 
                      dark:bg-zinc-800">
             <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong> الذي يقدم لك مجموعة من الألعاب والخدمات في مكان واحد، والمملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
@@ -933,7 +590,7 @@
             
             // --- 1. تعريف العناصر ---
             
-            // شاشة الموافقة
+            // شاشة الموافقة الإجبارية
             const termsModal = document.getElementById('terms-modal');
             const acceptTermsButton = document.getElementById('btn-accept-terms');
             
@@ -941,58 +598,19 @@
             const authModal = document.getElementById('auth-modal');
             const authForm = document.getElementById('auth-form');
             const authTitle = document.getElementById('auth-title');
+            const btnShowLogin = document.getElementById('btn-show-login');
+            const btnShowSignup = document.getElementById('btn-show-signup');
             const btnCloseAuth = document.getElementById('btn-close-auth');
             const btnLoginSubmit = document.getElementById('btn-login-submit');
             const btnSignupSubmit = document.getElementById('btn-signup-submit');
             const authError = document.getElementById('auth-error');
             const authSuccess = document.getElementById('auth-success');
             
-            // حقول اسم المستخدم
-            const authUsernameField = document.getElementById('auth-username-field');
-            const authUsernameInput = document.getElementById('auth-username');
-            
-            // حقل الموافقة على الشروط
-            const authTermsField = document.getElementById('auth-terms-field');
-            const authTermsCheckbox = document.getElementById('auth-terms-agree');
-            const btnShowTermsFromAuth = document.getElementById('btn-show-terms-from-auth');
-            
-            // أزرار تبديل عرض المصادقة
-            const btnShowSignupView = document.getElementById('btn-show-signup-view');
-            const btnShowLoginView = document.getElementById('btn-show-login-view');
-            
-            // (جديد) عناصر وضع الضيف
-            const btnShowGuestWarning = document.getElementById('btn-show-guest-warning');
-            const guestWarningModal = document.getElementById('guest-warning-modal');
-            const btnGuestContinue = document.getElementById('btn-guest-continue');
-            const btnGuestGoBackToLogin = document.getElementById('btn-guest-go-back-to-login');
-            // (جديد) عناصر شروط الضيف
-            const guestTermsCheckbox = document.getElementById('guest-terms-agree');
-            const btnShowTermsFromGuest = document.getElementById('btn-show-terms-from-guest');
-            const guestError = document.getElementById('guest-error');
-
-
-            // عناصر القائمة الجانبية
-            const btnOpenSidebar = document.getElementById('btn-open-sidebar');
-            const btnCloseSidebar = document.getElementById('btn-close-sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarMenu = document.getElementById('sidebar-menu');
-            const sidebarLoggedOut = document.getElementById('sidebar-logged-out');
-            const sidebarLoggedIn = document.getElementById('sidebar-logged-in');
-            const sidebarUsername = document.getElementById('sidebar-username');
-            const btnSidebarLogin = document.getElementById('btn-sidebar-login');
-            const btnSidebarSignup = document.getElementById('btn-sidebar-signup');
-            const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
-            const btnSidebarLogout = document.getElementById('btn-sidebar-logout');
-
-            // عناصر شاشة الإعدادات
-            const settingsModal = document.getElementById('settings-modal');
-            const btnCloseSettings = document.getElementById('btn-close-settings');
-            const settingsForm = document.getElementById('settings-form');
-            const settingsUsernameInput = document.getElementById('settings-username');
-            const btnUpdateUsername = document.getElementById('btn-update-username');
-            const btnResetPassword = document.getElementById('btn-reset-password');
-            const settingsError = document.getElementById('settings-error');
-            const settingsSuccess = document.getElementById('settings-success');
+            // واجهة المستخدم المسجل
+            const authLinks = document.getElementById('auth-links');
+            const userInfo = document.getElementById('user-info');
+            const userEmail = document.getElementById('user-email');
+            const btnLogout = document.getElementById('btn-logout');
 
             // جلب عناصر الصفحات
             const pageWelcome = document.getElementById('page-welcome');
@@ -1000,19 +618,9 @@
             const pageCompetitions = document.getElementById('page-competitions');
             const pageGames = document.getElementById('page-games');
             const pagePolicy = document.getElementById('page-policy');
+            const pageToolRemote = document.getElementById('page-tool-remote'); // صفحة ريموت المدمجة
             
-            const pageToolRemote = document.getElementById('page-tool-remote');
-            const pageToolSodfa = document.getElementById('page-tool-sodfa');
-            const pageToolQuestions = document.getElementById('page-tool-questions');
-            const pageToolLetters = document.getElementById('page-tool-letters');
-            const pageGameCaptain = document.getElementById('page-game-captain');
-            const pageGameSeaWar = document.getElementById('page-game-seawar');
-            const pageGameTopTen = document.getElementById('page-game-topten');
-            const pageGameThinkWin = document.getElementById('page-game-thinkwin');
-            const pageGameMalkoof = document.getElementById('page-game-malkoof');
-            const pageGameMafia = document.getElementById('page-game-mafia');
-            
-            // جلب كل الصفحات
+            // جلب كل الصفحات (لإخفائها)
             const allPages = document.querySelectorAll('.page');
 
             // جلب أزرار الاختيار من الصفحة الرئيسية
@@ -1020,435 +628,294 @@
             const btnCompetitions = document.getElementById('btn-competitions');
             const btnGames = document.getElementById('btn-games');
             
+            // جلب أزرار الأدوات المدمجة
             const btnToolRemote = document.getElementById('btn-tool-remote');
-            const btnToolSodfa = document.getElementById('btn-tool-sodfa');
-            const btnToolQuestions = document.getElementById('btn-tool-questions');
-            const btnToolLetters = document.getElementById('btn-tool-letters');
-            const btnGameCaptain = document.getElementById('btn-game-captain');
-            const btnGameSeaWar = document.getElementById('btn-game-seawar');
-            const btnGameTopTen = document.getElementById('btn-game-topten');
-            const btnGameThinkWin = document.getElementById('btn-game-thinkwin');
-            const btnGameMalkoof = document.getElementById('btn-game-malkoof');
-            const btnGameMafia = document.getElementById('btn-game-mafia');
-
-
-            // جلب جميع IFrames
-            const iframes = {
-                'tool-remote': document.getElementById('remote-iframe'),
-                'tool-sodfa': document.getElementById('sodfa-iframe'),
-                'tool-questions': document.getElementById('questions-iframe'),
-                'tool-letters': document.getElementById('letters-iframe'),
-                'game-captain': document.getElementById('captain-iframe'),
-                'game-seawar': document.getElementById('seawar-iframe'),
-                'game-topten': document.getElementById('topten-iframe'),
-                'game-thinkwin': document.getElementById('thinkwin-iframe'),
-                'game-malkoof': document.getElementById('malkoof-iframe'),
-                'game-mafia': document.getElementById('mafia-iframe')
-            };
-
-            // ماب لأسماء ملفات IFrames
-            const iframeSrcMap = {
-                'tool-remote': 'remot-app.html',
-                'tool-sodfa': 'sodfa-app.html',
-                'tool-questions': 'questions-bank-app.html',
-                'tool-letters': 'letters-trip-app.html',
-                'game-captain': 'captain-safe-app.html',
-                'game-seawar': 'sea-war-app.html',
-                'game-topten': 'top-ten-app.html',
-                'game-thinkwin': 'think-win-app.html',
-                'game-malkoof': 'malkoof-app.html',
-                'game-mafia': 'mafia-app.html'
-            };
+            const remoteIframe = document.getElementById('remote-iframe');
             
-            // جلب أزرار "العودة" للصفحات العادية
+            // جلب جميع أزرار "العودة"
             const backButtons = document.querySelectorAll('.btn-back');
             
-            // جلب أزرار الخروج العائمة (X)
-            const closeIframeButtons = document.querySelectorAll('.btn-close-iframe');
-            
-            // جلب جميع أزرار "سياسة الاستخدام"
+            // جلب جميع أزرار "سياسة الاستخدام" (الموجودة في التذييلات)
             const policyButtons = document.querySelectorAll('.btn-policy');
 
-            // عناصر الوضع الليلي
+            // --- 6. إضافة عناصر الوضع الليلي (3 حالات -> 2 حالة) ---
             const themeToggle = document.getElementById('theme-toggle');
             const darkIcon = document.getElementById('theme-toggle-dark-icon'); // قمر
             const lightIcon = document.getElementById('theme-toggle-light-icon'); // شمس
+            // تم حذف modernIcon
 
             // --- 7. دالة لتبديل الأيقونات (الوضع الليلي 2 حالة) ---
             function updateThemeIcons() {
                 const isDark = document.documentElement.classList.contains('dark');
-                darkIcon.style.display = isDark ? 'none' : 'block';
-                lightIcon.style.display = isDark ? 'block' : 'none';
+                
+                if (isDark) {
+                    // الوضع الليلي: أظهر الشمس
+                    darkIcon.style.display = 'none';
+                    lightIcon.style.display = 'block';
+                } else {
+                    // الوضع النهاري: أظهر القمر
+                    darkIcon.style.display = 'block';
+                    lightIcon.style.display = 'none';
+                }
             }
 
             // --- 8. ربط حدث النقر لزر الوضع الليلي (2 حالة) ---
             themeToggle.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.theme = isDark ? 'dark' : 'light';
+                const isDark = document.documentElement.classList.contains('dark');
+
+                if (isDark) {
+                    // ليلي -> نهاري
+                    document.documentElement.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    // نهاري -> ليلي
+                    document.documentElement.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+                
+                // تحديث الأيقونات
                 updateThemeIcons();
             });
 
-            // --- 2. (تعديل) منطق شاشة الموافقة ---
-            // (تعديل) هذا الزر الآن يغلق النافذة ويؤشر على الموافقة
+            // --- 2. منطق شاشة الموافقة الإجبارية (LocalStorage) ---
+
+            // ماذا يحدث عند الضغط على "أوافق"
             acceptTermsButton.addEventListener('click', () => {
-                termsModal.classList.add('opacity-0'); // (تعديل) استخدام كلاس
+                // 1. احفظ الموافقة في المتصفح
+                localStorage.setItem('sodfaTermsAccepted', 'true');
+                // 2. أخفِ شاشة الموافقة (مع تأثير بسيط)
+                termsModal.style.transition = 'opacity 0.3s ease-out';
+                termsModal.style.opacity = '0';
                 setTimeout(() => {
                     termsModal.style.display = 'none';
-                }, 300); // مطابقة مدة الانتقال
-                authTermsCheckbox.checked = true; // تفعيل موافقة إنشاء الحساب
-                guestTermsCheckbox.checked = true; // (جديد) تفعيل موافقة الضيف
+                }, 300);
+                
+                // 3. أظهر الصفحة الرئيسية وحدث الحالة (بدلاً من showPage البسيط)
+                showPage('welcome', true); // استدعاء showPage المحدثة
             });
-            
-            // (جديد) دالة لفتح نافذة الشروط
-            function openTermsModal() {
-                termsModal.style.display = 'flex'; // (تعديل) إظهار
-                void termsModal.offsetWidth; // Trigger reflow
-                termsModal.classList.remove('opacity-0'); // (تعديل) استخدام كلاس للظهور
-            }
-            
-            // (جديد) زر فتح الشروط من داخل شاشة المصادقة
-            btnShowTermsFromAuth.addEventListener('click', openTermsModal);
-            // (جديد) زر فتح الشروط من داخل شاشة الضيف
-            btnShowTermsFromGuest.addEventListener('click', openTermsModal);
 
 
             // --- 3. منطق التنقل بين الصفحات (مع History API وتأثير الفيد) ---
+
+            // متغير لتخزين الصفحة الظاهرة حالياً
             let currentPage = null;
 
-            const pageMap = {
-                'welcome': { element: pageWelcome },
-                'tools': { element: pageTools },
-                'competitions': { element: pageCompetitions },
-                'games': { element: pageGames },
-                'policy': { element: pagePolicy },
-                'tool-remote': { element: pageToolRemote, iframe: iframes['tool-remote'], src: iframeSrcMap['tool-remote'] },
-                'tool-sodfa': { element: pageToolSodfa, iframe: iframes['tool-sodfa'], src: iframeSrcMap['tool-sodfa'] },
-                'tool-questions': { element: pageToolQuestions, iframe: iframes['tool-questions'], src: iframeSrcMap['tool-questions'] },
-                'tool-letters': { element: pageToolLetters, iframe: iframes['tool-letters'], src: iframeSrcMap['tool-letters'] },
-                'game-captain': { element: pageGameCaptain, iframe: iframes['game-captain'], src: iframeSrcMap['game-captain'] },
-                'game-seawar': { element: pageGameSeaWar, iframe: iframes['game-seawar'], src: iframeSrcMap['game-seawar'] },
-                'game-topten': { element: pageGameTopTen, iframe: iframes['game-topten'], src: iframeSrcMap['game-topten'] },
-                'game-thinkwin': { element: pageGameThinkWin, iframe: iframes['game-thinkwin'], src: iframeSrcMap['game-thinkwin'] },
-                'game-malkoof': { element: pageGameMalkoof, iframe: iframes['game-malkoof'], src: iframeSrcMap['game-malkoof'] },
-                'game-mafia': { element: pageGameMafia, iframe: iframes['game-mafia'], src: iframeSrcMap['game-mafia'] }
-            };
-
+            // دالة لإظهار صفحة معينة وتحديث التاريخ
+            // pageId هو (welcome, tools, games, etc.)
+            // updateHistory يحدد إذا كنا نريد إضافة هذا للتاريخ (true) أو لا (false)
             function showPage(pageId, updateHistory = false) {
-                let pageConfig = pageMap[pageId] || pageMap['welcome'];
-                if (pageId === 'welcome' || !pageConfig) {
-                    pageConfig = pageMap['welcome'];
-                    pageId = 'welcome';
-                }
                 
-                const pageToShow = pageConfig.element;
-                if (!pageToShow || pageToShow === currentPage) return;
-
-                // إخفاء/إظهار الواجهة الرئيسية
-                if (pageConfig.iframe) {
-                    btnOpenSidebar.classList.add('hidden');
-                    themeToggle.classList.add('hidden');
-                } else {
-                    btnOpenSidebar.classList.remove('hidden');
-                    themeToggle.classList.remove('hidden');
+                let pageToShow = null;
+                switch(pageId) {
+                    case 'tools':
+                        pageToShow = pageTools;
+                        break;
+                    case 'competitions':
+                        pageToShow = pageCompetitions;
+                        break;
+                    case 'games':
+                        pageToShow = pageGames;
+                        break;
+                    case 'policy':
+                        pageToShow = pagePolicy;
+                        break;
+                    case 'tool-remote': // صفحة ريموت
+                        pageToShow = pageToolRemote;
+                        // تحميل الإطار عند عرض الصفحة
+                        if (remoteIframe.src === 'about:blank') {
+                            remoteIframe.src = 'remot-app.html';
+                        }
+                        break;
+                    case 'welcome':
+                    default:
+                        pageToShow = pageWelcome;
+                        pageId = 'welcome'; // ضمان أن pageId هو 'welcome' للرئيسية
+                        break;
                 }
 
-                // إخفاء الصفحة الحالية
+                // لا تفعل شيئاً إذا كانت الصفحة المطلوبة هي نفسها الظاهرة
+                if (pageToShow === currentPage) return;
+
+                // 1. إخفاء الصفحة الحالية (إذا كانت موجودة)
                 if (currentPage) {
                     currentPage.style.opacity = '0';
-                    const currentPageConfig = Object.values(pageMap).find(p => p && p.element === currentPage);
-                    if (currentPageConfig && currentPageConfig.iframe) {
+                    
+                    // إيقاف "ريموت" عند مغادرة صفحته
+                    if (currentPage === pageToolRemote) {
                         setTimeout(() => {
-                            currentPageConfig.iframe.src = 'about:blank'; 
-                        }, 300); 
+                            remoteIframe.src = 'about:blank'; // إفراغ الإطار لإيقاف الأصوات
+                        }, 300); // إيقاف بعد انتهاء الانتقال
                     }
                 }
 
-                // إظهار الصفحة الجديدة
-                setTimeout(() => {
-                    if (currentPage) {
-                        currentPage.style.display = 'none'; 
-                    }
-                    pageToShow.style.display = 'flex'; 
+                // 2. إظهار الصفحة الجديدة
+                if (pageToShow) {
+                    // بعد انتهاء مدة الانتقال (300ms)، قم بتغيير العرض
+                    setTimeout(() => {
+                        if (currentPage) {
+                            currentPage.style.display = 'none'; // إخفاء الصفحة القديمة تماماً
+                        }
 
-                    if (pageConfig.iframe && pageConfig.iframe.src === 'about:blank') {
-                        pageConfig.iframe.src = pageConfig.src;
-                    }
+                        // إظهار الصفحة الجديدة
+                        // *** إصلاح: تم تغيير 'block' إلى 'flex' للصفحة الرئيسية لضمان تمددها الصحيح ***
+                        if (pageToShow === pageWelcome) {
+                            pageToShow.style.display = 'flex'; // كانت 'block'
+                        } else {
+                            pageToShow.style.display = 'flex';
+                        }
 
-                    void pageToShow.offsetWidth; 
-                    pageToShow.style.opacity = '1';
-                    currentPage = pageToShow;
+                        // فرض إعادة رسم لضمان بدء الانتقال
+                        void pageToShow.offsetWidth; 
 
-                }, currentPage ? 300 : 0); 
+                        // بدء التلاشي للظهور
+                        pageToShow.style.opacity = '1';
+                        
+                        // تحديث الصفحة الحالية
+                        currentPage = pageToShow;
+
+                    }, currentPage ? 300 : 0); // 300ms إذا كان هناك صفحة سابقة، 0ms إذا كان التحميل الأول
+                }
                 
+                // العودة لأعلى الصفحة
                 window.scrollTo(0, 0);
 
-                // تحديث التاريخ
+                // تحديث تاريخ المتصفح إذا كان مطلوباً (لتفعيل زر الرجوع)
                 if (updateHistory) {
                     try {
                         if (window.location.hash !== `#${pageId}`) {
                             history.pushState({ page: pageId }, '', `#${pageId}`);
                         }
                     } catch (e) {
-                        console.warn("History API (pushState) not available.", e);
+                        console.warn("History API (pushState) not available in this environment.", e);
                     }
                 }
             }
 
-            // ربط أحداث النقر على أزرار اختيار الأقسام
+            // ربط أحداث النقر على أزرار اختيار الأقسام (مع تحديث التاريخ)
             btnTools.addEventListener('click', () => showPage('tools', true));
             btnCompetitions.addEventListener('click', () => showPage('competitions', true));
             btnGames.addEventListener('click', () => showPage('games', true));
 
+            // ربط زر "ريموت" المدمج
             btnToolRemote.addEventListener('click', () => showPage('tool-remote', true));
-            btnToolSodfa.addEventListener('click', () => showPage('tool-sodfa', true));
-            btnToolQuestions.addEventListener('click', () => showPage('tool-questions', true));
-            btnToolLetters.addEventListener('click', () => showPage('tool-letters', true));
-            btnGameCaptain.addEventListener('click', () => showPage('game-captain', true));
-            btnGameSeaWar.addEventListener('click', () => showPage('game-seawar', true));
-            btnGameTopTen.addEventListener('click', () => showPage('game-topten', true));
-            btnGameThinkWin.addEventListener('click', () => showPage('game-thinkwin', true));
-            btnGameMalkoof.addEventListener('click', () => showPage('game-malkoof', true));
-            btnGameMafia.addEventListener('click', () => showPage('game-mafia', true));
 
-
-            // (إصلاح) ربط أزرار "العودة" و "X" للعودة المباشرة للرئيسية
+            // ربط أحداث النقر على جميع أزرار "العودة"
             backButtons.forEach(button => {
-                button.addEventListener('click', () => showPage('welcome', true));
-            });
-            
-            closeIframeButtons.forEach(button => {
-                button.addEventListener('click', () => showPage('welcome', true));
+                // زر العودة في "ريموت" يعود إلى "الأدوات"
+                if (button.closest('#page-tool-remote')) {
+                    button.addEventListener('click', () => showPage('tools', true));
+                } 
+                // باقي الأزرار تعود للرئيسية
+                else {
+                    button.addEventListener('click', () => showPage('welcome', true));
+                }
             });
 
-
-            // ربط أزرار "سياسة الاستخدام"
+            // ربط أحداث النقر على جميع أزرار "سياسة الاستخدام" (الموجودة في التذييلات)
             policyButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    e.preventDefault(); 
+                    e.preventDefault(); // منع الرابط من القفز (#)
                     showPage('policy', true);
                 });
             });
 
             // --- 4. معالجة زر الرجوع وتحميل الصفحة المباشر ---
-            window.addEventListener('popstate', async (event) => { // (إصلاح) تحويل الدالة إلى async
-                let pageId = 'welcome'; 
+
+            // هذا المستمع يعمل عند الضغط على زر الرجوع في المتصفح
+            window.addEventListener('popstate', (event) => {
+                let pageId = 'welcome'; // الافتراضي هو العودة للرئيسية
                 if (event.state && event.state.page) {
                     pageId = event.state.page;
                 } else if (window.location.hash) {
                     pageId = window.location.hash.substring(1) || 'welcome';
                 }
                 
-                // (إصلاح) يجب جلب الجلسة بشكل غير متزامن (async)
-                const { data: { session } } = await supabase.auth.getSession();
-                const isGuest = sessionStorage.getItem('isGuest') === 'true';
-
-                if ((session && session.user) || isGuest) { // (إصلاح) التحقق من الجلسة أو الضيف
-                    showPage(pageId, false);
-                }
-                // إذا لم يكن مسجلاً دخوله وليس ضيفاً، لا تفعل شيئاً (تبقى شاشة المصادقة ظاهرة)
+                // نمرر 'false' لأننا لا نريد إضافة حالة جديدة للتاريخ (نحن نعود للوراء)
+                showPage(pageId, false);
             });
-            
-            // تحديث أيقونات الوضع عند التحميل الأولي
-            updateThemeIcons();
+
+            // --- 5. تحديث دالة تحميل الصفحة لتدعم الوضع الليلي ---
+            function handleInitialPageLoad() {
+                // 5.1 - تحديث أيقونات الوضع الليلي عند التحميل
+                updateThemeIcons();
+
+                // 5.2 - باقي منطق تحميل الصفحة والروابط
+                let pageId = window.location.hash.substring(1); //
+                
+                // التحقق إذا كان المستخدم قد وافق
+                if (localStorage.getItem('sodfaTermsAccepted') === 'true') {
+                    // وافق: اعرض الصفحة المطلوبة (أو الرئيسية)
+                    if (!pageId) {
+                        pageId = 'welcome';
+                    }
+                    showPage(pageId, false);
+                    // استبدال الحالة الحالية لضمان أن الحالة الأولى صحيحة
+                    try {
+                        history.replaceState({ page: pageId }, '', `#${pageId}`);
+                    } catch (e) {
+                        console.warn("History API (replaceState) not available in this environment.", e);
+                    }
+                    termsModal.style.display = 'none';
+                } else {
+                    // لم يوافق: اعرض شاشة الموافقة وأخفِ الرئيسية
+                    allPages.forEach(p => { p.style.display = 'none'; p.style.opacity = '0'; }); // تأكد أن كل شيء مخفي
+                    termsModal.style.display = 'flex';
+                    termsModal.style.opacity = '1';
+                }
+            }
+
+            // استدعاء الدالة عند تحميل الصفحة
+            handleInitialPageLoad();
             
             
             // --- 9. منطق المصادقة (Auth) ---
             
-            // دوال المساعدة للرسائل
+            // إظهار رسالة خطأ
             function showAuthError(message) {
                 authSuccess.classList.add('hidden');
                 authError.classList.remove('hidden');
                 authError.textContent = message;
             }
+            
+            // إظهار رسالة نجاح
             function showAuthSuccess(message) {
                 authError.classList.add('hidden');
                 authSuccess.classList.remove('hidden');
                 authSuccess.textContent = message;
             }
-            function showSettingsError(message) {
-                settingsSuccess.classList.add('hidden');
-                settingsError.classList.remove('hidden');
-                settingsError.textContent = message;
-            }
-            function showSettingsSuccess(message) {
-                settingsError.classList.add('hidden');
-                settingsSuccess.classList.remove('hidden');
-                settingsSuccess.textContent = message;
-            }
-
-            // دوال فتح/إغلاق القائمة الجانبية
-            function openSidebar() {
-                sidebarOverlay.classList.remove('hidden');
-                void sidebarOverlay.offsetWidth; // Trigger reflow
-                sidebarOverlay.classList.remove('opacity-0');
-                sidebarMenu.classList.remove('translate-x-full');
-            }
-
-            function closeSidebar() {
-                sidebarOverlay.classList.add('opacity-0');
-                sidebarMenu.classList.add('translate-x-full');
-                setTimeout(() => {
-                    sidebarOverlay.classList.add('hidden');
-                }, 300); // مطابقة مدة الانتقال
-            }
-
-            // (جديد) دالة لإظهار عرض تسجيل الدخول
-            function showLoginView() {
+            
+            // فتح شاشة تسجيل الدخول
+            btnShowLogin.addEventListener('click', () => {
                 authTitle.textContent = 'تسجيل الدخول';
                 btnLoginSubmit.classList.remove('hidden');
                 btnSignupSubmit.classList.add('hidden');
-                authUsernameField.classList.add('hidden');
-                authTermsField.classList.add('hidden');
-                btnShowSignupView.classList.remove('hidden');
-                btnShowLoginView.classList.add('hidden');
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
-            }
-
-            // (جديد) دالة لإظهار عرض إنشاء الحساب
-            function showSignupView() {
+                authModal.style.display = 'flex';
+            });
+            
+            // فتح شاشة إنشاء حساب
+            btnShowSignup.addEventListener('click', () => {
                 authTitle.textContent = 'إنشاء حساب جديد';
                 btnLoginSubmit.classList.add('hidden');
                 btnSignupSubmit.classList.remove('hidden');
-                authUsernameField.classList.remove('hidden');
-                authTermsField.classList.remove('hidden');
-                btnShowSignupView.classList.add('hidden');
-                btnShowLoginView.classList.remove('hidden');
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
-            }
-
-            // (جديد) ربط أزرار التبديل
-            btnShowSignupView.addEventListener('click', showSignupView);
-            btnShowLoginView.addEventListener('click', showLoginView);
-
-            // (جديد) ربط أحداث وضع الضيف
-            btnShowGuestWarning.addEventListener('click', () => {
-                guestError.classList.add('hidden'); // (جديد) إخفاء الخطأ عند الفتح
-                guestTermsCheckbox.checked = false; // (جديد) إلغاء تحديد المربع
-                guestWarningModal.style.display = 'flex';
-            });
-            btnGuestGoBackToLogin.addEventListener('click', () => {
-                guestWarningModal.style.display = 'none';
-            });
-            btnGuestContinue.addEventListener('click', () => {
-                // (جديد) التحقق من الموافقة على الشروط
-                if (!guestTermsCheckbox.checked) {
-                    guestError.textContent = 'يجب الموافقة على شروط الاستخدام أولاً.';
-                    guestError.classList.remove('hidden');
-                    return; // إيقاف المتابعة
-                }
-
-                guestError.classList.add('hidden'); // إخفاء الخطأ إذا تم الموافقة
-                sessionStorage.setItem('isGuest', 'true'); // تتبع الضيف في الجلسة
-                guestWarningModal.style.display = 'none';
-                authModal.style.display = 'none';
-                
-                // إظهار واجهة التطبيق يدوياً (لأن onAuthStateChange لن يفعل ذلك)
-                btnOpenSidebar.classList.remove('hidden');
-                themeToggle.classList.remove('hidden');
-                showPage('welcome', false);
-                try {
-                    history.replaceState({ page: 'welcome' }, '', `#welcome`);
-                } catch(e) {}
-            });
-
-
-            // ربط أحداث القائمة الجانبية
-            btnOpenSidebar.addEventListener('click', openSidebar);
-            btnCloseSidebar.addEventListener('click', closeSidebar);
-            sidebarOverlay.addEventListener('click', closeSidebar);
-
-            // ربط أزرار *داخل* القائمة الجانبية
-            btnSidebarLogin.addEventListener('click', () => {
-                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
-                showLoginView();
-                btnCloseAuth.classList.remove('hidden'); // إظهار زر الإغلاق
                 authModal.style.display = 'flex';
-                closeSidebar(); 
-            });
-
-            btnSidebarSignup.addEventListener('click', () => {
-                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
-                showSignupView();
-                btnCloseAuth.classList.remove('hidden'); // إظهار زر الإغلاق
-                authModal.style.display = 'flex';
-                closeSidebar(); 
-            });
-
-            btnSidebarSettings.addEventListener('click', () => {
-                // (ملاحظة: هذا الزر لن يظهر للضيف لأنه في sidebar-logged-in)
-                const { data: { user } } = supabase.auth.getUser();
-                if (user && user.user_metadata?.username) {
-                    settingsUsernameInput.value = user.user_metadata.username;
-                }
-                settingsError.classList.add('hidden');
-                settingsSuccess.classList.add('hidden');
-                settingsModal.style.display = 'flex';
-                closeSidebar(); 
             });
             
-            btnSidebarLogout.addEventListener('click', async () => {
-                sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف
-                await supabase.auth.signOut();
-                closeSidebar(); 
-            });
-
-            // --- منطق النوافذ المنبثقة (Modals) ---
-            
-            // إغلاق نافذة المصادقة
+            // إغلاق شاشة المصادقة
             btnCloseAuth.addEventListener('click', () => {
                 authModal.style.display = 'none';
             });
-
-            // إغلاق نافذة الإعدادات
-            btnCloseSettings.addEventListener('click', () => {
-                settingsModal.style.display = 'none';
-            });
-
-            // تحديث اسم المستخدم
-            btnUpdateUsername.addEventListener('click', async (e) => {
-                e.preventDefault(); 
-                const newUsername = settingsUsernameInput.value.trim();
-                if (!newUsername || newUsername.length < 3) {
-                    showSettingsError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
-                    return;
-                }
-                showSettingsSuccess('يتم تحديث الاسم...');
-                const { data, error } = await supabase.auth.updateUser({ data: { username: newUsername } });
-                if (error) {
-                    showSettingsError(error.message);
-                } else {
-                    showSettingsSuccess('تم تحديث اسم المستخدم بنجاح!');
-                    sidebarUsername.textContent = newUsername; 
-                    setTimeout(() => {
-                        settingsModal.style.display = 'none';
-                    }, 1500);
-                }
-            });
-
-            // إعادة تعيين كلمة المرور
-            btnResetPassword.addEventListener('click', async (e) => {
-                e.preventDefault();
-                showSettingsSuccess('يتم إرسال الرابط...');
-                const { data: { user } } = supabase.auth.getUser();
-                if (!user) {
-                    showSettingsError('لا يمكن العثور على المستخدم.');
-                    return;
-                }
-                const { data, error } = await supabase.auth.resetPasswordForEmail(user.email);
-                if (error) {
-                    showSettingsError(error.message);
-                } else {
-                    showSettingsSuccess('تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني.');
-                }
-            });
-
-            // إرسال نموذج المصادقة (تسجيل الدخول / إنشاء حساب)
+            
+            // عند إرسال النموذج
             authForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('auth-email').value;
                 const password = document.getElementById('auth-password').value;
+                
+                // تحديد أي زر تم الضغط عليه
                 const isLogin = e.submitter === btnLoginSubmit;
                 
                 if (isLogin) {
@@ -1458,6 +925,7 @@
                         email: email,
                         password: password,
                     });
+                    
                     if (error) {
                         showAuthError(error.message);
                     } else {
@@ -1466,101 +934,43 @@
                             authModal.style.display = 'none';
                         }, 1000);
                     }
+                    
                 } else {
                     // --- منطق إنشاء حساب ---
-                    const termsAgreed = authTermsCheckbox.checked;
-                    if (!termsAgreed) {
-                        showAuthError('يجب الموافقة على شروط الاستخدام أولاً.');
-                        return;
-                    }
-                    
-                    const username = authUsernameInput.value.trim();
-                    if (!username || username.length < 3) {
-                        showAuthError('يجب أن يكون اسم المستخدم 3 أحرف على الأقل.');
-                        return;
-                    }
                     showAuthSuccess('يتم إنشاء الحساب...');
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
-                        options: { data: { 'username': username } }
                     });
+                    
                     if (error) {
                         showAuthError(error.message);
                     } else {
                         showAuthSuccess('نجح! يرجى مراجعة بريدك الإلكتروني لتأكيد الحساب.');
+                        // لا نغلق الشاشة، ننتظر التأكيد
                     }
                 }
             });
             
-            // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
+            // --- تسجيل الخروج ---
+            btnLogout.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+            });
+            
+            // --- مراقبة حالة المصادقة ---
             supabase.auth.onAuthStateChange((event, session) => {
-                
-                let currentPageId = window.location.hash.substring(1);
-                const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
-                const isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
-
                 if (session && session.user) {
                     // المستخدم مسجل دخوله
-                    sessionStorage.removeItem('isGuest'); // (جديد) إلغاء وضع الضيف عند تسجيل الدخول
-                    
-                    // 1. إظهار واجهة التطبيق الرئيسية
-                    btnOpenSidebar.classList.remove('hidden');
-                    themeToggle.classList.remove('hidden');
-                    
-                    // 2. إخفاء نوافذ المصادقة
-                    authModal.style.display = 'none';
-                    guestWarningModal.style.display = 'none';
-                    
-                    // 3. تحديث القائمة الجانبية
-                    sidebarLoggedOut.classList.add('hidden');
-                    sidebarLoggedIn.classList.remove('hidden');
-                    const displayName = session.user.user_metadata?.username || session.user.email;
-                    sidebarUsername.textContent = displayName;
-                    
-                    // 4. تحديد الصفحة المراد عرضها
-                    if (isAuthHash || currentPageId === '' || !pageMap[currentPageId]) {
-                        showPage('welcome', false);
-                        try {
-                            history.replaceState({ page: 'welcome' }, '', `#welcome`);
-                        } catch(e) { console.warn("History API (replaceState) not available.", e); }
-                    } else {
-                        showPage(currentPageId, false);
-                    }
-                    
+                    authLinks.classList.add('hidden');
+                    userInfo.classList.remove('hidden');
+                    userInfo.classList.add('flex');
+                    userEmail.textContent = session.user.email;
                 } else {
-                    // المستخدم سجل خروجه (أو زائر جديد)
-                    
-                    // 1. إخفاء واجهة التطبيق الرئيسية
-                    btnOpenSidebar.classList.add('hidden');
-                    themeToggle.classList.add('hidden');
-                    
-                    // 2. إخفاء جميع الصفحات
-                    allPages.forEach(p => { 
-                        p.style.display = 'none'; 
-                        p.style.opacity = '0'; 
-                    });
-                    currentPage = null;
-                    
-                    // 3. تحديث القائمة الجانبية (للحالة غير المسجلة)
-                    sidebarLoggedIn.classList.add('hidden');
-                    sidebarLoggedOut.classList.remove('hidden');
-                    sidebarUsername.textContent = '';
-                    
-                    // 4. إظهار نافذة المصادقة أو واجهة الضيف
-                    if (isAuthHash) {
-                        // لا تفعل شيئاً، انتظر معالجة الرابط
-                    } else if (isGuest) {
-                        // (جديد) المستخدم اختار أن يكون ضيفاً
-                        btnOpenSidebar.classList.remove('hidden');
-                        themeToggle.classList.remove('hidden');
-                        showPage('welcome', false);
-                    } else {
-                        // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
-                        showLoginView();
-                        btnCloseAuth.classList.add('hidden');
-                        authModal.style.display = 'flex';
-                    }
+                    // المستخدم سجل خروجه
+                    authLinks.classList.remove('hidden');
+                    userInfo.classList.add('hidden');
+                    userInfo.classList.remove('flex');
+                    userEmail.textContent = '';
                 }
             });
 
