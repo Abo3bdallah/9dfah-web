@@ -1207,7 +1207,7 @@
             });
 
             // --- 4. معالجة زر الرجوع وتحميل الصفحة المباشر ---
-            window.addEventListener('popstate', (event) => {
+            window.addEventListener('popstate', async (event) => { // (إصلاح) تحويل الدالة إلى async
                 let pageId = 'welcome'; 
                 if (event.state && event.state.page) {
                     pageId = event.state.page;
@@ -1215,11 +1215,11 @@
                     pageId = window.location.hash.substring(1) || 'welcome';
                 }
                 
-                // (تعديل) لا تظهر الصفحة إذا كان المستخدم مسجلاً الخروج أو ضيفاً
-                const { data: { user } } = supabase.auth.getUser();
+                // (إصلاح) يجب جلب الجلسة بشكل غير متزامن (async)
+                const { data: { session } } = await supabase.auth.getSession();
                 const isGuest = sessionStorage.getItem('isGuest') === 'true';
 
-                if (user || isGuest) {
+                if ((session && session.user) || isGuest) { // (إصلاح) التحقق من الجلسة أو الضيف
                     showPage(pageId, false);
                 }
                 // إذا لم يكن مسجلاً دخوله وليس ضيفاً، لا تفعل شيئاً (تبقى شاشة المصادقة ظاهرة)
