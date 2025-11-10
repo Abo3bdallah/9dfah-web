@@ -1715,11 +1715,22 @@
             supabase.auth.onAuthStateChange((event, session) => {
                 
                 // (جديد) معالجة حدث إعادة تعيين كلمة المرور
+                // (تعديل) تم نقل هذا الشرط ليكون الأول وله الأولوية القصوى
                 if (event === 'PASSWORD_RECOVERY' && !session) {
                     // هذا الحدث يشتغل عندما يضغط المستخدم على رابط إعادة التعيين
                     // يجب إظهار شاشة إدخال كلمة المرور الجديدة
                     authModal.style.display = 'none'; // إخفاء شاشة الدخول
                     guestWarningModal.style.display = 'none'; // إخفاء شاشة الضيف
+                    
+                    // إخفاء الواجهة الرئيسية إذا كانت ظاهرة (مثل وضع الضيف)
+                    btnOpenSidebar.classList.add('hidden');
+                    themeToggle.classList.add('hidden');
+                    allPages.forEach(p => { 
+                        p.style.display = 'none'; 
+                        p.style.opacity = '0'; 
+                    });
+                    currentPage = null;
+
                     resetPasswordModal.style.display = 'flex'; // إظهار شاشة إعادة التعيين
                     
                     // تنظيف الرسائل القديمة
@@ -1788,10 +1799,8 @@
                     
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
                     
-                    // (تعديل) التأكد من أننا لا نتعامل مع إعادة تعيين كلمة المرور
-                    if (resetPasswordModal.style.display === 'flex') {
-                        return; // لا تفعل شيئاً، دع المستخدم يكمل إعادة التعيين
-                    }
+                    // (تعديل) تم حذف التحقق من resetPasswordModal.style.display
+                    // لأن الشرط الأول (PASSWORD_RECOVERY) سيتكفل به
                     
                     if (isAuthHash) {
                         // لا تفعل شيئاً، انتظر معالجة الرابط (هذا لـتأكيد الإيميل)
