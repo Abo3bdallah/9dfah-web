@@ -1186,17 +1186,15 @@
             btnGameMafia.addEventListener('click', () => showPage('game-mafia', true));
 
 
-            // ربط أزرار "العودة" للصفحات العادية
+            // (إصلاح) ربط أزرار "العودة" و "X" للعودة المباشرة للرئيسية
             backButtons.forEach(button => {
-                // (إصلاح 2) استخدام history.back() بدلاً من showPage('welcome', true)
-                button.addEventListener('click', () => history.back());
+                button.addEventListener('click', () => showPage('welcome', true));
             });
             
-            // ربط أزرار الخروج العائمة (X)
             closeIframeButtons.forEach(button => {
-                // (إصلاح 2) استخدام history.back() بدلاً من showPage('welcome', true)
-                button.addEventListener('click', () => history.back());
+                button.addEventListener('click', () => showPage('welcome', true));
             });
+
 
             // ربط أزرار "سياسة الاستخدام"
             policyButtons.forEach(button => {
@@ -1346,7 +1344,7 @@
             btnSidebarSettings.addEventListener('click', () => {
                 // (ملاحظة: هذا الزر لن يظهر للضيف لأنه في sidebar-logged-in)
                 const { data: { user } } = supabase.auth.getUser();
-                if (user && user.user-metadata?.username) {
+                if (user && user.user_metadata?.username) {
                     settingsUsernameInput.value = user.user_metadata.username;
                 }
                 settingsError.classList.add('hidden');
