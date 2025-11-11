@@ -279,6 +279,15 @@
                         <span>المفضلة</span>
                     </button>
                     
+                    <!-- === ( هذا هو الزر الجديد الذي طلبته ) === -->
+                    <button id="btn-sidebar-updates" class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM18 12l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 18l-1.035.259a3.375 3.375 0 00-2.456 2.456L18 21.75l-.259-1.035a3.375 3.375 0 00-2.456-2.456L14.25 18l1.035-.259a3.375 3.375 0 002.456-2.456L18 12z" />
+                        </svg>
+                        <span>مزايا وتحديثات</span>
+                    </button>
+                    <!-- === ( نهاية الزر الجديد ) === -->
+
                     <!-- (جديد) زر التواصل -->
                     <a href="mailto:althebyani7@gmail.com" class="w-full flex items-center gap-3 px-4 py-3 bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors">
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -1226,7 +1235,7 @@
                                 <ul class="list-disc pr-6 space-y-2 mb-4">
                                     <li>تشغيل الخدمة: تسجيل الدخول، الحفاظ على الجلسة آمنة، وحفظ الإعدادات.</li>
                                     <li>تحسين الخدمة: تحليل بيانات الاستخدام المجهولة المصدر لتطوير ميزات جديدة وإصلاح الأخطاء.</li>
-                                    <li>التواصل معك: إرسال إشعارات ضرورية متعلقة بالحساب (مثل تأكيد الحساب أو تغيير كلمة المرور).</li>
+                            _       <li>التواصل معك: إرسال إشعارات ضرورية متعلقة بالحساب (مثل تأكيد الحساب أو تغيير كلمة المرور).</li>
                                 </ul>
                                 <p>نحن لا نبيع أو نؤجر أو نشارك بياناتك الشخصية مع أي جهة خارجية لأغراض تسويقية.</p>
 
@@ -1261,7 +1270,7 @@
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">8. التواصل</h2>
                                 <p>للاستفسارات حول هذه السياسة، يُرجى التواصل عبر البريد الإلكتروني:<br>
-                                <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
+                _               <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
             
         </main>
 
@@ -1349,6 +1358,8 @@
             const btnSidebarSignup = document.getElementById('btn-sidebar-signup');
             const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
             const btnSidebarFavorites = document.getElementById('btn-sidebar-favorites'); // (جديد)
+            // (جديد) تعريف زر التحديثات
+            const btnSidebarUpdates = document.getElementById('btn-sidebar-updates');
             const btnSidebarLogout = document.getElementById('btn-sidebar-logout');
 
             // عناصر شاشة الإعدادات
@@ -1835,6 +1846,15 @@
                 closeSidebar(); 
             });
             
+            // (جديد) ربط زر التحديثات (مؤقتاً يغلق القائمة فقط)
+            if (btnSidebarUpdates) {
+                btnSidebarUpdates.addEventListener('click', () => {
+                    // يمكنك إضافة وظيفة هنا مستقبلاً، مثل فتح نافذة منبثقة
+                    console.log('Features and Updates button clicked');
+                    closeSidebar();
+                });
+            }
+
             btnSidebarLogout.addEventListener('click', async () => {
                 setGuestMode(false); // (تعديل) استخدام الدالة الجديدة
                 await supabase.auth.signOut();
