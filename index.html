@@ -732,16 +732,16 @@
                             </tr>
                             
                             <!-- يمكنك إضافة المزيد من التحديثات هنا مستقبلاً -->
-                            <!-- 
+                             
                             <tr>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                     1.1
                                 </td>
                                 <td class="px-4 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
-                                    12-11-2025
+                                    11-11-2025
                                 </td>
                                 <td class="px-4 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal">
-                                    وصف تحديث جديد هنا.
+                                    تم اضافة لعبة تنافسية جديدة "من سيربح المليون" إلى منصة التنافس.
                                 </td>
                             </tr>
                             -->
@@ -1252,6 +1252,22 @@
         </main>
     </div>
     
+     <!-- (جديد) صفحة لعبة من سيربح المليون -->
+    <div id="mileon-app" class="page min-h-screen page-iframe-container">
+        <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
+        <button class="btn-close-iframe hidden md:flex items-center justify-center 
+                       fixed top-6 left-6 z-50 
+                       w-10 h-10 bg-black/30 text-white rounded-full 
+                       hover:bg-black/50 transition-all active:scale-90">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <main>
+            <iframe id="thinkwin-iframe" src="about:blank"></iframe>
+        </main>
+    </div>
+
     <!-- (جديد) صفحة لعبة مين الملقوف -->
     <div id="page-game-malkoof" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
@@ -1517,6 +1533,7 @@
             const pageGameCaptain = document.getElementById('page-game-captain');
             const pageGameSeaWar = document.getElementById('page-game-seawar');
             const pageGameTopTen = document.getElementById('page-game-topten');
+            const pageGameMileon = document.getElementById('mileon-app');
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
             const pageGameMafia = document.getElementById('page-game-mafia');
@@ -1541,6 +1558,7 @@
                 'game-seawar': document.getElementById('seawar-iframe'),
                 'game-topten': document.getElementById('topten-iframe'),
                 'game-thinkwin': document.getElementById('thinkwin-iframe'),
+                'game-mileon': document.getElementById('mileon-iframe'),
                 'game-malkoof': document.getElementById('malkoof-iframe'),
                 'game-mafia': document.getElementById('mafia-iframe')
             };
@@ -1555,6 +1573,7 @@
                 'game-seawar': 'sea-war-app.html',
                 'game-topten': 'top-ten-app.html',
                 'game-thinkwin': 'think-win-app.html', // (إصلاح) تصحيح خطأ مطبعي
+                'game-mileon': 'mileon-app.html',
                 'game-malkoof': 'malkoof-app.html',
                 'game-mafia': 'mafia-app.html'
             };
@@ -1569,6 +1588,7 @@
                 'game-seawar': { title: '2. حرب البحار', img: 'https://i.postimg.cc/RCjfNbsR/hrb-albhar.png' },
                 'game-topten': { title: '3. الترتيب العاشر', img: 'https://i.postimg.cc/TPrN4DKt/altrtyb.png' },
                 'game-thinkwin': { title: '4. فكر تربح', img: 'https://i.postimg.cc/Gpkg5y4S/trbh.png' },
+                'game-mileon': { title: '5. من سيربح المليون', img: 'https://i.postimg.cc/3JvYVY6y/mlyon.png' },
                 'game-malkoof': { title: '1. مين الملقوف', img: 'https://i.postimg.cc/m2B9YF4M/7.png' },
                 'game-mafia': { title: '2. مافيا', img: 'https://i.postimg.cc/ZK4N8ymP/8.png' }
             };
@@ -1646,6 +1666,7 @@
                 'game-seawar': { element: pageGameSeaWar, iframe: iframes['game-seawar'], src: iframeSrcMap['game-seawar'] },
                 'game-topten': { element: pageGameTopTen, iframe: iframes['game-topten'], src: iframeSrcMap['game-topten'] },
                 'game-thinkwin': { element: pageGameThinkWin, iframe: iframes['game-thinkwin'], src: iframeSrcMap['game-thinkwin'] },
+                'game-mileon': { element: pageGameMileon, iframe: iframes['game-mileon'], src: iframeSrcMap['game-mileon'] },
                 'game-malkoof': { element: pageGameMalkoof, iframe: iframes['game-malkoof'], src: iframeSrcMap['game-malkoof'] },
                 'game-mafia': { element: pageGameMafia, iframe: iframes['game-mafia'], src: iframeSrcMap['game-mafia'] }
             };
