@@ -1017,8 +1017,12 @@
                 </div>
             </div>
             
+             <!-- ======================= -->
+             <!-- ==== (الإصلاح 1) ==== -->
+             <!-- ======================= -->
              <!-- (جديد) بطاقة 5: من سيربح المليون (أصبحت زراً داخلياً) -->
-            <div data-appid="mileon-app" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+             <!-- تم تغيير data-appid من "mileon-app" إلى "game-mileon" ليتطابق مع الجافاسكربت -->
+            <div data-appid="game-mileon" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
                     <img src="https://i.postimg.cc/9MjhzpVb/mlywn.png" alt="صورة مسابقة من سيربح المليون" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
@@ -1252,7 +1256,11 @@
         </main>
     </div>
     
+     <!-- ======================= -->
+     <!-- ==== (الإصلاح 2) ==== -->
+     <!-- ======================= -->
      <!-- (جديد) صفحة لعبة من سيربح المليون -->
+     <!-- تم تغيير id الـ iframe من "thinkwin-iframe" إلى "mileon-iframe" ليتطابق مع الجافاسكربت -->
     <div id="mileon-app" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
         <button class="btn-close-iframe hidden md:flex items-center justify-center 
@@ -1264,7 +1272,7 @@
             </svg>
         </button>
         <main>
-            <iframe id="thinkwin-iframe" src="about:blank"></iframe>
+            <iframe id="mileon-iframe" src="about:blank"></iframe>
         </main>
     </div>
 
@@ -1533,7 +1541,7 @@
             const pageGameCaptain = document.getElementById('page-game-captain');
             const pageGameSeaWar = document.getElementById('page-game-seawar');
             const pageGameTopTen = document.getElementById('page-game-topten');
-            const pageGameMileon = document.getElementById('mileon-app');
+            const pageGameMileon = document.getElementById('mileon-app'); // تم تعريفه بشكل صحيح
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
             const pageGameMafia = document.getElementById('page-game-mafia');
@@ -1558,7 +1566,7 @@
                 'game-seawar': document.getElementById('seawar-iframe'),
                 'game-topten': document.getElementById('topten-iframe'),
                 'game-thinkwin': document.getElementById('thinkwin-iframe'),
-                'game-mileon': document.getElementById('mileon-iframe'),
+                'game-mileon': document.getElementById('mileon-iframe'), // تم تحديث هذا السطر ليشير إلى ID الصحيح
                 'game-malkoof': document.getElementById('malkoof-iframe'),
                 'game-mafia': document.getElementById('mafia-iframe')
             };
