@@ -702,7 +702,70 @@
             </div>
         </div>
     </div>
-
+    
+    <!-- ============================================== -->
+    <!-- (جديد) شاشة التحديثات (التي طلبتها) -->
+    <!-- ============================================== -->
+    <div id="updates-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-2xl overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
+                <h2 class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">مزايا وتحديثات</h2>
+                <button id="btn-close-updates" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+            </header>
+            
+            <!-- محتوى التحديثات (جدول) -->
+            <div class="p-8 max-h-[60vh] overflow-y-auto">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                        <thead class="bg-zinc-50 dark:bg-zinc-700">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                    الرقم
+                                H</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                    التاريخ
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                    التفاصيل
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-zinc-200 dark:bg-zinc-800 dark:divide-zinc-700">
+                            <!-- هذا هو التحديث الأول الذي طلبته -->
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-white">
+                                    1
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    2025/11/11
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    تم إضافة قائمة "مزايا وتحديثات".
+                                </td>
+                            </tr>
+                            
+                            <!-- يمكنك إضافة المزيد من الصفوف هنا مستقبلاً -->
+                            <!--
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-white">
+                                    2
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    2025/11/12
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    تحديث قادم...
+                                </td>
+                            </tr>
+                            -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- ======================= -->
@@ -1266,11 +1329,85 @@
                                 <p>يُمنح المستخدم (المسجل أو الضيف) ترخيصًا محدودًا، شخصيًا، غير حصري، غير قابل للتحويل، وقابلًا للإلغاء لاستخدام الخدمات لأغراض شخصية وغير تجارية فقط، وفقًا لشروط هذه الاتفاقية.</p>
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">7. تعديل الشروط</h2>
-                                <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
+                              _ <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">8. التواصل</h2>
                                 <p>للاستفسارات حول هذه السياسة، يُرجى التواصل عبر البريد الإلكتروني:<br>
                 _               <a href="mailto:althebyani7@gmail.com" class="text-blue-600 hover:underline dark:text-blue-400">althebyani7@gmail.com</a></p>
+            
+        </main>
+
+        <!-- تذييل الصفحة - تم التغيير إلى zinc -->
+        <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
+                       dark:text-zinc-400 dark:border-zinc-700">
+            <p class="text-sm">
+                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+            </p>
+        </footer>
+    </div>
+    
+    <!-- ============================================== -->
+    <!-- (جديد) صفحة مزايا وتحديثات (التي طلبتها) -->
+    <!-- ============================================== -->
+    <div id="page-updates" class="page container mx-auto p-6 md:p-12 min-h-screen">
+        <!-- رأس الصفحة - تم تخفيف اللون -->
+        <header class="flex justify-between items-center mb-12">
+            <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">مزايا وتحديثات</h2>
+            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+                العودة للرئيسية
+            </button>
+        </header>
+
+        <!-- (جديد) المحتوى الرئيسي للجدول -->
+        <main class="flex-grow bg-white rounded-xl shadow-lg p-6 md:p-10 max-w-4xl mx-auto 
+                     dark:bg-zinc-800">
+            
+             <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <thead class="bg-zinc-50 dark:bg-zinc-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                الرقم
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                التاريخ
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">
+                                التفاصيل
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-zinc-200 dark:bg-zinc-800 dark:divide-zinc-700">
+                        <!-- هذا هو التحديث الأول الذي طلبته -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-white">
+                                1
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                2025/11/11
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                تم إضافة قائمة "مزايا وتحديثات".
+                            </td>
+                        </tr>
+                        
+                        <!-- يمكنك إضافة المزيد من الصفوف هنا مستقبلاً -->
+                        <!--
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-white">
+                                2
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                2025/11/12
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                تحديث قادم...
+                            </td>
+                        </tr>
+                        -->
+                    </tbody>
+                </table>
+            </div>
             
         </main>
 
@@ -1394,6 +1531,11 @@
             const favoritesModal = document.getElementById('favorites-modal');
             const btnCloseFavorites = document.getElementById('btn-close-favorites');
             const favoritesContainer = document.getElementById('favorites-container');
+
+            // (جديد) عناصر شاشة التحديثات (التي طلبتها)
+            // (ملاحظة: الكود القديم كان يستخدم نافذة منبثقة، هذا يستخدم نظام الصفحات)
+            // const updatesModal = document.getElementById('updates-modal');
+            // const btnCloseUpdates = document.getElementById('btn-close-updates');
             
             // (جديد) كل بطاقات التطبيقات وأزرار المفضلة
             const allAppCards = document.querySelectorAll('.app-card');
@@ -1405,6 +1547,7 @@
             const pageCompetitions = document.getElementById('page-competitions');
             const pageGames = document.getElementById('page-games');
             const pagePolicy = document.getElementById('page-policy');
+            const pageUpdates = document.getElementById('page-updates'); // <-- (جديد)
             
             const pageToolRemote = document.getElementById('page-tool-remote');
             const pageToolSodfa = document.getElementById('page-tool-sodfa');
@@ -1436,7 +1579,7 @@
                 'game-captain': document.getElementById('captain-iframe'),
                 'game-seawar': document.getElementById('seawar-iframe'),
                 'game-topten': document.getElementById('topten-iframe'),
-                'game-thinkwin': document.getElementById('thinkwin-iframe'),
+                'game-thinkwin': document.getElementById('thinkwin-iframe'), // (إصلاح) تصحيح خطأ مطبعي
                 'game-malkoof': document.getElementById('malkoof-iframe'),
                 'game-mafia': document.getElementById('mafia-iframe')
             };
@@ -1450,7 +1593,7 @@
                 'game-captain': 'captain-safe-app.html',
                 'game-seawar': 'sea-war-app.html',
                 'game-topten': 'top-ten-app.html',
-                'game-thinkwin': 'think-win-app.html', // (إصلاح) تصحيح خطأ مطبعي
+                'game-thinkwin': 'think-win-app.html', 
                 'game-malkoof': 'malkoof-app.html',
                 'game-mafia': 'mafia-app.html'
             };
@@ -1528,12 +1671,14 @@
             // --- 3. منطق التنقل بين الصفحات (مع History API وتأثير الفيد) ---
             let currentPage = null;
 
+            // (تعديل) إضافة صفحة التحديثات إلى الخريطة
             const pageMap = {
                 'welcome': { element: pageWelcome },
                 'tools': { element: pageTools },
                 'competitions': { element: pageCompetitions },
                 'games': { element: pageGames },
                 'policy': { element: pagePolicy },
+                'updates': { element: pageUpdates }, // <-- (جديد)
                 'tool-remote': { element: pageToolRemote, iframe: iframes['tool-remote'], src: iframeSrcMap['tool-remote'] },
                 'tool-sodfa': { element: pageToolSodfa, iframe: iframes['tool-sodfa'], src: iframeSrcMap['tool-sodfa'] },
                 'tool-questions': { element: pageToolQuestions, iframe: iframes['tool-questions'], src: iframeSrcMap['tool-questions'] },
@@ -1846,11 +1991,12 @@
                 closeSidebar(); 
             });
             
-            // (جديد) ربط زر التحديثات (مؤقتاً يغلق القائمة فقط)
+            // (تعديل) ربط زر التحديثات
             if (btnSidebarUpdates) {
                 btnSidebarUpdates.addEventListener('click', () => {
-                    // يمكنك إضافة وظيفة هنا مستقبلاً، مثل فتح نافذة منبثقة
-                    console.log('Features and Updates button clicked');
+                    // (تعديل) إظهار صفحة التحديثات بدلاً من النافذة المنبثقة
+                    showPage('updates', true);
+                    console.log('Features and Updates page opened');
                     closeSidebar();
                 });
             }
@@ -1884,6 +2030,11 @@
             btnCloseFavorites.addEventListener('click', () => {
                 favoritesModal.style.display = 'none';
             });
+            
+            // (جديد) إغلاق نافذة التحديثات (لم يعد مستخدماً مع نظام الصفحات)
+            // btnCloseUpdates.addEventListener('click', () => {
+            //     updatesModal.style.display = 'none';
+            // });
 
             // (جديد) منطق تبويبات الإعدادات
             function showSettingsTab(tabName) {
