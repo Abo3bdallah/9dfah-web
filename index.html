@@ -1541,7 +1541,12 @@
             const pageGameCaptain = document.getElementById('page-game-captain');
             const pageGameSeaWar = document.getElementById('page-game-seawar');
             const pageGameTopTen = document.getElementById('page-game-topten');
-            const pageGameMileon = document.getElementById('mileon-app'); // تم تعريفه بشكل صحيح
+            
+            // ================== (الإصلاح 1) ==================
+            // تم تغيير المعرف من 'mileon-app' إلى 'game-mileon' ليتطابق مع الـ HTML
+            const pageGameMileon = document.getElementById('game-mileon'); // (إصلاح) تم تغيير المعرف ليتطابق مع HTML
+            // ================== (نهاية الإصلاح 1) ==================
+            
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
             const pageGameMafia = document.getElementById('page-game-mafia');
@@ -1581,7 +1586,12 @@
                 'game-seawar': 'sea-war-app.html',
                 'game-topten': 'top-ten-app.html',
                 'game-thinkwin': 'think-win-app.html', // (إصلاح) تصحيح خطأ مطبعي
-                'game-mileon': 'mileon-app.html',
+                
+                // ================== (الإصلاح 2) ==================
+                // تم تغيير اسم الملف ليتطابق مع الملف الذي أرفقته
+                'game-mileon': 'game-mileon.html', // (إصلاح) تم تغيير اسم الملف ليتطابق مع الملف المرفق
+                // ================== (نهاية الإصلاح 2) ==================
+                
                 'game-malkoof': 'malkoof-app.html',
                 'game-mafia': 'mafia-app.html'
             };
