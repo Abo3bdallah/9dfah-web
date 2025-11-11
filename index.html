@@ -676,33 +676,82 @@
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
-                <h2 id="settings-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">المفضلة</h2>
+                <h2 id="favorites-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">المفضلة</h2>
                 <button id="btn-close-favorites" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
             </header>
             
             <!-- محتوى المفضلة -->
             <div id="favorites-container" class="p-8 max-h-[60vh] overflow-y-auto">
                 <!-- سيتم ملء هذا القسم ديناميكياً -->
-                <!-- مثال عند عدم وجود مفضلة -->
-                <!-- <p class="text-zinc-500 dark:text-zinc-400 text-center">لم تقم بإضافة أي تطبيقات إلى المفضلة بعد. اضغط على أيقونة ⭐️ لإضافتها.</p> -->
-                
-                <!-- مثال عند وجود مفضلة -->
-                <!-- 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button class="flex items-center gap-3 p-4 bg-zinc-100 dark:bg-zinc-700 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition">
-                        <img src="https://i.postimg.cc/8cqXJP2f/sdft-3.png" class="w-10 h-10 rounded object-cover">
-                        <span class="font-medium">1. صدفة</span>
-                    </button>
-                    <button class="flex items-center gap-3 p-4 bg-zinc-100 dark:bg-zinc-700 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-600 transition">
-                        <img src="https://i.postimg.cc/ZK4N8ymP/8.png" class="w-10 h-10 rounded object-cover">
-                        <span class="font-medium">2. مافيا</span>
-                    </button>
-                </div>
-                -->
+                <p class="text-zinc-500 dark:text-zinc-400 text-center">جاري تحميل المفضلة...</p>
             </div>
         </div>
     </div>
 
+    <!-- ================================== -->
+    <!-- (جديد) شاشة مزايا وتحديثات -->
+    <!-- ================================== -->
+    <div id="updates-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-75" style="display: none;">
+        <div class="bg-white rounded-xl shadow-2xl w-11/12 max-w-2xl overflow-hidden 
+                    dark:bg-zinc-800">
+            <!-- رأس الشاشة -->
+            <header class="bg-zinc-100 p-5 text-center relative dark:bg-zinc-700">
+                <h2 id="updates-title" class="text-2xl font-bold text-zinc-800 dark:text-zinc-100">مزايا وتحديثات</h2>
+                <button id="btn-close-updates" class="absolute top-3 left-4 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-2xl">&times;</button>
+            </header>
+            
+            <!-- محتوى التحديثات (جدول) -->
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                        <thead class="bg-zinc-50 dark:bg-zinc-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider dark:text-zinc-300">
+                                    الرقم
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider dark:text-zinc-300">
+                                    التاريخ
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider dark:text-zinc-300">
+                                    الوصف
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-zinc-200 dark:bg-zinc-800 dark:divide-zinc-700">
+                            <!-- التحديث الأول (الذي طلبته) -->
+                            <tr>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                    1.0
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    11-11-2025
+                                </td>
+                                <td class="px-4 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal">
+                                    تم إطلاق الموقع وإضافة قائمة "مزايا وتحديثات" لعرض آخر التغييرات.
+                                </td>
+                            </tr>
+                            
+                            <!-- يمكنك إضافة المزيد من التحديثات هنا مستقبلاً -->
+                            <!-- 
+                            <tr>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                    1.1
+                                </td>
+                                <td class="px-4 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                                    12-11-2025
+                                </td>
+                                <td class="px-4 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal">
+                                    وصف تحديث جديد هنا.
+                                </td>
+                            </tr>
+                            -->
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- ======================= -->
@@ -1253,7 +1302,7 @@
                                 </ul>
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">5. الملكية الفكرية (الاستخدام المحظور)</h2>
-                                <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
+                        _       <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
                                 <p>يُحظر تمامًا:</p>
                                 <ul class="list-disc pr-6 space-y-2 mb-4">
                                     <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
@@ -1266,7 +1315,7 @@
                                 <p>يُمنح المستخدم (المسجل أو الضيف) ترخيصًا محدودًا، شخصيًا، غير حصري، غير قابل للتحويل، وقابلًا للإلغاء لاستخدام الخدمات لأغراض شخصية وغير تجارية فقط، وفقًا لشروط هذه الاتفاقية.</p>
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">7. تعديل الشروط</h2>
-                                <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
+                              _ <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
 
                                 <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">8. التواصل</h2>
                                 <p>للاستفسارات حول هذه السياسة، يُرجى التواصل عبر البريد الإلكتروني:<br>
@@ -1394,6 +1443,11 @@
             const favoritesModal = document.getElementById('favorites-modal');
             const btnCloseFavorites = document.getElementById('btn-close-favorites');
             const favoritesContainer = document.getElementById('favorites-container');
+            
+            // === (جديد) عناصر شاشة التحديثات ===
+            const updatesModal = document.getElementById('updates-modal');
+            const btnCloseUpdates = document.getElementById('btn-close-updates');
+            // === (نهاية العناصر الجديدة) ===
             
             // (جديد) كل بطاقات التطبيقات وأزرار المفضلة
             const allAppCards = document.querySelectorAll('.app-card');
@@ -1846,14 +1900,14 @@
                 closeSidebar(); 
             });
             
-            // (جديد) ربط زر التحديثات (مؤقتاً يغلق القائمة فقط)
+            // === (تعديل) ربط زر التحديثات ===
             if (btnSidebarUpdates) {
                 btnSidebarUpdates.addEventListener('click', () => {
-                    // يمكنك إضافة وظيفة هنا مستقبلاً، مثل فتح نافذة منبثقة
-                    console.log('Features and Updates button clicked');
-                    closeSidebar();
+                    updatesModal.style.display = 'flex'; // إظهار نافذة التحديثات
+                    closeSidebar(); // إغلاق القائمة الجانبية
                 });
             }
+            // === (نهاية التعديل) ===
 
             btnSidebarLogout.addEventListener('click', async () => {
                 setGuestMode(false); // (تعديل) استخدام الدالة الجديدة
@@ -1884,6 +1938,12 @@
             btnCloseFavorites.addEventListener('click', () => {
                 favoritesModal.style.display = 'none';
             });
+
+            // === (جديد) إغلاق نافذة التحديثات ===
+            btnCloseUpdates.addEventListener('click', () => {
+                updatesModal.style.display = 'none';
+            });
+            // === (نهاية الإضافة) ===
 
             // (جديد) منطق تبويبات الإعدادات
             function showSettingsTab(tabName) {
