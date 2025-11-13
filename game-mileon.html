@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>game-mileon</title>
+    <title>سباق المليون للفرق</title>
     <!-- تحميل Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- تحميل Font Awesome (لأيقونات وسائل المساعدة) -->
@@ -471,7 +471,11 @@
             <!-- النتائج النهائية تضاف هنا -->
             <div id="final-results-container" class="space-y-3"></div>
         </div>
-        <button id="restart-button" class="px-10 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-2xl rounded-full shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-400/30">
+        <!-- (جديد) زر كشف النتائج -->
+        <button id="reveal-results-button" class="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-2xl rounded-full shadow-lg transition-transform duration-300 hover:scale-105">
+            <i class="fas fa-trophy"></i> اكشف النتائج
+        </button>
+        <button id="restart-button" class="hidden px-10 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-2xl rounded-full shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-400/30">
             العب مرة أخرى
         </button>
     </div>
@@ -709,7 +713,7 @@
                 // 25
                 { question: "أي من هذه الرياضات تُلعب بالكرة؟", options: ["أ: كرة السلة", "ب: السباحة", "ج: الجري", "د: التزلج"], answer: "أ: كرة السلة" },
                 { question: "أي من هذه الدول لديها أكبر عدد سكان؟", options: ["أ: الهند", "ب: كندا", "ج: أستراليا", "د: النرويج"], answer: "أ: الهند" },
-                { question: "أي من هذه الأنهار يتدفق في مصر؟", options: ["أ: نهر الأمازون", "ب: نهر النيل", "ج: نهر المسيسيبي", "د: نهر الدانوب"], answer: "ب: نهر النيل" },
+                { question: "أي من هذه الأنهار يتدفق في مصر؟", options: ["أ: نهر الأمازون", "ب: نهر النيل", "ج: نهر الميسيسيبي", "د: نهر الدانوب"], answer: "ب: نهر النيل" },
                 { question: "أي من هذه الكواكب يُعرف بالكوكب العملاق؟", options: ["أ: عطارد", "ب: المشتري", "ج: المريخ", "د: الزهرة"], answer: "ب: المشتري" },
                 { question: "أي من هذه القارات تحتوي على أكبر عدد من الدول؟", options: ["أ: آسيا", "ب: أفريقيا", "ج: أوروبا", "د: أمريكا"], answer: "ب: أفريقيا" }
             ];
@@ -837,7 +841,7 @@
             const safePointStartLevels = { 4: 5, 9: 10, 14: 15 }; // (index 4 -> start at 5), (index 9 -> start at 10)
             
             // (جديد) عقوبة الجولة بالمللي ثانية
-            const TURN_PENALTY_MS = 20000; // 30 ثانية
+            const TURN_PENALTY_MS = 30000; // 30 ثانية
 
             // --- متغيرات حالة اللعبة ---
             let teams = [];
@@ -864,6 +868,8 @@
             const endScreen = document.getElementById('end-screen');
             const startButton = document.getElementById('start-button');
             const restartButton = document.getElementById('restart-button');
+            // (جديد) زر كشف النتائج
+            const revealResultsButton = document.getElementById('reveal-results-button');
             const questionText = document.getElementById('question-text');
             const optionsContainer = document.getElementById('options-container');
             const prizeLadder = document.getElementById('prize-ladder');
@@ -956,7 +962,7 @@
                 }
 
                 if (teamsFinished === 3) {
-                    endGame();
+                    endGame(false); // (تعديل) استدعاء مع forced=false
                     return;
                 }
 
@@ -1128,7 +1134,7 @@
                 updateTeamPanel(currentTeamIndex);
                 
                 if (teamsFinished === 3) {
-                    endGame();
+                    endGame(false); // (تعديل) استدعاء مع forced=false
                     return;
                 }
                 
@@ -1177,7 +1183,7 @@
                 card.className = cardClasses;
 
                 let statsHTML = `
-                    الرصيد: <span class="font-bold text-green-400 font-mono">${team.lockedScore.toLocaleString()} ريال</span> | 
+                    الرصيد: <span class="font-bold ${team.lockedScore > 0 ? 'text-green-400' : 'text-white'} font-mono">${team.lockedScore.toLocaleString()} ريال</span> | 
                     الوقت: <span class="font-mono">${(team.totalTime / 1000).toFixed(1)}s</span> |
                     الجولات: <span class="font-mono">${team.turnsTaken}</span>
                     <br><span class="${rank === 1 ? 'text-white' : 'text-yellow-300'} font-bold">★ النقاط النهائية: ${team.penaltyScore.toFixed(1)}</span>
@@ -1195,8 +1201,8 @@
             }
 
 
-            // (تعديل) دالة إنهاء اللعبة (للتأثير الدرامي)
-            function endGame() {
+            // (تعديل) دالة إنهاء اللعبة (لإضافة زر الكشف)
+            function endGame(forced = false) { // (تعديل) إضافة بارامتر
                 gameScreen.classList.add('hidden');
                 endScreen.classList.remove('hidden');
                 pauseButton.classList.add('hidden'); 
@@ -1204,15 +1210,23 @@
                 const endTitle = document.getElementById('end-title');
                 const endMessage = document.getElementById('end-message');
                 const resultsContainer = document.getElementById('final-results-container');
-                const restartBtn = document.getElementById('restart-button'); // (جديد)
+                const restartBtn = document.getElementById('restart-button');
+                const revealBtn = document.getElementById('reveal-results-button'); // (جديد)
 
-                // (جديد) إخفاء العناصر للتشويق
+                // (جديد) إخفاء العناصر
                 resultsContainer.innerHTML = '';
                 resultsContainer.classList.add('hidden');
                 restartBtn.classList.add('hidden');
+                revealBtn.classList.remove('hidden'); // (جديد) إظهار زر الكشف
                 
                 endTitle.textContent = "انتهى السباق!";
-                endMessage.textContent = "يتم الآن احتساب النقاط النهائية...";
+                
+                // (جديد) رسالة مخصصة
+                if (forced) {
+                    endMessage.textContent = "تم إنهاء السباق يدوياً. اضغط لكشف النتائج...";
+                } else {
+                    endMessage.textContent = "الجميع وصل لخط النهاية! اضغط لكشف النتائج...";
+                }
 
                 // (جديد) حساب نقاط العقوبة
                 teams.forEach(team => {
@@ -1220,25 +1234,43 @@
                     const turnPenaltyInSeconds = team.turnsTaken * (TURN_PENALTY_MS / 1000); 
                     team.penaltyScore = timeInSeconds + turnPenaltyInSeconds;
                 });
-
-                // (تعديل) فرز الفائزين بناءً على "نقاط العقوبة" (الأقل أفضل)
-                const sortedTeams = teams.sort((a, b) => a.penaltyScore - b.penaltyScore);
                 
-                // (جديد) العرض الدرامي للنتائج
+                // لا يتم الفرز أو العرض هنا، بل عند الضغط على الزر
+            }
+            
+            // (جديد) دالة كشف النتائج
+            function revealResults() {
+                const endTitle = document.getElementById('end-title');
+                const endMessage = document.getElementById('end-message');
+                const resultsContainer = document.getElementById('final-results-container');
+                const restartBtn = document.getElementById('restart-button');
+                const revealBtn = document.getElementById('reveal-results-button');
+
+                // إخفاء زر الكشف
+                revealBtn.classList.add('hidden');
+                
+                // (تعديل) فرز الفرق بناءً على الرصيد الآمن أولاً، ثم نقاط العقوبة
+                const sortedTeams = teams.sort((a, b) => {
+                    // 1. الفرز بالرصيد الآمن (الأعلى أولاً)
+                    if (b.lockedScore !== a.lockedScore) {
+                        return b.lockedScore - a.lockedScore;
+                    }
+                    // 2. إذا تساوى الرصيد، الفرز بنقاط العقوبة (الأقل أولاً)
+                    return a.penaltyScore - b.penaltyScore;
+                });
                 
                 // 1. إظهار المركز الثالث
                 setTimeout(() => {
                     endMessage.textContent = "في المركز الثالث...";
                     resultsContainer.classList.remove('hidden');
                     resultsContainer.appendChild(createResultCard(sortedTeams[2], 3));
-                }, 1500); // 1.5 ثانية
+                }, 500); // 0.5 ثانية
 
                 // 2. إظهار المركز الثاني
                 setTimeout(() => {
                     endMessage.textContent = "وفي المركز الثاني...";
-                    // (تعديل) prepend لإضافة الكرت في الأعلى
                     resultsContainer.prepend(createResultCard(sortedTeams[1], 2));
-                }, 3500); // 3.5 ثانية (بعد ثانيتين)
+                }, 2000); // 2 ثانية (بعد 1.5 ثانية)
 
                 // 3. إظهار الفائز
                 setTimeout(() => {
@@ -1246,8 +1278,9 @@
                     endMessage.textContent = sortedTeams[0].name;
                     resultsContainer.prepend(createResultCard(sortedTeams[0], 1));
                     restartBtn.classList.remove('hidden'); // إظهار زر إعادة اللعب
-                }, 6000); // 6 ثواني (بعد 2.5 ثانية)
+                }, 4000); // 4 ثواني (بعد 2 ثانية)
             }
+
 
             // --- دوال العداد ---
             function startTimer() {
@@ -1345,6 +1378,13 @@
                 adminHTML += `
                     <button onclick="window.confirmRestartTurn()" class="w-full px-4 py-2 text-lg bg-blue-700 hover:bg-blue-600 rounded-full modal-button">
                         <i class="fas fa-history"></i> إعادة الدور الحالي
+                    </button>
+                `;
+                
+                // (جديد) زر إنهاء السباق
+                adminHTML += `
+                    <button onclick="window.confirmForceEndGame()" class="w-full px-4 py-2 text-lg bg-purple-700 hover:bg-purple-600 rounded-full modal-button">
+                        <i class="fas fa-flag-checkered"></i> إنهاء السباق (بالنتائج الحالية)
                     </button>
                 `;
                 
@@ -1449,6 +1489,45 @@
                         }
                     ]
                 );
+            }
+            
+            // (جديد) دالة لتأكيد الإنهاء الفوري
+            window.confirmForceEndGame = function() {
+                // إخفاء مودال الإعدادات أولاً
+                hideModal();
+                
+                showModal(
+                    "هل أنت متأكد من إنهاء السباق الآن؟<br><small>(سيتم إعلان الفائز حسب الرصيد الحالي والنقاط)</small>",
+                    [
+                        { 
+                            text: "نعم، أنهِ السباق", 
+                            action: window.forceEndGame, 
+                            class: "bg-purple-600 hover:bg-purple-500 modal-button" 
+                        },
+                        { 
+                            text: "إلغاء", 
+                            action: showPauseModal, // العودة إلى قائمة الإعدادات
+                            class: "bg-gray-500 hover:bg-gray-400 modal-button" 
+                        }
+                    ]
+                );
+            }
+
+            // (جديد) دالة للإنهاء الفوري
+            window.forceEndGame = function() {
+                hideModal();
+                // إيقاف أي مؤقتات جارية
+                stopTimer();
+                clearTimeout(freezeTimerTimeout);
+                clearInterval(freezeCountdownInterval);
+
+                // إعادة تعيين حالات التجميد والعداد
+                isTimerFrozen = false;
+                isLifelineFreezeActive = false;
+                gameInProgress = false;
+
+                // استدعاء دالة إنهاء اللعبة مع وضع "الإجبار"
+                endGame(true);
             }
 
             window.forceChangeTurn = function(newIndex) {
@@ -1709,6 +1788,7 @@
             // (تعديل) زر البدء يفتح مودال اختيار الجولة
             startButton.onclick = showRoundSelectionModal; 
             restartButton.onclick = showRoundSelectionModal; // زر إعادة اللعب يفتح اختيار الجولة أيضاً
+            revealResultsButton.onclick = revealResults; // (جديد) ربط زر كشف النتائج
             
             passTurnButton.onclick = passTurn;
             pauseButton.onclick = showPauseModal;
@@ -1759,5 +1839,4 @@
         });
     </script>
 </body>
-
 </html>
