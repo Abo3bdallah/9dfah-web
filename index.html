@@ -1394,7 +1394,7 @@
                                 <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
                                 <p>يُحظر تمامًا:</p>
                                 <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
+                          _         <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
                                     <li>تحليل أو تفكيك أو إجراء هندسة عكسية لأي جزء من برمجيات الموقع.</li>
                                     <li>استغلال الخدمات لأغراض تجارية أو لإنشاء منتج منافس.</li>
                                     <li>إزالة أو إخفاء أي إشعارات متعلقة بحقوق النشر أو العلامات التجارية.</li>
@@ -1422,8 +1422,37 @@
     </div>
 
 
+    <!-- ======================= -->
+    <!-- (جديد) شاشة الإعلانات المنبثقة -->
+    <!-- ======================= -->
+    <div id="announcement-modal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black bg-opacity-75 p-4" style="display: none;">
+        
+        <!-- (جديد) خلفية قابلة للنقر لإغلاق النافذة -->
+        <div id="announcement-modal-overlay" class="absolute inset-0"></div>
+
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden 
+                    dark:bg-zinc-800 transform transition-all scale-95 opacity-0" 
+             id="announcement-modal-box" role="dialog" aria-modal="true">
+            
+            <!-- المحتوى -->
+            <div class="p-2 relative">
+                <!-- زر الإغلاق -->
+                <button id="btn-close-announcement" class="absolute top-3 left-3 z-10 p-1.5 rounded-full bg-black/40 text-white hover:bg-black/60 transition" aria-label="إغلاق">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                
+                <!-- الصورة (ستُضاف من الجافاسكربت) -->
+                <img id="announcement-image" src="" alt="إعلان" class="w-full h-auto object-contain rounded-lg">
+            </div>
+        </div>
+    </div>
+    <!-- (نهاية شاشة الإعلانات) -->
+
+
     <!-- ============================================== -->
-    <!-- كود الجافاسكربت للتنقل (مع ميزة زر الرجوع وتأثير الفيد) -->
+    <!-- كود الجافاسكربت للتنقل... -->
     <!-- ============================================== -->
     <script type="module">
         // --- 0. تهيئة Supabase ---
@@ -1433,6 +1462,14 @@
         
         // (إصلاح) تم نقل المعرف إلى هنا لمنع تعريفه مرتين
         const GA_MEASUREMENT_ID = 'G-X3CFQ7QJ6R';
+
+        // === (جديد) معرّف الإعلان الحالي ===
+        //
+        // !! لتحديث الإعلان، فقط غيّر هذا الرابط !!
+        //
+        const CURRENT_ANNOUNCEMENT_URL = 'https://i.postimg.cc/XJhy3VTJ/aʿlan.png';
+        //
+        // === (نهاية الإضافة) ===
 
         // استيراد وإنشاء العميل
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -1537,6 +1574,14 @@
             const updatesModal = document.getElementById('updates-modal');
             const btnCloseUpdates = document.getElementById('btn-close-updates');
             // === (نهاية العناصر الجديدة) ===
+
+            // === (جديد) عناصر شاشة الإعلانات ===
+            const announcementModal = document.getElementById('announcement-modal');
+            const announcementModalBox = document.getElementById('announcement-modal-box');
+            const announcementModalOverlay = document.getElementById('announcement-modal-overlay');
+            const btnCloseAnnouncement = document.getElementById('btn-close-announcement');
+            const announcementImage = document.getElementById('announcement-image');
+            // === (نهاية الإضافة) ===
             
             // (جديد) كل بطاقات التطبيقات وأزرار المفضلة
             const allAppCards = document.querySelectorAll('.app-card');
@@ -1560,7 +1605,7 @@
             // ================== (الإصلاح 1) ==================
             // تم تغيير المعرف من 'mileon-app' إلى 'game-mileon' ليتطابق مع الـ HTML
             // === (الإصلاح 4: توحيد المعرّف) ===
-const pageGameMileon = document.getElementById('page-game-mileon');
+            const pageGameMileon = document.getElementById('page-game-mileon');
             // ================== (نهاية الإصلاح 1) ==================
             
             const pageGameThinkWin = document.getElementById('page-game-thinkwin');
@@ -1882,6 +1927,49 @@ const pageGameMileon = document.getElementById('page-game-mileon');
                 settingsSuccess.classList.add('hidden');
             }
 
+            // === (جديد) دوال شاشة الإعلانات ===
+            
+            /**
+             * يتحقق إذا كان يجب عرض الإعلان (لم يُرَ من قبل + نحن في الصفحة الرئيسية)
+             */
+            function checkAndShowAnnouncement() {
+                // نتأكد أننا في الصفحة الرئيسية
+                if (currentPage !== pageWelcome) {
+                    return;
+                }
+            
+                const seenURL = localStorage.getItem('seenAnnouncementURL');
+                
+                // إذا لم يرَ المستخدم هذا الرابط تحديداً
+                if (seenURL !== CURRENT_ANNOUNCEMENT_URL) {
+                    announcementImage.src = CURRENT_ANNOUNCEMENT_URL;
+                    announcementModal.style.display = 'flex';
+                    // تفعيل الأنيميشن
+                    setTimeout(() => {
+                        announcementModalBox.classList.remove('scale-95', 'opacity-0');
+                    }, 10); // تأخير بسيط لبدء التحريك
+                }
+            }
+            
+            /**
+             * إخفاء شاشة الإعلان وتسجيل الرابط كـ "مرئي"
+             */
+            function hideAnnouncementModal() {
+                // بدء أنيميشن الإخفاء
+                announcementModalBox.classList.add('scale-95', 'opacity-0');
+                
+                setTimeout(() => {
+                    announcementModal.style.display = 'none';
+                    // تسجيل أن المستخدم رأى هذا الإعلان
+                    localStorage.setItem('seenAnnouncementURL', CURRENT_ANNOUNCEMENT_URL);
+                }, 200); // مدة الأنيميشن
+                
+                // (اختياري) تشغيل صوت النقر
+                // playClickSound(); 
+            }
+            
+            // === (نهاية الإضافة) ===
+
             // دوال فتح/إغلاق القائمة الجانبية
             function openSidebar() {
                 sidebarOverlay.classList.remove('hidden');
@@ -1966,6 +2054,9 @@ const pageGameMileon = document.getElementById('page-game-mileon');
                 btnOpenSidebar.classList.remove('hidden');
                 themeToggle.classList.remove('hidden');
                 showPage('welcome', false);
+                // === (جديد) التحقق من الإعلان هنا أيضاً للضيف ===
+                setTimeout(checkAndShowAnnouncement, 500); // تأخير بسيط
+                // === (نهاية الإضافة) ===
                 try {
                     history.replaceState({ page: 'welcome' }, '', `#welcome`);
                 } catch(e) {}
@@ -2335,6 +2426,10 @@ const pageGameMileon = document.getElementById('page-game-mileon');
                 });
             }
 
+            // === (جديد) ربط أحداث إغلاق شاشة الإعلانات ===
+            btnCloseAnnouncement.addEventListener('click', hideAnnouncementModal);
+            announcementModalOverlay.addEventListener('click', hideAnnouncementModal);
+            // === (نهاية الإضافة) ===
             
             // --- مراقبة حالة المصادقة (*** تم التعديل بالكامل ***) ---
             supabase.auth.onAuthStateChange((event, session) => {
@@ -2367,10 +2462,16 @@ const pageGameMileon = document.getElementById('page-game-mileon');
                     sidebarUsername.textContent = displayName;
                     
                     // 4. تحديد الصفحة المراد عرضها
-                    if (isAuthHash || currentPageId === '' || !pageMap[currentPageId]) {
-                        showPage('welcome', false);
-                        try {
-                            history.replaceState({ page: 'welcome' }, '', `#welcome`);
+                   // 4. تحديد الصفحة المراد عرضها
+            if (isAuthHash || currentPageId === '' || !pageMap[currentPageId]) {
+                showPage('welcome', false);
+                
+                // === (جديد) أضف هذا السطر لتشغيل الإعلان ===
+                setTimeout(checkAndShowAnnouncement, 500);
+                // === (نهاية الإضافة) ===
+                
+                try {
+                    history.replaceState({ page: 'welcome' }, '', `#welcome`);
                         } catch(e) { console.warn("History API (replaceState) not available.", e); }
                     } else {
                         showPage(currentPageId, false);
@@ -2401,13 +2502,18 @@ const pageGameMileon = document.getElementById('page-game-mileon');
                     // 4. إظهار نافذة المصادقة أو واجهة الضيف
                     if (isAuthHash) {
                         // لا تفعل شيئاً، انتظر معالجة الرابط
-                    } else if (isGuest) {
-                        // (جديد) المستخدم اختار أن يكون ضيفاً
-                        btnOpenSidebar.classList.remove('hidden');
-                        themeToggle.classList.remove('hidden');
-                        showPage('welcome', false);
-                        setGuestMode(true); // (إصلاح) التأكد من تفعيل وضع الضيف
-                    } else {
+                  } else if (isGuest) {
+                // (جديد) المستخدم اختار أن يكون ضيفاً
+                btnOpenSidebar.classList.remove('hidden');
+                themeToggle.classList.remove('hidden');
+                showPage('welcome', false);
+
+                // === (جديد) أضف هذا السطر لتشغيل الإعلان للضيف العائد ===
+                setTimeout(checkAndShowAnnouncement, 500);
+                // === (نهاية الإضافة) ===
+
+                setGuestMode(true); // (إصلاح) التأكد من تفعيل وضع الضيف
+            } else {
                         // (جديد) مستخدم جديد أو سجل خروج، أظهِر المصادقة الإجبارية
                         setGuestMode(false); // (إصلاح) التأكد من إلغاء وضع الضيف
                         showLoginView();
