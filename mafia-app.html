@@ -16,12 +16,11 @@
             overflow-x: hidden;
         }
 
-        /* 🛠️ START: زر العودة للرئيسية */
         #homeButton {
-            position: fixed; /* أو absolute إذا كان .container هو الأب */
+            position: fixed; 
             top: 20px;
             left: 20px;
-            z-index: 1500; /* فوق كل شيء عدا النوافذ المنبثقة */
+            z-index: 1500; 
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -42,7 +41,6 @@
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
-        /* 🛠️ END: زر العودة للرئيسية */
         
         .container {
             max-width: 1200px;
@@ -90,7 +88,6 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
         
-        /* إزالة الأسهم القديمة (لأننا نستخدم الأزرار المخصصة) */
         input[type="number"] {
             -webkit-appearance: textfield; 
             -moz-appearance: textfield; 
@@ -131,9 +128,8 @@
             gap: 0.75rem;
         }
         
-        /* هذا هو العداد الرقمي في المنتصف (تم تطبيقه على المدخل) */
         .number-input-display {
-            background: rgba(30, 30, 30, 0.9); /* Match app inputs */
+            background: rgba(30, 30, 30, 0.9); 
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.75rem;
@@ -141,15 +137,14 @@
             width: 60px;
             text-align: center;
             font-weight: bold;
-            border: 2px solid rgba(80, 80, 80, 0.5); /* Match app inputs */
+            border: 2px solid rgba(80, 80, 80, 0.5); 
 
-            /* إضافات لجعله يعمل كـ input */
             -webkit-appearance: none;
             -moz-appearance: textfield;
             font-family: inherit;
-            box-sizing: border-box; /* لضمان تطابق الأبعاد */
-            height: 57px; /* ليتطابق مع ارتفاع الأزرار */
-            line-height: 2.5; /* لتوسيط الرقم عمودياً */
+            box-sizing: border-box; 
+            height: 57px; 
+            line-height: 2.5; 
         }
         
         .number-input-display:focus {
@@ -158,15 +153,14 @@
             box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
         }
 
-        /* الهيكل الأساسي للزر */
         .button-3d {
             -webkit-appearance: none;
             appearance: none;
             position: relative;
             border-width: 0;
             padding: 0;
-            min-width: 3.5em; /* تكبير طفيف */
-            min-height: 3.5em; /* تكبير طفيف */
+            min-width: 3.5em; 
+            min-height: 3.5em; 
             box-sizing: border-box;
             background: transparent;
             font: inherit;
@@ -174,7 +168,6 @@
             border-radius: 12px;
         }
         
-        /* الجزء العلوي الملون الذي تضغط عليه */
         .button-top {
             display: flex;
             align-items: center;
@@ -185,19 +178,17 @@
             height: 100%;
             transform: translateY(0);
             color: #fff;
-            font-size: 1.8rem; /* تكبير الأيقونة */
+            font-size: 1.8rem; 
             text-shadow: 0 -1px rgba(0, 0, 0, 0.25);
             border-radius: 12px;
             transition: transform 0.2s;
             font-weight: bold;
         }
         
-        /* تأثير الضغط (ينزل الزر للأسفل) */
         .button-3d:active .button-top {
             transform: translateY(2px);
         }
         
-        /* الظل الداكن أسفل الزر (يعطي عمق) */
         .button-bottom {
             position: absolute;
             z-index: 1;
@@ -206,11 +197,10 @@
             border-radius: 12px;
             width: calc(100% - 8px);
             height: calc(100% - 10px);
-            background: #ccc; /* لون الظل الأساسي */
+            background: #ccc; 
             box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.5);
         }
         
-        /* القاعدة الأساسية للزر (لإضافة واقعية) */
         .button-base {
             position: absolute;
             z-index: 0;
@@ -224,21 +214,18 @@
                 inset 0 2px 2px rgba(0, 0, 0, 0.25);
         }
         
-        /* ألوان زر الزائد (ذهبي - متوافق مع الثيم) */
         .button-3d-plus .button-top { background-image: linear-gradient(145deg, #ffd700, #e6c200); }
         .button-3d-plus .button-bottom { background-image: linear-gradient(145deg, #e6c200, #d4ac0d); }
         
-        /* ألوان زر الناقص (أحمر - متوافق مع الثيم) */
         .button-3d-minus .button-top { background-image: linear-gradient(145deg, #ff6b6b, #ff4757); }
         .button-3d-minus .button-bottom { background-image: linear-gradient(145deg, #ff4757, #c44569); }
         
-        /* شكل الزر عندما يكون معطلاً */
         .button-3d.disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
         .button-3d.disabled:active .button-top {
-            transform: translateY(0); /* إلغاء تأثير الضغط */
+            transform: translateY(0); 
         }
         /* --- END: تنسيقات الأزرار الجديدة 3D --- */
         
@@ -249,7 +236,6 @@
             margin-top: 20px;
         }
         
-        /* تعديل تنسيق حاويات الأدوار لتوسيط الأزرار */
         .role-inputs {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -258,7 +244,7 @@
         .role-inputs > div {
             display: flex;
             flex-direction: column;
-            align-items: center; /* توسيط العناصر الداخلية */
+            align-items: center; 
         }
         
         button {
@@ -296,7 +282,6 @@
             backdrop-filter: blur(15px);
             border: 3px solid rgba(80, 80, 80, 0.5);
             border-radius: 25px;
-            /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
             padding: 0 20px;
             text-align: center;
             cursor: pointer;
@@ -306,7 +291,6 @@
             min-height: 205px; 
             display: flex;
             flex-direction: column;
-            /* 🛠️ توسيط الاسم في المنتصف */
             justify-content: center;
             position: relative;
             overflow: hidden;
@@ -494,24 +478,22 @@
             50% { transform: scale(1.1); }
         }
         
-        /* 🛠️ START: تعديل تصميم اسم اللاعب (العودة للمنتصف) */
         .player-name {
-            font-size: 1.4rem; /* ⬅️ تكبير الخط */
+            font-size: 1.4rem; 
             font-weight: 800;
             color: #ffffff;
             text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
             letter-spacing: 0.3px;
             line-height: 1.2;
-            position: relative; /* ⬅️ العودة إلى relative */
+            position: relative; 
             z-index: 3;
-            background: rgba(0, 0, 0, 0.6); /* ⬅️ خلفية أغمق للوضوح */
-            padding: 8px 15px; /* ⬅️ تعديل الحشو */
-            border-radius: 10px; /* ⬅️ زوايا دائرية */
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 8px 15px; 
+            border-radius: 10px; 
             width: fit-content;
-            margin: 0 auto; /* ⬅️ توسيط أفقي */
+            margin: 0 auto; 
             transition: opacity 0.4s ease-in-out;
         }
-        /* 🛠️ END: تعديل تصميم اسم اللاعب */
 
         
         .player-box.opened.role-citizen .player-name,
@@ -681,7 +663,6 @@
             margin-top: 15px;
         }
         
-        /* ستايل جديد للنافذة المنبثقة (Modal) */
         #roleModal {
             position: fixed;
             top: 0;
@@ -703,7 +684,6 @@
             display: none;
         }
 
-        /* إصلاح قائمة الإخراج (إلغاء السكرول) */
         .modal-content {
             background: linear-gradient(145deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 20, 0.8));
             border: 1px solid rgba(80, 80, 80, 0.3);
@@ -801,7 +781,6 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        /* 🛠️ START: تنسيقات نافذة تأكيد الخروج (زر الرجوع) */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -810,7 +789,7 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.9); 
             backdrop-filter: blur(8px);
-            z-index: 2000; /* أعلى من نافذة الأدوار */
+            z-index: 2000; 
             display: flex;
             align-items: center; 
             justify-content: center; 
@@ -821,12 +800,10 @@
         .modal-backdrop.hidden {
             display: none;
         }
-        /* 🛠️ END: تنسيقات نافذة تأكيد الخروج */
 
         
         /* Media Queries */
         @media (max-width: 768px) {
-            /* 🛠️ زر العودة للرئيسية */
             #homeButton {
                 top: 15px;
                 left: 15px;
@@ -870,13 +847,12 @@
                 width: 100%; 
                 min-height: 180px;
                 height: 180px; 
-                /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
                 padding: 0 15px;
             }
             
             .player-name {
-                font-size: 1.2rem; /* ⬅️ تكبير الخط */
-                padding: 6px 12px; /* ⬅️ تعديل الحشو */
+                font-size: 1.2rem; 
+                padding: 6px 12px; 
             }
             
             .skull-icon {
@@ -925,7 +901,6 @@
         }
         
         @media (max-width: 480px) {
-            /* 🛠️ زر العودة للرئيسية */
             #homeButton {
                 top: 10px;
                 left: 10px;
@@ -946,30 +921,28 @@
                 padding: 15px 10px; 
             }
 
-            /* 🛠️ إصلاح تنسيق الأزرار للجوال (توزيع الأدوار) */
              .role-inputs {
                  grid-template-columns: 1fr 1fr; 
                  gap: 15px;
              }
              .role-inputs .number-input-container {
-                 gap: 0.5rem; /* ⬅️ تصغير المسافة */
-                 flex-wrap: nowrap; /* ⬅️ ضمان بقائها في سطر واحد */
+                 gap: 0.5rem; 
+                 flex-wrap: nowrap; 
              }
              .role-inputs .button-3d {
-                min-width: 2.8em; /* ⬅️ تصغير الزر */
+                min-width: 2.8em; 
                 min-height: 2.8em;
              }
              .role-inputs .button-top {
-                 font-size: 1.2rem; /* ⬅️ تصغير الأيقونة */
+                 font-size: 1.2rem; 
              }
              .role-inputs .number-input-display {
-                 width: 40px; /* ⬅️ تصغير العداد */
+                 width: 40px; 
                  font-size: 1rem;
                  height: 45px; 
                  line-height: 2;
                  padding: 0.5rem;
              }
-            /* --------------------------------- */
 
             .players-grid {
                 display: flex;
@@ -985,24 +958,19 @@
             }
             
             .player-box {
-                /* 🛠️ التعديل الأخير: عمود واحد لتكبير الصندوق */
                 flex-basis: 100%; 
-                max-width: 375px; /* تحديد عرض أقصى */
+                max-width: 375px; 
                 width: 100%; 
                 height: auto; 
                 aspect-ratio: 375 / 205; 
                 min-height: unset; 
-                /* 🛠️ إزالة الحشو العلوي والسفلي للسماح للاسم بالتموضع */
                 padding: 0 10px;
             }
             
-            /* 🛠️ تعديل اسم اللاعب (العودة للمنتصف) للجوال */
             .player-name {
-                font-size: 1.3rem; /* ⬅️ تكبير الخط على الجوال أيضاً */
-                padding: 6px 12px; /* ⬅️ تعديل الحشو للجوال */
-                /* ⬅️ بقية الخصائص موروثة من الأساسي */
+                font-size: 1.3rem; 
+                padding: 6px 12px; 
             }
-            /* --------------------------------- */
 
             .skull-icon {
                 font-size: 1.2rem;
@@ -1051,7 +1019,6 @@
                 font-size: 1.1rem;
             }
 
-            /* إصلاح قائمة الإخراج للجوال */
             .modal-content {
                  width: 90vw; 
                  height: auto;
@@ -1085,9 +1052,7 @@
     </style>
 </head>
 <body>
-    <!-- 🛠️ START: زر العودة للرئيسية -->
     <button id="homeButton" class="hidden" onclick="showExitConfirm()">🏠</button>
-    <!-- 🛠️ END: زر العودة للرئيسية -->
 
     <div class="container">
         <h1>🎭 مافيا 🎭</h1>
@@ -1096,7 +1061,6 @@
         <div id="setup-phase">
             <div class="setup-section">
                 
-                <!-- START: HTML الأزرار الجديدة 3D -->
                 <div class="input-group">
                     <label for="playerCount">عدد اللاعبين:</label>
                     <div class="number-input-container">
@@ -1174,7 +1138,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- END: HTML الأزرار الجديدة 3D -->
                 
                 <button class="start-btn" onclick="startGame()">ابدأ اللعبة</button>
             </div>
@@ -1236,7 +1199,6 @@
         </div>
     </div>
     
-    <!-- النافذة المنبثقة الجديدة للقرعة: تم إضافة الكلاس "hidden" هنا -->
     <div id="roleModal" class="hidden">
         <div class="modal-content">
             <h2 id="modalTitle">
@@ -1266,9 +1228,7 @@
             </div>
         </div>
     </div>
-    <!-- نهاية النافذة المنبثقة -->
-
-    <!-- 🛠️ START: النافذة المنبثقة لتأكيد الخروج (زر الرجوع) -->
+    
     <div id="exitConfirmModal" class="modal-backdrop hidden">
         <div class="modal-content" style="max-width: 400px;">
             <h2 style="color: #ff6b6b;">تأكيد الخروج</h2>
@@ -1285,7 +1245,6 @@
             </div>
         </div>
     </div>
-    <!-- 🛠️ END: النافذة المنبثقة لتأكيد الخروج -->
 
 
     <script>
@@ -1301,24 +1260,22 @@
         let isRolesPhaseActive = true; 
         let gameState = {}; // للحفظ
 
-        // --- إضافة كائن مسارات صور الأدوار الجديدة ---
         const roleImages = {
-            'مافيا': 'https://i.postimg.cc/zft6CjJT/1.png', // القاتل/المافيا
-            'مواطن': 'https://i.postimg.cc/TP7FV9R0/2.png', // مواطن
-            'محقق': 'https://i.postimg.cc/zft6CjJj/3.png', // تم التحديث هنا: محقق
-            'طبيب': 'https://i.postimg.cc/W4WCGn26/4.png'  // طبيب
+            'مافيا': 'https://i.postimg.cc/zft6CjJT/1.png', 
+            'مواطن': 'https://i.postimg.cc/TP7FV9R0/2.png', 
+            'محقق': 'https://i.postimg.cc/zft6CjJj/3.png', 
+            'طبيب': 'https://i.postimg.cc/W4WCGn26/4.png'  
         };
         
         const roleColors = {
             'مواطن': '#2c3e50',
             'مافيا': '#ff4757',
             'طبيب': '#74b9ff',
-            'محقق': '#fdcb6e' // تم التحديث هنا: محقق
+            'محقق': '#fdcb6e' 
         };
         
-        const rolesList = ['مافيا', 'مواطن', 'محقق', 'طبيب']; // تم التحديث هنا: محقق
+        const rolesList = ['مافيا', 'مواطن', 'محقق', 'طبيب']; 
         
-        // --- START: كود الأزرار 3D ---
         function setupNumberInputListeners() {
             document.querySelectorAll('.button-3d').forEach(button => {
                 button.addEventListener('click', () => {
@@ -1330,7 +1287,7 @@
 
                     let currentValue = parseInt(inputElement.value);
                     const min = parseInt(inputElement.min);
-                    const max = parseInt(inputElement.max);
+                    const max = parseInt(inputElement.max) || 99; 
 
                     if (action === 'increment') {
                         if (currentValue < max) {
@@ -1344,28 +1301,25 @@
                     
                     inputElement.value = currentValue;
                     
-                    // تحديث حالة الأزرار (تعطيل/تفعيل)
                     updateButtonStates(inputId, currentValue, min, max);
 
-                    // ربط التحديث التلقائي إذا كان الزر خاص بـ playerCount
                     if (inputId === 'playerCount') {
                         inputElement.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                 });
             });
 
-             // إضافة مستمعين للمدخلات للتحقق من الحدود عند الكتابة اليدوية
             document.querySelectorAll('.number-input-display').forEach(input => {
                 input.addEventListener('input', (e) => {
                     let value = parseInt(e.target.value);
                     const min = parseInt(e.target.min);
-                    const max = parseInt(e.target.max);
+                    const max = parseInt(e.target.max) || 99; 
 
                     if (isNaN(value)) value = min;
                     if (value < min) value = min;
                     if (value > max) value = max;
                     
-                    e.target.value = value; // تصحيح القيمة إذا تجاوزت
+                    e.target.value = value; 
                     
                     updateButtonStates(e.target.id, value, min, max);
 
@@ -1375,10 +1329,9 @@
                     }
                 });
 
-                // تفعيل الأزرار عند التحميل الأولي
                 let value = parseInt(input.value);
                 const min = parseInt(input.min);
-                const max = parseInt(input.max);
+                const max = parseInt(input.max) || 99; 
                 updateButtonStates(input.id, value, min, max);
             });
         }
@@ -1392,33 +1345,28 @@
                 decrementButton.disabled = value <= min;
             }
             if (incrementButton) {
-                incrementButton.classList.toggle('disabled', value >= max);
-                incrementButton.disabled = value >= max;
+                const isMaxDisabled = !isNaN(max) && value >= max;
+                incrementButton.classList.toggle('disabled', isMaxDisabled);
+                incrementButton.disabled = isMaxDisabled;
             }
         }
-        // --- END: كود الأزرار 3D ---
-
-        // --- 🛠️ START: تعديل دالة تحديث الأسماء (للحفاظ عليها) ---
+        
         function updatePlayerNameInputs(count) {
             const container = document.getElementById('playersInput');
             
-            // 1. حفظ الأسماء الموجودة حالياً
             const existingNames = [];
             container.querySelectorAll('input[type="text"]').forEach(input => {
                 existingNames.push(input.value);
             });
 
-            // 2. مسح الحاوية
             container.innerHTML = '';
             
-            // 3. إعادة إنشاء الحقول مع استرجاع الأسماء
             for (let i = 1; i <= count; i++) {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.placeholder = `اسم اللاعب ${i}`;
                 input.id = `player${i}`;
                 
-                // 4. استرجاع الاسم إذا كان موجوداً
                 if (existingNames[i-1]) {
                     input.value = existingNames[i-1];
                 }
@@ -1426,14 +1374,10 @@
                 container.appendChild(input);
             }
         }
-        // --- 🛠️ END: تعديل دالة تحديث الأسماء ---
+        
 
-
-        // ربط حدث 'input' الخاص بـ playerCount بالدوال المناسبة
         document.getElementById('playerCount').addEventListener('input', function() {
             const count = parseInt(this.value);
-            // التأكد من أن التحديث يتم فقط إذا تغير الرقم فعلاً
-            // 🛠️ تم تعديل الشرط ليناسب المنطق الجديد (دائماً حدث الأسماء)
             updatePlayerNameInputs(count);
             updateRoleDistribution(count);
         });
@@ -1441,41 +1385,77 @@
         function updateRoleDistribution(playerCount) {
             if (isNaN(playerCount) || playerCount < 4) playerCount = 4;
 
-            let mafiaCount, doctorCount = 0, detectiveCount = 0;
+            // 🛠️ START: قراءة القيم الحالية بدلاً من إعادة تعيينها
+            let doctorCount = parseInt(document.getElementById('doctorCount').value) || 0;
+            let detectiveCount = parseInt(document.getElementById('detectiveCount').value) || 0;
+            // 🛠️ END
 
+            let mafiaCount;
             if (playerCount <= 5) mafiaCount = 1;
             else if (playerCount <= 7) mafiaCount = 2;
             else if (playerCount <= 10) mafiaCount = 3;
             else if (playerCount <= 13) mafiaCount = 4;
             else mafiaCount = Math.floor(playerCount * 0.3); 
 
-            if (playerCount - mafiaCount >= 1) doctorCount = 1;
-            if (playerCount - mafiaCount - doctorCount >= 1) detectiveCount = 1;
+            // 🛠️ START: التحقق مما إذا كانت الأدوار اليدوية لا تزال ممكنة
+            if (doctorCount + detectiveCount + mafiaCount > playerCount) {
+                // إذا تجاوز المجموع، أعد تعيين الأدوار الخاصة بناءً على الأولوية
+                if (playerCount - mafiaCount >= 1) doctorCount = 1; else doctorCount = 0;
+                if (playerCount - mafiaCount - doctorCount >= 1) detectiveCount = 1; else detectiveCount = 0;
+            }
+            // 🛠️ END
             
             const citizenCount = playerCount - mafiaCount - doctorCount - detectiveCount;
             
-            // تحديث قيم المدخلات وتحديث أزرارها
+            // 🛠️ تحديث القيم في الحقول
             const rolesToUpdate = { citizenCount, mafiaCount, doctorCount, detectiveCount };
             for (const [id, value] of Object.entries(rolesToUpdate)) {
                 const input = document.getElementById(id);
                 if (input) {
-                    input.value = value;
-                    updateButtonStates(id, value, parseInt(input.min), 99); // 99 كحد أقصى افتراضي
+                    // تحديث المواطنين والمافيا دائماً
+                    if (id === 'citizenCount' || id === 'mafiaCount') {
+                        input.value = value;
+                    } else {
+                        // تحديث الطبيب والمحقق فقط إذا تم إعادة تعيينهما
+                        // هذا يحافظ على القيمة اليدوية إذا لم يتم تشغيل منطق إعادة التعيين
+                        if (parseInt(input.value) !== value && (id === 'doctorCount' || id === 'detectiveCount')) {
+                             // إذا كانت القيمة اليدوية أكبر من المسموح به، استخدم القيمة الجديدة
+                             if (parseInt(input.value) > (playerCount - mafiaCount)) {
+                                input.value = value;
+                             }
+                             // وإلا، احتفظ بالقيمة اليدوية
+                        } else if (id === 'citizenCount' || id === 'mafiaCount') {
+                             input.value = value;
+                        }
+                        // إذا كانت القيمة 0، قم بتحديثها (للحالة الأولية)
+                        if(input.value == "0") input.value = value;
+                    }
+                    
+                    // حساب المواطنين مجدداً بناءً على القيم النهائية
+                    const finalCitizenCount = playerCount - 
+                                            parseInt(document.getElementById('mafiaCount').value) -
+                                            parseInt(document.getElementById('doctorCount').value) -
+                                            parseInt(document.getElementById('detectiveCount').value);
+                    document.getElementById('citizenCount').value = finalCitizenCount;
+
+
+                    // تحديث حالة الأزرار لجميع الحقول
+                    updateButtonStates(id, parseInt(input.value), parseInt(input.min), 99); 
                 }
             }
+             // تحديث أزرار المواطنين مرة أخيرة
+             const finalCitizenInput = document.getElementById('citizenCount');
+             updateButtonStates('citizenCount', parseInt(finalCitizenInput.value), parseInt(finalCitizenInput.min), 99);
         }
 
-        // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', () => {
-            setupNumberInputListeners(); // تفعيل مستمعي الأزرار
-            loadGameState(); // محاولة تحميل اللعبة
+            setupNumberInputListeners(); 
+            loadGameState(); 
 
-            // 🛠️ إضافة مستمع زر الرجوع
             window.addEventListener('popstate', handleBackButton);
         });
 
 
-        // --- START: دوال الحفظ والاسترجاع ---
         function saveGameState() {
             gameState = {
                 players: players,
@@ -1484,7 +1464,6 @@
                 lockedBoxes: lockedBoxes,
                 isRolesPhaseActive: isRolesPhaseActive,
                 currentPhase: document.querySelector('div[id$="-phase"]:not(.hidden)')?.id || 'setup-phase',
-                // حفظ بيانات المراحل المتقدمة
                 votes: votes,
                 topTwoCandidates: topTwoCandidates,
                 currentJustifyingPlayer: currentJustifyingPlayer,
@@ -1500,7 +1479,6 @@
             if (savedState) {
                 gameState = JSON.parse(savedState);
                 
-                // استرجاع البيانات الأساسية
                 players = gameState.players || [];
                 roles = gameState.roles || [];
                 eliminatedPlayers = gameState.eliminatedPlayers || [];
@@ -1512,74 +1490,62 @@
                 finalVotes = gameState.finalVotes || {};
 
                 if (players.length === 0) {
-                     // إذا كانت اللعبة المحفوظة فارغة (بعد لعبة جديدة)
                      document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                     homeButton.classList.add('hidden'); // 🛠️ إخفاء زر العودة
+                     homeButton.classList.add('hidden'); 
                      return;
                 }
                 
-                // إخفاء الإعداد
                 document.getElementById('setup-phase').classList.add('hidden');
-                homeButton.classList.remove('hidden'); // 🛠️ إظهار زر العودة
+                homeButton.classList.remove('hidden'); 
                 
-                // استرجاع المرحلة الحالية
                 const currentPhase = gameState.currentPhase || 'roles-phase';
                 
-                // إعادة بناء الواجهة بناءً على المرحلة
                 switch(currentPhase) {
                     case 'roles-phase':
                         createPlayerBoxes();
                         document.getElementById('roles-phase').classList.remove('hidden');
                         break;
                     case 'voting-phase':
-                        createPlayerBoxes(); // عرض الأدوار المقفلة
-                        showVoting(); // بناء شاشة التصويت
+                        createPlayerBoxes(); 
+                        showVoting(); 
                         break;
                     case 'justification-phase':
                          createPlayerBoxes();
-                         startJustificationPhase(); // إعادة بناء مرحلة التبرير
+                         startJustificationPhase(); 
                          break;
                     case 'final-voting-phase':
                         createPlayerBoxes();
-                        startFinalVoting(); // إعادة بناء التصويت النهائي
+                        startFinalVoting(); 
                         break;
                     case 'results-phase':
                          createPlayerBoxes();
                          document.getElementById('results-phase').classList.remove('hidden');
-                         // (قد تحتاج لإعادة عرض النتائج إذا تم حفظها)
                          break;
                     default:
-                        // إذا كان في مرحلة الإعداد (أو خطأ)، أعد تحميل الإعداد
                          document.getElementById('setup-phase').classList.remove('hidden');
                          document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                         homeButton.classList.add('hidden'); // 🛠️ إخفاء زر العودة
+                         homeButton.classList.add('hidden'); 
                 }
 
             } else {
-                 // لا توجد لعبة محفوظة، قم بالتهيئة العادية
                  document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                 homeButton.classList.add('hidden'); // 🛠️ إخفاء زر العودة
+                 homeButton.classList.add('hidden'); 
             }
         }
         
         function clearGameState() {
             localStorage.removeItem('mafiaGameState');
-            gameState = {}; // إعادة تعيين المتغير المحلي
-            // إعادة تحميل الصفحة للبدء من جديد
+            gameState = {}; 
             window.location.reload();
         }
-        // --- END: دوال الحفظ والاسترجاع ---
-
 
         function startGame() {
-            // إعادة تعيين حالة اللعبة
             lockedBoxes = [];
             eliminatedPlayers = [];
             isRolesPhaseActive = true; 
             
             document.getElementById('roleModal').classList.add('hidden');
             
-            // 🛠️ START: [تجاهل الخانات الفارغة]
             const playerCountInput = parseInt(document.getElementById('playerCount').value);
             players = [];
 
@@ -1587,41 +1553,35 @@
                 const nameInput = document.getElementById(`player${i}`);
                 if (!nameInput) continue; 
                 const name = nameInput.value.trim();
-                if (name) { // ⬅️ هذا هو الشرط: أضف الاسم فقط إذا لم يكن فارغاً
+                if (name) { 
                     players.push(name);
                 }
             }
 
-            // 🛠️ تحديث: [تجاهل الخانات الفارغة]
-            // يجب أن يتطابق عدد اللاعبين الفعلي مع عدد الأسماء المدخلة
             const actualPlayerCount = players.length; 
             
-            if (actualPlayerCount < 4) { // ⬅️ التحقق من الحد الأدنى بناءً على الأسماء الفعلية
+            if (actualPlayerCount < 4) { 
                  showCustomAlert('الحد الأدنى لعدد اللاعبين (الذين تم إدخال أسمائهم) هو 4');
                  return;
             }
-            // 🛠️ END: [تجاهل الخانات الفارغة]
             
-            // التحقق من توزيع الأدوار
             const citizenCount = parseInt(document.getElementById('citizenCount').value);
             const mafiaCount = parseInt(document.getElementById('mafiaCount').value);
             const doctorCount = parseInt(document.getElementById('doctorCount').value);
             const detectiveCount = parseInt(document.getElementById('detectiveCount').value); 
             
             const totalRoles = citizenCount + mafiaCount + doctorCount + detectiveCount; 
-            if (totalRoles !== actualPlayerCount) { // ⬅️ المقارنة بعدد اللاعبين الفعلي
+            if (totalRoles !== actualPlayerCount) { 
                 showCustomAlert(`مجموع الأدوار (${totalRoles}) يجب أن يساوي عدد اللاعبين الفعلي (${actualPlayerCount})`);
                 return;
             }
             
-            // توزيع الأدوار عشوائياً
             roles = [];
             for (let i = 0; i < citizenCount; i++) roles.push('مواطن');
             for (let i = 0; i < mafiaCount; i++) roles.push('مافيا');
             for (let i = 0; i < doctorCount; i++) roles.push('طبيب');
             for (let i = 0; i < detectiveCount; i++) roles.push('محقق'); 
             
-            // خلط الأدوار
             for (let i = roles.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [roles[i], roles[j]] = [roles[j], roles[i]];
@@ -1631,15 +1591,12 @@
             
             document.getElementById('setup-phase').classList.add('hidden');
             document.getElementById('roles-phase').classList.remove('hidden');
-            document.getElementById('homeButton').classList.remove('hidden'); // 🛠️ إظهار زر العودة
+            document.getElementById('homeButton').classList.remove('hidden'); 
 
-            saveGameState(); // حفظ اللعبة عند البدء
+            saveGameState(); 
 
-            // 🛠️ تفعيل ميزة التقاط زر الرجوع *بعد* بدء اللعبة
             history.pushState({ gameStarted: true }, '', location.href);
         }
-
-        // let lockedBoxes = []; // معرفة بالخارج
 
         function createPlayerBoxes() {
             const container = document.getElementById('playersGrid');
@@ -1749,7 +1706,6 @@
                 localStorage.removeItem(`player-opened-${playerIndex}`);
             }
             
-            // حفظ حالة القفل (لأنه ليس جزءاً من saveGameState الرئيسي)
             gameState.lockedBoxes = lockedBoxes;
             localStorage.setItem('mafiaGameState', JSON.stringify(gameState));
         }
@@ -1801,7 +1757,7 @@
             document.getElementById('roles-phase').classList.add('hidden');
             document.getElementById('voting-phase').classList.remove('hidden');
 
-            saveGameState(); // حفظ عند بدء التصويت
+            saveGameState(); 
         }
 
         function addVote(playerIndex) {
@@ -1809,9 +1765,8 @@
             updateVoteDisplay(playerIndex);
         }
 
-        // تعديل لإيقاف انتشار الحدث
         function removeVote(event, playerIndex) {
-            event.stopPropagation(); // منع النقر على الزر من تشغيل النقر على الحاوية
+            event.stopPropagation(); 
             if (votes[playerIndex] > 0) {
                 votes[playerIndex]--;
                 updateVoteDisplay(playerIndex);
@@ -1889,7 +1844,6 @@
                     }
                 }
 
-                // التأكد من وجود مرشحين (إذا كان الجميع 0 أصوات وتمت تصفيتهم)
                 if (candidatesForJustification.length === 0) {
                      const resultsContainer = document.getElementById('votingResults');
                     resultsContainer.innerHTML = '<div>لا توجد أصوات كافية لإخراج أي لاعب</div>';
@@ -1940,10 +1894,8 @@
         function showCurrentJustification() {
             const container = document.getElementById('justificationContent');
             
-            // 🛠️ إصلاح: التأكد من وجود مرشحين قبل المتابعة
             if (!topTwoCandidates || topTwoCandidates.length === 0 || !topTwoCandidates[currentJustifyingPlayer]) {
-                // إذا لم يوجد مرشحون (ربما بسبب تحميل خاطئ)
-                startFinalVoting(); // انتقل للخطوة التالية
+                startFinalVoting(); 
                 return;
             }
 
@@ -1976,7 +1928,6 @@
                         <p style="font-size: 1.1rem; color: #ddd;">
                             لديك دقيقة واحدة للدفاع عن نفسك
                         </p>
-                        <!-- إصلاح تداخل الأزرار -->
                         <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                             <button onclick="skipJustification()" 
                                     style="background: linear-gradient(45deg, #74b9ff, #0984e3); 
@@ -2002,14 +1953,12 @@
         function startTimer() {
             timeLeft = 60; 
             isPaused = false;
-            const timerElement = document.getElementById('timer');
             
             if (justificationTimer) clearInterval(justificationTimer); 
 
             justificationTimer = setInterval(() => {
                 if (!isPaused) {
                     
-                    // 🛠️ إصلاح: التأكد من وجود عنصر المؤقت
                     const timerElement = document.getElementById('timer');
                     if (!timerElement) {
                          clearInterval(justificationTimer);
@@ -2075,9 +2024,7 @@
             container.innerHTML = '';
             finalVotes = {};
             
-            // 🛠️ إصلاح: التأكد من وجود مرشحين
             if (!topTwoCandidates || topTwoCandidates.length === 0) {
-                // إذا لم يوجد مرشحون، أعد اللعبة إلى مرحلة الأدوار
                 showCustomAlert("خطأ: لا يوجد مرشحون للتصويت النهائي.");
                 backToRoles();
                 return;
@@ -2127,7 +2074,6 @@
         function updateFinalVoteDisplay(playerIndex) {
             const voteCount = finalVotes[playerIndex];
             const countElement = document.getElementById(`final-vote-count-${playerIndex}`);
-            // 🛠️ إصلاح: التأكد من وجود العنصر
             if (!countElement) return;
 
             const removeBtn = countElement.parentElement.parentElement.querySelector('.remove-vote-btn');
@@ -2343,7 +2289,7 @@
 
         function showCustomAlert(message) {
             const modal = document.getElementById('roleModal');
-            document.getElementById('modalTitle').textContent = "تنبيه"; // "خطأ" -> "تنبيه"
+            document.getElementById('modalTitle').textContent = "تنبيه";
             document.getElementById('modalPlayerName').textContent = message;
             document.getElementById('modalPlayerName').style.fontSize = "1.5rem"; 
             document.getElementById('modalRoleImage').style.display = 'none'; 
@@ -2372,27 +2318,19 @@
             continueBtn.onclick = hideModalAndContinue; 
         }
 
-        // --- 🛠️ START: دوال زر الرجوع ---
-
         function handleBackButton(event) {
             const modal = document.getElementById('exitConfirmModal');
-            // نستخدم gameState للتحقق من أننا لسنا في مرحلة الإعداد
             if (gameState.currentPhase && gameState.currentPhase !== 'setup-phase') {
                 
-                // إذا كانت النافذة ظاهرة، لا تفعل شيئاً (تجنب الحلقات)
                 if (!modal.classList.contains('hidden')) {
                     return;
                 }
 
-                // إظهار نافذة التأكيد
                 showExitConfirm();
                 
-                // (الإصلاح الأهم)
-                // إعادة "دفع" الحالة مرة أخرى فوراً
                 history.pushState({ gameStarted: true }, '', location.href);
                 
             } else {
-                // إذا كنا في مرحلة الإعداد، اسمح للمتصفح بالرجوع (أو لا تفعل شيئاً)
                  history.pushState({ gameStarted: false }, '', location.href);
             }
         }
@@ -2404,8 +2342,6 @@
         function hideExitConfirm() {
             document.getElementById('exitConfirmModal').classList.add('hidden');
         }
-
-        // --- 🛠️ END: دوال زر الرجوع ---
 
     </script>
 </body>
