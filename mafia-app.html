@@ -544,6 +544,14 @@
             margin: 30px 0;
         }
         
+        .night-action-grid {
+             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            width: 100%;
+        }
+        
         .vote-option {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
             backdrop-filter: blur(10px);
@@ -556,8 +564,40 @@
             position: relative;
             overflow: hidden;
         }
+
+        .night-action-option {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* (تعديل) تنسيق الخيار المعطل للمافيا */
+        .night-action-option.disabled {
+            background: linear-gradient(145deg, rgba(80, 80, 80, 0.5), rgba(60, 60, 60, 0.5));
+            border-color: rgba(120, 120, 120, 0.3);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .night-action-option.disabled .player-vote-name {
+            color: #aaa; /* لون باهت لاسم الزميل */
+            text-decoration: line-through;
+        }
+        .night-action-option.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: rgba(120, 120, 120, 0.3);
+        }
+        /* (نهاية التعديل) */
+
         
-        .vote-option::before {
+        .vote-option::before, .night-action-option::before {
             content: '';
             position: absolute;
             top: 0;
@@ -568,18 +608,18 @@
             transition: left 0.5s;
         }
         
-        .vote-option:hover::before {
+        .vote-option:hover::before, .night-action-option:not(.disabled):hover::before {
             left: 100%;
         }
         
-        .vote-option:hover {
+        .vote-option:hover, .night-action-option:not(.disabled):hover {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
             border-color: #ffd700;
         }
         
-        .vote-option.selected {
+        .vote-option.selected, .night-action-option.selected {
             background: linear-gradient(145deg, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.2));
             border-color: #ffd700;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
@@ -800,6 +840,39 @@
         .modal-backdrop.hidden {
             display: none;
         }
+        
+        #detectiveResultContent {
+            font-size: 4rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255,255,255,0.7);
+        }
+        #detectiveResultContent.mafia {
+            color: #ff4757;
+        }
+        #detectiveResultContent.citizen {
+            color: #74b9ff;
+        }
+
+        #nightKillSpinner {
+            font-size: 2.5rem;
+            color: #fff;
+            margin: 40px 0;
+            font-weight: 900;
+            height: 50px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        #nightKillSpinner.final-fail {
+            color: #74b9ff; 
+            animation: eliminatedPulse 1s ease-in-out;
+        }
+        #nightKillSpinner.final-kill {
+            color: #ff4757; 
+            animation: eliminatedPulse 1s ease-in-out;
+        }
+        
 
         
         /* Media Queries */
@@ -838,7 +911,7 @@
                 gap: 15px;
             }
             
-            .voting-grid {
+            .voting-grid, .night-action-grid {
                 grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                 gap: 15px;
             }
@@ -873,7 +946,7 @@
                 bottom: 6px;
             }
             
-            .vote-option {
+            .vote-option, .night-action-option {
                 padding: 20px 12px;
             }
             
@@ -952,7 +1025,7 @@
                 padding: 0; 
             }
             
-            .voting-grid {
+            .voting-grid, .night-action-grid {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
                 gap: 12px;
             }
@@ -990,7 +1063,7 @@
                 bottom: 4px;
             }
             
-            .vote-option {
+            .vote-option, .night-action-option {
                 padding: 15px 8px;
             }
             
@@ -1047,6 +1120,10 @@
             }
              #modalContinueSection {
                 margin-top: 10px; 
+            }
+            
+            #nightKillSpinner {
+                font-size: 2rem;
             }
         }
     </style>
@@ -1150,7 +1227,30 @@
                 <!-- سيتم إنشاء صناديق اللاعبين هنا -->
             </div>
             
-            <button class="vote-btn" onclick="showVoting()">بدء التصويت</button>
+            <button class="vote-btn" id="rolesPhaseButton" onclick="startNightPhase()">بدء مرحلة الليل</button>
+        </div>
+
+        <div id="night-phase" class="hidden">
+            <!-- شاشة اختيار الهدف (للقتل/الحماية/السؤال) -->
+            <div id="night-action-screen" class="voting-section hidden">
+                <h2 id="night-action-title" style="text-align: center;">عنوان دور الليل</h2>
+                <p id="night-action-instruction" style="text-align: center; color: #ffd700; font-size: 1.1rem;">يرجى تمرير الجهاز للدور المحدد</p>
+                <div id="night-action-grid" class="night-action-grid">
+                    <!-- سيتم إنشاء خيارات الاختيار (القتل/الحماية/السؤال) هنا -->
+                </div>
+                <button onclick="confirmNightAction()" id="confirmNightActionButton" style="margin: 20px auto; display: block; background: linear-gradient(45deg, #74b9ff, #0984e3);">
+                    تأكيد
+                </button>
+            </div>
+
+            <!-- شاشة التسليم (الجديدة) -->
+            <div id="night-handoff-screen" class="voting-section hidden" style="text-align: center;">
+                <h2 id="handoff-title" style="color: #ffd700; font-size: 1.8rem;">الرجاء تمرير الجهاز إلى...</h2>
+                <p id="handoff-role-name" style="font-size: 2.5rem; color: #fff; margin: 40px 0;"></p>
+                <button id="startNightRoleButton" style="background: linear-gradient(45deg, #74b9ff, #0984e3); padding: 18px 40px; font-size: 1.3rem;">
+                    أنا جاهز (اضغط لبدء دورك)
+                </button>
+            </div>
         </div>
         
         <!-- مرحلة التصويت -->
@@ -1194,7 +1294,8 @@
             <div class="results">
                 <h2>نتائج التصويت</h2>
                 <div id="votingResults"></div>
-                <button onclick="backToRoles()" style="margin: 20px auto; display: block;">العودة للأدوار</button>
+                <!-- (تعديل) تم تغيير وظيفة الزر ليعود لليل -->
+                <button onclick="startNightPhase()" style="margin: 20px auto; display: block;">بدء الليل التالي</button>
             </div>
         </div>
     </div>
@@ -1246,6 +1347,34 @@
         </div>
     </div>
 
+    <div id="nightKillAnimationModal" class="modal-backdrop hidden">
+        <div class="modal-content" style="max-width: 450px;">
+            <h2 style="color: #ff4757;">نتائج الاغتيال</h2>
+            <div id="nightKillSpinner">
+                <!-- Spinning names go here -->
+            </div>
+            <p id="nightKillResultText" class="hidden" style="font-size: 1.2rem; color: #ffd700;"></p>
+            <button id="nightKillContinueButton" class="hidden" style="background: linear-gradient(45deg, #ffd700, #e6c200); padding: 12px 25px; font-size: 1.1rem; color: #333; margin-top: 20px;">
+                متابعة
+            </button>
+        </div>
+    </div>
+
+    <div id="detectiveResultModal" class="modal-backdrop hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color: #fdcb6e;">نتيجة التحقيق</h2>
+            <p style="font-size: 1.1rem; color: #fff; margin: 20px 0;">
+                اللاعب الذي تم اختياره هو:
+            </p>
+            <div id="detectiveResultContent">
+                <!-- هل هو مافيا؟ -->
+            </div>
+            <button onclick="closeDetectiveModal()" style="background: linear-gradient(45deg, #74b9ff, #0984e3); margin-top: 25px; padding: 12px 25px; font-size: 1.1rem;">
+                متابعة (إخفاء النتيجة)
+            </button>
+        </div>
+    </div>
+
 
     <script>
         let players = [];
@@ -1259,6 +1388,13 @@
         let justificationTimer = null;
         let isRolesPhaseActive = true; 
         let gameState = {}; // للحفظ
+
+        let currentNightRole = '';
+        let mafiaKillTarget = -1;
+        let doctorSaveTarget = -1;
+        let detectiveCheckTarget = -1;
+        let nightActionOrder = [];
+        let currentNightRoleIndex = 0;
 
         const roleImages = {
             'مافيا': 'https://i.postimg.cc/zft6CjJT/1.png', 
@@ -1306,6 +1442,10 @@
                     if (inputId === 'playerCount') {
                         inputElement.dispatchEvent(new Event('input', { bubbles: true }));
                     }
+                    
+                    if (inputId !== 'playerCount') {
+                        updateCitizensCount();
+                    }
                 });
             });
 
@@ -1326,6 +1466,8 @@
                     if (e.target.id === 'playerCount') {
                          updateRoleDistribution(value);
                          updatePlayerNameInputs(value);
+                    } else {
+                         updateCitizensCount();
                     }
                 });
 
@@ -1385,10 +1527,8 @@
         function updateRoleDistribution(playerCount) {
             if (isNaN(playerCount) || playerCount < 4) playerCount = 4;
 
-            // 🛠️ START: قراءة القيم الحالية بدلاً من إعادة تعيينها
             let doctorCount = parseInt(document.getElementById('doctorCount').value) || 0;
             let detectiveCount = parseInt(document.getElementById('detectiveCount').value) || 0;
-            // 🛠️ END
 
             let mafiaCount;
             if (playerCount <= 5) mafiaCount = 1;
@@ -1397,55 +1537,40 @@
             else if (playerCount <= 13) mafiaCount = 4;
             else mafiaCount = Math.floor(playerCount * 0.3); 
 
-            // 🛠️ START: التحقق مما إذا كانت الأدوار اليدوية لا تزال ممكنة
             if (doctorCount + detectiveCount + mafiaCount > playerCount) {
-                // إذا تجاوز المجموع، أعد تعيين الأدوار الخاصة بناءً على الأولوية
                 if (playerCount - mafiaCount >= 1) doctorCount = 1; else doctorCount = 0;
                 if (playerCount - mafiaCount - doctorCount >= 1) detectiveCount = 1; else detectiveCount = 0;
             }
-            // 🛠️ END
             
             const citizenCount = playerCount - mafiaCount - doctorCount - detectiveCount;
             
-            // 🛠️ تحديث القيم في الحقول
             const rolesToUpdate = { citizenCount, mafiaCount, doctorCount, detectiveCount };
             for (const [id, value] of Object.entries(rolesToUpdate)) {
                 const input = document.getElementById(id);
                 if (input) {
-                    // تحديث المواطنين والمافيا دائماً
                     if (id === 'citizenCount' || id === 'mafiaCount') {
                         input.value = value;
                     } else {
-                        // تحديث الطبيب والمحقق فقط إذا تم إعادة تعيينهما
-                        // هذا يحافظ على القيمة اليدوية إذا لم يتم تشغيل منطق إعادة التعيين
-                        if (parseInt(input.value) !== value && (id === 'doctorCount' || id === 'detectiveCount')) {
-                             // إذا كانت القيمة اليدوية أكبر من المسموح به، استخدم القيمة الجديدة
-                             if (parseInt(input.value) > (playerCount - mafiaCount)) {
-                                input.value = value;
-                             }
-                             // وإلا، احتفظ بالقيمة اليدوية
-                        } else if (id === 'citizenCount' || id === 'mafiaCount') {
-                             input.value = value;
-                        }
-                        // إذا كانت القيمة 0، قم بتحديثها (للحالة الأولية)
-                        if(input.value == "0") input.value = value;
+                        input.value = (id === 'doctorCount') ? doctorCount : detectiveCount;
                     }
-                    
-                    // حساب المواطنين مجدداً بناءً على القيم النهائية
-                    const finalCitizenCount = playerCount - 
-                                            parseInt(document.getElementById('mafiaCount').value) -
-                                            parseInt(document.getElementById('doctorCount').value) -
-                                            parseInt(document.getElementById('detectiveCount').value);
-                    document.getElementById('citizenCount').value = finalCitizenCount;
-
-
-                    // تحديث حالة الأزرار لجميع الحقول
                     updateButtonStates(id, parseInt(input.value), parseInt(input.min), 99); 
                 }
             }
-             // تحديث أزرار المواطنين مرة أخيرة
-             const finalCitizenInput = document.getElementById('citizenCount');
-             updateButtonStates('citizenCount', parseInt(finalCitizenInput.value), parseInt(finalCitizenInput.min), 99);
+            
+            updateCitizensCount();
+        }
+
+        function updateCitizensCount() {
+            const playerCount = parseInt(document.getElementById('playerCount').value) || 0;
+            const mafiaCount = parseInt(document.getElementById('mafiaCount').value) || 0;
+            const doctorCount = parseInt(document.getElementById('doctorCount').value) || 0;
+            const detectiveCount = parseInt(document.getElementById('detectiveCount').value) || 0;
+
+            const citizenCount = playerCount - mafiaCount - doctorCount - detectiveCount;
+            
+            const citizenInput = document.getElementById('citizenCount');
+            citizenInput.value = citizenCount >= 0 ? citizenCount : 0; 
+            updateButtonStates('citizenCount', parseInt(citizenInput.value), parseInt(citizenInput.min), 99);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -1468,6 +1593,12 @@
                 topTwoCandidates: topTwoCandidates,
                 currentJustifyingPlayer: currentJustifyingPlayer,
                 finalVotes: finalVotes,
+                currentNightRole: currentNightRole,
+                mafiaKillTarget: mafiaKillTarget,
+                doctorSaveTarget: doctorSaveTarget,
+                detectiveCheckTarget: detectiveCheckTarget,
+                nightActionOrder: nightActionOrder,
+                currentNightRoleIndex: currentNightRoleIndex
             };
             localStorage.setItem('mafiaGameState', JSON.stringify(gameState));
         }
@@ -1488,6 +1619,14 @@
                 topTwoCandidates = gameState.topTwoCandidates || [];
                 currentJustifyingPlayer = gameState.currentJustifyingPlayer || 0;
                 finalVotes = gameState.finalVotes || {};
+                
+                currentNightRole = gameState.currentNightRole || '';
+                mafiaKillTarget = gameState.mafiaKillTarget || -1;
+                doctorSaveTarget = gameState.doctorSaveTarget || -1;
+                detectiveCheckTarget = gameState.detectiveCheckTarget || -1;
+                nightActionOrder = gameState.nightActionOrder || [];
+                currentNightRoleIndex = gameState.currentNightRoleIndex || 0;
+
 
                 if (players.length === 0) {
                      document.getElementById('playerCount').dispatchEvent(new Event('input'));
@@ -1503,7 +1642,21 @@
                 switch(currentPhase) {
                     case 'roles-phase':
                         createPlayerBoxes();
+                        if (isRolesPhaseActive) {
+                            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
+                        } else {
+                            setupRolesPhaseButton('showVoting', 'بدء التصويت');
+                        }
                         document.getElementById('roles-phase').classList.remove('hidden');
+                        break;
+                    case 'night-phase':
+                        createPlayerBoxes(); 
+                        document.getElementById('night-phase').classList.remove('hidden');
+                        if (currentNightRole) {
+                            showNightHandoffScreen(currentNightRole);
+                        } else {
+                             processNextNightRole();
+                        }
                         break;
                     case 'voting-phase':
                         createPlayerBoxes(); 
@@ -1588,6 +1741,8 @@
             }
             
             createPlayerBoxes();
+            
+            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
             
             document.getElementById('setup-phase').classList.add('hidden');
             document.getElementById('roles-phase').classList.remove('hidden');
@@ -1720,6 +1875,330 @@
             }
         }
 
+        function startNightPhase() {
+            document.getElementById('roles-phase').classList.add('hidden');
+            document.getElementById('night-phase').classList.remove('hidden');
+            
+            mafiaKillTarget = -1;
+            doctorSaveTarget = -1;
+            detectiveCheckTarget = -1;
+            nightActionOrder = [];
+            currentNightRoleIndex = 0;
+
+            const aliveRoles = new Set();
+            players.forEach((p, i) => {
+                if (!eliminatedPlayers.includes(i)) {
+                    aliveRoles.add(roles[i]);
+                }
+            });
+
+            // (تعديل) استخدام الأسماء العربية
+            if (aliveRoles.has('مافيا')) nightActionOrder.push('مافيا');
+            if (aliveRoles.has('طبيب')) nightActionOrder.push('طبيب');
+            if (aliveRoles.has('محقق')) nightActionOrder.push('محقق');
+
+            if (nightActionOrder.length > 0) {
+                processNextNightRole();
+            } else {
+                showHandoffScreenForResults("انتهى الليل (لا أدوار نشطة)", "اضغطوا لعرض النتائج");
+            }
+            saveGameState();
+        }
+
+        function processNextNightRole() {
+            if (currentNightRoleIndex < nightActionOrder.length) {
+                const role = nightActionOrder[currentNightRoleIndex];
+                showNightHandoffScreen(role);
+            } else {
+                showHandoffScreenForResults("انتهى الليل... أغلقوا أعينكم", "اضغطوا معاً لعرض النتائج");
+            }
+            saveGameState();
+        }
+
+        function showNightHandoffScreen(role, title, buttonText) {
+            document.getElementById('night-action-screen').classList.add('hidden');
+            document.getElementById('night-handoff-screen').classList.remove('hidden');
+
+            const roleNameEl = document.getElementById('handoff-role-name');
+            const handoffTitle = document.getElementById('handoff-title');
+            const startButton = document.getElementById('startNightRoleButton');
+
+            let roleDisplayName = '';
+            let roleColor = '#fff';
+
+            // (تعديل) استخدام الأسماء العربية
+            switch(role) {
+                case 'مافيا':
+                    roleDisplayName = 'المافيا 🔪';
+                    roleColor = roleColors['مافيا'];
+                    handoffTitle.textContent = title || "المافيا، استيقظوا!";
+                    break;
+                case 'طبيب':
+                    roleDisplayName = 'الطبيب 🧑‍⚕️';
+                    roleColor = roleColors['طبيب'];
+                    handoffTitle.textContent = title || "الطبيب، استيقظ!";
+                    break;
+                case 'محقق':
+                    roleDisplayName = 'المحقق 🕵️';
+                    roleColor = roleColors['محقق'];
+                    handoffTitle.textContent = title || "المحقق، استيقظ!";
+                    break;
+            }
+
+            roleNameEl.textContent = roleDisplayName;
+            roleNameEl.style.color = roleColor;
+            startButton.textContent = buttonText || "أنا جاهز (اضغط لبدء دورك)";
+
+            startButton.onclick = () => {
+                document.getElementById('night-handoff-screen').classList.add('hidden');
+                document.getElementById('night-action-screen').classList.remove('hidden');
+                showNightActionScreen(role);
+            };
+        }
+
+        function showHandoffScreenForResults(title, buttonText) {
+            document.getElementById('night-action-screen').classList.add('hidden');
+            document.getElementById('night-handoff-screen').classList.remove('hidden');
+
+            const roleNameEl = document.getElementById('handoff-role-name');
+            const handoffTitle = document.getElementById('handoff-title');
+            const startButton = document.getElementById('startNightRoleButton');
+
+            handoffTitle.textContent = title || "انتهى الليل... أغلقوا أعينكم";
+            roleNameEl.textContent = "☀️"; 
+            roleNameEl.style.color = "#ffd700";
+            startButton.textContent = buttonText || "اضغطوا معاً لعرض النتائج";
+
+            startButton.onclick = () => {
+                document.getElementById('night-handoff-screen').classList.add('hidden');
+                processNightResults();
+            };
+        }
+
+
+        function showNightActionScreen(role) {
+            currentNightRole = role;
+            const grid = document.getElementById('night-action-grid');
+            const title = document.getElementById('night-action-title');
+            const instruction = document.getElementById('night-action-instruction');
+            grid.innerHTML = '';
+
+            let targetPlayers = [];
+
+            // (تعديل) استخدام الأسماء العربية
+            switch(role) {
+                case 'مافيا':
+                    title.textContent = 'دور المافيا 🔪';
+                    instruction.textContent = 'أيها المافيا، اختاروا ضحيتكم لهذه الليلة';
+                    targetPlayers = players.map((p, i) => ({p, i}));
+                    break;
+                case 'طبيب':
+                    title.textContent = 'دور الطبيب 🧑‍⚕️';
+                    instruction.textContent = 'أيها الطبيب، اختر شخصاً لحمايته (يمكنك حماية نفسك)';
+                    targetPlayers = players.map((p, i) => ({p, i}));
+                    break;
+                case 'محقق':
+                    title.textContent = 'دور المحقق 🕵️';
+                    instruction.textContent = 'أيها المحقق، اختر شخصاً للكشف عن هويته';
+                    const detectiveIndices = players.map((p, i) => i).filter(i => roles[i] === 'محقق');
+                    targetPlayers = players.map((p, i) => ({p, i})).filter((p, i) => !detectiveIndices.includes(p.i));
+                    break;
+            }
+
+            targetPlayers.filter(p => !eliminatedPlayers.includes(p.i)).forEach(playerObj => {
+                const playerIndex = playerObj.i;
+                const playerName = playerObj.p;
+                
+                const option = document.createElement('div');
+                option.className = 'night-action-option'; 
+                option.innerHTML = `<div class="player-vote-name">${playerName}</div>`;
+                option.id = `night-target-${playerIndex}`;
+
+                // (تعديل) استخدام الأسماء العربية للتحقق من المافيا
+                if (role === 'مافيا' && roles[playerIndex] === 'مافيا') {
+                    option.classList.add('disabled');
+                    option.onclick = null; 
+                } else {
+                    option.onclick = () => selectNightTarget(playerIndex, option);
+                }
+                
+                grid.appendChild(option);
+            });
+
+            document.getElementById('confirmNightActionButton').disabled = true;
+            document.getElementById('confirmNightActionButton').style.opacity = 0.5;
+        }
+
+        function selectNightTarget(playerIndex, element) {
+            if (element.classList.contains('disabled')) return;
+
+            document.querySelectorAll('.night-action-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+
+            // (تعديل) استخدام الأسماء العربية
+            switch(currentNightRole) {
+                case 'مافيا':
+                    mafiaKillTarget = playerIndex;
+                    break;
+                case 'طبيب':
+                    doctorSaveTarget = playerIndex;
+                    break;
+                case 'محقق':
+                    detectiveCheckTarget = playerIndex;
+                    break;
+            }
+            
+            document.getElementById('confirmNightActionButton').disabled = false;
+            document.getElementById('confirmNightActionButton').style.opacity = 1;
+            saveGameState();
+        }
+
+        function confirmNightAction() {
+            document.getElementById('night-action-screen').classList.add('hidden');
+            
+            if (detectiveCheckTarget !== -1) {
+                showDetectiveResult();
+                detectiveCheckTarget = -1; 
+            } else {
+                currentNightRole = ''; 
+                currentNightRoleIndex++;
+                processNextNightRole();
+            }
+        }
+
+        function showDetectiveResult() {
+            const targetRole = roles[detectiveCheckTarget];
+            const resultElement = document.getElementById('detectiveResultContent');
+            
+            if (targetRole === 'مافيا') {
+                resultElement.textContent = 'نعم (مافيا)';
+                resultElement.className = 'mafia';
+            } else {
+                resultElement.textContent = 'لا (ليس مافيا)';
+                resultElement.className = 'citizen';
+            }
+
+            document.getElementById('detectiveResultModal').classList.remove('hidden');
+        }
+
+        function closeDetectiveModal() {
+            document.getElementById('detectiveResultModal').classList.add('hidden');
+            currentNightRole = ''; 
+            currentNightRoleIndex++;
+            processNextNightRole();
+        }
+
+        function processNightResults() {
+            document.getElementById('night-phase').classList.add('hidden');
+            let playerKilled = -1; 
+            let killSuccess = false;
+
+            if (mafiaKillTarget === -1) {
+                killSuccess = false;
+            } else if (mafiaKillTarget === doctorSaveTarget) {
+                killSuccess = false;
+            } else {
+                playerKilled = mafiaKillTarget;
+                killSuccess = true;
+            }
+
+            showNightKillAnimation(playerKilled, killSuccess);
+        }
+
+        function showNightKillAnimation(targetPlayerIndex, killSuccess) {
+            const modal = document.getElementById('nightKillAnimationModal');
+            const spinner = document.getElementById('nightKillSpinner');
+            const resultText = document.getElementById('nightKillResultText');
+            const continueBtn = document.getElementById('nightKillContinueButton');
+
+            spinner.innerHTML = '';
+            spinner.className = '';
+            resultText.classList.add('hidden');
+            continueBtn.classList.add('hidden');
+            modal.classList.remove('hidden');
+
+            const livingPlayers = players
+                .map((name, index) => ({ name, index }))
+                .filter(p => !eliminatedPlayers.includes(p.index));
+            
+            if (livingPlayers.length === 0) {
+                modal.classList.add('hidden');
+                return; 
+            }
+
+            let spinCount = 0;
+            const maxSpins = 30; 
+            const spinSpeed = 100; 
+            let currentSpinIndex = 0;
+
+            const spinInterval = setInterval(() => {
+                spinner.textContent = livingPlayers[currentSpinIndex].name;
+                currentSpinIndex = (currentSpinIndex + 1) % livingPlayers.length;
+                spinCount++;
+
+                if (spinCount >= maxSpins) {
+                    clearInterval(spinInterval);
+                    
+                    setTimeout(() => {
+                        if (killSuccess) {
+                            const killedName = players[targetPlayerIndex];
+                            spinner.textContent = killedName;
+                            spinner.classList.add('final-kill');
+                            resultText.textContent = "اغتيال ناجح!";
+                            eliminatedPlayers.push(targetPlayerIndex);
+                        } else {
+                            spinner.textContent = "اغتيال فاشل";
+                            spinner.classList.add('final-fail');
+                            if (doctorSaveTarget === mafiaKillTarget && mafiaKillTarget !== -1) {
+                                resultText.textContent = "تم إنقاذ الهدف!";
+                            } else {
+                                resultText.textContent = "لم يمت أحد الليلة.";
+                            }
+                        }
+                        
+                        resultText.classList.remove('hidden');
+                        
+                        const gameEnded = checkWinConditions();
+                        if (!gameEnded) {
+                             continueBtn.classList.remove('hidden');
+                        } else {
+                            modal.classList.add('hidden');
+                        }
+                        saveGameState();
+                    }, 500);
+                }
+            }, spinSpeed);
+
+            continueBtn.onclick = () => {
+                modal.classList.add('hidden');
+                showDaytimeRolesPage(); 
+            };
+        }
+
+        function showDaytimeRolesPage() {
+            isRolesPhaseActive = false; 
+            createPlayerBoxes(); 
+            setupRolesPhaseButton('showVoting', 'بدء التصويت');
+            document.getElementById('roles-phase').classList.remove('hidden');
+            saveGameState();
+        }
+
+        function setupRolesPhaseButton(onclickAction, text) {
+            const button = document.getElementById('rolesPhaseButton');
+            if (button) {
+                const newButton = button.cloneNode(true);
+                newButton.textContent = text;
+                button.parentNode.replaceChild(newButton, button);
+                
+                if (onclickAction === 'startNightPhase') {
+                    newButton.addEventListener('click', startNightPhase);
+                } else if (onclickAction === 'showVoting') {
+                    newButton.addEventListener('click', showVoting);
+                }
+            }
+        }
+
+
         function showVoting() {
             isRolesPhaseActive = false; 
 
@@ -1755,6 +2234,7 @@
             });
             
             document.getElementById('roles-phase').classList.add('hidden');
+            document.getElementById('night-phase').classList.add('hidden'); 
             document.getElementById('voting-phase').classList.remove('hidden');
 
             saveGameState(); 
@@ -1776,6 +2256,7 @@
         function updateVoteDisplay(playerIndex) {
             const voteCount = votes[playerIndex];
             const countElement = document.getElementById(`vote-count-${playerIndex}`);
+            if (!countElement) return;
             const removeBtn = countElement.parentElement.parentElement.querySelector('.remove-vote-btn');
             
             countElement.textContent = `${voteCount} أصوات`;
@@ -2114,7 +2595,11 @@
                 resultsContainer.innerHTML = '<div>تعادل في الأصوات - لم يتم إخراج أي لاعب</div>';
                 document.getElementById('final-voting-phase').classList.add('hidden');
                 document.getElementById('results-phase').classList.remove('hidden');
-                checkWinConditions();
+                // (تعديل) التأكد من التحقق من الفوز حتى لو كان هناك تعادل
+                const gameEnded = checkWinConditions();
+                if (gameEnded) {
+                    resultsContainer.querySelector('button')?.classList.add('hidden');
+                }
             }
             saveGameState(); 
         }
@@ -2123,7 +2608,8 @@
             document.getElementById('roleModal').classList.add('hidden');
             const gameEnded = checkWinConditions();
             if (!gameEnded) {
-                backToRoles();
+                // (تعديل) العودة إلى مرحلة الليل
+                startNightPhase(); 
             }
             saveGameState(); 
         }
@@ -2280,11 +2766,15 @@
         }
 
         function backToRoles() {
-            createPlayerBoxes();
-            
             document.getElementById('results-phase').classList.add('hidden');
-            document.getElementById('roles-phase').classList.remove('hidden');
-            saveGameState(); 
+            
+            isRolesPhaseActive = false; 
+            createPlayerBoxes(); 
+            // (تعديل) العودة إلى مرحلة الليل بعد التعادل
+            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل'); 
+            document.getElementById('roles-phase').classList.remove('hidden'); 
+            
+            saveGameState();
         }
 
         function showCustomAlert(message) {
