@@ -1946,7 +1946,7 @@
                 showNightHandoffScreen(role);
             } else {
                 // (إصلاح) إظهار شاشة التسليم للنتائج
-                showHandoffScreenForResults("انتهى الليل... أغلقوا أعينكم", "اضغطوا معاً لعرض النتائج");
+                showHandoffScreenForResults("انتهى الليل... افتحوا أعينكم", "اضغطوا معاً لعرض النتائج");
             }
             saveGameState();
         }
@@ -2004,7 +2004,7 @@
             const handoffTitle = document.getElementById('handoff-title');
             const startButton = document.getElementById('startNightRoleButton');
 
-            handoffTitle.textContent = title || "انتهى الليل... أغلقوا أعينكم";
+            handoffTitle.textContent = title || "انتهى الليل... افتحوا أعينكم";
             roleNameEl.textContent = "☀️"; 
             roleNameEl.style.color = "#ffd700";
             startButton.textContent = buttonText || "اضغطوا معاً لعرض النتائج";
@@ -2032,8 +2032,8 @@
             // (إصلاح) استخدام الأسماء العربية
             switch(role) {
                 case 'مافيا':
-                    title.textContent = 'دور المافIA 🔪';
-                    instruction.textContent = 'أيها المافIA، اختاروا ضحيتكم لهذه الليلة';
+                    title.textContent = 'دور المافيا 🔪';
+                    instruction.textContent = 'أيها المافيا، اختاروا ضحيتكم لهذه الليلة';
                     targetPlayers = players.map((p, i) => ({p, i}));
                     break;
                 case 'طبيب':
@@ -2928,5 +2928,4 @@
 
     </script>
 </body>
-
 </html>
