@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خزنة ربان</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
         
@@ -557,7 +557,68 @@
             'https://i.postimg.cc/t4SWLxqS/3.png', // Team 3
             'https://i.postimg.cc/mgXC0HL8/4.png'  // Team 4
         ];
+        // --- إعدادات الحفظ السحابي ---
+        const supabaseUrl = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
         
+        const GAME_ID = 'captain-safe'; // معرف خاص لهذه اللعبة
+        let currentUserId = null;
+
+        async function initGameWithCloud() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUserId = session.user.id;
+                console.log("تم تسجيل الدخول، جاري جلب البيانات...");
+                await loadFromCloud();
+            } else {
+                console.log("زائر: استخدام الحفظ المحلي");
+                initGame(); // استدعاء دالة البدء العادية
+            }
+        }
+
+       async function loadFromCloud() {
+            const { data, error } = await supabaseClient
+                .from('game_saves')
+                .select('save_data')
+                .eq('user_id', currentUserId)
+                .eq('game_name', GAME_ID)
+                .single();
+
+            if (data && data.save_data) {
+                console.log("تم تحميل البيانات من السحابة");
+                loadGameState(data.save_data);
+                
+                // --- هذا السطر ضروري جداً لكي لا تختفي البيانات عند فتح المحرر ---
+                editorState.originalTreasures = JSON.parse(JSON.stringify(initialTreasureData)); 
+                // -------------------------------------------------------------
+
+                // تحديث الواجهة
+                createTreasureGrid();
+                updateTeamSelectors();
+                updateScoreboard();
+                updateReopenBoxSelect();
+                
+                // ضبط الفريق الحالي
+                const currentTeamEl = document.getElementById('currentTeam');
+                if(currentTeamEl) {
+                    currentTeamEl.value = gameState.currentTeam;
+                }
+            } else {
+                console.log("لا توجد بيانات سحابية، بدء لعبة جديدة.");
+                initGame(); 
+            }
+        }
+
+        async function saveToCloud(dataToSave) {
+            if (!currentUserId) return;
+            await supabaseClient.from('game_saves').upsert({ 
+                user_id: currentUserId, 
+                game_name: GAME_ID, 
+                save_data: dataToSave,
+                updated_at: new Date()
+            }, { onConflict: 'user_id, game_name' });
+        }
         // مصفوفة روابط صور الخزائن المرقمة (تم التحديث هنا)
         const TREASURE_IMAGE_URLS = [
             // 1-9
@@ -633,62 +694,6 @@
             currentTreasure: null,
             currentBoxNumber: null
         };
-        // --- إعدادات الحفظ السحابي (Supabase) ---
-        // هذه المفاتيح مأخوذة من ملف index.html الخاص بك
-        const supabaseUrl = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        
-        const GAME_ID = 'mafia'; // معرف خاص بهذه اللعبة
-        let currentUserId = null;
-
-        // 1. دالة البدء الذكية (تتحقق من الإنترنت والمستخدم)
-        async function initGameWithCloud() {
-            // محاولة جلب المستخدم الحالي
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                currentUserId = session.user.id;
-                console.log("تم تسجيل الدخول، جاري جلب البيانات السحابية...");
-                await loadFromCloud();
-            } else {
-                console.log("زائر: استخدام الحفظ المحلي");
-                loadGameState(); // تحميل محلي عادي
-            }
-        }
-
-        // 2. دالة جلب البيانات من السحابة
-        async function loadFromCloud() {
-            const { data, error } = await supabase
-                .from('game_saves')
-                .select('save_data')
-                .eq('user_id', currentUserId)
-                .eq('game_name', GAME_ID)
-                .single();
-
-            if (data && data.save_data) {
-                console.log("تم تحميل البيانات من السحابة");
-                // نمرر البيانات السحابية لدالة التحميل
-                loadGameState(data.save_data);
-            } else {
-                console.log("لا توجد بيانات سحابية، جاري التحقق من المحلي...");
-                loadGameState(); 
-            }
-        }
-
-        // 3. دالة الحفظ في السحابة
-        async function saveToCloud(dataToSave) {
-            if (!currentUserId) return; // لا تفعل شيئاً إذا كان زائر
-            
-            await supabase
-                .from('game_saves')
-                .upsert({ 
-                    user_id: currentUserId, 
-                    game_name: GAME_ID, 
-                    save_data: dataToSave,
-                    updated_at: new Date()
-                }, { onConflict: 'user_id, game_name' });
-        }
         
         // متغيرات مؤقتة لحفظ الإعدادات قبل الحفظ النهائي
         let tempTeamConfig = {
@@ -757,138 +762,85 @@
         ];
 
 
+        // 1. دالة حفظ حالة اللعبة في localStorage
         function saveGameState() {
-            gameState = {
-                players: players,
-                roles: roles,
-                eliminatedPlayers: eliminatedPlayers,
-                lockedBoxes: lockedBoxes,
-                isRolesPhaseActive: isRolesPhaseActive,
-                currentPhase: document.querySelector('div[id$="-phase"]:not(.hidden)')?.id || 'setup-phase',
-                votes: votes,
-                topTwoCandidates: topTwoCandidates,
-                currentJustifyingPlayer: currentJustifyingPlayer,
-                finalVotes: finalVotes,
-                // المتغيرات الجديدة
-                currentNightRole: currentNightRole,
-                mafiaKillTarget: mafiaKillTarget,
-                doctorSaveTarget: doctorSaveTarget,
-                detectiveCheckTarget: detectiveCheckTarget,
-                nightActionOrder: nightActionOrder,
-                currentNightRoleIndex: currentNightRoleIndex
-            };
-            
-            // 1. حفظ محلي (دائماً)
-            localStorage.setItem('mafiaGameState', JSON.stringify(gameState));
-            
-            // 2. حفظ سحابي (إذا وجد مستخدم)
-            saveToCloud(gameState);
+            try {
+                const stateToSave = {
+                    teams: gameState.teams,
+                    currentTeam: gameState.currentTeam,
+                    numTeams: gameState.numTeams,
+                    openedBoxes: Array.from(gameState.openedBoxes), 
+                    treasures: gameState.treasures,
+                    teamNames: TEAM_NAMES
+                };
+                
+                // 1. الحفظ المحلي
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+                
+                // 2. الحفظ السحابي
+                saveToCloud(stateToSave);
+                
+            } catch (error) {
+                console.error('Error saving game state:', error);
+            }
         }
 
+        // 2. دالة تحميل حالة اللعبة من localStorage
         function loadGameState(cloudData = null) {
-            let loadedData = null;
+            try {
+                let loadedState = null;
 
-            // الأولوية للبيانات السحابية إذا تم تمريرها
-            if (cloudData) {
-                loadedData = cloudData;
-            } else {
-                // وإلا نستخدم البيانات المحلية
-                const savedState = localStorage.getItem('mafiaGameState');
-                if (savedState) loadedData = JSON.parse(savedState);
-            }
-
-            const homeButton = document.getElementById('homeButton');
-            
-            if (loadedData) {
-                gameState = loadedData;
-                
-                // استعادة المتغيرات من البيانات المحملة
-                players = gameState.players || [];
-                roles = gameState.roles || [];
-                eliminatedPlayers = gameState.eliminatedPlayers || [];
-                lockedBoxes = gameState.lockedBoxes || [];
-                isRolesPhaseActive = gameState.isRolesPhaseActive;
-                votes = gameState.votes || {};
-                topTwoCandidates = gameState.topTwoCandidates || [];
-                currentJustifyingPlayer = gameState.currentJustifyingPlayer || 0;
-                finalVotes = gameState.finalVotes || {};
-                
-                currentNightRole = gameState.currentNightRole || '';
-                mafiaKillTarget = gameState.mafiaKillTarget || -1;
-                doctorSaveTarget = gameState.doctorSaveTarget || -1;
-                detectiveCheckTarget = gameState.detectiveCheckTarget || -1;
-                nightActionOrder = gameState.nightActionOrder || [];
-                currentNightRoleIndex = gameState.currentNightRoleIndex || 0;
-
-                if (players.length === 0) {
-                     document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                     homeButton.classList.add('hidden'); 
-                     return;
-                }
-                
-                document.getElementById('setup-phase').classList.add('hidden');
-                homeButton.classList.remove('hidden'); 
-                
-                const currentPhase = gameState.currentPhase || 'roles-phase';
-                
-                // توجيه الواجهة حسب المرحلة المحفوظة
-                switch(currentPhase) {
-                    case 'roles-phase':
-                        createPlayerBoxes();
-                        if (isRolesPhaseActive) {
-                            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
-                        } else {
-                            setupRolesPhaseButton('showVoting', 'بدء التصويت');
-                        }
-                        document.getElementById('roles-phase').classList.remove('hidden');
-                        break;
-                    case 'night-phase':
-                        createPlayerBoxes(); 
-                        document.getElementById('night-phase').classList.remove('hidden');
-                        if (currentNightRole) {
-                            showNightHandoffScreen(currentNightRole);
-                        } else {
-                             processNextNightRole();
-                        }
-                        break;
-                    case 'voting-phase':
-                        createPlayerBoxes(); 
-                        showVoting(); 
-                        break;
-                    case 'justification-phase':
-                         createPlayerBoxes();
-                         startJustificationPhase(); 
-                         break;
-                    case 'final-voting-phase':
-                        createPlayerBoxes();
-                        startFinalVoting(); 
-                        break;
-                    case 'results-phase':
-                         createPlayerBoxes();
-                         document.getElementById('results-phase').classList.remove('hidden');
-                         break;
-                    default:
-                         document.getElementById('setup-phase').classList.remove('hidden');
-                         document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                         homeButton.classList.add('hidden'); 
+                // أولوية للسحابة
+                if (cloudData) {
+                    loadedState = cloudData;
+                } else {
+                    const savedState = localStorage.getItem(STORAGE_KEY);
+                    if (savedState) loadedState = JSON.parse(savedState);
                 }
 
-            } else {
-                 // لا توجد بيانات، تهيئة جديدة
-                 document.getElementById('playerCount').dispatchEvent(new Event('input'));
-                 homeButton.classList.add('hidden'); 
+                if (loadedState) {
+                    gameState.teams = loadedState.teams || [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
+                    gameState.currentTeam = loadedState.currentTeam || 0;
+                    gameState.numTeams = loadedState.numTeams !== undefined ? loadedState.numTeams : 3;
+                    
+                    if (gameState.currentTeam >= gameState.numTeams) {
+                        gameState.currentTeam = 0;
+                    }
+
+                    gameState.openedBoxes = new Set(loadedState.openedBoxes || []);
+
+                    if (loadedState.treasures && loadedState.treasures.length === initialTreasureData.length) {
+                        gameState.treasures = loadedState.treasures;
+                    } else {
+                        gameState.treasures = [...initialTreasureData];
+                    }
+                    
+                    if (loadedState.teamNames && loadedState.teamNames.length === 4) {
+                        TEAM_NAMES = loadedState.teamNames;
+                    }
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading game state:', error);
             }
+            return false;
         }
 
         // تهيئة اللعبة
-        function initGame() {
+        function initGame(gameIndex) { // (تجاهل المعامل gameIndex إذا لم يكن مستخدماً)
+            // نحاول التحميل من المحلي فقط إذا لم يتم استدعاء هذه الدالة بعد تحميل سحابي
+            // (سنعرف ذلك من خلال التحقق مما إذا كانت البيانات قد ملئت بالفعل أم لا)
+            
+            // لكن للتبسيط: سنقوم بالتحميل المحلي هنا كالمعتاد
+            // وإذا جاءت بيانات السحابة لاحقاً (عبر initGameWithCloud -> loadFromCloud)
+            // ستقوم هي بتحديث البيانات والواجهة
+            
             const isLoaded = loadGameState();
             
-            if (!isLoaded) {
+            if (!isLoaded && gameState.treasures.length === 0) { // إذا لم تكن هناك بيانات
                 gameState.treasures = [...initialTreasureData];
-                // ** تحديث: تعيين النقاط الافتراضية
                 gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
-                // ** تحديث: تعيين الافتراضي إلى 3 فرق إذا لم يتم التحميل
                 gameState.numTeams = 3; 
             }
             
@@ -899,8 +851,8 @@
             updateTeamSelectors();
             updateScoreboard();
             updateReopenBoxSelect();
-            document.getElementById('currentTeam').value = gameState.currentTeam;
-            // يجب أن يتم تحديث قائمة configNumTeamsSelect عند فتح المودال، وليس هنا
+            const currentTeamEl = document.getElementById('currentTeam');
+            if(currentTeamEl) currentTeamEl.value = gameState.currentTeam;
         }
         
         // ** دالة جديدة لفتح نافذة إعدادات الفرق
@@ -1674,15 +1626,11 @@
             }
         }
 
-       // ✅ الكود الصحيح: استدعاء دالة البدء الذكية
-document.addEventListener('DOMContentLoaded', () => {
-    setupNumberInputListeners(); 
-    
-    // هذا السطر هو المسؤول عن جلب البيانات من الشبكة
-    initGameWithCloud(); 
-
-    // ... باقي كود التهيئة ...
-});
+        // تهيئة اللعبة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            // استدعاء الدالة الذكية بدلاً من initGame المباشرة
+            initGameWithCloud();
+        });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9875307e15c69355',t:'MTc1OTI1MDcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
