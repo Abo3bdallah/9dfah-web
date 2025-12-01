@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -632,6 +633,62 @@
             currentTreasure: null,
             currentBoxNumber: null
         };
+        // --- إعدادات الحفظ السحابي (Supabase) ---
+        // هذه المفاتيح مأخوذة من ملف index.html الخاص بك
+        const supabaseUrl = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        const GAME_ID = 'mafia'; // معرف خاص بهذه اللعبة
+        let currentUserId = null;
+
+        // 1. دالة البدء الذكية (تتحقق من الإنترنت والمستخدم)
+        async function initGameWithCloud() {
+            // محاولة جلب المستخدم الحالي
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                currentUserId = session.user.id;
+                console.log("تم تسجيل الدخول، جاري جلب البيانات السحابية...");
+                await loadFromCloud();
+            } else {
+                console.log("زائر: استخدام الحفظ المحلي");
+                loadGameState(); // تحميل محلي عادي
+            }
+        }
+
+        // 2. دالة جلب البيانات من السحابة
+        async function loadFromCloud() {
+            const { data, error } = await supabase
+                .from('game_saves')
+                .select('save_data')
+                .eq('user_id', currentUserId)
+                .eq('game_name', GAME_ID)
+                .single();
+
+            if (data && data.save_data) {
+                console.log("تم تحميل البيانات من السحابة");
+                // نمرر البيانات السحابية لدالة التحميل
+                loadGameState(data.save_data);
+            } else {
+                console.log("لا توجد بيانات سحابية، جاري التحقق من المحلي...");
+                loadGameState(); 
+            }
+        }
+
+        // 3. دالة الحفظ في السحابة
+        async function saveToCloud(dataToSave) {
+            if (!currentUserId) return; // لا تفعل شيئاً إذا كان زائر
+            
+            await supabase
+                .from('game_saves')
+                .upsert({ 
+                    user_id: currentUserId, 
+                    game_name: GAME_ID, 
+                    save_data: dataToSave,
+                    updated_at: new Date()
+                }, { onConflict: 'user_id, game_name' });
+        }
         
         // متغيرات مؤقتة لحفظ الإعدادات قبل الحفظ النهائي
         let tempTeamConfig = {
@@ -700,62 +757,127 @@
         ];
 
 
-        // 1. دالة حفظ حالة اللعبة في localStorage
         function saveGameState() {
-            try {
-                // نحفظ أسماء الفرق أيضاً
-                const stateToSave = {
-                    teams: gameState.teams,
-                    currentTeam: gameState.currentTeam,
-                    numTeams: gameState.numTeams,
-                    openedBoxes: Array.from(gameState.openedBoxes), 
-                    treasures: gameState.treasures,
-                    teamNames: TEAM_NAMES // حفظ أسماء الفرق المعدلة
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-                //console.log('Game state saved successfully.');
-            } catch (error) {
-                console.error('Error saving game state:', error);
-            }
+            gameState = {
+                players: players,
+                roles: roles,
+                eliminatedPlayers: eliminatedPlayers,
+                lockedBoxes: lockedBoxes,
+                isRolesPhaseActive: isRolesPhaseActive,
+                currentPhase: document.querySelector('div[id$="-phase"]:not(.hidden)')?.id || 'setup-phase',
+                votes: votes,
+                topTwoCandidates: topTwoCandidates,
+                currentJustifyingPlayer: currentJustifyingPlayer,
+                finalVotes: finalVotes,
+                // المتغيرات الجديدة
+                currentNightRole: currentNightRole,
+                mafiaKillTarget: mafiaKillTarget,
+                doctorSaveTarget: doctorSaveTarget,
+                detectiveCheckTarget: detectiveCheckTarget,
+                nightActionOrder: nightActionOrder,
+                currentNightRoleIndex: currentNightRoleIndex
+            };
+            
+            // 1. حفظ محلي (دائماً)
+            localStorage.setItem('mafiaGameState', JSON.stringify(gameState));
+            
+            // 2. حفظ سحابي (إذا وجد مستخدم)
+            saveToCloud(gameState);
         }
 
-        // 2. دالة تحميل حالة اللعبة من localStorage
-        function loadGameState() {
-            try {
-                const savedState = localStorage.getItem(STORAGE_KEY);
-                if (savedState) {
-                    const loadedState = JSON.parse(savedState);
-                    
-                    // استعادة حالة اللعبة
-                    gameState.teams = loadedState.teams || [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
-                    gameState.currentTeam = loadedState.currentTeam || 0;
-                    // ** تحديث: الافتراضي 3 طواقم إذا لم يتم الحفظ من قبل
-                    gameState.numTeams = loadedState.numTeams !== undefined ? loadedState.numTeams : 3;
-                    
-                    if (gameState.currentTeam >= gameState.numTeams) {
-                        gameState.currentTeam = 0;
-                    }
+        function loadGameState(cloudData = null) {
+            let loadedData = null;
 
-                    gameState.openedBoxes = new Set(loadedState.openedBoxes || []);
-
-                    if (loadedState.treasures && loadedState.treasures.length === initialTreasureData.length) {
-                        gameState.treasures = loadedState.treasures;
-                    } else {
-                        gameState.treasures = [...initialTreasureData];
-                    }
-                    
-                    // ** تحديث: تحميل أسماء الفرق المعدلة
-                    if (loadedState.teamNames && loadedState.teamNames.length === 4) {
-                        TEAM_NAMES = loadedState.teamNames;
-                    }
-                    
-                    // console.log('Game state loaded successfully.');
-                    return true;
-                }
-            } catch (error) {
-                console.error('Error loading game state:', error);
+            // الأولوية للبيانات السحابية إذا تم تمريرها
+            if (cloudData) {
+                loadedData = cloudData;
+            } else {
+                // وإلا نستخدم البيانات المحلية
+                const savedState = localStorage.getItem('mafiaGameState');
+                if (savedState) loadedData = JSON.parse(savedState);
             }
-            return false;
+
+            const homeButton = document.getElementById('homeButton');
+            
+            if (loadedData) {
+                gameState = loadedData;
+                
+                // استعادة المتغيرات من البيانات المحملة
+                players = gameState.players || [];
+                roles = gameState.roles || [];
+                eliminatedPlayers = gameState.eliminatedPlayers || [];
+                lockedBoxes = gameState.lockedBoxes || [];
+                isRolesPhaseActive = gameState.isRolesPhaseActive;
+                votes = gameState.votes || {};
+                topTwoCandidates = gameState.topTwoCandidates || [];
+                currentJustifyingPlayer = gameState.currentJustifyingPlayer || 0;
+                finalVotes = gameState.finalVotes || {};
+                
+                currentNightRole = gameState.currentNightRole || '';
+                mafiaKillTarget = gameState.mafiaKillTarget || -1;
+                doctorSaveTarget = gameState.doctorSaveTarget || -1;
+                detectiveCheckTarget = gameState.detectiveCheckTarget || -1;
+                nightActionOrder = gameState.nightActionOrder || [];
+                currentNightRoleIndex = gameState.currentNightRoleIndex || 0;
+
+                if (players.length === 0) {
+                     document.getElementById('playerCount').dispatchEvent(new Event('input'));
+                     homeButton.classList.add('hidden'); 
+                     return;
+                }
+                
+                document.getElementById('setup-phase').classList.add('hidden');
+                homeButton.classList.remove('hidden'); 
+                
+                const currentPhase = gameState.currentPhase || 'roles-phase';
+                
+                // توجيه الواجهة حسب المرحلة المحفوظة
+                switch(currentPhase) {
+                    case 'roles-phase':
+                        createPlayerBoxes();
+                        if (isRolesPhaseActive) {
+                            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
+                        } else {
+                            setupRolesPhaseButton('showVoting', 'بدء التصويت');
+                        }
+                        document.getElementById('roles-phase').classList.remove('hidden');
+                        break;
+                    case 'night-phase':
+                        createPlayerBoxes(); 
+                        document.getElementById('night-phase').classList.remove('hidden');
+                        if (currentNightRole) {
+                            showNightHandoffScreen(currentNightRole);
+                        } else {
+                             processNextNightRole();
+                        }
+                        break;
+                    case 'voting-phase':
+                        createPlayerBoxes(); 
+                        showVoting(); 
+                        break;
+                    case 'justification-phase':
+                         createPlayerBoxes();
+                         startJustificationPhase(); 
+                         break;
+                    case 'final-voting-phase':
+                        createPlayerBoxes();
+                        startFinalVoting(); 
+                        break;
+                    case 'results-phase':
+                         createPlayerBoxes();
+                         document.getElementById('results-phase').classList.remove('hidden');
+                         break;
+                    default:
+                         document.getElementById('setup-phase').classList.remove('hidden');
+                         document.getElementById('playerCount').dispatchEvent(new Event('input'));
+                         homeButton.classList.add('hidden'); 
+                }
+
+            } else {
+                 // لا توجد بيانات، تهيئة جديدة
+                 document.getElementById('playerCount').dispatchEvent(new Event('input'));
+                 homeButton.classList.add('hidden'); 
+            }
         }
 
         // تهيئة اللعبة
@@ -1552,8 +1674,15 @@
             }
         }
 
-        // تهيئة اللعبة عند تحميل الصفحة
-        window.onload = initGame;
+       // ✅ الكود الصحيح: استدعاء دالة البدء الذكية
+document.addEventListener('DOMContentLoaded', () => {
+    setupNumberInputListeners(); 
+    
+    // هذا السطر هو المسؤول عن جلب البيانات من الشبكة
+    initGameWithCloud(); 
+
+    // ... باقي كود التهيئة ...
+});
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9875307e15c69355',t:'MTc1OTI1MDcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
