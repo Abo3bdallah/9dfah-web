@@ -1478,7 +1478,7 @@
         //
         // !! لتحديث الإعلان، فقط غيّر هذا الرابط !!
         //
-        const CURRENT_ANNOUNCEMENT_URL = 'https://i.postimg.cc/CMWMzym9/tm-adaft-msabqt-jdydt-aly-qsm-almnafsat.png';
+        const CURRENT_ANNOUNCEMENT_URL = 'https://i.postimg.cc/NFwhVngg/aʿlanat.png';
         //
         // === (نهاية الإضافة) ===
 
@@ -2127,10 +2127,27 @@
             }
             // === (نهاية التعديل) ===
 
+           // تعديل منطق زر تسجيل الخروج لإصلاح مشكلة الكمبيوتر
             btnSidebarLogout.addEventListener('click', async () => {
-                setGuestMode(false); // (تعديل) استخدام الدالة الجديدة
-                await supabase.auth.signOut();
-                closeSidebar(); 
+                // 1. إغلاق القائمة فوراً ليرى المستخدم استجابة
+                closeSidebar();
+
+                // 2. مسح حالة الضيف يدوياً
+                sessionStorage.removeItem('isGuest');
+                
+                // 3. محاولة تسجيل الخروج من Supabase
+                // نضعها داخل try-catch لضمان عدم توقف الكود إذا كان هناك مشكلة في الشبكة
+                try {
+                    await supabase.auth.signOut();
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    // في حال فشل Supabase، نقوم بمسح التخزين المحلي يدوياً كإجراء احتياطي
+                    localStorage.clear(); 
+                }
+
+                // 4. (الحل الجذري) إعادة تحميل الصفحة
+                // هذا يضمن مسح أي بيانات عالقة في ذاكرة الكمبيوتر ويعيد المستخدم لشاشة الدخول
+                window.location.reload();
             });
             
             // (جديد) فتح نافذة المفضلة
@@ -2541,4 +2558,3 @@
 </body>
 
 </html>
-
