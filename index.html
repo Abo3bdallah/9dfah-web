@@ -2548,7 +2548,29 @@
 
         });
     </script>
-    
+    <script>
+    // شبكة أمان: إذا لم تظهر الصفحة خلال 3 ثوانٍ، أظهر الصفحة الرئيسية فوراً
+    setTimeout(() => {
+        const welcomePage = document.getElementById('page-welcome');
+        const loader = document.getElementById('site-loader'); // إذا كنت تستخدمه
+        
+        // إذا كانت الصفحة مخفية، أظهرها بالقوة
+        if (welcomePage && getComputedStyle(welcomePage).display === 'none') {
+            console.log("Force showing welcome page due to timeout");
+            
+            // إخفاء أي نوافذ انتظار
+            if (loader) loader.style.display = 'none';
+            
+            // إظهار الصفحة الرئيسية
+            welcomePage.style.display = 'flex';
+            setTimeout(() => { welcomePage.style.opacity = '1'; }, 50);
+            
+            // إظهار الأزرار العائمة
+            document.getElementById('btn-open-sidebar').classList.remove('hidden');
+            document.getElementById('theme-toggle').classList.remove('hidden');
+        }
+    }, 3000);
+</script>
 
 </body>
 
