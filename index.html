@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     
     <!-- تحميل مكتبة Tailwind CSS أولاً -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 2. إضافة إعدادات Tailwind لتفعيل الوضع الليلي عبر "class" -->
     <script>
@@ -201,6 +201,19 @@
             100% {
                 transform: translate(-50%, -50%) rotate(-360deg);
             }
+        }
+        /* 6. (جديد) أنيميشن الانتقال الناعم بين الوضع الليلي والنهاري */
+        /* نطبقه على body وجميع العناصر بداخله */
+        body, body * {
+            transition-property: background-color, border-color, color, fill, stroke, shadow;
+            transition-duration: 300ms; /* مدة الانتقال: 0.3 ثانية (سرعة مثالية) */
+            transition-timing-function: ease-in-out;
+        }
+
+        /* استثناء هام: نستثني القائمة الجانبية والشرائح من هذا الانتقال العام */
+        /* لأن لديها أنيميشن خاص للحركة (transform) لا نريد تخريبه */
+        #sidebar-menu, .transform, .transition-transform {
+            transition-property: transform, background-color, border-color, color;
         }
 
 
