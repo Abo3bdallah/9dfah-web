@@ -218,7 +218,15 @@
         #sidebar-menu, .transform, .transition-transform {
             transition-property: transform, background-color, border-color, color;
         }
-
+/* رفع البطاقات والأزرار فوق الخلفية */
+    .app-card, 
+    #btn-tools, 
+    #btn-competitions, 
+    #btn-games {
+        position: relative; /* ضروري لعمل الـ z-index */
+        z-index: 10;        /* رقم أعلى من الخلفية */
+        cursor: pointer;
+    }
 
     </style>
 </head>
