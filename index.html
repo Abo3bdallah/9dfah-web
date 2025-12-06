@@ -129,24 +129,27 @@
         .animated-gradient-background::before,
         .animated-gradient-background::after {
             content: "";
-            position: fixed; /* (إصلاح) تم التغيير إلى fixed لتثبيت الخلفية */
+            position: fixed;
             top: 50%;
             left: 50%;
             width: 200%;
             height: 200%;
-            /* الوضع الفاتح: ألوان الأقسام */
             background: conic-gradient(
                 from 0deg,
-                #bfdbfe, /* أزرق فاتح (أدوات) */
-                #bbf7d0, /* أخضر فاتح (منافسات) */
-                #fecaca, /* أحمر فاتح (ألعاب) */
-                #bfdbfe  /* العودة للأزرق */
+                #bfdbfe,
+                #bbf7d0,
+                #fecaca,
+                #bfdbfe
             );
             transform: translate(-50%, -50%);
             animation: rotate 8s linear infinite;
-            filter: blur(80px); /* زيادة الضبابية */
-            opacity: 0.6; /* تخفيف الشفافية */
-            z-index: -1; /* خلف المحتوى */
+            filter: blur(80px);
+            opacity: 0.6;
+            z-index: -1;
+            
+            /* === هذا هو الحل === */
+            /* يسمح للضغطات بالمرور عبر الخلفية والوصول للأزرار */
+            pointer-events: none; 
         }
 
         /* --- الوضع الداكن --- */
