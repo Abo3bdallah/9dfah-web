@@ -9,7 +9,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E🎲%3C/text%3E%3C/svg%3E">
     
     <!-- تحميل مكتبة Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
     
     <!-- تحميل مكتبة Tailwind CSS أولاً -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -208,7 +208,7 @@
         /* 6. (جديد) أنيميشن الانتقال الناعم بين الوضع الليلي والنهاري */
         /* نطبقه على body وجميع العناصر بداخله */
         body, body * {
-            transition-property: background-color, border-color, color, fill, stroke, shadow;
+            transition-property: background-color, border-color, color, fill, stroke, box-shadow;
             transition-duration: 300ms; /* مدة الانتقال: 0.3 ثانية (سرعة مثالية) */
             transition-timing-function: ease-in-out;
         }
@@ -1141,7 +1141,7 @@
                 <div class="p-6 app-card-body">
                     <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">3. اربع تربح</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">اربع تربح لعبة تعتمد على الاستراتيجية والحنكة ،العب ضد لاعب او ضد الكمبيوتر.</p>
-                    <span class="inline-block bg-blue-100 text-black-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات والكمبيوتر</span>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات والكمبيوتر</span>
                 </div>
             </div>
             <!-- === (نهاية البطاقة) === -->
@@ -1789,6 +1789,24 @@
                 'page-4to-won': { element: page4toWon, iframe: iframes['page-4to-won'], src: iframeSrcMap['page-4to-won'] }
             };
 
+            allAppCards.forEach(card => {
+                const appId = card.dataset.appid;
+                const info = appInfoMap[appId];
+                card.setAttribute('role', 'button');
+                card.tabIndex = 0;
+                if (info && info.title) {
+                    card.setAttribute('aria-label', `فتح ${info.title}`);
+                }
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.target.closest('.favorite-btn')) return;
+                        e.preventDefault();
+                        if (appId && pageMap[appId]) {
+                            showPage(appId, true);
+                        }
+                    }
+                });
+            });
             function showPage(pageId, updateHistory = false) {
                 
                 // (جديد) إرسال حدث لـ Google Analytics
