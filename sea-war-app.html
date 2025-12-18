@@ -572,9 +572,19 @@
             margin-bottom: 30px;
         }
 
-        /* Simplified layout for 3 teams on large screens */
+        /* Simplified layout for teams on large screens */
         @media (min-width: 1200px) {
+             body.teams-2 .teams-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
              body.teams-3 .teams-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+             body.teams-4 .teams-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+             body.teams-5 .teams-container,
+             body.teams-6 .teams-container {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
