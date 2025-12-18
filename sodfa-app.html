@@ -43,7 +43,6 @@
         /* متغيرات CSS للتحكم الديناميكي في الأحجام */
         :root {
             --pointer-size: 20px; 
-            --number-circle-size: 250px; 
             --name-display-width: 60vw; 
             --name-display-height: 20vh; 
         }
@@ -51,17 +50,10 @@
         /* تنسيقات عجلة الحظ */
         .wheel-container {
             position: relative;
-            width: min(85vw, 85vh); 
-            height: min(85vw, 85vh); 
+            width: min(80vw, 80vh);
+            height: min(80vw, 80vh);
             margin: 0 auto;
             overflow: visible;
-        }
-        
-        @media (max-width: 640px) {
-            .wheel-container {
-                width: min(95vw, 95vh); 
-                height: min(95vw, 95vh); 
-            }
         }
         
         .wheel {
@@ -78,53 +70,53 @@
             cursor: grabbing;
         }
 
-        /* المؤشر الجديد: خط مدبب يشير للأسفل (مثبت في الأعلى) */
         .pin-pointer {
             position: absolute;
-            top: 0;
-            left: 50%; 
-            transform: translateX(calc(-50% + 10px)) translateY(calc(-1 * var(--pointer-size))); 
+            top: 50%;
+            left: 100%; 
+            transform: translate(-100%, -50%); 
             z-index: 100;
             pointer-events: none;
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 20px solid red; 
+            border-top: 14px solid transparent;
+            border-bottom: 14px solid transparent;
+            border-right: 26px solid #ef4444;
+            box-shadow: none;
             transition: transform 0.1s ease;
         }
 
         /* المؤشر البصري لتحديد نقطة التوقف الدقيقة (طلب المستخدم) */
         .winning-pin {
             position: absolute;
-            top: 0; /* في نفس موقع الـ pin-pointer */
-            left: 50%;
-            transform: translate(-50%, -100%) translateY(-25px); /* رفعها قليلاً لتكون فوق العجلة تماماً */
-            width: 10px;
-            height: 10px;
-            background-color: #ff0000;
+            top: 50%; 
+            left: 100%;
+            transform: translate(-115%, -50%); 
+            width: 0;
+            height: 0;
+            background-color: transparent;
+            border: 0;
             border-radius: 50%;
             z-index: 101; /* أعلى من المؤشر ليكون واضحاً */
             pointer-events: none;
-            box-shadow: 0 0 5px #ff0000;
+            box-shadow: none;
         }
 
         /* الحركة الاهتزازية للمؤشر */
         .wobble {
-            animation: wobbleAnim 0.15s ease-in-out infinite alternate;
-            transform-origin: center bottom; 
+            animation: none;
+            transform-origin: center center; 
         }
 
         @keyframes wobbleAnim {
-            from { transform: translateX(calc(-50% + 10px)) translateY(calc(-1 * var(--pointer-size))) rotate(-5deg); }
-            to { transform: translateX(calc(-50% + 10px)) translateY(calc(-1 * var(--pointer-size))) rotate(5deg); }
+            from { transform: translate(-100%, -50%) rotate(-6deg); }
+            to { transform: translate(-100%, -50%) rotate(6deg); }
         }
         
-        /* تأثيرات الأرقام */
         @keyframes numberPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1) translateY(0); text-shadow: 0 0 10px rgba(255, 255, 255, 0.4); }
+            40% { transform: scale(1.12) translateY(-4px); text-shadow: 0 0 16px rgba(255, 255, 255, 0.7); }
+            100% { transform: scale(1) translateY(0); text-shadow: 0 0 6px rgba(0, 0, 0, 0.6); }
         }
         
         /* تنسيقات النرد */
@@ -219,14 +211,38 @@
         
         /* تنسيقات دائرة الرقم الكبيرة الجديدة */
         .large-number-circle {
-            width: var(--number-circle-size);
-            height: var(--number-circle-size);
+            width: min(70vw, 60vh);
+            height: min(70vw, 60vh);
             display: flex; align-items: center; justify-content: center; border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            margin: 0 auto; transition: width 0.3s ease, height 0.3s ease;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.8), rgba(148, 163, 184, 0.15));
+            border: 3px solid rgba(148, 163, 184, 0.8);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65), 0 0 35px rgba(96, 165, 250, 0.4);
+            backdrop-filter: blur(10px);
+            margin: 0 auto;
+            transition: width 0.3s ease, height 0.3s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
         .large-number-circle span {
-            font-size: 8rem; font-weight: bold; color: white; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            font-size: min(35vw, 30vh);
+            font-weight: bold;
+            color: #0f172a;
+            text-shadow: 0 3px 10px rgba(15, 23, 42, 0.6);
+            /* animation: numberPulse 0.4s ease-out;  <-- Removed default to control via JS */
+        }
+        
+        /* تأثير النبض عند تغير الرقم */
+        .number-animation {
+            animation: numberPulse 0.1s ease-out;
+        }
+
+        /* تأثير القفزة للرقم الفائز (Pop) */
+        @keyframes popNumber {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(79, 70, 229, 0.8); }
+            100% { transform: scale(1); }
+        }
+        .pop-number {
+            animation: popNumber 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            color: #4f46e5 !important;
         }
 
         /* تنسيقات منطقة عرض الاسم الفائز (مستطيل) */
@@ -539,18 +555,7 @@
                         </button>
                     </div>
                     <div class="flex flex-col items-center gap-4 mb-4 text-white">
-                         <!-- Slider for Wheel Size - تم إرجاع الشريط ليظهر على جميع الأجهزة -->
-                        <div class="w-full flex items-center gap-2">
-                            <label for="wheelSizeSlider" class="flex-1 text-sm">حجم العجلة (%):</label>
-                            <input type="range" id="wheelSizeSlider" value="84" min="50" max="100" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveWheelSettings()">
-                            <span id="wheelSizeValue" class="w-10 text-right">84</span>
-                        </div>
-                        <div class="w-full flex items-center gap-2">
-                            <label for="spinDuration" class="flex-1 text-sm">مدة الدوران (ثانية):</label>
-                            <input type="range" id="spinDuration" value="5" min="3" max="15" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveWheelSettings()">
-                            <span id="durationValue" class="w-10 text-right">5</span>
-                        </div>
-                         <div class="w-full flex flex-col items-start justify-start gap-3">
+                        <div class="w-full flex flex-col items-start justify-start gap-3">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="showWheelPopup" checked class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveWheelSettings()">
                                 <label for="showWheelPopup" class="text-sm text-white">إظهار النافذة المنبثقة للنتيجة</label>
@@ -558,6 +563,34 @@
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="showWheelConfetti" checked class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveWheelSettings()">
                                 <label for="showWheelConfetti" class="text-sm text-white">إظهار الاحتفال (قصاصات)</label>
+                            </div>
+                        </div>
+                        <div class="w-full glass-card rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm font-semibold">ألوان العجلة</span>
+                                <button type="button" onclick="toggleWheelColorsPanel()" class="bg-white/20 text-xs text-white px-3 py-1 rounded-lg hover:bg-white/30 transition">
+                                    تخصيص العجلة
+                                </button>
+                            </div>
+                            <div id="wheelColorsPanel" class="w-full flex flex-col gap-3 hidden">
+                                <div id="wheelColorsList" class="flex flex-wrap gap-2"></div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="handleAddWheelColorClick()" class="w-8 h-8 rounded-full border-2 border-dashed border-white flex items-center justify-center text-lg leading-none">
+                                        +
+                                    </button>
+                                    <span class="text-xs text-white/80">إضافة لون جديد</span>
+                                </div>
+                                <div id="wheelColorAddArea" class="mt-2 hidden">
+                                    <div class="text-xs text-white/80 mb-2">اختر من الألوان الجاهزة:</div>
+                                    <div id="wheelPresetColorsContainer" class="flex flex-wrap gap-2 mb-3"></div>
+                                    <div class="text-xs text-white/80 mb-1">أو اختر لوناً بنفسك:</div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="color" id="wheelCustomColorInput" class="w-10 h-10 p-0 border-0 rounded-lg">
+                                        <button type="button" onclick="addCustomWheelColor()" class="bg-white/30 text-xs text-white px-3 py-1 rounded-lg hover:bg-white/50">
+                                            إضافة
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -587,13 +620,25 @@
                     </div>
                 </div>
                 
-                <div class="text-center mt-12 flex gap-4">
-                    <button id="generateNumberButton" onclick="generateRandomNumber()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1">
-                        اختيار رقم عشوائي
-                    </button>
-                    <button onclick="toggleNumberOptionsModal()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-shrink-0">
-                        إدارة الخيارات
-                    </button>
+                <div class="text-center mt-12 flex flex-col items-center gap-6 w-full px-4">
+                    <div class="flex gap-4 w-full max-w-xl">
+                        <button id="generateNumberButton" onclick="generateRandomNumber()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1">
+                            اختيار رقم عشوائي
+                        </button>
+                        <button onclick="toggleNumberOptionsModal()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-shrink-0">
+                            إدارة الخيارات
+                        </button>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 w-full max-w-xl text-right">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-white font-semibold text-sm">الأرقام التي ظهرت</h4>
+                            <button type="button" onclick="clearNumberHistory()" class="text-xs bg-white/20 text-white px-3 py-1 rounded-lg hover:bg-white/30">
+                                مسح القائمة
+                            </button>
+                        </div>
+                        <div id="numberHistoryContainer" class="min-h-[40px] max-h-32 overflow-y-auto text-white/90 text-sm">
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -609,12 +654,6 @@
                         </button>
                     </div>
                     <div class="glass-card rounded-lg p-6 mb-6">
-                        <!-- Slider for Number Size -->
-                        <div class="w-full flex items-center gap-2 mb-4">
-                            <label class="flex-1 text-sm text-white">حجم الدائرة (%):</label>
-                            <input type="range" id="numberSizeSlider" value="100" min="50" max="150" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveNumberSettings()">
-                            <span id="numberSizeValue" class="w-10 text-right text-white">100</span>
-                        </div>
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <label class="block text-white mb-2">من:</label>
@@ -638,6 +677,10 @@
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="showNumberConfetti" checked class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveNumberSettings()">
                                 <label for="showNumberConfetti" class="text-sm text-white">إظهار الاحتفال (قصاصات)</label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="avoidNumberRepeats" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveNumberSettings()">
+                                <label for="avoidNumberRepeats" class="text-sm text-white">منع تكرار الأرقام حتى إعادة التعيين</label>
                             </div>
                         </div>
                     </div>
@@ -1033,6 +1076,19 @@
     <script>
         // المتغيرات العامة لتخزين خيارات الرول والأسماء
         let wheelOptions = ['الخيار 1', 'الخيار 2', 'الخيار 3', 'الخيار 4'];
+        let wheelBaseColors = [];
+        const wheelPresetColors = [
+            '#ef4444',
+            '#3b82f6',
+            '#22c55e',
+            '#f59e0b',
+            '#f97316',
+            '#a855f7',
+            '#ec4899',
+            '#14b8a6',
+            '#f472b6',
+            '#818cf8'
+        ];
         let names = []; // قائمة أسماء قرعة الأسماء
         let currentSection = 'main-menu'; // لتتبع القسم الحالي لسجل المتصفح
         
@@ -1050,10 +1106,21 @@
         let currentRotation = 0;
         let lastTime = 0;
         let velocity = 0;
+        let currentWinningIndex = null;
 
         // ** المتغيرات الجديدة لتخزين Intervals **
         let numberInterval = null; // لـ generateRandomNumber
         let nameInterval = null;   // لـ selectRandomName
+        
+        function getSecureRandomInt(max) {
+            if (max <= 0) return 0;
+            if (window.crypto && window.crypto.getRandomValues) {
+                const array = new Uint32Array(1);
+                window.crypto.getRandomValues(array);
+                return array[0] % max;
+            }
+            return Math.floor(Math.random() * max);
+        }
         
         // **الألوان المصححة للفرق:** (أحمر، أزرق، أخضر، أصفر، بنفسجي، برتقالي)
         const teamConfigs = [
@@ -1104,6 +1171,50 @@
         sounds.number.loop = true;
         // ** تفعيل التكرار لصوت العد في قرعة الأسماء (click) **
         sounds.click.loop = true;
+
+        // متغيرات الصوت المولد
+        let audioCtx = null;
+        
+        // دالة لتهيئة السياق الصوتي (يجب أن تستدعى بعد تفاعل المستخدم)
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // دالة لتوليد صوت تكة رقمي (Digital Tick)
+        // rate: معامل السرعة (1 = سريع/عادي، أقل = أبطأ/أغلظ)
+        function playDigitalTick(rate = 1) {
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // إعداد نوع الصوت (Triangle يعطي صوت ناعم ونقي يشبه الألعاب الإلكترونية)
+            osc.type = 'triangle'; 
+            
+            // تغيير التردد بناءً على السرعة (محاكاة تباطؤ المحرك)
+            // التردد الأساسي 600Hz، ينخفض مع انخفاض السرعة
+            const frequency = 400 + (400 * rate); 
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            
+            // تأثير الانخفاض السريع في التردد (Chirp effect) لجعله يشبه "التكة"
+            osc.frequency.exponentialRampToValueAtTime(frequency * 0.1, audioCtx.currentTime + 0.05);
+
+            // التحكم في الصوت (Envelope) - قصير جداً
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.06);
+        }
 
         // دالة مساعدة لتشغيل أي صوت بسرعة وإعادة ضبطه
         function playSound(type) {
@@ -1168,11 +1279,20 @@
 
             // 2. إيقاف الحركة الدوارة للعجلة إذا كانت قيد الدوران
             if (isSpinning) {
+                // إيقاف أنميشن JS إذا كان يعمل
+                if (wheelAnimationId) {
+                    cancelAnimationFrame(wheelAnimationId);
+                    wheelAnimationId = null;
+                }
+                
                 const wheel = document.getElementById('wheelCanvas');
                 if (wheel) {
-                    // إيقاف الحركة عبر إزالة transition
+                    // إيقاف الحركة عبر إزالة transition (احتياط)
                     wheel.style.transition = 'none';
-                    wheel.style.transform = wheel.style.transform; // للحفاظ على الوضع الحالي
+                    // التحديث لقيمة المصفوفة الحالية لتجميد الحركة بصرياً
+                    const style = window.getComputedStyle(wheel);
+                    wheel.style.transform = style.transform;
+                    
                     // إعادة تفعيل زر الدوران
                     document.getElementById('spinWheelButton').disabled = false;
                     document.getElementById('wheelPointer').classList.remove('wobble');
@@ -1183,9 +1303,10 @@
 
             // 3. إيقاف عدادات الأرقام والأسماء
             if (numberInterval !== null) {
-                clearInterval(numberInterval);
+                clearTimeout(numberInterval); // استخدام clearTimeout بدلاً من clearInterval
                 numberInterval = null;
                 document.getElementById('generateNumberButton').disabled = false;
+                stopNumberSound(); // التأكد من إيقاف الصوت
             }
 
             if (nameInterval !== null) {
@@ -1232,16 +1353,11 @@
         
         // ----------------- حفظ إعدادات عجلة الحظ -----------------
         function saveWheelSettings() {
-            // حفظ الخيارات والقائمة
             saveToLocalStorage('wheelOptions', wheelOptions);
-            
-            // حفظ الإعدادات الأخرى
             const settings = {
-                size: document.getElementById('wheelSizeSlider').value,
-                duration: document.getElementById('spinDuration').value,
-                // ** تم حذف speed **
                 showPopup: document.getElementById('showWheelPopup').checked,
                 showConfetti: document.getElementById('showWheelConfetti').checked,
+                colors: wheelBaseColors
             };
             saveToLocalStorage('wheelSettings', settings);
         }
@@ -1249,29 +1365,32 @@
         // دالة لتحميل وتطبيق إعدادات عجلة الحظ
         function loadWheelSettings() {
             wheelOptions = loadFromLocalStorage('wheelOptions', ['الخيار 1', 'الخيار 2', 'الخيار 3', 'الخيار 4']);
-            // ** تم حذف speed من الإعدادات الافتراضية **
             const settings = loadFromLocalStorage('wheelSettings', {
-                size: 84, duration: 5, showPopup: true, showConfetti: true 
+                showPopup: true,
+                showConfetti: true,
+                colors: null
             });
-            
-            // تطبيق القيم على عناصر التحكم
-            document.getElementById('wheelSizeSlider').value = settings.size;
-            document.getElementById('durationValue').textContent = settings.duration;
-            document.getElementById('spinDuration').value = settings.duration;
-            // ** تم حذف تطبيق قيمة السرعة **
-            document.getElementById('showWheelPopup').checked = settings.showPopup;
-            document.getElementById('showWheelConfetti').checked = settings.showConfetti;
+            const showWheelPopupCheckbox = document.getElementById('showWheelPopup');
+            const showWheelConfettiCheckbox = document.getElementById('showWheelConfetti');
+            if (showWheelPopupCheckbox) showWheelPopupCheckbox.checked = settings.showPopup;
+            if (showWheelConfettiCheckbox) showWheelConfettiCheckbox.checked = settings.showConfetti;
+            if (Array.isArray(settings.colors) && settings.colors.length > 0) {
+                wheelBaseColors = settings.colors;
+            } else {
+                wheelBaseColors = wheelPresetColors.slice(0, 5);
+            }
+            renderWheelColors();
         }
         
         // ----------------- حفظ إعدادات قرعة الأرقام -----------------
         function saveNumberSettings() {
             const settings = {
-                size: document.getElementById('numberSizeSlider').value,
                 min: document.getElementById('minNumber').value,
                 max: document.getElementById('maxNumber').value,
                 duration: document.getElementById('numberDuration').value,
                 showPopup: document.getElementById('showNumberPopup').checked,
                 showConfetti: document.getElementById('showNumberConfetti').checked,
+                avoidRepeats: document.getElementById('avoidNumberRepeats') ? document.getElementById('avoidNumberRepeats').checked : false
             };
             saveToLocalStorage('numberSettings', settings);
         }
@@ -1280,12 +1399,10 @@
         function loadNumberSettings() {
             // ** تعديل الإعدادات الافتراضية: showPopup: false, showConfetti: true **
             const settings = loadFromLocalStorage('numberSettings', {
-                size: 100, min: 1, max: 100, duration: 5, showPopup: false, showConfetti: true 
+                min: 1, max: 100, duration: 5, showPopup: false, showConfetti: true, avoidRepeats: false 
             });
             
             // تطبيق القيم على عناصر التحكم
-            document.getElementById('numberSizeSlider').value = settings.size;
-            document.getElementById('numberSizeValue').textContent = settings.size;
             document.getElementById('minNumber').value = settings.min;
             document.getElementById('maxNumber').value = settings.max;
             document.getElementById('numberDuration').value = settings.duration;
@@ -1294,8 +1411,10 @@
             // تطبيق الافتراضيات الجديدة
             const showPopupCheckbox = document.getElementById('showNumberPopup');
             const showConfettiCheckbox = document.getElementById('showNumberConfetti');
+            const avoidRepeatsCheckbox = document.getElementById('avoidNumberRepeats');
             if (showPopupCheckbox) showPopupCheckbox.checked = settings.showPopup;
             if (showConfettiCheckbox) showConfettiCheckbox.checked = settings.showConfetti;
+            if (avoidRepeatsCheckbox) avoidRepeatsCheckbox.checked = settings.avoidRepeats;
         }
 
         // ----------------- حفظ إعدادات قرعة الأسماء -----------------
@@ -1549,34 +1668,21 @@
                 
                 // تهيئة الأقسام عند الانتقال إليها
                 if (sectionName === 'wheel') {
-                    // يجب تحميل الإعدادات أولاً
                     loadWheelSettings();
                     
                     const canvas = document.getElementById('wheelCanvas');
                     const container = document.getElementById('wheel-container');
                     
-                    // استخدام القيمة المحفوظة في شريط التحكم
-                    const sizeValue = document.getElementById('wheelSizeSlider').value;
-                    // ** تم تطبيق الحجم المحفوظ هنا **
-                    container.style.width = `min(${sizeValue}vw, ${sizeValue}vh)`;
-                    container.style.height = `min(${sizeValue}vw, ${sizeValue}vh)`;
-                    
-                    // 1. دعم الشاشات عالية الدقة (HiDPI)
                     const ratio = window.devicePixelRatio || 1;
                     canvas.width = container.offsetWidth * ratio;
                     canvas.height = container.offsetHeight * ratio;
                     canvas.getContext('2d').scale(ratio, ratio);
-                    
-                    // تحديث شريط التمرير ليعكس القيمة الافتراضية الجديدة
-                    document.getElementById('wheelSizeValue').textContent = sizeValue;
 
                     updateWheel();
-                    // تهيئة مستمع لتحديث العجلة عند تغيير حجم النافذة
                     window.onresize = () => {
                         const canvas = document.getElementById('wheelCanvas');
                         const container = document.getElementById('wheel-container');
                         
-                        // إعادة ضبط Canvas للحجم الجديد
                         const resizeRatio = window.devicePixelRatio || 1;
                         canvas.width = container.offsetWidth * resizeRatio;
                         canvas.height = container.offsetHeight * resizeRatio;
@@ -1584,7 +1690,7 @@
                         
                         updateWheel();
                     };
-                    setupWheelDrag(); // تفعيل سحب العجلة
+                    setupWheelDrag();
                 } else if (sectionName === 'dice') {
                     loadDiceSettings(); // تحميل إعدادات النرد
                     // ** الإصلاح 3: استدعاء دالة تحديث الحاويات هنا **
@@ -1595,7 +1701,6 @@
                     updateNameDisplaySize(false);
                 } else if (sectionName === 'numbers') {
                     loadNumberSettings(); // تحميل إعدادات الأرقام
-                    updateNumberCircleSize(false);
                 } else if (sectionName === 'coin') {
                     loadCoinSettings(); // تحميل إعدادات العملة
                 } else if (sectionName === 'drag-and-drop') {
@@ -1758,7 +1863,7 @@
             window.removeEventListener('touchend', endDrag);
             
             // تحديد ما إذا كانت الحركة سريعة بما يكفي لتدوير العجلة
-            const flickThreshold = 0.3; // عتبة السرعة (بالدرجات/ميلي ثانية)
+            const flickThreshold = 0.02; // عتبة السرعة (بالدرجات/ميلي ثانية)
 
             if (Math.abs(velocity) > flickThreshold) {
                 // تدوير العجلة بناءً على السرعة النهائية
@@ -1769,6 +1874,66 @@
             }
         }
 
+
+        function renderWheelColors() {
+            const list = document.getElementById('wheelColorsList');
+            if (list) {
+                list.innerHTML = '';
+                wheelBaseColors.forEach(color => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'w-8 h-8 rounded-full border-2 border-white/80 shadow';
+                    button.style.backgroundColor = color;
+                    list.appendChild(button);
+                });
+            }
+            const presetContainer = document.getElementById('wheelPresetColorsContainer');
+            if (presetContainer) {
+                presetContainer.innerHTML = '';
+                const remaining = wheelPresetColors.filter(color => !wheelBaseColors.includes(color));
+                remaining.forEach(color => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'w-8 h-8 rounded-full border border-white/60';
+                    button.style.backgroundColor = color;
+                    button.onclick = function () {
+                        addWheelColor(color);
+                    };
+                    presetContainer.appendChild(button);
+                });
+            }
+        }
+
+        function toggleWheelColorsPanel() {
+            const panel = document.getElementById('wheelColorsPanel');
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+        }
+
+        function handleAddWheelColorClick() {
+            const area = document.getElementById('wheelColorAddArea');
+            if (!area) return;
+            area.classList.toggle('hidden');
+        }
+
+        function addWheelColor(color) {
+            if (!color) return;
+            if (!wheelBaseColors.includes(color)) {
+                wheelBaseColors.push(color);
+                renderWheelColors();
+                updateWheel();
+                saveWheelSettings();
+            }
+        }
+
+        function addCustomWheelColor() {
+            const input = document.getElementById('wheelCustomColorInput');
+            if (!input) return;
+            const color = input.value;
+            if (color) {
+                addWheelColor(color);
+            }
+        }
 
         // دالة لتحديث رسم العجلة بناءً على الخيارات المتاحة
         function updateWheel() {
@@ -1789,17 +1954,29 @@
             }
             
             const anglePerSection = (2 * Math.PI) / sections;
-            // ألوان جديدة بتباين عالٍ وأكثر أناقة (لتصحيح مشكلة الوضوح)
-            const glassColors = [
-                'rgba(255, 69, 0, 0.5)',    // برتقالي ساطع (Red-Orange)
-                'rgba(0, 206, 209, 0.5)',  // فيروزي (Turquoise)
-                'rgba(255, 223, 0, 0.5)',  // أصفر ذهبي ساطع (Gold)
-                'rgba(138, 43, 226, 0.5)', // بنفسجي
-                'rgba(255, 99, 71, 0.5)',  // أحمر مرجاني
-                'rgba(60, 179, 113, 0.5)',  // أخضر ميديوم
-                'rgba(255, 140, 0, 0.4)',   // برتقالي داكن
-                'rgba(0, 191, 255, 0.4)'    // أزرق سماوي
-            ];
+            const baseColors = wheelBaseColors.length > 0 ? wheelBaseColors : wheelPresetColors;
+
+            const sectorColors = [];
+            let colorIndex = 0;
+            for (let i = 0; i < sections; i++) {
+                for (let attempt = 0; attempt < baseColors.length; attempt++) {
+                    const color = baseColors[colorIndex];
+                    colorIndex = (colorIndex + 1) % baseColors.length;
+                    if (i === 0 || color !== sectorColors[i - 1]) {
+                        sectorColors[i] = color;
+                        break;
+                    }
+                }
+            }
+            if (sections > 1 && sectorColors[sections - 1] === sectorColors[0]) {
+                for (let j = 0; j < baseColors.length; j++) {
+                    const candidate = baseColors[j];
+                    if (candidate !== sectorColors[sections - 2] && candidate !== sectorColors[0]) {
+                        sectorColors[sections - 1] = candidate;
+                        break;
+                    }
+                }
+            }
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1815,11 +1992,11 @@
                 ctx.arc(centerX, centerY, radius, startAngle, endAngle);
                 ctx.closePath();
                 
-                ctx.fillStyle = glassColors[index % glassColors.length];
+                ctx.fillStyle = sectorColors[index % sectorColors.length];
                 ctx.fill();
                 
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; // إطار زجاجي ناعم
-                ctx.lineWidth = 4; // سمك الإطار
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+                ctx.lineWidth = 0.6;
                 ctx.stroke();
 
                 // رسم النص
@@ -1835,8 +2012,8 @@
                 ctx.textAlign = 'center'; // تمركز الخط في المنتصف
                 ctx.textBaseline = 'middle';
                 
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)'; // ظل قوي جداً
-                ctx.shadowBlur = 4; // قوة الظل
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                ctx.shadowBlur = 1;
                 /* ------------------------------------- */
 
                 
@@ -1873,14 +2050,8 @@
             const pointer = document.getElementById('wheelPointer');
             const container = document.getElementById('wheel-container');
             if (pointer && container) {
-                // *** إصلاح موضع المؤشر ليكون في منتصف الأعلى تماماً ***
-                const pointerSize = 20; // حجم المؤشر (border-top)
-                
-                // left: 50% - 10px (Center of container - half pointer width)
-                pointer.style.left = `calc(50% - 10px)`; 
-                
-                // top: 0 (At the top edge)
-                pointer.style.top = `0`; 
+                pointer.style.top = '50%';
+                pointer.style.left = '100%';
             }
         }
 
@@ -1930,6 +2101,15 @@
             }
         }
 
+        // متغير لمعرف أنميشن العجلة (للإيقاف)
+        let wheelAnimationId = null;
+
+        // دالة التسهيل (Easing Function) لمحاكاة cubic-bezier(0.17, 0.67, 0.12, 0.99)
+        // هذه دالة تقريبية (easeOutQuart) تعطي نتيجة مشابهة جداً
+        function easeOutQuart(x) {
+            return 1 - Math.pow(1 - x, 4);
+        }
+
         // دالة لتدوير العجلة (تم تعديلها لتقبل سرعة السحب)
         function spinWheel(isFlick = false, flickVelocity = 0) {
             if (isSpinning) return;
@@ -1942,117 +2122,193 @@
             isSpinning = true;
             document.getElementById('spinWheelButton').disabled = true;
             
-            // ** قيمة السرعة الثابتة والمضبوطة (تم حذف شريط التمرير) **
-            const spinSpeed = 7;
+            // تهيئة الصوت المولد
+            initAudioContext();
             
             const wheel = document.getElementById('wheelCanvas');
+            // إزالة مستمع الحدث القديم لأننا سنستخدم JS
             wheel.removeEventListener('transitionend', handleSpinEnd);
             
-            // تفعيل حركة الاهتزاز للمؤشر
             document.getElementById('wheelPointer').classList.add('wobble');
 
-            // تشغيل صوت التدوير (Spin Sound)
-            playSound('spin');
+            // إزالة playSound('spin') لأننا سنولد الصوت يدويًا
+            // playSound('spin'); 
 
-            // الحصول على الدوران الحالي لتبدأ منه الحركة
+            // الحصول على الزاوية الحالية
             const style = window.getComputedStyle(wheel);
             const matrix = new DOMMatrix(style.transform);
-            
-            // يجب أن نستخدم العنصر m21 أو m11 للحصول على الدوران الحالي (cos(theta) / sin(theta))
             const rotationRad = Math.atan2(matrix.b, matrix.a);
-            currentRotation = rotationRad * (180 / Math.PI); // تحويل إلى درجات
-            if (currentRotation < 0) currentRotation += 360;
+            let currentRotationDeg = rotationRad * (180 / Math.PI);
+            if (currentRotationDeg < 0) currentRotationDeg += 360;
             
-            const spinDuration = parseInt(document.getElementById('spinDuration').value) * 1000;
+            // تحديث currentRotation العام ليكون متوافقاً مع الدوران التراكمي
+            // إذا كانت العجلة قد دارت سابقاً، نحتاج للحفاظ على القيمة التراكمية
+            // لكن للتبسيط، سنبدأ الحركة من القيمة الحالية للمصفوفة ونضيف عليها
+            // ملاحظة: currentRotation المخزنة عالمياً قد تكون أدق
+            
+            const sections = wheelOptions.length;
+            const anglePerSection = 360 / sections;
 
-            let totalDegrees;
+            let spinDuration;
+            let baseTurns;
 
             if (isFlick) {
-                // حساب الدوران بناءً على سرعة السحب (Flick)
-                const finalSpin = Math.abs(flickVelocity) * 1000; // تحويل السرعة إلى درجات تقريبية
-                const randomOffset = Math.random() * 360;
-
-                // تحديد عدد الدورات الكاملة (5 دورات كحد أدنى بالإضافة إلى الدوران الناتج عن السرعة)
-                const minRotations = 7;
-                let addedRotations = Math.floor(finalSpin / 360);
-                
-                // تحديد اتجاه الدوران
-                const direction = flickVelocity > 0 ? 1 : -1;
-                
-                totalDegrees = currentRotation + direction * ((minRotations + addedRotations) * 360 + randomOffset);
-                
+                const absVel = Math.abs(flickVelocity);
+                const minVel = 0.002;
+                const maxVel = 0.03;
+                if (absVel < minVel) {
+                    isSpinning = false;
+                    document.getElementById('spinWheelButton').disabled = false;
+                    document.getElementById('wheelPointer').classList.remove('wobble');
+                    stopSpinSound();
+                    return;
+                }
+                const ratio = Math.min(1, Math.max(0, (absVel - minVel) / (maxVel - minVel)));
+                const threshold = 0.5;
+                if (ratio <= threshold) {
+                    const local = ratio / threshold;
+                    const minDurationSec = 2.0;
+                    const maxDurationSec = 3.0;
+                    const minTurns = 5;
+                    const maxTurns = 8;
+                    const durationSec = minDurationSec + local * (maxDurationSec - minDurationSec);
+                    spinDuration = Math.round(durationSec * 1000);
+                    baseTurns = Math.round(minTurns + local * (maxTurns - minTurns));
+                } else {
+                    const local = (ratio - threshold) / (1 - threshold);
+                    const minDurationSec = 3.5;
+                    const maxDurationSec = 6.0;
+                    const minTurns = 9;
+                    const maxTurns = 14;
+                    const durationSec = minDurationSec + local * (maxDurationSec - minDurationSec);
+                    spinDuration = Math.round(durationSec * 1000);
+                    baseTurns = Math.round(minTurns + local * (maxTurns - minTurns));
+                }
             } else {
-                // الحركة من الزر (Button Spin)
-                const totalRotations = 25 + spinSpeed; // استخدام السرعة الثابتة
-                const finalAngle = Math.random() * 360;
-                totalDegrees = currentRotation + (totalRotations * 360) + finalAngle;
+                const minDurationSec = 2.5;
+                const maxDurationSec = 6.0;
+                const durationSec = minDurationSec + Math.random() * (maxDurationSec - minDurationSec);
+                spinDuration = Math.round(durationSec * 1000);
+                const minTurns = 7;
+                const maxTurns = 13;
+                baseTurns = Math.floor(Math.random() * (maxTurns - minTurns + 1)) + minTurns;
+            }
+
+            const winningIndex = getSecureRandomInt(sections);
+            currentWinningIndex = winningIndex;
+
+            const waCenter = (winningIndex + 0.5) * anglePerSection;
+            const halfSection = anglePerSection / 2;
+            const edgeMargin = Math.min(halfSection * 0.3, 5);
+            const randomFactor = Math.random() * 2 - 1;
+            const offsetInSection = randomFactor * (halfSection - edgeMargin);
+            const waRandom = waCenter + offsetInSection;
+            const nrTarget = (90 - waRandom + 360) % 360;
+
+            let currentNorm = currentRotation % 360;
+            if (currentNorm < 0) currentNorm += 360;
+            const deltaToTarget = (nrTarget - currentNorm + 360) % 360;
+
+            // الزاوية النهائية المستهدفة
+            const targetRotation = currentRotation + baseTurns * 360 + deltaToTarget;
+            const startRotation = currentRotation;
+            const totalChange = targetRotation - startRotation;
+            
+            // تعطيل Transition CSS لأننا نستخدم JS
+            wheel.style.transition = 'none';
+
+            let startTime = null;
+            let lastSoundAngle = startRotation;
+
+            function animate(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / spinDuration, 1);
+                
+                // تطبيق دالة التسهيل
+                const easedProgress = easeOutQuart(progress);
+                const currentAngle = startRotation + (totalChange * easedProgress);
+                
+                wheel.style.transform = `rotate(${currentAngle}deg)`;
+                
+                // --- منطق الصوت الجديد ---
+                // حساب السرعة الحالية (درجة لكل ميلي ثانية تقريباً) للتحكم في حدة الصوت
+                // نشتق السرعة من دالة التسهيل: derivative of easeOutQuart is 4 * (1-x)^3
+                // السرعة عند هذه اللحظة = totalChange * derivative / spinDuration
+                const remainingRatio = 1 - progress;
+                const derivative = 4 * Math.pow(remainingRatio, 3);
+                const currentSpeed = (totalChange * derivative) / spinDuration; // degrees per ms
+                
+                // تشغيل الصوت عند عبور "وتد" (فاصل بين الأقسام)
+                // كل قسم يمثل "وتد"
+                if (Math.abs(currentAngle - lastSoundAngle) >= anglePerSection) {
+                    // معدل الصوت يعتمد على السرعة (كلما كانت أسرع، كان الصوت أحد)
+                    // currentSpeed يتراوح عادة بين 0 و 2
+                    let rate = currentSpeed * 2; 
+                    if (rate < 0.2) rate = 0.2; // حد أدنى
+                    if (rate > 2.0) rate = 2.0; // حد أقصى
+                    
+                    playDigitalTick(rate);
+                    lastSoundAngle = currentAngle;
+                }
+                
+                if (progress < 1) {
+                    wheelAnimationId = requestAnimationFrame(animate);
+                } else {
+                    currentRotation = targetRotation;
+                    wheelAnimationId = null;
+                    handleSpinEnd();
+                }
             }
             
-            wheel.style.transition = `transform ${spinDuration}ms cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
-            wheel.style.transform = `rotate(${totalDegrees}deg)`;
-            currentRotation = totalDegrees; // تحديث الدوران النهائي
-
-            wheel.addEventListener('transitionend', handleSpinEnd, { once: true });
+            wheelAnimationId = requestAnimationFrame(animate);
         }
         
         // دالة معالجة حدث انتهاء الحركة (التعديل الجديد والصحيح)
         function handleSpinEnd() {
-            // إيقاف حركة الاهتزاز للمؤشر
-            document.getElementById('wheelPointer').classList.remove('wobble');
+            const pointer = document.getElementById('wheelPointer');
+            if (pointer) pointer.classList.remove('wobble');
 
-            // إيقاف صوت الدوران
             stopSpinSound();
 
             const canvas = document.getElementById('wheelCanvas');
-            const style = window.getComputedStyle(canvas);
-            const matrix = new DOMMatrix(style.transform);
+            let finalIndex = 0;
 
-            // زاوية دوران العجلة النهائية (من -180 إلى +180)
-            const rotation = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
-            // تحويل الزاوية إلى 0-360 درجة، تمثل الزاوية التي توقفت عندها العجلة
-            let normalizedRotation = (rotation + 360) % 360;
+            if (wheelOptions.length === 0) {
+                isSpinning = false;
+                document.getElementById('spinWheelButton').disabled = false;
+                if (canvas) canvas.removeEventListener('transitionend', handleSpinEnd);
+                return;
+            }
 
-            const anglePerSection = 360 / wheelOptions.length;
-
-            // المؤشر الثابت عند الأعلى (الساعة 12) يعادل 270 درجة في نظام الإحداثيات الديكارتي (0=يمين، 90=أسفل، 180=يسار، 270=أعلى).
-            const pointerAngle = 360;
-
-            // حساب الزاوية المطلوبة (Winning Angle):
-            // نستخدم الزاوية التي توقفت عندها العجلة بالنسبة لنظام الإحداثيات (normalizedRotation).
-            // الزاوية الفائزة هي الزاوية داخل العجلة التي يغطيها المؤشر (270) بعد دوران العجلة.
-            // (زاوية المؤشر - زاوية دوران العجلة) + 360 لضمان القيمة الموجبة ثم % 360
-            let winningAngle = (pointerAngle - normalizedRotation + 360) % 360;
-
-            // تحديد فهرس الخيار الفائز:
-            // نقسم الزاوية الفائزة على زاوية كل مقطع.
-            let finalIndex = Math.floor(winningAngle / anglePerSection);
-
-            // بما أن العجلة مرسومة بحيث يبدأ المقطع الأول (Index 0) عند الزاوية 270 درجة (الأعلى)
-            // فإن الزاوية 0 تقع في منتصف المقطع الأول.
-            // إذا كانت الزاوية الفائزة تقع عند 359.99 درجة (الحد بين المقطع الأخير والمقطع الأول)
-            // فإن finalIndex سيساوي (wheelOptions.length - 1).
-            // هذا المنطق يعمل بشكل صحيح طالما أن المقطع الأول يبدأ رسمه من زاوية 270 ويمتد باتجاه عقارب الساعة.
-            
-            // حماية من الحالات الحدية
-            if (finalIndex < 0) finalIndex = 0;
-            if (finalIndex >= wheelOptions.length) finalIndex = wheelOptions.length - 1;
+            if (typeof currentWinningIndex === 'number' && currentWinningIndex >= 0 && currentWinningIndex < wheelOptions.length) {
+                finalIndex = currentWinningIndex;
+            } else if (canvas) {
+                const style = window.getComputedStyle(canvas);
+                const matrix = new DOMMatrix(style.transform);
+                const rotation = Math.atan2(matrix.b, matrix.a) * (180 / Math.PI);
+                let normalizedRotation = (rotation + 360) % 360;
+                const anglePerSection = 360 / wheelOptions.length;
+                const pointerAngle = 360;
+                let winningAngle = (pointerAngle - normalizedRotation + 360) % 360;
+                finalIndex = Math.floor(winningAngle / anglePerSection);
+                if (finalIndex < 0) finalIndex = 0;
+                if (finalIndex >= wheelOptions.length) finalIndex = wheelOptions.length - 1;
+            }
 
             const selectedOption = wheelOptions[finalIndex];
-
-            // Debug: لمراجعة الزوايا إذا أردت
-            console.log(`[Wheel Debug Fixed] Rotation: ${rotation.toFixed(2)} deg, Normalized: ${normalizedRotation.toFixed(2)} deg, Winning Angle: ${winningAngle.toFixed(2)} deg, Angle Per Section: ${anglePerSection.toFixed(2)} deg, Selected Index: ${finalIndex}, Selected: ${selectedOption}`);
 
             const showPopup = document.getElementById('showWheelPopup').checked;
             const showConfetti = document.getElementById('showWheelConfetti').checked;
 
-            if (showConfetti) { /* تشغيل القصاصات */ }
             if (showPopup || showConfetti) {
                 showConfettiPopup(`النتيجة`, `فاز: ${selectedOption}`, selectedOption, 'removeWinningOption', showConfetti, showPopup);
             }
 
             isSpinning = false;
             document.getElementById('spinWheelButton').disabled = false;
-            canvas.removeEventListener('transitionend', handleSpinEnd);
+            if (canvas) canvas.removeEventListener('transitionend', handleSpinEnd);
+            currentWinningIndex = null;
         }
 
         // دالة لحذف الخيار الفائز من العجلة
@@ -2071,21 +2327,7 @@
 
         // --- دوال قسم الأرقام ---
         
-        // دالة لتحديث حجم دائرة الرقم بناءً على شريط التحكم
-        function updateNumberCircleSize(save = true) {
-            const sizeSlider = document.getElementById('numberSizeSlider');
-            const sizeValue = document.getElementById('numberSizeValue');
-            
-            if (sizeSlider) {
-                const percentage = sizeSlider.value;
-                const baseSize = 250; 
-                const newSize = (baseSize * percentage) / 100;
-
-                document.documentElement.style.setProperty('--number-circle-size', `${newSize}px`);
-                sizeValue.textContent = percentage;
-            }
-            if (save) saveNumberSettings(); // ** الحفظ بعد التحديث **
-        }
+        let usedNumbers = [];
 
         // دالة لتوليد رقم عشوائي
         function generateRandomNumber() {
@@ -2095,50 +2337,97 @@
             const max = parseInt(document.getElementById('maxNumber').value);
             const showPopup = document.getElementById('showNumberPopup').checked;
             const showConfetti = document.getElementById('showNumberConfetti').checked;
+            const avoidRepeatsCheckbox = document.getElementById('avoidNumberRepeats');
+            const avoidRepeats = avoidRepeatsCheckbox ? avoidRepeatsCheckbox.checked : false;
             
             if (min >= max || isNaN(min) || isNaN(max)) {
                 playSound('error');
                 showConfettiPopup('خطأ', 'الرقم الأدنى يجب أن يكون أقل من الأعلى.', null, null, false, true);
                 return;
             }
+
+            if (avoidRepeats) {
+                const rangeSize = max - min + 1;
+                const usedInRange = usedNumbers.filter(n => n >= min && n <= max).length;
+                if (usedInRange >= rangeSize) {
+                    playSound('error');
+                    showConfettiPopup('تنبيه', 'تم استخدام جميع الأرقام في هذا المدى. قم بتغيير الإعدادات أو إيقاف منع التكرار.', null, null, false, true);
+                    return;
+                }
+            }
             
             document.getElementById('generateNumberButton').disabled = true;
             const numberElement = document.getElementById('selectedNumber');
+            numberElement.classList.remove('pop-number'); // إعادة تعيين تأثير القفزة
             
             const duration = parseInt(document.getElementById('numberDuration').value) * 1000;
-            const intervalTime = 50;
-            let elapsedTime = 0;
+            let startTime = Date.now();
             
-            // إيقاف صوت التكتكة السابق إذا كان لا يزال يعمل
+            // إيقاف صوت التكتكة السابق
             stopNumberSound();
             
-            // تشغيل صوت عد الأرقام (في حلقة)
-            playSound('number');
+            // تهيئة الصوت المولد
+            initAudioContext();
             
-            // ** حفظ Interval ID **
-            numberInterval = setInterval(() => {
+            // دالة الحركة المتكررة (Recursive) لتحقيق التباطؤ
+            const tick = () => {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // 1. التباطؤ التدريجي (Easing): زيادة التأخير مع الوقت
+                const currentDelay = 50 + (300 * Math.pow(progress, 2)); 
+
+                // 4. تزامن الصوت: تغيير نغمة الصوت بناءً على السرعة
+                // كلما زاد التأخير (أبطأ)، قل الـ Rate (أغلظ)
+                let rate = 50 / currentDelay; 
+                playDigitalTick(rate); // تشغيل التكة المولدة
+
+                // تحديث الرقم العشوائي
                 const randomNumValue = Math.floor(Math.random() * (max - min + 1)) + min;
                 numberElement.textContent = randomNumValue;
+                
+                // تأثير النبض البسيط
+                numberElement.classList.remove('number-animation');
+                void numberElement.offsetWidth; // Force reflow
                 numberElement.classList.add('number-animation');
-                
-                
-                setTimeout(() => { numberElement.classList.remove('number-animation'); }, 100);
-                
-                elapsedTime += intervalTime;
-                
-                if (elapsedTime >= duration) {
-                    // ** إيقاف وحذف Interval ID **
-                    clearInterval(numberInterval);
+
+                if (elapsed < duration) {
+                    numberInterval = setTimeout(tick, currentDelay);
+                } else {
+                    // الانتهاء
                     numberInterval = null; 
-                    
-                    // إيقاف صوت عد الأرقام
                     stopNumberSound();
                     
-                    const finalNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                    let finalNumber;
+                    if (avoidRepeats) {
+                        const rangeSize = max - min + 1;
+                        const available = [];
+                        for (let n = min; n <= max; n++) {
+                            if (!usedNumbers.includes(n)) {
+                                available.push(n);
+                            }
+                        }
+                        if (available.length === 0) {
+                            playSound('error');
+                            showConfettiPopup('تنبيه', 'تم استخدام جميع الأرقام.', null, null, false, true);
+                            document.getElementById('generateNumberButton').disabled = false;
+                            return;
+                        }
+                        const randomIndex = getSecureRandomInt(available.length);
+                        finalNumber = available[randomIndex];
+                    } else {
+                        finalNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                    }
+                    
                     numberElement.textContent = finalNumber;
+                    usedNumbers.push(finalNumber);
+                    updateNumberHistory();
                     
-                    
-                    if (showConfetti) { /* تشغيل القصاصات */ } 
+                    // 3. تأثير القفزة للرقم الفائز (Final Pop)
+                    numberElement.classList.remove('number-animation');
+                    void numberElement.offsetWidth;
+                    numberElement.classList.add('pop-number');
                     
                     if (showPopup || showConfetti) {
                         showConfettiPopup('الرقم الفائز', `${finalNumber}`, null, null, showConfetti, showPopup);
@@ -2146,7 +2435,38 @@
                     
                     document.getElementById('generateNumberButton').disabled = false;
                 }
-            }, intervalTime);
+            };
+            
+            // بدء الحلقة
+            numberInterval = setTimeout(tick, 50);
+        }
+
+        function updateNumberHistory() {
+            const container = document.getElementById('numberHistoryContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            if (!usedNumbers.length) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'text-white/50 text-xs';
+                placeholder.textContent = 'لم يتم اختيار أرقام بعد';
+                container.appendChild(placeholder);
+                return;
+            }
+            const sorted = usedNumbers.slice().sort((a, b) => a - b);
+            const wrap = document.createElement('div');
+            wrap.className = 'flex flex-wrap gap-2';
+            sorted.forEach(num => {
+                const badge = document.createElement('span');
+                badge.className = 'px-3 py-1 rounded-full text-xs bg-white/15 text-white border border-white/30 shadow-sm';
+                badge.textContent = num;
+                wrap.appendChild(badge);
+            });
+            container.appendChild(wrap);
+        }
+
+        function clearNumberHistory() {
+            usedNumbers = [];
+            updateNumberHistory();
         }
 
         // --- دوال قسم الأسماء ---
@@ -3033,7 +3353,6 @@
             
             // تحديث قيم المقياسين بشكل مباشر
             const sliders = [
-                { id: 'spinDuration', span: 'durationValue', save: 'saveWheelSettings' }, 
                 { id: 'numberDuration', span: 'numberDurationValue', save: 'saveNumberSettings' }, 
                 { id: 'nameDuration', span: 'nameDurationValueModal', save: 'saveNameSettings' },
                 { id: 'coinDuration', span: 'coinDurationValue', save: 'saveCoinSettings' }
@@ -3051,26 +3370,6 @@
             
             // ******************** مستمعات أحداث تغيير الحجم ********************
             
-            // عجلة الحظ (Wheel Size) - تم نقل دالة الحفظ لـ onchange في HTML لكن سنضيفها هنا أيضاً كـ input
-            const wheelSizeSlider = document.getElementById('wheelSizeSlider');
-            const wheelContainer = document.getElementById('wheel-container');
-            if (wheelSizeSlider && wheelContainer) {
-                wheelSizeSlider.addEventListener('input', () => {
-                    const size = wheelSizeSlider.value;
-                    document.getElementById('wheelSizeValue').textContent = size;
-                    wheelContainer.style.width = `min(${size}vw, ${size}vh)`;
-                    wheelContainer.style.height = `min(${size}vw, ${size}vh)`;
-                    updateWheel(); 
-                    saveWheelSettings(); // ** الحفظ عند السحب **
-                });
-            }
-            
-            // قرعة الأرقام (Number Circle Size)
-            const numberSizeSlider = document.getElementById('numberSizeSlider');
-            if (numberSizeSlider) {
-                numberSizeSlider.addEventListener('input', () => updateNumberCircleSize(true));
-            }
-
             // قرعة الأسماء (Name Display Size)
             const nameWidthSlider = document.getElementById('nameWidthSlider');
             const nameHeightSlider = document.getElementById('nameHeightSlider');
@@ -3110,7 +3409,6 @@
             
             // تهيئة واجهة المستخدم بناءً على الإعدادات المحملة
             updateNameDisplaySize(false); 
-            updateNumberCircleSize(false); 
             
             // إضافة الحالة الأولية للسجل (القائمة الرئيسية)
             history.replaceState({ section: 'main-menu' }, '', '#main-menu');
