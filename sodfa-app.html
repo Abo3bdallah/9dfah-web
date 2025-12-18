@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق القرعة العشوائية</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة معالجة ملفات Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* استيراد خط القاهرة من Google Fonts */
@@ -247,20 +249,61 @@
 
         /* تنسيقات منطقة عرض الاسم الفائز (مستطيل) */
         .large-name-display {
-            max-width: var(--name-display-width);
-            min-height: var(--name-display-height);
+            width: min(90vw, 800px);
+            min-height: min(40vh, 300px);
             margin: 0 auto; padding: 2rem; display: flex; flex-direction: column;
             align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border-radius: 20px; text-align: center; transition: max-width 0.3s ease, min-height 0.3s ease;
+            border-radius: 20px; text-align: center; transition: all 0.3s ease;
             overflow-x: auto;
+            position: relative; /* Added for absolute positioning of children */
         }
-        .large-name-display p { font-size: 1.5rem; font-weight: bold; color: white; margin-bottom: 0.5rem; }
+        .large-name-display p {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 0; /* Removed margin as it's now absolute */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+            padding: 0.5rem 2.5rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: absolute; /* Fixed position relative to container */
+            top: 2rem; /* Spacing from top */
+            z-index: 10;
+        }
         .large-name-display span {
-            font-size: 2.5rem; font-weight: bold; color: white; max-width: 100%; padding: 0 1rem;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: min(15vw, 6rem); font-weight: 800; color: white; max-width: 100%; padding: 0.2em 1rem;
+            line-height: 1.5;
+            white-space: nowrap; overflow: visible; text-overflow: clip; /* Changed to prevent cutting off shadows/letters */
+            transition: transform 0.1s ease, filter 0.1s ease;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: inline-block; /* Helps with alignment */
+            margin-top: 3rem; /* Space for the absolute positioned title */
         }
-        .large-name-display.wrap-text span { white-space: normal !important; overflow: visible; text-overflow: clip; }
+        
+        /* تأثير الضبابية أثناء الحركة السريعة */
+        .blur-text {
+            filter: blur(2px);
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* تأثير الفوز */
+        @keyframes popName {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+            100% { transform: scale(1); }
+        }
+        .pop-name {
+            animation: popName 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            color: #ffffff !important;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
         
         /* تنسيقات السحب والإفلات */
         .name-item.selected {
@@ -325,6 +368,20 @@
                 min-width: 256px; 
                 width: 256px;
                 flex-shrink: 0;
+            }
+        }
+        
+        /* تحسين عرض الأسماء على الجوال */
+        @media (max-width: 768px) {
+            .large-name-display span {
+                white-space: normal !important; /* السماح بالالتفاف */
+                word-wrap: break-word;
+                display: block; 
+                line-height: 1.3;
+            }
+            .large-name-display {
+                height: auto; 
+                min-height: 40vh;
             }
         }
 
@@ -703,18 +760,29 @@
                 <div id="nameResult" class="text-center overflow-x-auto w-full"> <!-- وسم w-full مهم هنا -->
                     <!-- Name Display Rectangle (Modified to large-name-display) -->
                     <div id="nameDisplayContainer" class="large-name-display">
-                        <p class="text-white/90">الفائز:</p>
+                        <p class="text-white/90">🏆 الفائز</p>
                         <span id="selectedName" class="text-white max-w-full">لم يتم الاختيار بعد</span>
                     </div>
                 </div>
                 
-                <div class="text-center mt-12 flex gap-4">
-                    <button id="selectNameButton" onclick="selectRandomName()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1">
-                        اختيار اسم عشوائي
-                    </button>
-                    <button onclick="toggleNameOptionsModal()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all mr-4 flex-shrink-0">
-                        إدارة الخيارات
-                    </button>
+                <div class="text-center mt-12 flex flex-col gap-4">
+                    <div class="flex gap-4 w-full">
+                        <button id="selectNameButton" onclick="selectRandomName()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1 shadow-lg border border-white/20">
+                            اختيار اسم عشوائي
+                        </button>
+                        <button onclick="toggleNameOptionsModal()" class="bg-white/30 text-white px-4 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-shrink-0 shadow-lg border border-white/20" title="الإعدادات">
+                            ⚙️
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-4 w-full">
+                         <button id="removeWinnerBtn" onclick="removeCurrentWinner()" class="bg-red-500/30 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-500/50 transition-all flex-1 shadow-lg border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            🗑️ حذف الفائز
+                        </button>
+                        <button onclick="toggleHistoryModal()" class="bg-blue-500/30 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-500/50 transition-all flex-1 shadow-lg border border-white/20">
+                            📜 سجل الفائزين
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -730,28 +798,17 @@
                         </button>
                     </div>
                     <div class="flex flex-col items-center gap-4 mb-4 text-white">
-                        <!-- Slider for Name Width -->
-                        <div class="w-full flex items-center gap-2">
-                            <label class="flex-1 text-sm">حجم العرض (W%):</label>
-                            <input type="range" id="nameWidthSlider" value="100" min="50" max="200" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveNameSettings()">
-                            <span id="nameWidthValue" class="w-10 text-right">100</span>
-                        </div>
-                        <!-- Slider for Name Height -->
-                        <div class="w-full flex items-center gap-2">
-                            <label class="flex-1 text-sm">حجم الارتفاع (H%):</label>
-                            <input type="range" id="nameHeightSlider" value="100" min="50" max="200" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveNameSettings()">
-                            <span id="nameHeightValue" class="w-10 text-right">100</span>
-                        </div>
+
                         <div class="w-full flex items-center gap-2">
                             <label class="flex-1 text-sm">مدة الدوران (ثانية):</label>
                             <input type="range" id="nameDuration" value="5" min="3" max="15" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveNameSettings()">
                             <span id="nameDurationValueModal" class="w-10 text-right">5</span>
                         </div>
                         <div class="w-full flex flex-col items-start justify-start gap-3">
-                            <!-- الخيار الجديد لتقسيم السطر -->
+                            <!-- خيار الوقت الديناميكي -->
                             <div class="flex items-center gap-3">
-                                <input type="checkbox" id="wrapNameText" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveNameSettings()">
-                                <label for="wrapNameText" class="text-sm text-white">السماح بتقسيم الاسم (عدة أسطر)</label>
+                                <input type="checkbox" id="dynamicNameDuration" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveNameSettings(); toggleNameDurationSlider()">
+                                <label for="dynamicNameDuration" class="text-sm text-white">وقت دوران عشوائي (ديناميكي)</label>
                             </div>
                             <!-- الخيار الجديد: إقصاء الفائز تلقائياً -->
                             <div class="flex items-center gap-3">
@@ -775,7 +832,13 @@
                         <div class="flex gap-2 mb-4">
                             <textarea id="namesTextarea" placeholder="أدخل أسماء جديدة (كل اسم في سطر)" class="flex-1 px-4 py-2 rounded-lg border-0 bg-white/50 text-gray-800"></textarea>
                         </div>
-                        <button onclick="addNamesFromTextarea()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إضافة الأسماء</button>
+                        <div class="flex gap-2 mb-4 w-full">
+                             <button onclick="addNamesFromTextarea()" class="bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50 flex-1">إضافة الأسماء</button>
+                             <label for="importFile" class="bg-blue-500/30 text-white px-4 py-2 rounded-lg hover:bg-blue-500/50 cursor-pointer text-center transition-all border border-white/20 flex-1 flex items-center justify-center gap-2">
+                                <span>📥 استيراد (Excel/Txt)</span>
+                                <input type="file" id="importFile" accept=".txt,.csv,.xlsx,.xls" class="hidden" onchange="importNamesFile(this)">
+                            </label>
+                        </div>
                         <div id="namesList" class="space-y-2 max-h-40 overflow-y-auto mt-4"></div>
                         <button onclick="clearNames()" class="w-full mt-4 bg-white/30 text-white py-2 rounded-lg hover:bg-white/50">مسح الكل</button>
                     </div>
@@ -1090,6 +1153,7 @@
             '#818cf8'
         ];
         let names = []; // قائمة أسماء قرعة الأسماء
+        let winnersHistory = []; // سجل الفائزين
         let currentSection = 'main-menu'; // لتتبع القسم الحالي لسجل المتصفح
         
         let isSpinning = false;
@@ -1216,6 +1280,9 @@
             osc.stop(audioCtx.currentTime + 0.06);
         }
 
+        // متغير للتحكم في مدة صوت التشجيع
+        let cheerTimeout = null;
+
         // دالة مساعدة لتشغيل أي صوت بسرعة وإعادة ضبطه
         function playSound(type) {
              const sound = sounds[type];
@@ -1236,6 +1303,14 @@
                  }
                  
                  sound.play().catch(e => console.error("Error playing sound:", type, e)); 
+                 
+                 // ** تحديد مدة صوت التشجيع بـ 3 ثوانٍ فقط **
+                 if (type === 'cheer') {
+                     if (cheerTimeout) clearTimeout(cheerTimeout);
+                     cheerTimeout = setTimeout(() => {
+                         stopCheerSound();
+                     }, 3000);
+                 }
              }
         }
         
@@ -1310,9 +1385,10 @@
             }
 
             if (nameInterval !== null) {
-                clearInterval(nameInterval);
+                clearTimeout(nameInterval); // تم التغيير إلى clearTimeout
                 nameInterval = null;
                 document.getElementById('selectNameButton').disabled = false;
+                stopNameTickSound(); // التأكد من إيقاف الصوت
             }
 
             // 4. إيقاف حركة قلب العملة
@@ -1417,18 +1493,40 @@
             if (avoidRepeatsCheckbox) avoidRepeatsCheckbox.checked = settings.avoidRepeats;
         }
 
+        // دالة لتبديل حالة شريط تمرير الوقت
+        function toggleNameDurationSlider() {
+            const isDynamic = document.getElementById('dynamicNameDuration').checked;
+            const slider = document.getElementById('nameDuration');
+            const label = slider.previousElementSibling;
+            const valueSpan = document.getElementById('nameDurationValueModal');
+            
+            if (isDynamic) {
+                slider.disabled = true;
+                slider.classList.add('opacity-50', 'cursor-not-allowed');
+                label.classList.add('opacity-50');
+                valueSpan.classList.add('opacity-50');
+                valueSpan.textContent = '؟؟';
+            } else {
+                slider.disabled = false;
+                slider.classList.remove('opacity-50', 'cursor-not-allowed');
+                label.classList.remove('opacity-50');
+                valueSpan.classList.remove('opacity-50');
+                valueSpan.textContent = slider.value;
+            }
+        }
+
         // ----------------- حفظ إعدادات قرعة الأسماء -----------------
         function saveNameSettings() {
             // حفظ القائمة
             saveToLocalStorage('namesList', names);
+            // حفظ سجل الفائزين
+            saveToLocalStorage('winnersHistory', winnersHistory);
             
             // حفظ الإعدادات الأخرى
             const settings = {
-                width: document.getElementById('nameWidthSlider').value,
-                height: document.getElementById('nameHeightSlider').value,
                 duration: document.getElementById('nameDuration').value,
-                wrapText: document.getElementById('wrapNameText').checked,
-                autoRemoveName: document.getElementById('autoRemoveName').checked, // حفظ الخيار الجديد
+                dynamicDuration: document.getElementById('dynamicNameDuration').checked, // ** جديد **
+                autoRemoveName: document.getElementById('autoRemoveName').checked,
                 showPopup: document.getElementById('showNamePopup').checked,
                 showConfetti: document.getElementById('showNameConfetti').checked,
             };
@@ -1438,17 +1536,24 @@
         // دالة لتحميل وتطبيق إعدادات قرعة الأسماء
         function loadNameSettings() {
             names = loadFromLocalStorage('namesList', []); // يتم تحميل القائمة
+            winnersHistory = loadFromLocalStorage('winnersHistory', []); // تحميل سجل الفائزين
+            
             // ** تعديل الإعدادات الافتراضية: showPopup: false, showConfetti: true **
             const settings = loadFromLocalStorage('nameSettings', {
-                width: 100, height: 100, duration: 5, wrapText: false, autoRemoveName: false, showPopup: false, showConfetti: true
+                duration: 5, dynamicDuration: false, autoRemoveName: false, showPopup: false, showConfetti: true
             });
             
             // تطبيق القيم على عناصر التحكم
-            document.getElementById('nameWidthSlider').value = settings.width;
-            document.getElementById('nameHeightSlider').value = settings.height;
             document.getElementById('nameDuration').value = settings.duration;
             document.getElementById('nameDurationValueModal').textContent = settings.duration;
-            document.getElementById('wrapNameText').checked = settings.wrapText;
+            
+            // ** تطبيق إعداد الوقت الديناميكي **
+            const dynamicDurationCheckbox = document.getElementById('dynamicNameDuration');
+            if (dynamicDurationCheckbox) {
+                dynamicDurationCheckbox.checked = settings.dynamicDuration || false;
+                toggleNameDurationSlider(); // تطبيق حالة الواجهة
+            }
+
             document.getElementById('autoRemoveName').checked = settings.autoRemoveName; // تحميل الخيار الجديد
             
             // تطبيق الافتراضيات الجديدة
@@ -2075,6 +2180,9 @@
             const textarea = document.getElementById('wheelOptionsTextarea');
             const newNames = textarea.value.split('\n').map(name => name.trim()).filter(name => name.length > 0);
             if (newNames.length > 0) {
+                // حفظ في السجل الذكي
+                SmartSuggestions.add(newNames);
+
                 // فحص التكرار قبل الإضافة
                 const uniqueNewNames = newNames.filter(name => !wheelOptions.includes(name));
                 if (uniqueNewNames.length > 0) {
@@ -2469,41 +2577,168 @@
             updateNumberHistory();
         }
 
+        // ----------------- نظام الاقتراحات الذكي -----------------
+        const SmartSuggestions = {
+            history: [],
+            maxItems: 500,
+            storageKey: 'sodfa_smart_history',
+
+            init() {
+                this.history = loadFromLocalStorage(this.storageKey, []);
+            },
+
+            add(items) {
+                // items is array of strings
+                const newItems = items.filter(item => !this.history.includes(item));
+                if (newItems.length > 0) {
+                    // Add to beginning
+                    this.history = [...newItems, ...this.history].slice(0, this.maxItems);
+                    saveToLocalStorage(this.storageKey, this.history);
+                }
+            },
+
+            get(query) {
+                if (!query) return [];
+                const lowerQuery = query.toLowerCase();
+                return this.history.filter(item => item.toLowerCase().includes(lowerQuery)).slice(0, 5);
+            }
+        };
+
+        // دالة إعداد الاقتراحات لحقل معين
+        function setupSmartSuggestions(textareaId) {
+            const textarea = document.getElementById(textareaId);
+            if (!textarea) return;
+
+            // التأكد من أن الحاوية نسبية لتموضع القائمة
+            if (textarea.parentElement) {
+                 textarea.parentElement.style.position = 'relative';
+            }
+
+            const box = document.createElement('div');
+            box.className = 'hidden absolute left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden mt-1';
+            box.style.top = '100%'; // أسفل الحقل مباشرة
+            box.style.maxHeight = '150px';
+            box.style.overflowY = 'auto';
+
+            textarea.parentElement.appendChild(box);
+
+            textarea.addEventListener('input', () => {
+                const cursorStart = textarea.selectionStart;
+                const text = textarea.value;
+                // العثور على السطر الحالي
+                const lastNewline = text.lastIndexOf('\n', cursorStart - 1);
+                const nextNewline = text.indexOf('\n', cursorStart);
+                const start = lastNewline + 1;
+                const end = nextNewline === -1 ? text.length : nextNewline;
+                
+                const currentLine = text.substring(start, cursorStart); // النص حتى المؤشر
+
+                if (currentLine.trim().length < 1) {
+                    box.classList.add('hidden');
+                    return;
+                }
+
+                const suggestions = SmartSuggestions.get(currentLine.trim());
+                if (suggestions.length > 0) {
+                    box.innerHTML = '';
+                    suggestions.forEach(suggestion => {
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-2 hover:bg-blue-50 cursor-pointer text-gray-800 border-b border-gray-100 last:border-0 text-right';
+                        div.textContent = suggestion;
+                        div.onclick = () => {
+                            // استبدال السطر الحالي بالاقتراح
+                            const before = text.substring(0, start);
+                            const after = text.substring(end);
+                            textarea.value = before + suggestion + after;
+                            box.classList.add('hidden');
+                            textarea.focus();
+                        };
+                        box.appendChild(div);
+                    });
+                    box.classList.remove('hidden');
+                } else {
+                    box.classList.add('hidden');
+                }
+            });
+
+            // إخفاء القائمة عند فقدان التركيز (مع تأخير للسماح بالنقر)
+            textarea.addEventListener('blur', () => {
+                setTimeout(() => box.classList.add('hidden'), 200);
+            });
+        }
+
         // --- دوال قسم الأسماء ---
 
-        // دالة لتحديث حجم مستطيل الأسماء بناءً على شريطي التحكم
-        function updateNameDisplaySize(save = true) {
-            const widthSlider = document.getElementById('nameWidthSlider');
-            const heightSlider = document.getElementById('nameHeightSlider');
-            const widthValue = document.getElementById('nameWidthValue');
-            const heightValue = document.getElementById('nameHeightValue');
-            const displayContainer = document.getElementById('nameDisplayContainer');
-            
-            if (widthSlider && heightSlider && displayContainer) {
-                const widthPercentage = parseFloat(widthSlider.value);
-                const heightPercentage = parseFloat(heightSlider.value);
+        // دالة موحدة لإضافة الأسماء (تستخدم من Textarea ومن الاستيراد)
+        function addNames(newNamesArray) {
+            if (newNamesArray.length > 0) {
+                // حفظ في السجل الذكي
+                SmartSuggestions.add(newNamesArray);
+
+                // فحص التكرار
+                const uniqueNewNames = newNamesArray.filter(name => !names.includes(name));
                 
-                // استخدام قيم مرنة بناءً على مساحة الشاشة الحالية
-                const baseWidthVW = 60; 
-                const baseHeightVH = 20; 
-                
-                const newWidth = baseWidthVW * (widthPercentage / 100); 
-                const newHeight = baseHeightVH * (heightPercentage / 100);
-                
-                document.documentElement.style.setProperty('--name-display-width', `${newWidth}vw`);
-                document.documentElement.style.setProperty('--name-display-height', `${newHeight}vh`);
-                
-                widthValue.textContent = widthPercentage.toFixed(0);
-                heightValue.textContent = heightPercentage.toFixed(0);
-                
-                const wrapTextCheckbox = document.getElementById('wrapNameText');
-                if (wrapTextCheckbox.checked) {
-                    displayContainer.classList.add('wrap-text');
+                if (uniqueNewNames.length > 0) {
+                    names = names.concat(uniqueNewNames);
+                    updateNamesList();
+                    saveNameSettings();
+                    
+                    // إذا كان الاستيراد كبيراً، نظهر رسالة نجاح
+                    if (uniqueNewNames.length > 10) {
+                        showConfettiPopup('تمت الإضافة', `تم إضافة ${uniqueNewNames.length} اسم بنجاح.`, null, null, false, true);
+                    }
                 } else {
-                    displayContainer.classList.remove('wrap-text');
+                     playSound('error');
+                     showConfettiPopup('تنبيه', 'جميع الأسماء المدخلة موجودة بالفعل.', null, null, false, true);
                 }
             }
-            if (save) saveNameSettings(); // ** الحفظ بعد التحديث **
+        }
+
+        // دالة الاستيراد من ملف
+        function importNamesFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            const extension = file.name.split('.').pop().toLowerCase();
+
+            reader.onload = function(e) {
+                let content = e.target.result;
+                let newNames = [];
+
+                try {
+                    if (extension === 'xlsx' || extension === 'xls') {
+                        const data = new Uint8Array(content);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        // تحويل الورقة إلى JSON (مصفوفة من المصفوفات)
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                        // دمج جميع الخلايا في مصفوفة واحدة وتنظيفها
+                        newNames = jsonData.flat().map(n => String(n).trim()).filter(n => n.length > 0);
+                    } else {
+                        // معالجة الملفات النصية و CSV
+                        // تقسيم النص بناءً على الأسطر أو الفواصل
+                        newNames = content.split(/[\r\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+                    }
+
+                    addNames(newNames);
+                    
+                } catch (error) {
+                    console.error(error);
+                    playSound('error');
+                    showConfettiPopup('خطأ', 'حدث خطأ أثناء قراءة الملف. تأكد من الصيغة.', null, null, false, true);
+                }
+                
+                // إعادة تعيين المدخل للسماح باختيار نفس الملف مرة أخرى
+                input.value = '';
+            };
+
+            if (extension === 'xlsx' || extension === 'xls') {
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.readAsText(file);
+            }
         }
 
         // دالة لإضافة أسماء من المنطقة النصية
@@ -2512,32 +2747,42 @@
             const newNames = textarea.value.split('\n').map(name => name.trim()).filter(name => name.length > 0);
             
             if (newNames.length > 0) {
-                // فحص التكرار قبل الإضافة
-                const uniqueNewNames = newNames.filter(name => !names.includes(name));
-                if (uniqueNewNames.length > 0) {
-                    names = names.concat(uniqueNewNames);
-                    textarea.value = '';
-                    updateNamesList();
-                    saveNameSettings(); // ** الحفظ بعد الإضافة **
-                } else {
-                     playSound('error');
-                     showConfettiPopup('تنبيه', 'جميع الأسماء المدخلة موجودة بالفعل في القائمة.', null, null, false, true);
-                }
+                addNames(newNames);
+                textarea.value = '';
             }
         }
 
-        // دالة لتحديث قائمة الأسماء المعروضة
+        // دالة لتحديث قائمة الأسماء المعروضة (نسخة محسنة للأداء)
         function updateNamesList() {
             const container = document.getElementById('namesList');
             if (!container) return;
             container.innerHTML = '';
-            names.forEach((name, index) => {
+            
+            // تحسين الأداء: عرض أول 100 اسم فقط لتجنب تعليق المتصفح مع القوائم الطويلة
+            const displayLimit = 100;
+            const namesToShow = names.slice(0, displayLimit);
+            
+            namesToShow.forEach((name, index) => {
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center bg-white/50 rounded px-3 py-2'; 
                 div.innerHTML = `<span class="text-gray-900">${name}</span>
                                 <button onclick="removeNameFromList('${name}', false)" class="text-red-600 hover:text-red-800">✕</button>`;
                 container.appendChild(div);
             });
+
+            if (names.length > displayLimit) {
+                const moreDiv = document.createElement('div');
+                moreDiv.className = 'text-center text-white/70 text-sm py-2';
+                moreDiv.textContent = `... وهناك ${names.length - displayLimit} اسم آخر (مخفية للسرعة)`;
+                container.appendChild(moreDiv);
+            }
+            
+            if (names.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'text-center text-white/50 py-4';
+                emptyDiv.textContent = 'القائمة فارغة';
+                container.appendChild(emptyDiv);
+            }
         }
         
         // ** دالة الحذف الموحدة (تقبل الاسم مباشرة) **
@@ -2569,10 +2814,47 @@
                 names = [];
                 updateNamesList();
                 saveNameSettings(); // ** الحفظ بعد المسح **
-                document.getElementById('selectedName').textContent = 'لم يتم الاختيار بعد';
+                const nameElement = document.getElementById('selectedName');
+                nameElement.textContent = 'لم يتم الاختيار بعد';
+                adjustFontSize(nameElement); // ضبط الحجم عند إعادة التعيين
             });
         }
         
+        // دالة مساعدة لضبط حجم الخط ديناميكياً
+        function adjustFontSize(element) {
+            const length = element.textContent.length;
+            const isMobile = window.innerWidth <= 768;
+            let size;
+            
+            // التحقق من النص الافتراضي (تصغيره بشكل خاص)
+            if (element.textContent.includes('لم يتم الاختيار بعد') || element.textContent.includes('لم يتم اختيار بعد')) {
+                element.style.fontSize = isMobile ? '2rem' : '3rem';
+                return;
+            }
+            
+            if (isMobile) {
+                // للجوال: السماح بالالتفاف مع خط أكبر قليلاً
+                if (length <= 10) {
+                    size = 'min(15vw, 4rem)';
+                } else {
+                    size = 'min(10vw, 2.5rem)';
+                }
+            } else {
+                // للكمبيوتر: الحفاظ على السطر الواحد مع زيادة الحدود القصوى
+                if (length <= 6) {
+                    size = 'min(18vw, 8rem)'; // Increased from 15vw/6rem
+                } else if (length <= 12) {
+                    size = 'min(14vw, 5.5rem)'; // Increased from 12vw/4.5rem
+                } else if (length <= 20) {
+                    size = 'min(10vw, 3.5rem)'; // Increased from 8vw/3rem
+                } else {
+                    size = 'min(6vw, 2.5rem)'; // Increased from 5vw/2rem
+                }
+            }
+            
+            element.style.fontSize = size;
+        }
+
         // دالة لاختيار اسم عشوائي
         function selectRandomName() {
             if (nameInterval !== null) return; // منع التفعيل المزدوج
@@ -2596,54 +2878,178 @@
             const showPopup = document.getElementById('showNamePopup').checked;
             const showConfetti = document.getElementById('showNameConfetti').checked;
 
-            const duration = parseInt(document.getElementById('nameDuration').value) * 1000;
-            const intervalTime = 150;
-            let elapsedTime = 0;
+            let duration = parseInt(document.getElementById('nameDuration').value) * 1000;
             
-            // ** تم تعديل هذا الجزء ليتطابق مع نمط عد الأرقام **
+            // التحقق من خيار الوقت الديناميكي
+            const isDynamicDuration = document.getElementById('dynamicNameDuration') ? document.getElementById('dynamicNameDuration').checked : false;
+            if (isDynamicDuration) {
+                // وقت عشوائي بين 3 و 15 ثانية (3000 - 15000 ملي ثانية)
+                duration = Math.floor(Math.random() * (15000 - 3000 + 1)) + 3000;
+            }
+            const startTime = Date.now();
             
-            // إيقاف أي صوت عد سابق
+            // إيقاف أي صوت سابق
             stopNameTickSound();
             
-            // تشغيل صوت العد (نفس صوت الأرقام)
-            playSound('click'); // sound.click هو نفسه sound.number حالياً
+            // إعادة تعيين الكلاسات وتجهيز العنصر
+            nameElement.classList.remove('pop-name');
+            nameElement.classList.add('blur-text');
             
-            // ** حفظ Interval ID **
-            nameInterval = setInterval(() => {
+            const tick = () => {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // حساب التأخير بناءً على التقدم (تسارع سلبي - يبدأ سريعاً ويتباطأ)
+                // يبدأ بـ 50ms وينتهي بـ ~400ms
+                const currentDelay = 50 + (350 * Math.pow(progress, 3));
+                
+                // حساب سرعة الصوت (1.0 -> ~0.2)
+                let rate = 50 / currentDelay;
+                if (rate < 0.2) rate = 0.2;
+                
+                // تشغيل صوت التكة الرقمي المتزامن مع السرعة
+                playDigitalTick(rate);
+                
+                // تحديث الاسم
                 const randomName = names[Math.floor(Math.random() * names.length)];
                 nameElement.textContent = randomName;
+                adjustFontSize(nameElement); // ضبط حجم الخط
                 
-                elapsedTime += intervalTime;
-                
-                if (elapsedTime >= duration) {
-                    // ** إيقاف وحذف Interval ID **
-                    clearInterval(nameInterval);
+                if (progress < 1) {
+                    // استمرار الدوران
+                    nameInterval = setTimeout(tick, currentDelay);
+                } else {
+                    // الانتهاء
                     nameInterval = null;
                     
-                    // إيقاف صوت العد بعد انتهاء الدوران
-                    stopNameTickSound(); 
-                    
+                    // اختيار الاسم النهائي
                     const finalName = names[Math.floor(Math.random() * names.length)];
                     nameElement.textContent = finalName;
+                    adjustFontSize(nameElement); // ضبط حجم الخط للاسم النهائي
                     
+                    // إضافة للسجل
+                    addToHistory(finalName);
                     
-                    if (showConfetti) { /* تشغيل القصاصات */ }
+                    // تفعيل زر حذف الفائز
+                    const removeWinnerBtn = document.getElementById('removeWinnerBtn');
+                    if (removeWinnerBtn) {
+                        removeWinnerBtn.disabled = false;
+                        // تخزين الاسم الحالي في الزر للرجوع إليه
+                        removeWinnerBtn.dataset.currentWinner = finalName;
+                    }
+                    
+                    // إزالة تأثير الضبابية وإضافة تأثير الظهور
+                    nameElement.classList.remove('blur-text');
+                    
+                    // فرض إعادة الرسم (Reflow) لتفعيل الأنيميشن من جديد
+                    void nameElement.offsetWidth; 
+                    nameElement.classList.add('pop-name');
+                    
+                    // تشغيل صوت الفوز (Cheer)
+                    playSound('cheer');
 
                     // تحديد ما إذا كان سيتم عرض زر الحذف التلقائي أم زر الحذف اليدوي
                     const deleteCallback = autoRemove ? null : 'removeWinningName';
 
                     if (showPopup || showConfetti) {
-                        showConfettiPopup('الاسم الفائز', `${finalName}`, finalName, deleteCallback, showConfetti, showPopup);
+                        // تأخير قليل للسماح برؤية الاسم وتأثير الـ pop قبل ظهور النافذة المنبثقة
+                        setTimeout(() => {
+                            showConfettiPopup('الاسم الفائز', `${finalName}`, finalName, deleteCallback, showConfetti, showPopup);
+                        }, 600);
                     }
                     
-                    // إذا كان الإقصاء تلقائيًا، نحذف الاسم فورًا
+                    // إذا كان الإقصاء تلقائيًا، نحذف الاسم من القائمة الخلفية
                     if (autoRemove) {
                         removeNameFromList(finalName);
                     }
 
                     document.getElementById('selectNameButton').disabled = false;
                 }
-            }, intervalTime);
+            };
+            
+            // بدء الدورة الأولى
+            nameInterval = setTimeout(tick, 50);
+        }
+
+        // ----------------- دوال سجل الفائزين -----------------
+        
+        function addToHistory(name) {
+            const timestamp = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            winnersHistory.unshift({ name: name, time: timestamp }); // إضافة في البداية
+            
+            // الاحتفاظ بآخر 50 فائز فقط
+            if (winnersHistory.length > 50) {
+                winnersHistory.pop();
+            }
+            
+            saveNameSettings(); // حفظ السجل
+        }
+        
+        function removeCurrentWinner() {
+            const removeBtn = document.getElementById('removeWinnerBtn');
+            const winnerName = removeBtn.dataset.currentWinner;
+            
+            if (winnerName) {
+                // استخدام دالة الحذف الموجودة
+                const removed = removeNameFromList(winnerName, false);
+                if (removed) {
+                    removeBtn.disabled = true;
+                    removeBtn.dataset.currentWinner = '';
+                    // تغيير النص ليدل على الحذف
+                    removeBtn.innerHTML = '✅ تم الحذف';
+                    setTimeout(() => {
+                        removeBtn.innerHTML = '🗑️ حذف الفائز';
+                    }, 2000);
+                }
+            }
+        }
+        
+        function toggleHistoryModal() {
+            const modal = document.getElementById('historyModal');
+            if (modal) {
+                if (modal.classList.contains('visible')) {
+                    modal.classList.remove('visible');
+                } else {
+                    renderHistoryList();
+                    modal.classList.add('visible');
+                }
+            }
+        }
+        
+        function renderHistoryList() {
+            const listContainer = document.getElementById('historyList');
+            if (!listContainer) return;
+            
+            listContainer.innerHTML = '';
+            
+            if (winnersHistory.length === 0) {
+                listContainer.innerHTML = '<p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>';
+                return;
+            }
+            
+            winnersHistory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-white/20 p-2 rounded hover:bg-white/30 transition-colors';
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-white/60 text-sm font-mono">${index + 1}.</span>
+                        <span class="text-white font-bold">${item.name}</span>
+                    </div>
+                    <span class="text-white/50 text-xs bg-black/20 px-2 py-1 rounded">${item.time}</span>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+        
+        function clearHistory() {
+            if (winnersHistory.length === 0) return;
+            
+            showConfirmModal('هل أنت متأكد من مسح سجل الفائزين؟', () => {
+                winnersHistory = [];
+                saveNameSettings();
+                renderHistoryList();
+            });
         }
 
         // --- دوال قسم النرد ---
@@ -3079,6 +3485,9 @@
                  showConfettiPopup('تنبيه', 'جميع الأسماء المدخلة موجودة بالفعل أو غير صالحة.', null, null, false, true);
                  return;
             }
+
+            // حفظ في السجل الذكي
+            SmartSuggestions.add(uniqueNewNames);
             
             // إضافة الأسماء الفريدة
             const unorganizedArea = document.getElementById('unorganized');
@@ -3331,6 +3740,14 @@
         
         // تهيئة التطبيق عند التحميل (هنا يتم تحميل جميع الإعدادات لأول مرة)
         window.onload = function() {
+            // تهيئة السجل الذكي
+            if (typeof SmartSuggestions !== 'undefined') {
+                SmartSuggestions.init();
+                setupSmartSuggestions('namesTextarea');
+                setupSmartSuggestions('wheelOptionsTextarea');
+                setupSmartSuggestions('multipleNamesInput');
+            }
+
             // ** الخطوة الجديدة: ربط أحداث النقر بالقائمة الرئيسية بعد تحميل الدالة showSection **
             document.querySelectorAll('#main-menu-links a').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -3371,18 +3788,8 @@
             // ******************** مستمعات أحداث تغيير الحجم ********************
             
             // قرعة الأسماء (Name Display Size)
-            const nameWidthSlider = document.getElementById('nameWidthSlider');
-            const nameHeightSlider = document.getElementById('nameHeightSlider');
-            const wrapTextCheckbox = document.getElementById('wrapNameText');
             const autoRemoveNameCheckbox = document.getElementById('autoRemoveName'); // المستمع الجديد
 
-            if (nameWidthSlider && nameHeightSlider) {
-                nameWidthSlider.addEventListener('input', () => updateNameDisplaySize(true));
-                nameHeightSlider.addEventListener('input', () => updateNameDisplaySize(true));
-            }
-            if (wrapTextCheckbox) {
-                wrapTextCheckbox.addEventListener('change', () => updateNameDisplaySize(true));
-            }
             if (autoRemoveNameCheckbox) {
                 autoRemoveNameCheckbox.addEventListener('change', saveNameSettings);
             }
@@ -3408,12 +3815,37 @@
             loadDragAndDropState(); 
             
             // تهيئة واجهة المستخدم بناءً على الإعدادات المحملة
-            updateNameDisplaySize(false); 
+            // ضبط حجم الخط للنص الأولي
+            const nameElement = document.getElementById('selectedName');
+            if(nameElement) adjustFontSize(nameElement);
             
             // إضافة الحالة الأولية للسجل (القائمة الرئيسية)
             history.replaceState({ section: 'main-menu' }, '', '#main-menu');
             showSection('main-menu', false); // عرض القائمة الرئيسية دون إضافة حالة جديدة
         };
     </script>
+    <!-- History Modal -->
+    <div id="historyModal" class="options-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-white text-2xl font-bold">سجل الفائزين</h3>
+                <button onclick="toggleHistoryModal()" class="text-white/80 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="glass-card rounded-lg p-4 mb-4">
+                <div id="historyList" class="space-y-2 max-h-60 overflow-y-auto">
+                    <!-- History items will be here -->
+                    <p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>
+                </div>
+            </div>
+            
+            <button onclick="clearHistory()" class="w-full bg-red-500/30 text-white px-4 py-2 rounded-lg hover:bg-red-500/50 mb-2">مسح السجل</button>
+            <button onclick="toggleHistoryModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إغلاق</button>
+        </div>
+    </div>
 </body>
 </html>
