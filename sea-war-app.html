@@ -1426,6 +1426,19 @@
 
                 <div id="gameSettings" class="tab-content">
                     <div class="settings-section">
+                        <div class="settings-title">إعدادات اللعبة</div>
+                        <div class="form-group">
+                            <label class="form-label">عدد الفرق:</label>
+                            <div class="custom-select-container">
+                                <select id="numTeamsInput">
+                                    <option value="2">2 فرق</option>
+                                    <option value="3" selected>3 فرق</option>
+                                    <option value="4">4 فرق</option>
+                                    <option value="5">5 فرق</option>
+                                    <option value="6">6 فرق</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="settings-title">أبعاد الشبكة</div>
                         <div class="form-group">
                             <label class="form-label">عرض الشبكة:</label>
@@ -2068,8 +2081,14 @@
                 const colorsContainer = document.getElementById('teamColorsConfig');
                 namesContainer.innerHTML = '';
                 colorsContainer.innerHTML = '';
-                // Loop is now hardcoded to 3 teams
-                for (let i = 0; i < 3; i++) {
+                
+                // Ensure we have enough default teams
+                while (this.defaultTeams.length < numTeams) {
+                    const nextIndex = this.defaultTeams.length + 1;
+                    this.defaultTeams.push({ name: `الفريق ${nextIndex}`, color: '#ffffff' });
+                }
+
+                for (let i = 0; i < numTeams; i++) {
                     const teamData = this.defaultTeams[i] || { name: `الفريق ${i + 1}`, color: '#ffffff' };
                     namesContainer.innerHTML += `<div class="form-group"><label>الفريق ${i + 1}:</label><input type="text" class="form-input" id="teamName${i + 1}Input" value="${teamData.name}"></div>`;
                     colorsContainer.innerHTML += `<div class="form-group"><label>لون الفريق ${i + 1}:</label><input type="color" class="color-picker" id="teamColor${i + 1}Input" value="${teamData.color}"></div>`;
@@ -2077,6 +2096,12 @@
             }
 
             createTeams() {
+                // Ensure we have enough default teams
+                while (this.defaultTeams.length < this.numTeams) {
+                    const nextIndex = this.defaultTeams.length + 1;
+                    this.defaultTeams.push({ name: `الفريق ${nextIndex}`, color: '#ffffff' });
+                }
+                
                 const teamsToCreate = this.defaultTeams.slice(0, this.numTeams);
 
                 this.teams = teamsToCreate.map((team, index) => ({
@@ -2142,6 +2167,10 @@
             populateAdminPanel() {
                 document.getElementById('gridWidthInput').value = this.gridWidth;
                 document.getElementById('gridHeightInput').value = this.gridHeight;
+                const numTeamsSelect = document.getElementById('numTeamsInput');
+                if (numTeamsSelect) {
+                    numTeamsSelect.value = this.numTeams;
+                }
                 this.renderTeamSettingsInputs(this.numTeams);
             }
 
@@ -3424,13 +3453,20 @@
             game.gridWidth = parseInt(document.getElementById('gridWidthInput').value);
             game.gridHeight = parseInt(document.getElementById('gridHeightInput').value);
             
-            game.numTeams = 3; // Hardcoded to 3
+            const numTeamsSelect = document.getElementById('numTeamsInput');
+            if (numTeamsSelect) {
+                game.numTeams = parseInt(numTeamsSelect.value);
+            }
 
             // This is the crucial fix: Update the master list instead of replacing it.
             for (let i = 0; i < game.numTeams; i++) { 
                 const nameInput = document.getElementById(`teamName${i + 1}Input`);
                 const colorInput = document.getElementById(`teamColor${i + 1}Input`);
                 if (nameInput && colorInput) { 
+                     // Ensure team data exists
+                     if (!game.defaultTeams[i]) {
+                         game.defaultTeams.push({ name: `الفريق ${i + 1}`, color: '#ffffff' });
+                     }
                      game.defaultTeams[i].name = nameInput.value;
                      game.defaultTeams[i].color = colorInput.value;
                 }
