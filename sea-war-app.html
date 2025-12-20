@@ -10,28 +10,43 @@
     <style id="dynamic-styles"></style>
     <style>
         :root {
-            --primary-color: #00a8ff;
-            --secondary-color: #fbc531;
-            --background-start: #1e272e;
-            --background-end: #34495e;
-            --surface-color: #485460;
-            --hit-color: #e84118;
-            --miss-color: #95a5a6;
-            --sunk-color: #2f3640;
+            /* Deep Ocean Tactical Theme */
+            --primary-color: #00f2ff; /* Cyan Neon */
+            --secondary-color: #ffd700; /* Gold */
+            --accent-color: #ff0055; /* Alert Red */
+            --background-start: #02111b; /* Deep Dark Blue */
+            --background-end: #0c2d48; /* Navy */
+            --surface-color: rgba(255, 255, 255, 0.05); /* Glassy */
+            --hit-color: #ff3838;
+            --miss-color: #a4b0be;
+            --sunk-color: #2d3436;
             --font-family: 'Cairo', sans-serif;
-            --border-radius: 12px;
+            --border-radius: 16px;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         body {
             box-sizing: border-box;
             font-family: var(--font-family);
-            background-image: linear-gradient(to bottom right, var(--background-start), var(--background-end));
+            background: linear-gradient(135deg, #02111b 0%, #14283b 50%, #0c2d48 100%);
+            background-attachment: fixed; /* Parallax-like feel */
             margin: 0;
             padding: 20px;
-            color: white;
+            color: #ecf0f1;
             min-height: 100vh;
-            overflow-x: hidden; /* Prevent horizontal scroll */
-            overflow-y: auto; /* Allow vertical scroll */
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* Glassmorphism Common Class */
+        .glass-panel {
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--border-radius);
         }
 
         .game-container {
@@ -41,42 +56,57 @@
 
         .game-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
         }
 
         .game-title {
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 10px;
-            color: white;
-            text-shadow: 0 0 15px var(--secondary-color);
-            animation: fadeInDown 1s ease;
+            color: transparent;
+            background: linear-gradient(to right, #00f2ff, #00c6ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
 
         /* New Style for Copyright Notice */
         .copyright-notice {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.4); /* Faint white color */
-            margin-top: 30px; /* Added margin-top for spacing */
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 40px;
             text-align: center;
+            letter-spacing: 1px;
         }
 
         .game-status {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--border-radius);
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            padding: 15px 30px;
+            background: rgba(0, 242, 255, 0.1);
+            border-radius: 50px;
             display: inline-block;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
         }
 
         .admin-controls {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
             text-align: center;
             display: flex;
             justify-content: center;
@@ -218,158 +248,327 @@
 
         /* Neumorphic Button Style */
         .neumorphic-btn {
-            color: #e8e8e8;
-            padding: 0.7em 1.7em;
-            font-size: 16px;
-            border-radius: 0.5em;
-            background: #2a343a;
+            color: #ecf0f1;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
-            border: 1px solid #3c4a58;
-            transition: all 0.3s;
-            box-shadow: 6px 6px 12px #1c252c, -6px -6px 12px #3a4f60;
+            border: 2px solid rgba(255, 255, 255, 0.6); /* Clearer border */
+            transition: all 0.3s ease;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             font-family: var(--font-family);
+            backdrop-filter: blur(5px);
         }
         
         .neumorphic-btn svg {
-             width: 18px;
-            height: 18px;
+             width: 22px;
+            height: 22px;
             stroke: currentColor;
+            stroke-width: 2; /* Reduced to avoid clipping */
+            overflow: visible;
         }
 
+        .turn-switch-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            color: white;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: none; /* Hidden by default */
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            font-family: var(--font-family);
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        body.battle-phase .turn-switch-btn {
+            display: inline-flex;
+        }
+
+        .turn-switch-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+
+        .turn-switch-btn:active {
+            transform: translateY(0);
+        }
+
+        .turn-switch-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2;
+            overflow: visible;
+        }
+
+        .team-section.current-turn-highlight .turn-switch-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+            animation: pulse-green-btn 2s infinite;
+        }
+
+        @keyframes pulse-green-btn {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+
         .neumorphic-btn:hover {
-            border: 1px solid var(--primary-color);
+            background: rgba(0, 242, 255, 0.1);
+            border-color: var(--primary-color);
             color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .neumorphic-btn:active {
-            box-shadow: inset 4px 4px 12px #1c252c, inset -4px -4px 12px #3a4f60;
+            transform: translateY(1px);
         }
 
 
         .turn-control-panel {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .turn-tools-row {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 16px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 10px 18px;
+        }
+        .turn-tools-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .shots-segment {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .shots-pill {
+            min-width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #ecf0f1;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .shots-pill.active {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        .auto-advance-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #ecf0f1;
+            font-size: 0.8rem;
+        }
+        .auto-advance-toggle .switch {
+            width: 36px;
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.2);
+            position: relative;
+            transition: background 0.2s ease;
+        }
+        .auto-advance-toggle .thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            transition: transform 0.2s ease;
+        }
+        .auto-advance-toggle input:checked + .switch {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        .auto-advance-toggle input:checked + .switch .thumb {
+            transform: translateX(16px);
+        }
+
+        .panel-order-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.4);
+            background: rgba(0,0,0,0.35);
+            color: #ecf0f1;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+        .panel-order-btn:hover {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
         }
         .turn-control-title {
-            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             font-size: 1.3rem;
             font-weight: bold;
-            margin-bottom: 15px;
-            color: var(--secondary-color);
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
       
         .timer-display {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
             padding: 20px;
             text-align: center;
             border: 2px solid #27ae60;
             transition: all 0.3s ease;
-            min-width: 120px;
+            min-width: 140px;
+            box-shadow: 0 0 20px rgba(39, 174, 96, 0.2);
         }
         .timer-value {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: bold;
             color: #27ae60;
             margin-bottom: 5px;
             font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
         }
         .timer-label {
             font-size: 0.9rem;
             opacity: 0.8;
+            letter-spacing: 1px;
         }
         .timer-warning {
             animation: pulse 1s infinite;
             border-color: #f39c12 !important;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.2);
         }
-        .timer-warning .timer-value { color: #f39c12 !important; }
+        .timer-warning .timer-value { color: #f39c12 !important; text-shadow: 0 0 10px rgba(243, 156, 18, 0.5); }
         .timer-danger {
             animation: pulse 0.5s infinite;
             border-color: var(--hit-color) !important;
+            box-shadow: 0 0 20px rgba(255, 56, 56, 0.3);
         }
-        .timer-danger .timer-value { color: var(--hit-color) !important; }
+        .timer-danger .timer-value { color: var(--hit-color) !important; text-shadow: 0 0 10px rgba(255, 56, 56, 0.5); }
         .timer-expired {
             background: rgba(231, 76, 60, 0.3) !important;
             border-color: #c0392b !important;
         }
         .current-player-display {
-            background: rgba(0, 168, 255, 0.2);
-            border-radius: 10px;
+            background: rgba(0, 242, 255, 0.1);
+            border-radius: 15px;
             padding: 20px;
             text-align: center;
             color: white;
             flex-grow: 1;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
         }
         .current-player-name {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
             margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
-        .current-player-status { font-size: 0.9rem; opacity: 0.9; }
+        .current-player-status { font-size: 1rem; opacity: 0.9; }
         .turn-actions {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .turn-btn {
-            color: #e8e8e8;
-            border-radius: 0.5em;
-            background: #2a343a;
+            color: white;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            border: 1px solid #3c4a58;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s;
-            box-shadow: 6px 6px 12px #1c252c, -6px -6px 12px #3a4f60;
             font-weight: bold;
             font-family: var(--font-family);
             margin: 0;
+            padding: 10px 25px;
+            backdrop-filter: blur(5px);
         }
         .turn-btn:hover {
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
         }
         .turn-btn:active {
-            box-shadow: inset 4px 4px 12px #1c252c, inset -4px -4px 12px #3a4f60;
+            transform: translateY(1px);
         }
         .turn-btn.success {
-            background: #27ae60;
-            box-shadow: 6px 6px 12px #1a6e3a, -6px -6px 12px #34f086;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
         }
         .turn-btn.success:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-         .turn-btn.success:active {
-            box-shadow: inset 4px 4px 12px #1a6e3a, inset -4px -4px 12px #34f086;
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.5);
         }
         .turn-btn.danger {
-            background: var(--hit-color);
-            box-shadow: 6px 6px 12px #a02d10, -6px -6px 12px #ff5520;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
         }
         .turn-btn.danger:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-         .turn-btn.danger:active {
-             box-shadow: inset 4px 4px 12px #a02d10, inset -4px -4px 12px #ff5520;
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.5);
         }
         .turn-btn.warning {
-            background: #f39c12;
-            box-shadow: 6px 6px 12px #a96d0c, -6px -6px 12px #ffc918;
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: #000;
+            border: none;
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3);
         }
         .turn-btn.warning:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-         .turn-btn.warning:active {
-            box-shadow: inset 4px 4px 12px #a96d0c, inset -4px -4px 12px #ffc918;
+            box-shadow: 0 8px 20px rgba(241, 196, 15, 0.5);
         }
 
         .setting-group { margin-bottom: 15px; }
@@ -377,23 +576,28 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             text-align: center;
+            color: var(--secondary-color);
         }
         .setting-input {
-            width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            width: 70px; /* Reduced width */
+            margin: 0 auto; /* Center it */
+            padding: 8px 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.4);
+            color: var(--primary-color);
             font-size: 1rem;
             text-align: center;
             font-weight: bold;
+            transition: all 0.3s ease;
         }
         .setting-input:focus {
             outline: none;
-            background: rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.6);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
         }
 
         .turn-history {
@@ -403,25 +607,28 @@
             max-height: 200px;
             overflow-y: auto;
             margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .turn-history-item {
-            padding: 8px;
-            margin-bottom: 5px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            font-size: 0.8rem;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 3px solid var(--primary-color);
         }
         .auto-advance-indicator {
             display: inline-block;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #44bd32;
+            background: #2ecc71;
             margin-left: 10px;
             animation: blink 1s infinite;
+            box-shadow: 0 0 10px #2ecc71;
         }
 
         /* New Turn Control Panel Layout */
@@ -464,46 +671,7 @@
             min-height: 50px; /* Prevent layout shift */
         }
 
-        #toggleAdvancedSettingsBtn {
-            padding: 0.7em; /* Make it more square */
-            flex-shrink: 0; /* Prevent resizing */
-            transition: transform 0.4s ease-in-out;
-        }
-        #toggleAdvancedSettingsBtn.toggled {
-            transform: rotate(90deg);
-        }
 
-        .advanced-settings-panel {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            max-width: 0;
-            opacity: 0;
-            overflow: hidden;
-            padding: 0;
-            transition: max-width 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.5s ease-in-out;
-            white-space: nowrap; /* Prevent items from wrapping during animation */
-        }
-
-        .advanced-settings-panel.active {
-            max-width: 700px; /* A large value to accommodate all content */
-            opacity: 1;
-            padding: 10px 15px;
-        }
-
-        .turn-settings-compact {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end; /* Align children to bottom */
-            flex-grow: 1;
-            justify-content: center;
-        }
-        .turn-settings-compact .setting-group {
-            margin-bottom: 0;
-            /* Removed flex: 1 to stop inputs from stretching */
-        }
 
         .setting-input[type="number"] {
             width: 90px;
@@ -528,6 +696,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .scoreboard-title {
+            position: relative;
             text-align: center;
             font-size: 1.4rem;
             font-weight: bold;
@@ -580,57 +749,71 @@
              body.teams-3 .teams-container {
                 grid-template-columns: repeat(3, 1fr);
             }
+             body.compact-layout.teams-3 .teams-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
              body.teams-4 .teams-container {
                 grid-template-columns: repeat(2, 1fr);
             }
-             body.teams-5 .teams-container,
+             body.teams-5 .teams-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+             body.compact-layout.teams-5 .teams-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
              body.teams-6 .teams-container {
                 grid-template-columns: repeat(3, 1fr);
             }
         }
 
         .team-section {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
             border-radius: var(--border-radius);
             padding: 20px;
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 5px solid;
+            transition: all 0.3s ease;
+            border-left: 5px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .team-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            pointer-events: none;
         }
         .team-section:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         .team-section.current-turn-highlight {
-            box-shadow: 0 0 25px rgba(251, 197, 49, 0.6);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
             border-color: var(--secondary-color) !important;
+            background: rgba(255, 215, 0, 0.05);
         }
         .team-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .team-name { font-size: 1.3rem; font-weight: bold; }
-        .ships-status { font-size: 0.9rem; opacity: 0.8; }
-        .switch-turn-btn {
-            padding: 4px;
-            font-size: 0.7rem;
-            height: 28px;
-            width: 28px;
-            margin: 0 10px;
-            display: none; /* Hidden by default */
-        }
-        body.battle-phase .switch-turn-btn {
-            display: inline-flex;
-        }
-
+        .team-name { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
+        .ships-status { font-size: 0.9rem; opacity: 0.7; font-family: monospace; }
+        
+        /* .switch-turn-btn removed, replaced by .turn-indicator-circle */
 
         .abilities-container {
             display: none;
             justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-            padding-top: 15px;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         .team-section.current-turn-highlight .abilities-container {
@@ -645,8 +828,8 @@
         .grid-header {
             display: grid;
             grid-template-columns: 30px repeat(var(--grid-width, 7), 1fr);
-            gap: 2px;
-            margin-bottom: 5px;
+            gap: 4px;
+            margin-bottom: 8px;
             padding: 0 10px;
         }
         .grid-header-cell {
@@ -656,20 +839,22 @@
             justify-content: center;
             font-weight: bold;
             font-size: 0.9rem;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
         }
         .grid-with-labels {
             display: grid;
             grid-template-columns: 30px 1fr;
-            gap: 5px;
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 10px;
+            gap: 8px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .grid-labels {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
         }
         .grid-label {
             flex-grow: 1;
@@ -678,95 +863,137 @@
             justify-content: center;
             font-weight: bold;
             font-size: 0.9rem;
-            color: var(--secondary-color);
+            color: var(--primary-color);
+            text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(var(--grid-width, 7), 1fr);
-            gap: 3px;
+            gap: 4px;
         }
 
         .cell {
             aspect-ratio: 1;
-            background-image: url('https://i.postimg.cc/zvrFxWCn/image.png');
-            background-size: cover;
-            background-position: center;
-            border: none;
+            /* Optimized for performance: Solid color instead of complex gradient/shadows */
+            background: rgba(0, 100, 170, 0.4); 
+            border: 1px solid rgba(0, 191, 255, 0.25);
             cursor: pointer;
-            transition: all 0.2s ease;
+            /* Optimized transition */
+            transition: scale 0.2s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            border-radius: 5px;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
         }
         .cell:hover {
-            transform: scale(1.1);
-            box-shadow: inset 0 0 10px 2px rgba(0, 168, 255, 0.7);
+            scale: 1.05; /* Reduced scale slightly */
+            background: rgba(0, 140, 200, 0.6);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); /* Reduced shadow spread */
+            z-index: 10;
+            border-color: var(--primary-color);
         }
-        .cell.ship, .cell.mine { background: transparent; }
+        .cell.ship, .cell.mine { background: rgba(255, 255, 255, 0.05); }
+        
         .cell.hit { 
-            background: linear-gradient(135deg, #ff3838, #ff5722);
-            animation: hitPulse 0.5s ease;
+            background: transparent;
+            box-shadow: inset 0 0 20px var(--hit-color);
+            border-color: var(--hit-color);
+            animation: hitPulse 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
+        .cell.hit::after {
+            content: '💥';
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
         .cell.miss {
-            background-image: none;
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            background: transparent;
+            box-shadow: inset 0 0 15px var(--miss-color);
+            border-color: var(--miss-color);
+            animation: missRipple 0.6s ease;
         }
-        .cell.sunk { background: linear-gradient(135deg, #2d3436, #636e72); animation: sunkPulse 1s ease infinite; }
+        .cell.miss::after {
+            content: '';
+            width: 30%;
+            height: 30%;
+            background: var(--miss-color);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .cell.sunk { 
+            background: rgba(45, 52, 54, 0.8);
+            border-color: #000;
+            animation: sunkPulse 2s infinite;
+        }
         .cell.sinking-ship { animation: sinkingShip 1.5s ease forwards; }
         
-        .cell.radar-reveal.water { animation: radarPulseWater 1s infinite; }
-        .cell.radar-reveal.hit { animation: radarPulseHit 1s infinite; }
-        .cell.radar-reveal.hit { background-color: rgba(0, 255, 0, 0.4); }
+        .cell.radar-reveal.water { animation: radarPulseWater 1.5s infinite; background: rgba(0, 242, 255, 0.1); }
+        .cell.radar-reveal.hit { animation: radarPulseHit 1.5s infinite; background: rgba(255, 0, 0, 0.2); }
         .cell.radar-preview {
-            background-color: rgba(46, 204, 113, 0.4) !important;
-            box-shadow: inset 0 0 10px rgba(46, 204, 113, 0.8);
+            background-color: rgba(0, 242, 255, 0.2) !important;
+            box-shadow: 0 0 20px var(--primary-color);
+            border-color: var(--primary-color);
         }
 
-        .mine-image {
-            width: 80%;
-            height: 80%;
-            background-image: url('https://i.postimg.cc/y87gLKD3/image.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        /* Define Animations */
+        @keyframes hitPulse {
+            0% { scale: 1; }
+            50% { scale: 1.2; }
+            100% { scale: 1; }
+        }
+        @keyframes missRipple {
+            0% { background: rgba(255,255,255,0.5); }
+            100% { background: transparent; }
         }
 
-        .controls { text-align: center; margin-bottom: 20px; }
+        .controls { text-align: center; margin-bottom: 25px; }
         .btn {
-            background-image: linear-gradient(to right, var(--primary-color), #0097e6);
-            color: white;
+            background: linear-gradient(135deg, var(--primary-color), #0097e6);
+            color: #02111b;
             border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
+            padding: 12px 35px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 800;
             margin: 0 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(0, 168, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 168, 255, 0.4);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.5);
+            filter: brightness(1.1);
         }
         .btn:disabled {
-            opacity: 0.4;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
             filter: grayscale(1);
-            background-image: none;
-            background-color: var(--surface-color);
+            background: var(--surface-color);
+            color: #aaa;
+            box-shadow: none;
         }
 
         .ships-dock {
-            background: rgba(0, 0, 0, 0.2);
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-shadow);
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .dock-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--secondary-color); }
         .ships-container {
@@ -848,8 +1075,8 @@
         .draggable-ship.vertical .ship-part {
             transform: rotate(90deg);
         }
-        .cell.vertical-ship-part {
-            transform: rotate(90deg);
+        .cell.vertical-ship-part, .cell.shark.vertical-ship-part {
+            transform: rotate(90deg) !important;
         }
         .ship-part, .cell.ship, .cell.shark {
             background-size: contain;
@@ -877,6 +1104,13 @@
         .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('https://i.postimg.cc/sXTsfPT2/8.png'); }
         .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('https://i.postimg.cc/j5Mtq6ML/9.png'); }
         .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('https://i.postimg.cc/G2Xd3PXB/10.png'); }
+
+        .mine-image {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+        }
 
 
         .rotate-btn {
@@ -908,17 +1142,21 @@
             animation: fadeIn 0.3s ease;
         }
         .modal-content {
-            background-image: linear-gradient(to bottom right, var(--surface-color), var(--background-start));
+            background: rgba(2, 17, 27, 0.9);
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(2, 17, 27, 0.95));
             margin: 5% auto;
             padding: 30px;
-            border-radius: var(--border-radius);
+            border-radius: 15px;
             width: 90%;
             max-width: 800px;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            color: white;
-            animation: slideInUp 0.5s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
         .modal-header {
             display: flex;
@@ -988,16 +1226,70 @@
 
         .settings-section { margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px; }
         .settings-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: bold; color: #ccc; }
         .form-input {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 8px;
             background: rgba(0,0,0,0.2);
             color: white;
             font-size: 1rem;
+            text-align: right;
+            display: block;
+            box-sizing: border-box;
+        }
+        .form-input[type="number"] {
+            width: 100%;
+            text-align: center;
+        }
+        .team-settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .team-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .team-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .team-card-title {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: bold;
+        }
+        .team-color-indicator-large {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .team-colors-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 5px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         .form-input:focus { outline: none; border-color: var(--primary-color); }
         .color-picker { width: 50px; height: 40px; border: none; border-radius: 5px; cursor: pointer; }
@@ -1143,12 +1435,13 @@
         .select-selected {
             background-color: rgba(0,0,0,0.2);
             color: white;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             user-select: none;
             transition: all 0.3s ease;
+            text-align: right;
         }
         .select-selected:after {
             position: absolute;
@@ -1291,7 +1584,7 @@
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-        @keyframes hitPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
         @keyframes sunkPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         @keyframes sinkingShip {
             0% { transform: scale(1) rotate(0deg); opacity: 1; }
@@ -1323,6 +1616,286 @@
             .turn-controls { grid-template-columns: 1fr; }
             .turn-actions { flex-direction: column; align-items: center; }
         }
+
+        /* --- Visual Improvements --- */
+        /* Moving Ocean Background */
+        @keyframes oceanMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 200%; height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' viewBox='0 0 100 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.184 20c.357-.13.72-.264 1.088-.402l1.768-.661C33.64 15.347 39.647 14 50 14c10.271 0 15.362 1.222 24.629 4.928.955.383 1.869.74 2.75 1.072h6.225c-2.51-.73-5.139-1.691-8.233-2.928C65.888 12.327 60.562 10 50 10c-10.626 0-16.855 2.397-26.66 6.339-4.595 1.848-7.853 3.033-11.45 3.66L21.184 20zM0 20c1.67-.32 3.167-.796 4.463-1.408l.942-.45c.958-.458 1.933-.945 2.927-1.428C16.855 12.72 23.11 10 33.74 10c10.56 0 15.896 2.327 25.372 6.071C63.09 17.643 68.097 19 78.448 19c10.352 0 15.36-1.222 24.627-4.928.955-.383 1.87-.74 2.75-1.072h-6.225c-2.51.73-5.139 1.691-8.233 2.928C81.888 20.673 76.562 23 66 23c-10.626 0-16.855-2.397-26.66-6.339-4.595-1.848-7.853-3.033-11.45-3.66L21.184 10c-.357.13-.72.264-1.088.402l-1.768.661C8.74 14.003 2.733 15.35 0 15.35v4.65z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            animation: oceanMove 60s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Screen Shake */
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Radar Scan Overlay */
+        .grid-container { position: relative; overflow: hidden; }
+        .radar-scan-line {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: rgba(0, 242, 255, 0.8);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 1);
+            animation: scanDown 3s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .team-section.current-turn-highlight .radar-scan-line { opacity: 0.3; }
+
+        @keyframes scanDown {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        /* Control Center Styles */
+        .control-center-modal .modal-content {
+            max-width: 900px;
+            width: 95%;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden;
+            height: 80vh;
+            max-height: 700px;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .control-center-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .control-sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 0;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-sidebar h3 {
+            margin: 0 20px 20px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .sidebar-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            text-align: right;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-btn:hover, .sidebar-btn.active {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+        }
+
+        .control-main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .control-tab {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .control-tab.active {
+            display: block;
+        }
+
+        .control-footer {
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .control-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .control-section-title {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .team-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .team-color-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        /* Leaderboard Styles */
+        #finalScores {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px; /* For box-shadow visibility */
+        }
+
+        .leaderboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .leaderboard-card.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            transform: scale(1.02);
+            z-index: 10;
+        }
+
+        .leaderboard-card.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+            border-color: rgba(192, 192, 192, 0.5);
+        }
+
+        .leaderboard-card.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
+            border-color: rgba(205, 127, 50, 0.5);
+        }
+
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.3);
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+
+        .rank-1 .rank-badge { background: #FFD700; color: #000; box-shadow: 0 0 10px #FFD700; }
+        .rank-2 .rank-badge { background: #C0C0C0; color: #000; }
+        .rank-3 .rank-badge { background: #CD7F32; color: #000; }
+
+        .team-info-leaderboard {
+            flex: 1;
+            text-align: right;
+        }
+
+        .team-name-leaderboard {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .team-stats-leaderboard {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-item i { font-style: normal; }
+
+        .total-score-leaderboard {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1335,7 +1908,12 @@
         </div>
 
         <div class="admin-controls">
-            <!-- تمت إضافة زر "كيف تلعب" هنا -->
+            <!-- Control Center Button -->
+            <button class="neumorphic-btn" onclick="openAdminPanel()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                الإعدادات
+            </button>
+            <!-- How to Play Button -->
             <button class="neumorphic-btn" onclick="openHowToPlayModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 كيف تلعب؟
@@ -1343,7 +1921,10 @@
         </div>
 
         <div class="turn-control-panel" id="turnControlPanel" style="display: none;">
-            <div class="turn-control-title">⏱️ تحكم في الأدوار</div>
+            <div class="turn-control-title">
+                ⏱️ تحكم في الأدوار
+                <button type="button" class="panel-order-btn" onclick="setPanelsOrder('turnFirst')">⬆️ نقل للأعلى</button>
+            </div>
             <div class="main-turn-display">
                 <div class="current-player-display">
                     <div class="current-player-name" id="currentPlayerName">في انتظار بدء اللعبة</div>
@@ -1362,32 +1943,44 @@
                 <button class="turn-btn success" id="nextTurn" onclick="turnManager.nextTurn()">التالي ⏭️</button>
             </div>
 
-            <div class="secondary-controls-wrapper">
-                <div class="advanced-settings-panel" id="advancedSettingsPanel">
-                    <div class="turn-settings-compact">
-                        <div class="setting-group">
-                            <label class="setting-label">مدة الدور</label>
-                            <input type="number" class="setting-input" id="turnDuration" value="30" min="10" max="300">
-                        </div>
-                        <div class="setting-group">
-                            <label class="setting-label">الرميات</label>
-                            <input type="number" class="setting-input" id="shotsPerTurn" value="1" min="1" max="5">
-                        </div>
-                        <div class="setting-group">
-                            <label class="checkbox-container">تلقائي
-                                <input type="checkbox" class="custom-checkbox" id="autoAdvance" checked=""> 
-                                <span class="checkmark"></span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="turn-actions secondary-actions">
-                        <button class="neumorphic-btn warning" id="addTime" onclick="turnManager.addTime(15)">+15 ثانية</button>
-                        <button class="neumorphic-btn" id="toggleHistoryBtn" onclick="game.toggleHistory()"></button>
+            <div class="turn-actions-secondary turn-tools-row">
+                <div class="turn-tools-group">
+                    <button class="neumorphic-btn warning" id="addTime" onclick="turnManager.addTime(15)" style="padding: 6px 14px; font-size: 0.85rem;">+15 ث</button>
+                </div>
+                <div class="turn-tools-group">
+                    <span style="color: white; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">🎯 الرميات</span>
+                    <select id="quickShotsPerTurn" style="display:none;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <div class="shots-segment">
+                        <button type="button" class="shots-pill" data-shots="1">1</button>
+                        <button type="button" class="shots-pill" data-shots="2">2</button>
+                        <button type="button" class="shots-pill" data-shots="3">3</button>
+                        <button type="button" class="shots-pill" data-shots="4">4</button>
+                        <button type="button" class="shots-pill" data-shots="5">5</button>
                     </div>
                 </div>
-                <button class="neumorphic-btn" id="toggleAdvancedSettingsBtn" onclick="toggleAdvancedSettings()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                </button>
+                <div class="turn-tools-group">
+                    <div class="auto-advance-toggle">
+                        <span>🔁 نقل تلقائي</span>
+                        <label style="position: relative; display: inline-flex; align-items: center;">
+                            <input type="checkbox" id="autoAdvance" checked style="position:absolute; opacity:0; width:0; height:0;">
+                            <div class="switch">
+                                <div class="thumb"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="turn-tools-group">
+                    <button class="neumorphic-btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="resetSpecialAbilities()">✨ القدرات</button>
+                </div>
+                <div class="turn-tools-group">
+                    <button class="neumorphic-btn" id="toggleHistoryBtn" onclick="game.toggleHistory()" style="padding: 6px 12px; font-size: 0.8rem;">📋 السجل</button>
+                </div>
             </div>
 
             <div class="turn-history" id="turnHistory" style="display: none;">
@@ -1397,7 +1990,10 @@
         </div>
 
         <div class="scoreboard" id="scoreboard">
-            <div class="scoreboard-title">🏆 لوحة النقاط</div>
+            <div class="scoreboard-title">
+                🏆 لوحة النقاط
+                <button type="button" class="panel-order-btn" onclick="setPanelsOrder('scoreFirst')">⬆️ نقل للأعلى</button>
+            </div>
             <div class="scores-grid" id="scoresGrid"></div>
         </div>
 
@@ -1420,126 +2016,140 @@
         </div>
     </div>
 
-    <!-- Admin Panel Modal -->
-    <div id="adminModal" class="modal">
+    <!-- Unified Control Center Modal -->
+    <div id="controlCenterModal" class="modal control-center-modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">لوحة تحكم المقدم</h2>
-                <span class="close" onclick="closeAdminPanel()">&times;</span>
-            </div>
-             <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-button active" onclick="openTab(event, 'gameSettings')">إعدادات اللعبة</button>
-                    <button class="tab-button" onclick="openTab(event, 'teamSettings')">الفرق</button>
-                    <button class="tab-button" onclick="openTab(event, 'scoreSettings')">النقاط</button>
+            <div class="control-center-body">
+                <div class="control-sidebar">
+                    <h3>مركز التحكم</h3>
+                    <button class="sidebar-btn active" onclick="openControlTab('roundSettings')">
+                        <span>⚙️</span> إعدادات الجولة
+                    </button>
+                    <button class="sidebar-btn" onclick="openControlTab('teamNames')">
+                        <span>📝</span> أسماء الفرق
+                    </button>
+                    <button class="sidebar-btn" onclick="openControlTab('advancedRules')">
+                        <span>⚖️</span> القوانين والنقاط
+                    </button>
                 </div>
-
-                <div id="gameSettings" class="tab-content">
-                    <div class="settings-section">
-                        <div class="settings-title">إعدادات اللعبة</div>
-                        <div class="form-group">
-                            <label class="form-label">عدد الفرق:</label>
-                            <div class="custom-select-container">
-                                <select id="numTeamsInput">
-                                    <option value="2">2 فرق</option>
-                                    <option value="3" selected>3 فرق</option>
-                                    <option value="4">4 فرق</option>
-                                    <option value="5">5 فرق</option>
-                                    <option value="6">6 فرق</option>
-                                </select>
+                
+                <div class="control-main">
+                    <!-- Round Settings -->
+                    <div id="roundSettings" class="control-tab active">
+                        <div class="control-section">
+                            <div class="control-section-title">إعدادات أساسية</div>
+                            <div class="control-grid">
+                                <div class="form-group">
+                                    <label class="form-label">عدد الفرق</label>
+                                    <div class="custom-select-container">
+                                        <select id="newNumTeamsInput" class="form-input">
+                                            <option value="3" selected>3 فرق</option>
+                                            <option value="2">2 فرق</option>
+                                            <option value="4">4 فرق</option>
+                                            <option value="5">5 فرق</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">حجم الشبكة (طول × عرض)</label>
+                                    <div class="custom-select-container">
+                                        <select id="newGridSize" class="form-input">
+                                            <option value="6">6 × 6</option>
+                                            <option value="7">7 × 7</option>
+                                            <option value="8">8 × 8</option>
+                                            <option value="9" selected>9 × 9</option>
+                                            <option value="10">10 × 10</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">وقت الجولة (ثانية)</label>
+                                    <input type="number" id="newTurnDuration" class="form-input" value="30" min="10" max="300">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">الرميات في الدور</label>
+                                    <input type="number" id="newShotsPerTurn" class="form-input" value="1" min="1" max="5">
+                                </div>
+                            </div>
+                            
+                            <div class="control-section-title" style="margin-top: 25px;">خيارات اللعب</div>
+                            <div class="control-grid">
+                                <div class="form-group" style="grid-column: 1 / -1; display: flex; justify-content: center; gap: 30px; margin-top: 5px;">
+                                    <label class="checkbox-container">2 فرق/سطر
+                                        <input type="checkbox" class="custom-checkbox" id="compactLayoutToggle"> 
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <div class="settings-title">أبعاد الشبكة</div>
-                        <div class="form-group">
-                            <label class="form-label">عرض الشبكة:</label>
-                            <input type="number" class="form-input" id="gridWidthInput" value="9" min="5" max="15">
+
+                        <div class="control-section">
+                            <div class="control-section-title">أدوات التحكم</div>
+                            <div class="control-grid">
+                                <button class="btn" onclick="game.resetGame(true)">🚀 لعبة جديدة</button>
+                                <button class="btn" onclick="game.resetPlacements()">🔄 إعادة التوزيع</button>
+                                <button class="btn" onclick="game.saveGame()">💾 حفظ اللعبة</button>
+                                <button class="btn" onclick="game.loadGame()">📂 استرجاع</button>
+                                <button class="btn" onclick="game.undoMove()">↩️ تراجع</button>
+                                <button class="btn" onclick="game.endGameConfirm()">🏁 إنهاء اللعبة</button>
+                                <button id="settingsSoundBtn" class="btn" onclick="soundManager.toggleMute()">🔊 كتم/تشغيل الصوت</button>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">ارتفاع الشبكة:</label>
-                            <input type="number" class="form-input" id="gridHeightInput" value="9" min="5" max="15">
+                    </div>
+
+                    <!-- Team Names -->
+                    <div id="teamNames" class="control-tab">
+                         <div class="control-section">
+                            <div class="control-section-title">تخصيص الفرق</div>
+                            <div id="newTeamNamesConfig">
+                                <!-- Will be populated by JS -->
+                            </div>
+                         </div>
+                    </div>
+
+                    <!-- Advanced Rules -->
+                    <div id="advancedRules" class="control-tab">
+                        <div class="control-section">
+                            <div class="control-section-title">نظام النقاط</div>
+                            <div class="control-grid">
+                                <div class="form-group">
+                                    <label class="form-label">نقاط الإصابة</label>
+                                    <input type="number" id="newHitPoints" class="form-input" value="10">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">نقاط الإغراق</label>
+                                    <input type="number" id="newSinkPoints" class="form-input" value="50">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">عقوبة اللغم</label>
+                                    <input type="number" id="newMinePenalty" class="form-input" value="50">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">مكافأة الدقة (%)</label>
+                                    <input type="number" id="newAccuracyBonus" class="form-input" value="20">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-section">
+                            <div class="control-section-title">خيارات إضافية</div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                                <label class="checkbox-container">تفعيل الرادار
+                                    <input type="checkbox" checked id="radarEnabled">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="checkbox-container">تفعيل الضربة المزدوجة
+                                    <input type="checkbox" checked id="planeEnabled">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div id="teamSettings" class="tab-content">
-                    <div class="settings-section">
-                        <div class="settings-title">أسماء وألوان الفرق</div>
-                        <div id="teamNamesConfig" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
-                        <div id="teamColorsConfig" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;"></div>
-                    </div>
-                </div>
-
-                <div id="scoreSettings" class="tab-content">
-                    <div class="settings-section">
-                        <div class="settings-title">إعدادات النقاط</div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                            <div class="form-group">
-                                <label class="form-label">نقاط الإصابة:</label>
-                                <input type="number" class="form-input" id="hitPoints" value="10" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">نقاط إغراق السفينة:</label>
-                                <input type="number" class="form-input" id="sinkPoints" value="50" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">عقوبة اللغم:</label>
-                                <input type="number" class="form-input" id="minePenalty" value="50" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">مكافأة الدقة (%):</label>
-                                <input type="number" class="form-input" id="accuracyBonus" value="20" min="0" max="100">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">عقوبة الأخطاء المتتالية:</label>
-                                <input type="number" class="form-input" id="missPenalty" value="5" min="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" onclick="applySettings()">✅ تطبيق وإعادة تشغيل</button>
-                <button class="btn" onclick="resetToDefaults()">🔄 إعادة للافتراضي</button>
-            </div>
-        </div>
-    </div>
-    
-     <!-- Presenter Tools Modal -->
-    <div id="presenterToolsModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h2 class="modal-title">أدوات المقدم</h2>
-                <span class="close" onclick="closePresenterTools()">&times;</span>
-            </div>
-            <div class="presenter-tools-grid">
-                <div class="tool-item">
-                    <button class="btn" onclick="game.saveGame()">حفظ</button>
-                    <p class="tool-description">حفظ الحالة الحالية للعبة لاستئنافها لاحقاً.</p>
-                </div>
-                <div class="tool-item">
-                    <button class="btn" onclick="game.loadGame()">تحميل</button>
-                    <p class="tool-description">تحميل آخر لعبة تم حفظها.</p>
-                </div>
-                <div class="tool-item">
-                    <button class="btn" onclick="game.resetPlacements()">إعادة التوزيع</button>
-                    <p class="tool-description">العودة إلى مرحلة توزيع السفن مع الاحتفاظ بالنقاط الحالية.</p>
-                </div>
-                <div class="tool-item">
-                    <button class="btn" onclick="game.undoMove()">تراجع</button>
-                    <p class="tool-description">التراجع عن آخر حركة تم لعبها في مرحلة المعركة.</p>
-                </div>
-                <div class="tool-item">
-                    <button class="btn" onclick="game.endGameConfirm()">إنهاء اللعبة</button>
-                    <p class="tool-description">إنهاء اللعبة الحالية وكشف جميع أماكن السفن والفخاخ.</p>
-                </div>
-                <div class="tool-item">
-                    <button class="btn" onclick="game.resetGame(true)">إعادة اللعبة</button>
-                    <p class="tool-description">بدء لعبة جديدة من البداية ومسح جميع البيانات الحالية.</p>
-                </div>
-                <div class="tool-item">
-                    <button id="soundBtn" class="btn" onclick="soundManager.toggleMute()">كتم الصوت</button>
-                    <p class="tool-description">كتم أو تشغيل المؤثرات الصوتية للعبة.</p>
-                </div>
+            
+            <div class="control-footer">
+                <button class="btn btn-no" onclick="closeControlCenter()">إلغاء</button>
+                <button class="btn btn-yes" onclick="applyControlSettings()">✅ حفظ وتطبيق</button>
             </div>
         </div>
     </div>
@@ -1602,7 +2212,7 @@
                 <p>اضغط على أي مربع في شبكة الخصم لإطلاق قذيفة.</p>
                 <h3>النتائج:</h3>
                 <ul>
-                    <li><span style="color: var(--blue-color);">أزرق (خطأ):</span> قذيفتك سقطت في الماء.</li>
+                    <li><span style="color: var(--miss-color);">رمادي (خطأ):</span> قذيفتك سقطت في الماء.</li>
                     <li><span style="color: var(--hit-color);">أحمر (إصابة):</span> أحسنت! لقد أصبت سفينة.</li>
                     <li><span style="color: var(--miss-color);">رمادي "ظهور السفينة" (إغراق):</span> ممتاز! لقد دمرت السفينة بالكامل.</li>
                 </ul>
@@ -1642,23 +2252,26 @@
     <script>
         // --- SVG Icons ---
         const icons = {
-            settings: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`,
-            reset: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`,
-            scoreboard: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
-            timer: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`,
-            soundOn: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`,
-            soundOff: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
-            radar: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>`,
-            doubleShot: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4 4V8"/></svg>`,
-            save: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`,
-            load: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>`,
-            undo: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>`,
-            resetPlacements: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7L21 16"/>`,
-            endGame: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>`,
-            target: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
-            history: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18M3 10h18M3 16h18"/></svg>`,
-            tools: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`
+            settings: `<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>`,
+            reset: `<polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>`,
+            scoreboard: `<line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>`,
+            timer: `<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>`,
+            soundOn: `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>`,
+            soundOff: `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>`,
+            radar: `<circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>`,
+            doubleShot: `<circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4 4V8"/>`,
+            save: `<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>`,
+            load: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>`,
+            undo: `<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>`,
+            resetPlacements: `<path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7L21 16"/>`,
+            endGame: `<path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>`,
+            target: `<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>`,
+            history: `<path d="M3 4h18M3 10h18M3 16h18"/>`,
+            tools: `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>`
         };
+
+        const BATTLESHIP_SETTINGS_KEY = 'battleshipControlSettings';
+
 
         // --- Toast Notification ---
         function showToast(message, type = 'info') {
@@ -1683,12 +2296,23 @@
                 this.isMuted = false;
             }
 
+            updateButtonUI() {
+                const soundBtn = document.getElementById('soundBtn');
+                if (soundBtn) {
+                    const iconKey = this.isMuted ? 'soundOff' : 'soundOn';
+                    const label = this.isMuted ? 'تشغيل الصوت' : 'كتم الصوت';
+                    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconKey] || ''}</svg>`;
+                    soundBtn.innerHTML = `${iconSvg} ${label}`;
+                }
+                const settingsSoundBtn = document.getElementById('settingsSoundBtn');
+                if (settingsSoundBtn) {
+                    settingsSoundBtn.textContent = this.isMuted ? 'تشغيل الصوت' : 'كتم الصوت';
+                }
+            }
+
             toggleMute() {
                 this.isMuted = !this.isMuted;
-                const soundBtn = document.getElementById('soundBtn');
-                 if (soundBtn) {
-                    soundBtn.textContent = this.isMuted ? 'تشغيل الصوت' : 'كتم الصوت';
-                }
+                this.updateButtonUI();
                 return this.isMuted;
             }
 
@@ -1810,6 +2434,7 @@
         class TurnManager {
             constructor() {
                 this.timeLeft = 0;
+                this.duration = 30;
                 this.timerInterval = null;
                 this.isRunning = false;
                 this.isPaused = false;
@@ -1825,9 +2450,14 @@
             }
 
             startTimer() {
-                const duration = parseInt(document.getElementById('turnDuration').value);
-                if (this.isPaused) { this.isPaused = false; }
-                else { this.timeLeft = duration; }
+                const duration = this.duration;
+                if (this.isPaused) { 
+                    this.isPaused = false; 
+                } else { 
+                    if (this.timeLeft <= 0) {
+                        this.timeLeft = duration;
+                    }
+                }
                 this.isRunning = true;
                 this.updateTimerDisplay();
                 this.timerInterval = setInterval(() => {
@@ -1934,7 +2564,7 @@
                 if (game.battlePhase && !game.gameOver) {
                     const team = game.teams[game.currentTurn];
                     const aliveShips = team.ships.filter(s => !s.sunk).length;
-                    const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                    const shotsPerTurn = game.shotsPerTurn;
                     playerStatus.textContent = `النقاط: ${team.score.total} | السفن: ${aliveShips} | الرميات: ${shotsPerTurn - game.shotsMadeThisTurn}`;
                     playerName.textContent = team.name;
                 } else if (game.placementPhase) {
@@ -1993,10 +2623,72 @@
                     { name: 'باخرة', size: 2, count: 2 },
                     { name: 'قارب', size: 1, count: 2 }
                 ];
+                this.mineCount = 1;
+                this.sharkCount = 1;
                 this.scoring = { hitPoints: 10, sinkPoints: 50, minePenalty: 50, accuracyBonus: 20, missPenalty: 5 };
                 
+                // Initialize ability flags if not already set (for future proofing)
+                this.radarEnabled = true;
+                this.doubleShotEnabled = true;
+
                 this.moveHistory = [];
+                this.loadPersistentSettings();
                 this.init();
+            }
+
+            loadPersistentSettings() {
+                try {
+                    const raw = localStorage.getItem(BATTLESHIP_SETTINGS_KEY);
+                    if (!raw) return;
+                    const settings = JSON.parse(raw);
+                    if (!settings || typeof settings !== 'object') return;
+
+                    const storedGrid = parseInt(settings.gridSize);
+                    if (!isNaN(storedGrid) && storedGrid >= 6 && storedGrid <= 14) {
+                        this.gridWidth = storedGrid;
+                        this.gridHeight = storedGrid;
+                    }
+
+                    const storedTeams = parseInt(settings.numTeams);
+                    if (!isNaN(storedTeams) && storedTeams >= 2 && storedTeams <= 5) {
+                        this.numTeams = storedTeams;
+                    }
+
+                    if (settings.scoring && typeof settings.scoring === 'object') {
+                        const s = settings.scoring;
+                        this.scoring = {
+                            hitPoints: typeof s.hitPoints === 'number' ? s.hitPoints : this.scoring.hitPoints,
+                            sinkPoints: typeof s.sinkPoints === 'number' ? s.sinkPoints : this.scoring.sinkPoints,
+                            minePenalty: typeof s.minePenalty === 'number' ? s.minePenalty : this.scoring.minePenalty,
+                            accuracyBonus: typeof s.accuracyBonus === 'number' ? s.accuracyBonus : this.scoring.accuracyBonus,
+                            missPenalty: this.scoring.missPenalty
+                        };
+                    }
+
+                    if (typeof settings.radarEnabled === 'boolean') {
+                        this.radarEnabled = settings.radarEnabled;
+                    }
+                    if (typeof settings.doubleShotEnabled === 'boolean') {
+                        this.doubleShotEnabled = settings.doubleShotEnabled;
+                    }
+
+                    if (typeof settings.shotsPerTurn === 'number' && settings.shotsPerTurn >= 1) {
+                        this.shotsPerTurn = settings.shotsPerTurn;
+                    }
+
+                    if (Array.isArray(settings.defaultTeams)) {
+                        for (let i = 0; i < settings.defaultTeams.length && i < this.defaultTeams.length; i++) {
+                            const storedTeam = settings.defaultTeams[i];
+                            if (!storedTeam) continue;
+                            if (typeof storedTeam.name === 'string') {
+                                this.defaultTeams[i].name = storedTeam.name;
+                            }
+                            if (typeof storedTeam.color === 'string') {
+                                this.defaultTeams[i].color = storedTeam.color;
+                            }
+                        }
+                    }
+                } catch (e) {}
             }
 
             init() {
@@ -2014,9 +2706,10 @@
                 this.moveHistory = [];
                 this.teamToSkip = null;
                 this.shipCountsLocked = false;
-                this.shotsPerTurn = 1;
+                this.shotsPerTurn = this.shotsPerTurn || 1;
                 this.shotsMadeThisTurn = 0;
                 this.historyVisible = false;
+                this.turnControlVisible = false;
 
                 document.documentElement.style.setProperty('--grid-width', this.gridWidth);
                 document.body.classList.remove('battle-phase');
@@ -2055,17 +2748,31 @@
 
             renderAdminControls() {
                 const container = document.querySelector('.admin-controls');
-                // ندرج الزر الجديد مع الأزرار الموجودة
                 container.innerHTML = `
                     <button class="neumorphic-btn" onclick="openHowToPlayModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         كيف تلعب؟
                     </button>
-                    <button class="neumorphic-btn" onclick="openAdminPanel()">${this.getIcon('settings')} لوحة التحكم</button>
-                    <button class="neumorphic-btn" onclick="openPresenterTools()">${this.getIcon('tools')} أدوات المقدم</button>
-                    <button class="neumorphic-btn" onclick="toggleScoreboard()">${this.getIcon('scoreboard')} عرض النقاط</button>
-                    <button class="neumorphic-btn" onclick="toggleTurnControl()">${this.getIcon('timer')} عرض الأدوار</button>
+                    <button class="neumorphic-btn" onclick="openAdminPanel()">${this.getIcon('settings')} مركز التحكم</button>
+                    <button id="scoreboardToggleBtn" class="neumorphic-btn" onclick="toggleScoreboard()">${this.getIcon('scoreboard')} عرض النقاط</button>
+                    <button id="turnToggleBtn" class="neumorphic-btn" onclick="toggleTurnControl()">${this.getIcon('timer')} عرض الأدوار</button>
+                    <button id="soundBtn" class="neumorphic-btn" onclick="soundManager.toggleMute()">${this.getIcon('soundOn')} كتم الصوت</button>
+                    <button class="neumorphic-btn" onclick="game.resetGame(true)">🔄 إعادة اللعبة</button>
+                    <button class="neumorphic-btn" onclick="game.endGameConfirm()">🏳️ إنهاء اللعبة</button>
                 `;
+                if (window.soundManager) {
+                    soundManager.updateButtonUI();
+                }
+                const scoreboardBtn = document.getElementById('scoreboardToggleBtn');
+                if (scoreboardBtn) {
+                    const label = this.scoreboardVisible ? 'إخفاء النقاط' : 'عرض النقاط';
+                    scoreboardBtn.innerHTML = `${this.getIcon('scoreboard')} ${label}`;
+                }
+                const turnBtn = document.getElementById('turnToggleBtn');
+                if (turnBtn) {
+                    const label = this.turnControlVisible ? 'إخفاء الأدوار' : 'عرض الأدوار';
+                    turnBtn.innerHTML = `${this.getIcon('timer')} ${label}`;
+                }
             }
             
             getIcon(name) {
@@ -2087,10 +2794,11 @@
             }
 
             renderTeamSettingsInputs(numTeams) {
-                const namesContainer = document.getElementById('teamNamesConfig');
-                const colorsContainer = document.getElementById('teamColorsConfig');
-                namesContainer.innerHTML = '';
-                colorsContainer.innerHTML = '';
+                const container = document.getElementById('newTeamNamesConfig');
+                if (!container) return; // Guard clause if modal not present
+                
+                container.className = 'team-settings-grid'; // Ensure grid layout
+                container.innerHTML = '';
                 
                 // Ensure we have enough default teams
                 while (this.defaultTeams.length < numTeams) {
@@ -2098,10 +2806,52 @@
                     this.defaultTeams.push({ name: `الفريق ${nextIndex}`, color: '#ffffff' });
                 }
 
+                const presets = [
+                    { c: '#f1c40f', n: 'أصفر' },
+                    { c: '#e74c3c', n: 'أحمر' },
+                    { c: '#3498db', n: 'أزرق' },
+                    { c: '#2ecc71', n: 'أخضر' },
+                    { c: '#9b59b6', n: 'بنفسجي' },
+                    { c: '#e67e22', n: 'برتقالي' }
+                ];
+
                 for (let i = 0; i < numTeams; i++) {
                     const teamData = this.defaultTeams[i] || { name: `الفريق ${i + 1}`, color: '#ffffff' };
-                    namesContainer.innerHTML += `<div class="form-group"><label>الفريق ${i + 1}:</label><input type="text" class="form-input" id="teamName${i + 1}Input" value="${teamData.name}"></div>`;
-                    colorsContainer.innerHTML += `<div class="form-group"><label>لون الفريق ${i + 1}:</label><input type="color" class="color-picker" id="teamColor${i + 1}Input" value="${teamData.color}"></div>`;
+                    const inputId = `teamColor${i + 1}Input`;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'team-card';
+                    
+                    let html = `
+                        <div class="team-card-header">
+                            <span class="team-card-title">الفريق ${i + 1}</span>
+                            <div class="team-color-indicator-large" style="background-color: ${teamData.color}" id="indicator${i}"></div>
+                        </div>
+                        
+                        <div>
+                            <input type="text" class="form-input" id="teamName${i + 1}Input" value="${teamData.name}" placeholder="اسم الفريق">
+                        </div>
+                        
+                        <div class="team-colors-row">
+                    `;
+                    
+                    // Presets
+                    presets.forEach(p => {
+                        html += `<div title="${p.n}" onclick="document.getElementById('${inputId}').value='${p.c}'; document.getElementById('indicator${i}').style.backgroundColor='${p.c}';" 
+                            style="background:${p.c}; width:20px; height:20px; border-radius:50%; cursor:pointer; border:1px solid rgba(255,255,255,0.3); transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>`;
+                    });
+                    
+                    // Custom Color
+                    html += `<div style="position:relative; width:20px; height:20px; border-radius:50%; overflow:hidden; border:1px solid rgba(255,255,255,0.8); cursor:pointer;" title="لون مخصص">
+                        <input type="color" id="${inputId}" value="${teamData.color}" 
+                            onchange="document.getElementById('indicator${i}').style.backgroundColor=this.value"
+                            style="position:absolute; top:-50%; left:-50%; width:200%; height:200%; padding:0; border:none; cursor:pointer;">
+                    </div>`;
+                    
+                    html += `</div>`;
+                    card.innerHTML = html;
+                    container.appendChild(card);
                 }
             }
 
@@ -2118,8 +2868,8 @@
                     id: index + 1,
                     ...team,
                     ships: [],
-                    mine: null,
-                    shark: { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' },
+                    mines: [],
+                    sharks: [],
                     grid: Array(this.gridWidth * this.gridHeight).fill(0),
                     hits: Array(this.gridWidth * this.gridHeight).fill(0),
                     score: { total: 0, hits: 0, sinks: 0, misses: 0, accuracy: 0, consecutiveMisses: 0 },
@@ -2128,6 +2878,21 @@
                         canUseDoubleShot: true
                     }
                 }));
+                
+                // Unlock ship counts for the first team of a new game
+                this.shipCountsLocked = false;
+
+                // Safety check: ensure we have at least 2 teams if numTeams >= 2
+                if (this.numTeams >= 2 && this.teams.length < 2) {
+                     console.error(`Critical Error: Expected ${this.numTeams} teams, but got ${this.teams.length}. Forcing recreation.`);
+                     // Force basic teams
+                     this.teams = [
+                         { id: 1, name: 'الفريق 1', color: '#ff0000', ships: [], mines: [], sharks: [], grid: Array(this.gridWidth*this.gridHeight).fill(0), hits: Array(this.gridWidth*this.gridHeight).fill(0), score: {total:0, hits:0, sinks:0, misses:0, accuracy:0, consecutiveMisses:0}, abilities: {canUseRadar:true, canUseDoubleShot:true} },
+                         { id: 2, name: 'الفريق 2', color: '#0000ff', ships: [], mines: [], sharks: [], grid: Array(this.gridWidth*this.gridHeight).fill(0), hits: Array(this.gridWidth*this.gridHeight).fill(0), score: {total:0, hits:0, sinks:0, misses:0, accuracy:0, consecutiveMisses:0}, abilities: {canUseRadar:true, canUseDoubleShot:true} }
+                     ];
+                     this.numTeams = 2;
+                }
+
                 this.updateTeamLayout();
             }
 
@@ -2150,10 +2915,22 @@
                 const gridLabels = Array.from({ length: this.gridHeight }, (_, i) => alphabet[i] || '').map(label => `<div class="grid-label">${label}</div>`).join('');
                 const gridHeaderCells = Array.from({ length: this.gridWidth }, (_, i) => `<div class="grid-header-cell">${i + 1}</div>`).join('');
 
+                const radarBtn = this.radarEnabled !== false ? `
+                     <button id="radarBtn${team.id}" class="ability-btn radar" onclick="game.activateRadar()">
+                        <span class="shadow"></span><span class="edge"></span>
+                        <span class="front">${this.getIcon('radar')} رادار</span>
+                     </button>` : '';
+
+                const doubleShotBtn = this.doubleShotEnabled !== false ? `
+                     <button id="doubleShotBtn${team.id}" class="ability-btn double-shot" onclick="game.activateDoubleShot()">
+                        <span class="shadow"></span><span class="edge"></span>
+                        <span class="front">${this.getIcon('doubleShot')} ضربة مزدوجة</span>
+                     </button>` : '';
+
                 teamSection.innerHTML = `
                     <div class="team-header">
                         <div class="team-name" id="teamName${team.id}">${team.name}</div>
-                         <button class="icon-btn switch-turn-btn" title="انقل الدور لهذا الفريق" onclick="game.switchToTeam(${team.id})">${this.getIcon('target')}</button>
+                         <button class="turn-switch-btn" title="انقل الدور لهذا الفريق" onclick="game.switchToTeam(${team.id})">انتقال</button>
                         <div class="ships-status" id="team${team.id}Status">0 سفن متبقية</div>
                     </div>
                     <div class="grid-container">
@@ -2161,27 +2938,15 @@
                         <div class="grid-with-labels"><div class="grid-labels">${gridLabels}</div><div class="grid" id="grid${team.id}"></div></div>
                     </div>
                     <div class="abilities-container" id="abilities${team.id}">
-                         <button id="radarBtn${team.id}" class="ability-btn radar" onclick="game.activateRadar()">
-                            <span class="shadow"></span><span class="edge"></span>
-                            <span class="front">${this.getIcon('radar')} رادار</span>
-                         </button>
-                         <button id="doubleShotBtn${team.id}" class="ability-btn double-shot" onclick="game.activateDoubleShot()">
-                            <span class="shadow"></span><span class="edge"></span>
-                            <span class="front">${this.getIcon('doubleShot')} ضربة مزدوجة</span>
-                         </button>
+                         ${radarBtn}
+                         ${doubleShotBtn}
                     </div>
                     `;
                 return teamSection;
             }
 
             populateAdminPanel() {
-                document.getElementById('gridWidthInput').value = this.gridWidth;
-                document.getElementById('gridHeightInput').value = this.gridHeight;
-                const numTeamsSelect = document.getElementById('numTeamsInput');
-                if (numTeamsSelect) {
-                    numTeamsSelect.value = this.numTeams;
-                }
-                this.renderTeamSettingsInputs(this.numTeams);
+                // No longer used, handled by Control Center
             }
 
             calculateScore(teamIndex, isHit, isSink, isMine = false) {
@@ -2245,8 +3010,8 @@
                         horizontal: true
                     });
                 });
-                this.dockItemTypes.push({ name: 'لغم', type: 'mine', size: 1, totalCount: 1, placedCount: 0 });
-                this.dockItemTypes.push({ name: 'قرش', type: 'shark', size: 2, totalCount: 1, placedCount: 0, horizontal: true });
+                this.dockItemTypes.push({ name: 'لغم', type: 'mine', size: 1, totalCount: this.mineCount, placedCount: 0 });
+                this.dockItemTypes.push({ name: 'قرش', type: 'shark', size: 2, totalCount: this.sharkCount, placedCount: 0, horizontal: true });
                 this.renderDockItems();
             }
 
@@ -2282,7 +3047,8 @@
             
                     if (item.type === 'mine') {
                         const part = document.createElement('div');
-                        part.className = 'ship-part mine-image';
+                        part.className = 'ship-part';
+                        part.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                         el.appendChild(part);
                     } else {
                         for (let i = 0; i < item.size; i++) {
@@ -2324,6 +3090,7 @@
                     if (this.shipCountsLocked) upArrow.style.display = 'none';
 
                     counterControls.append(downArrow, counter, upArrow);
+                    // counterControls.append(counter);
                     itemContainer.appendChild(counterControls);
 
             
@@ -2352,6 +3119,14 @@
                     const grid = document.getElementById(`grid${team.id}`);
                     if (!grid) return; // defensive check
                     grid.innerHTML = '';
+                    grid.style.position = 'relative'; // Ensure relative positioning for radar scan
+                    grid.style.overflow = 'hidden';   // Clip the scan line
+                    
+                    // Add Radar Scan Line
+                    const scanLine = document.createElement('div');
+                    scanLine.className = 'radar-scan-line';
+                    grid.appendChild(scanLine);
+
                     grid.addEventListener('mouseleave', () => this.handleRadarHoverEnd());
                     for (let i = 0; i < this.gridWidth * this.gridHeight; i++) {
                         const cell = document.createElement('div');
@@ -2379,7 +3154,7 @@
                     <div class="legend-item"><div class="legend-color" style="background: var(--hit-color);"></div><span>إصابة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--miss-color);"></div><span>خطأ</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--sunk-color);"></div><span>غارقة</span></div>
-                    <div class="legend-item"><div class="mine-image" style="width: 20px; height: 20px;"></div><span>لغم</span></div>
+                    <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم"><span>لغم</span></div>
                 `;
             }
 
@@ -2389,16 +3164,38 @@
                 document.getElementById('confirmPlacement').addEventListener('click', () => this.confirmPlacement());
                 document.getElementById('startBattle').addEventListener('click', () => this.startBattle());
                 document.getElementById('shipsContainer').addEventListener('dragstart', (e) => this.handleDockDragStart(e));
-                document.getElementById('shotsPerTurn').addEventListener('change', (e) => {
-                    const value = parseInt(e.target.value);
-                    if (value >= 1 && value <= 5) {
-                        this.shotsPerTurn = value;
-                        turnManager.addToHistory(`تم تغيير عدد الرميات إلى ${value}`);
-                        turnManager.updateCurrentPlayer();
-                    } else {
-                        e.target.value = this.shotsPerTurn; // revert if invalid
+                
+                // Add drop listener to shipsDock to allow returning ships
+                const shipsDock = document.getElementById('shipsDock');
+                shipsDock.addEventListener('dragover', (e) => {
+                    e.preventDefault(); // Allow drop
+                    if (this.draggedShip && this.draggedShip.isFromGrid) {
+                        e.dataTransfer.dropEffect = 'move';
                     }
                 });
+                
+                shipsDock.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (this.draggedShip && this.draggedShip.isFromGrid) {
+                        this.removePiece(this.draggedShip);
+                        this.updateGridDisplay();
+                        this.renderDockItems();
+                        this.checkPlacementComplete();
+                        this.draggedShip = null;
+                        document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+                    }
+                });
+
+                const compactToggle = document.getElementById('compactLayoutToggle');
+                if (compactToggle) {
+                    compactToggle.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            document.body.classList.add('compact-layout');
+                        } else {
+                            document.body.classList.remove('compact-layout');
+                        }
+                    });
+                }
             }
 
             handleDockDragStart(e) {
@@ -2432,10 +3229,16 @@
                 const shipId = team.grid[index];
                 if (shipId > 0) {
                     piece = { ...team.ships.find(s => s.id === shipId) };
-                } else if (team.mine === index) {
-                    piece = { type: 'mine', size: 1, name: 'لغم' };
-                } else if (team.shark.positions.includes(index)) {
-                    piece = { ...team.shark, name: 'قرش' };
+                } else {
+                    const mine = team.mines.find(m => m.position === index);
+                    if (mine) {
+                         piece = { type: 'mine', size: 1, name: 'لغم', position: mine.position };
+                    } else {
+                        const shark = team.sharks.find(s => s.positions.includes(index));
+                        if (shark) {
+                            piece = { ...shark, name: 'قرش' };
+                        }
+                    }
                 }
 
                 if (piece) {
@@ -2465,13 +3268,17 @@
                         if (dockItem) dockItem.placedCount--;
                     }
                 } else if (pieceToRemove.type === 'mine') {
-                    if (team.mine !== null) {
-                        team.mine = null;
+                    const mineIndex = team.mines.findIndex(m => m.position === pieceToRemove.position);
+                    if (mineIndex !== -1) {
+                        team.mines.splice(mineIndex, 1);
                         if (dockItem) dockItem.placedCount--;
                     }
                 } else if (pieceToRemove.type === 'shark') {
-                    team.shark.positions = [];
-                    if (dockItem) dockItem.placedCount--;
+                    const sharkIndex = team.sharks.findIndex(s => s.positions[0] === pieceToRemove.positions[0]);
+                    if (sharkIndex !== -1) {
+                         team.sharks.splice(sharkIndex, 1);
+                         if (dockItem) dockItem.placedCount--;
+                    }
                 }
             }
             
@@ -2480,10 +3287,10 @@
                 e.target.classList.remove('drag-over', 'invalid-drop');
                 if (!this.draggedShip) return;
 
-                if (!this.shipCountsLocked) {
-                    this.shipCountsLocked = true;
-                    this.renderDockItems(); 
-                }
+                // if (!this.shipCountsLocked) {
+                //     this.shipCountsLocked = true;
+                //     this.renderDockItems(); 
+                // }
 
                 if (!this.canDropShip(e.target)) {
                     this.updateGridDisplay();
@@ -2501,9 +3308,9 @@
                 }
 
                 if (this.draggedShip.type === 'mine') {
-                    team.mine = start;
+                    team.mines.push({ position: start, revealed: false });
                 } else if (this.draggedShip.type === 'shark') {
-                    team.shark.positions = positions;
+                    team.sharks.push({ positions: positions, hits: 0, revealed: false, size: 2, type: 'shark' });
                 } else {
                     let shipId;
                     if (this.draggedShip.isFromGrid) {
@@ -2545,21 +3352,25 @@
                 if (!positions) return false;
 
                 let tempGrid = [...team.grid];
-                let tempMine = team.mine;
-                let tempSharkPositions = [...team.shark.positions];
+                let tempMinePositions = team.mines.map(m => m.position);
+                let tempSharkPositions = team.sharks.flatMap(s => s.positions);
                 
                 if (this.draggedShip.isFromGrid) {
                     if (this.draggedShip.type === 'ship') {
                         const originalShip = team.ships.find(s => s.id === this.draggedShip.id);
                         if(originalShip) originalShip.positions.forEach(p => tempGrid[p] = 0);
                     } else if (this.draggedShip.type === 'mine') {
-                        tempMine = null;
+                        tempMinePositions = tempMinePositions.filter(p => p !== this.draggedShip.position);
                     } else if (this.draggedShip.type === 'shark') {
-                        tempSharkPositions = [];
+                         const sharkToMove = team.sharks.find(s => s.positions[0] === this.draggedShip.positions[0]);
+                         if (sharkToMove) {
+                             const sharkPos = sharkToMove.positions;
+                             tempSharkPositions = tempSharkPositions.filter(p => !sharkPos.includes(p));
+                         }
                     }
                 }
                 
-                return positions.every(p => tempGrid[p] === 0 && tempMine !== p && !tempSharkPositions.includes(p));
+                return positions.every(p => tempGrid[p] === 0 && !tempMinePositions.includes(p) && !tempSharkPositions.includes(p));
             }
 
             getShipPositions(start, size, horizontal) {
@@ -2584,6 +3395,7 @@
                 if (!this.isAttackAllowed) return;
                 const index = parseInt(e.target.dataset.index);
                 const teamId = parseInt(e.target.dataset.team);
+
                 if (this.battlePhase && !this.gameOver && teamId !== this.currentTurn + 1) {
                     if (this.isRadarActive) {
                         this.performRadarScan(e.target.parentElement, teamId - 1, index);
@@ -2612,7 +3424,9 @@
                         const canPlace = () => {
                              const team = this.teams[this.currentTeam];
                              if (!positions) return false;
-                             return positions.every(p => team.grid[p] === 0 && team.mine !== p && !team.shark.positions.includes(p));
+                             const minePositions = team.mines.map(m => m.position);
+                             const sharkPositions = team.sharks.flatMap(s => s.positions);
+                             return positions.every(p => team.grid[p] === 0 && !minePositions.includes(p) && !sharkPositions.includes(p));
                         }
 
                         if (positions && canPlace()) {
@@ -2637,8 +3451,8 @@
                 const team = this.teams[this.currentTeam];
                 team.grid.fill(0);
                 team.ships = [];
-                team.mine = null;
-                team.shark = { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' };
+                team.mines = [];
+                team.sharks = [];
                 
                 this.dockItemTypes.forEach(item => item.placedCount = 0);
                 this.renderDockItems();
@@ -2650,17 +3464,28 @@
             confirmPlacement() { this.nextTeam(); }
 
             nextTeam() {
+                if (this.isProcessingNextTeam) return;
+                this.isProcessingNextTeam = true;
+                setTimeout(() => this.isProcessingNextTeam = false, 1000);
+
+                // Ensure numTeams is up to date with actual teams length
+                if (this.teams.length !== this.numTeams) {
+                    console.warn(`Mismatch: teams.length=${this.teams.length}, numTeams=${this.numTeams}. Adjusting numTeams.`);
+                    this.numTeams = this.teams.length;
+                }
+
                 // Check if the current team is NOT the last one
                 if (this.currentTeam < this.teams.length - 1) {
                     // If not last, move to the next team and reset the dock for them
                     this.currentTeam++;
-                    this.shipCountsLocked = false;
+                    this.shipCountsLocked = true;
                     this.dockItemTypes.forEach(item => {
                         item.placedCount = 0;
                         if (item.type !== 'mine') item.horizontal = true;
                     });
                     this.renderDockItems();
                     this.checkPlacementComplete();
+                    showToast(`انتقل الدور إلى ${this.teams[this.currentTeam].name} لتوزيع السفن`, 'info');
                 } else {
                     // If this WAS the last team, end the placement phase and show the start button
                     this.placementPhase = false;
@@ -2690,6 +3515,7 @@
                 document.getElementById('startBattle').style.display = 'none';
                 // Show battle controls
                 document.getElementById('turnControlPanel').style.display = 'block';
+                this.turnControlVisible = true;
                 this.updateUI();
                 this.updateAllGridsForBattle();
                 turnManager.updateCurrentPlayer();
@@ -2700,8 +3526,16 @@
                 const rect = cell.getBoundingClientRect();
                 const cellCenterX = rect.left + rect.width / 2;
                 const cellCenterY = rect.top + rect.height / 2;
-                const particleCount = isMine ? 60 : 30;
-                const colors = isMine ? ['#ff4757', '#ffa502'] : (isHit ? ['#ff9f43', 'var(--hit-color)'] : ['#192a56']);
+                const particleCount = isMine ? 60 : 40;
+                
+                let colors;
+                if (isMine) {
+                    colors = ['#ff4757', '#ffa502', '#2f3542']; // Red, Orange, Dark Grey
+                } else if (isHit) {
+                    colors = ['#ff9f43', '#ff3838', '#feca57', '#ffffff']; // Orange, Red, Yellow, White
+                } else {
+                    colors = ['#a4b0be', '#dfe4ea', '#74b9ff', '#ffffff']; // Greys, Light Blue, White (Splash)
+                }
 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
@@ -2709,12 +3543,19 @@
                     particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                     particle.style.left = `${cellCenterX}px`;
                     particle.style.top = `${cellCenterY}px`;
+                    
                     const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * (isMine ? 100 : 50) + 20;
+                    const distance = Math.random() * (isMine ? 120 : 60) + 20;
                     const x = Math.cos(angle) * distance;
                     const y = Math.sin(angle) * distance;
+                    
                     particle.style.setProperty('--x', `${x}px`);
                     particle.style.setProperty('--y', `${y}px`);
+                    
+                    const size = Math.random() * 6 + 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+
                     document.body.appendChild(particle);
                     setTimeout(() => particle.remove(), 700);
                 }
@@ -2749,17 +3590,22 @@
                 setTimeout(() => {
                     cannonball.remove();
                     
-                    if (targetTeam.mine === pos) {
+                    const hitMine = targetTeam.mines.find(m => m.position === pos);
+                    if (hitMine) {
+                        document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500);
                         this.createExplosion(cell, true, true);
                         soundManager.playSound('sink');
                         this.calculateScore(this.currentTurn, false, false, true);
                         turnManager.addToHistory(`${this.teams[this.currentTurn].name} أصاب لغمًا! -${this.scoring.minePenalty} نقطة.`);
                         targetTeam.hits[pos] = 4;
-                        targetTeam.mine = null;
+                        
+                        const mineIndex = targetTeam.mines.findIndex(m => m.position === pos);
+                        if (mineIndex > -1) targetTeam.mines.splice(mineIndex, 1);
+                        
                         this.updateGridDisplay();
                         
                         this.shotsMadeThisTurn++;
-                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        const shotsPerTurn = this.shotsPerTurn;
                         const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
                         if (shotsRemaining > 0 && !this.gameOver) {
                             showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
@@ -2771,11 +3617,14 @@
                         turnManager.updateCurrentPlayer();
                         return;
                     }
-                    if (targetTeam.shark.positions.includes(pos)) {
-                        targetTeam.shark.hits++;
+                    
+                    const hitShark = targetTeam.sharks.find(s => s.positions.includes(pos));
+                    if (hitShark) {
+                        document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500);
+                        hitShark.hits++;
                         targetTeam.hits[pos] = 2;
-                        if (targetTeam.shark.hits >= targetTeam.shark.size) {
-                            targetTeam.shark.revealed = true;
+                        if (hitShark.hits >= hitShark.size) {
+                            hitShark.revealed = true;
                             this.teamToSkip = this.currentTurn;
                             turnManager.addToHistory(`${this.teams[this.currentTurn].name} كشف فخ القرش! سيتم حرمانه من الجولة القادمة.`);
                             showToast(`${this.teams[this.currentTurn].name} سيتخطى دوره القادم!`, 'error');
@@ -2787,7 +3636,7 @@
                         this.updateGridDisplay();
 
                         this.shotsMadeThisTurn++;
-                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        const shotsPerTurn = this.shotsPerTurn;
                         const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
                         if (shotsRemaining > 0 && !this.gameOver) {
                             showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
@@ -2814,6 +3663,7 @@
                     else if (isHit) soundManager.playSound('hit');
                     else soundManager.playSound('splash');
                     
+                    if (isHit) { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500); }
                     this.createExplosion(cell, isHit);
 
                     setTimeout(() => {
@@ -2837,20 +3687,24 @@
                         this.updateGridDisplay();
                         this.checkGameOver();
                         
-                        const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                        const shotsPerTurn = this.shotsPerTurn;
                         this.shotsMadeThisTurn++;
                         const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
 
-                        if (this.isDoubleShotActive && isHit && !isDoubleShotSecond) {
-                            showToast(`ضربة ناجحة! لديك ضربة إضافية.`, 'success');
-                            const team = this.teams[this.currentTurn];
-                            team.abilities.canUseDoubleShot = false; // Consume ability on successful use
+                        const team = this.teams[this.currentTurn];
+                        const wasDoubleShotActive = this.isDoubleShotActive && !isDoubleShotSecond;
+                        if (wasDoubleShotActive) {
+                            this.isDoubleShotActive = false;
+                            team.abilities.canUseDoubleShot = false;
                             const doubleShotBtn = document.getElementById(`doubleShotBtn${team.id}`);
                             if (doubleShotBtn) {
                                 doubleShotBtn.classList.remove('active');
                             }
-                            this.isDoubleShotActive = false;
-                            this.shotsMadeThisTurn--; // Grant an extra shot
+                        }
+
+                        if (wasDoubleShotActive && isHit) {
+                            showToast(`ضربة ناجحة! لديك ضربة إضافية.`, 'success');
+                            this.shotsMadeThisTurn--;
                             setTimeout(() => this.isAttackAllowed = true, 500);
                         } else if (shotsRemaining > 0 && !this.gameOver) {
                             showToast(`لديك ${shotsRemaining} رمية متبقية.`, 'info');
@@ -2948,7 +3802,7 @@
                         
                         const targetTeam = this.teams[targetTeamIdx];
                         if(cell) {
-                             if (targetTeam.grid[index] > 0 || targetTeam.mine === index || targetTeam.shark.positions.includes(index)) {
+                             if (targetTeam.grid[index] > 0 || targetTeam.mines.some(m => m.position === index) || targetTeam.sharks.some(s => s.positions.includes(index))) {
                                 cell.classList.add('radar-reveal', 'hit');
                             } else {
                                 cell.classList.add('radar-reveal', 'water');
@@ -2971,7 +3825,7 @@
                     }
                 }, 1000);
 
-                const shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
+                const shotsPerTurn = this.shotsPerTurn;
                 this.shotsMadeThisTurn++;
                 const shotsRemaining = shotsPerTurn - this.shotsMadeThisTurn;
 
@@ -3058,18 +3912,45 @@
                     turnManager.addToHistory(`المقدم قام بنقل الدور إلى ${this.teams[teamIndex].name}`);
                     this.currentTurn = teamIndex;
                     this.shotsMadeThisTurn = 0; // Reset shot count
-                    this.shotsPerTurn = parseInt(document.getElementById('shotsPerTurn').value);
                     this.updateUI();
                     turnManager.updateCurrentPlayer();
                 }
             }
 
+            updateShotsPerTurn(value) {
+                const shots = parseInt(value);
+                if (!isNaN(shots) && shots >= 1) {
+                    this.shotsPerTurn = shots;
+                    // Sync settings input if it exists
+                    const settingsInput = document.getElementById('newShotsPerTurn');
+                    if (settingsInput) {
+                        settingsInput.value = shots;
+                    }
+                    showToast(`تم تحديث عدد الرميات إلى ${shots}`, 'info');
+                }
+            }
+
             checkGameOver() {
-                const aliveTeams = this.teams.filter(t => t.ships.some(s => !s.sunk));
-                if (aliveTeams.length <= 1) {
-                    this.gameOver = true;
-                    showGameOverModal(aliveTeams[0]);
-                    turnManager.stopTimer();
+                try {
+                    // Filter teams that have at least one ship that is NOT sunk
+                    // We check both the sunk flag AND the hits vs size to be safe
+                    const aliveTeams = this.teams.filter(t => t.ships && t.ships.some(s => !s.sunk && s.hits < s.size));
+                    
+                    console.log(`CheckGameOver: Alive teams: ${aliveTeams.length}`, aliveTeams.map(t => t.name));
+                    
+                    if (aliveTeams.length <= 1) {
+                        this.gameOver = true;
+                        console.log('Game Over triggered! Winner:', aliveTeams[0]?.name);
+                        
+                        // Small delay to allow the last hit animation/sound to play
+                        setTimeout(() => {
+                            showGameOverModal(aliveTeams[0]);
+                        }, 500);
+                        
+                        turnManager.stopTimer();
+                    }
+                } catch (e) {
+                    console.error('Error in checkGameOver:', e);
                 }
             }
 
@@ -3083,7 +3964,9 @@
                         
                         const shipId = team.grid[index];
                         const ship = shipId > 0 ? team.ships.find(s => s.id === shipId) : null;
-                        const isShark = team.shark.positions.includes(index);
+                        const mine = team.mines.find(m => m.position === index);
+                        const shark = team.sharks.find(s => s.positions.includes(index));
+                        const isShark = !!shark;
 
                         const applyImage = (item, cell, index) => {
                             if (!item || !item.positions) return;
@@ -3114,31 +3997,32 @@
                                 isPieceHere = true;
                                 cell.classList.add('ship');
                                 applyImage(ship, cell, index);
-                            } else if (team.mine === index) {
+                            } else if (mine) {
                                 isPieceHere = true;
                                 cell.classList.add('mine');
-                                cell.innerHTML = '<div class="mine-image"></div>';
+                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                             } else if (isShark) {
                                 isPieceHere = true;
                                 cell.classList.add('shark');
-                                applyImage(team.shark, cell, index);
+                                applyImage(shark, cell, index);
                             }
                         } 
                         else if (this.battlePhase) {
                             if (team.hits[index] === 1) {
                                 cell.classList.add('miss');
                             } else if (team.hits[index] === 2) {
-                                cell.classList.add('hit');
-                                if (isShark && team.shark.revealed) {
+                                if (isShark && shark.revealed) {
                                     cell.classList.add('shark');
-                                    applyImage(team.shark, cell, index);
+                                    applyImage(shark, cell, index);
+                                } else {
+                                    cell.classList.add('hit');
                                 }
                             } else if (team.hits[index] === 3) {
                                 cell.classList.add('ship', 'sunk');
                                 applyImage(ship, cell, index);
                             } else if (team.hits[index] === 4) {
-                                cell.classList.add('mine', 'hit');
-                                cell.innerHTML = '<div class="mine-image"></div>';
+                                cell.classList.add('mine');
+                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                             }
                         }
 
@@ -3238,8 +4122,8 @@
                     this.shipCountsLocked = false;
                     this.teams.forEach(team => {
                         team.ships = [];
-                        team.mine = null;
-                        team.shark = { positions: [], hits: 0, revealed: false, size: 2, type: 'shark' };
+                        team.mines = [];
+                        team.sharks = [];
                         team.grid.fill(0);
                         team.hits.fill(0);
                         team.abilities.canUseRadar = true;
@@ -3280,19 +4164,24 @@
                         });
                     });
 
-                    if (team.mine !== null && team.hits[team.mine] === 0) {
-                        team.hits[p] = 4;
-                    }
-
-                    team.shark.positions.forEach(p => {
-                        if (team.hits[p] === 0) {
-                            team.hits[p] = 2;
+                    team.mines.forEach(mine => {
+                        if (team.hits[mine.position] === 0) {
+                            team.hits[mine.position] = 4;
                         }
                     });
-                    team.shark.revealed = true;
+
+                    team.sharks.forEach(shark => {
+                        shark.positions.forEach(p => {
+                            if (team.hits[p] === 0) {
+                                team.hits[p] = 2;
+                            }
+                        });
+                        shark.revealed = true;
+                    });
                 });
                 this.updateGridDisplay();
                 showToast('انتهت اللعبة! تم كشف جميع المواقع.', 'warning');
+                setTimeout(() => showGameOverModal(), 2000);
             }
             
             saveGame() {
@@ -3315,11 +4204,11 @@
                     shipCountsLocked: this.shipCountsLocked
                 };
                 localStorage.setItem('battleshipSaveData', JSON.stringify(gameState));
-                showToast('تم حفظ اللعبة بنجاح!', 'success');
             }
 
             _performLoad(gameState) {
                 Object.assign(this, gameState);
+                document.documentElement.style.setProperty('--grid-width', this.gridWidth);
                 turnManager.turnHistory = gameState.turnHistory || [];
                 this.isAttackAllowed = true;
 
@@ -3336,6 +4225,7 @@
                      document.getElementById('startBattle').style.display = 'none';
                      document.getElementById('turnControlPanel').style.display = 'block';
                      document.body.classList.add('battle-phase');
+                     this.turnControlVisible = true;
                 }
 
                 this.updateAllGridsForBattle();
@@ -3402,6 +4292,94 @@
             }
         }
 
+        function showGameOverModal(winningTeam) {
+            console.log('Attempting to show Game Over Modal');
+            
+            // Try to find the game object
+            let gameInstance = null;
+            if (typeof game !== 'undefined') gameInstance = game;
+            else if (window.game) gameInstance = window.game;
+
+            if (!gameInstance || !gameInstance.teams) {
+                console.error('Game object or teams not found!');
+                return;
+            }
+
+            try {
+                const modal = document.getElementById('gameOverModal');
+                const winnerTitle = document.getElementById('winnerTitle');
+                const finalScoresContainer = document.getElementById('finalScores');
+
+                if (!modal) {
+                    console.error('Modal element not found');
+                    return;
+                }
+
+                // 1. Sort teams by score
+                const sortedTeams = [...gameInstance.teams].sort((a, b) => b.score.total - a.score.total);
+                
+                // 2. Set winner title
+                if (winningTeam) {
+                    winnerTitle.innerHTML = `🏆 الفائز هو: <span style="color:${winningTeam.color}">${winningTeam.name}</span>`;
+                } else if (sortedTeams.length > 0) {
+                    winnerTitle.innerHTML = `🏆 الفائز هو: <span style="color:${sortedTeams[0].color}">${sortedTeams[0].name}</span>`;
+                }
+
+                // 3. Generate HTML for leaderboard
+                finalScoresContainer.innerHTML = '';
+                
+                sortedTeams.forEach((team, index) => {
+                    const rank = index + 1;
+                    const delay = index * 0.2; // Stagger animation
+                    
+                    const hits = team.stats.hits;
+                    const misses = team.stats.misses;
+                    const sinks = team.stats.sinks;
+                    const totalShots = hits + misses;
+                    const accuracy = totalShots > 0 ? ((hits / totalShots) * 100).toFixed(1) : 0;
+                    
+                    const card = document.createElement('div');
+                    card.className = `leaderboard-card rank-${rank}`;
+                    card.style.animationDelay = `${delay}s`;
+                    
+                    let medal = rank;
+                    if (rank === 1) medal = '🥇';
+                    if (rank === 2) medal = '🥈';
+                    if (rank === 3) medal = '🥉';
+
+                    card.innerHTML = `
+                        <div class="rank-badge">${medal}</div>
+                        <div class="team-info-leaderboard">
+                            <div class="team-name-leaderboard" style="color: ${team.color}">${team.name}</div>
+                            <div class="team-stats-leaderboard">
+                                <div class="stat-item" title="إصابات">🎯 ${hits}</div>
+                                <div class="stat-item" title="إغراق">💥 ${sinks}</div>
+                                <div class="stat-item" title="أخطاء">🌊 ${misses}</div>
+                                <div class="stat-item" title="دقة">📊 ${accuracy}%</div>
+                            </div>
+                        </div>
+                        <div class="total-score-leaderboard">
+                            ${team.score.total}
+                            <div style="font-size: 0.7rem; opacity: 0.7;">نقطة</div>
+                        </div>
+                    `;
+                    
+                    finalScoresContainer.appendChild(card);
+                });
+
+                modal.style.display = 'block';
+                console.log('Game Over Modal displayed successfully');
+                
+                if (window.soundManager) soundManager.playSound('sink');
+            } catch (e) {
+                console.error('Error in showGameOverModal:', e);
+            }
+        }
+
+        function closeGameOverModal() {
+            document.getElementById('gameOverModal').style.display = 'none';
+        }
+
         // --- Global Functions ---
         let onConfirmCallback = null;
         function showConfirmationModal(title, message, callback) {
@@ -3416,120 +4394,202 @@
             onConfirmCallback = null;
         }
 
-        function openAdminPanel() { 
-            document.getElementById('adminModal').style.display = 'block'; 
-            document.querySelector('.tab-button').click();
-            setupCustomSelects(); // Initialize custom selects when modal is opened
-        }
-        function closeAdminPanel() { document.getElementById('adminModal').style.display = 'none'; }
-        function openPresenterTools() { document.getElementById('presenterToolsModal').style.display = 'block'; }
-        function closePresenterTools() { document.getElementById('presenterToolsModal').style.display = 'none'; }
+        function openControlTab(tabName) {
+            // Hide all tab content
+            const tabContents = document.getElementsByClassName('control-tab');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
 
-        // --- START: How to Play Functions ---
+            // Remove active class from all sidebar buttons
+            const sidebarButtons = document.getElementsByClassName('sidebar-btn');
+            for (let i = 0; i < sidebarButtons.length; i++) {
+                sidebarButtons[i].classList.remove('active');
+            }
+
+            // Show the selected tab content and activate the corresponding sidebar button
+            document.getElementById(tabName).classList.add('active');
+            // Find the button that called this function
+            const buttons = document.getElementsByClassName('sidebar-btn');
+            for(let btn of buttons) {
+                if(btn.getAttribute('onclick').includes(tabName)) {
+                    btn.classList.add('active');
+                    break;
+                }
+            }
+        }
+
+        function openAdminPanel() { 
+            const modal = document.getElementById('controlCenterModal');
+            modal.style.display = 'block'; 
+            
+            // Default to first tab
+            openControlTab('roundSettings');
+
+            // Populate current values
+            const numTeamsInput = document.getElementById('newNumTeamsInput');
+            if(numTeamsInput) numTeamsInput.value = game.numTeams;
+
+            const turnDurInput = document.getElementById('newTurnDuration');
+            if(turnDurInput) turnDurInput.value = turnManager.duration;
+
+            const shotsInput = document.getElementById('newShotsPerTurn');
+            if(shotsInput) shotsInput.value = game.shotsPerTurn;
+
+            const gridSizeInput = document.getElementById('newGridSize');
+            if(gridSizeInput) gridSizeInput.value = game.gridWidth;
+
+            // Render team settings
+            game.renderTeamSettingsInputs(game.numTeams);
+
+            // Populate advanced rules
+            document.getElementById('newHitPoints').value = game.scoring.hitPoints;
+            document.getElementById('newSinkPoints').value = game.scoring.sinkPoints;
+            document.getElementById('newMinePenalty').value = game.scoring.minePenalty;
+            document.getElementById('newAccuracyBonus').value = game.scoring.accuracyBonus;
+            
+            document.getElementById('radarEnabled').checked = game.radarEnabled !== false;
+            document.getElementById('planeEnabled').checked = game.doubleShotEnabled !== false;
+
+            setupCustomSelects(); 
+        }
+
+        function closeControlCenter() { 
+            document.getElementById('controlCenterModal').style.display = 'none'; 
+        }
+
         function openHowToPlayModal() {
             document.getElementById('howToPlayModal').style.display = 'block';
         }
+
         function closeHowToPlayModal() {
             document.getElementById('howToPlayModal').style.display = 'none';
         }
-        // --- END: How to Play Functions ---
 
+        function applyControlSettings() {
+            const prevNumTeams = game.numTeams;
+            const prevRadarEnabled = game.radarEnabled !== false;
+            const prevDoubleShotEnabled = game.doubleShotEnabled !== false;
+            const prevGridWidth = game.gridWidth;
 
-        function showGameOverModal(winner) {
-            const modal = document.getElementById('gameOverModal');
-            document.getElementById('winnerTitle').textContent = winner ? `🏆 الفريق الفائز: ${winner.name} 🏆` : 'انتهت اللعبة بالتعادل!';
-            const scores = document.getElementById('finalScores');
-            scores.innerHTML = '';
-            game.teams.forEach(t => scores.innerHTML += `<p>${t.name}: ${t.score.total} نقطة</p>`);
-            modal.style.display = 'block';
-        }
-        function closeGameOverModal() { document.getElementById('gameOverModal').style.display = 'none'; }
-        
-        function toggleTurnControl() {
-            const panel = document.getElementById('turnControlPanel');
-            panel.style.display = panel.style.display === 'none' || panel.style.display === '' ? 'block' : 'none';
-        }
-
-        function toggleAdvancedSettings() {
-            const panel = document.getElementById('advancedSettingsPanel');
-            const btn = document.getElementById('toggleAdvancedSettingsBtn');
-            panel.classList.toggle('active');
-            btn.classList.toggle('toggled');
-        }
-
-        function applySettings() {
-            // --- THE FIX ---
-            // Step 1: Read all new settings from the modal and update the game object's properties first.
-            game.gridWidth = parseInt(document.getElementById('gridWidthInput').value);
-            game.gridHeight = parseInt(document.getElementById('gridHeightInput').value);
-            
-            const numTeamsSelect = document.getElementById('numTeamsInput');
+            const numTeamsSelect = document.getElementById('newNumTeamsInput');
+            let numTeams = prevNumTeams || 3;
             if (numTeamsSelect) {
-                game.numTeams = parseInt(numTeamsSelect.value);
-            }
-
-            // This is the crucial fix: Update the master list instead of replacing it.
-            for (let i = 0; i < game.numTeams; i++) { 
-                const nameInput = document.getElementById(`teamName${i + 1}Input`);
-                const colorInput = document.getElementById(`teamColor${i + 1}Input`);
-                if (nameInput && colorInput) { 
-                     // Ensure team data exists
-                     if (!game.defaultTeams[i]) {
-                         game.defaultTeams.push({ name: `الفريق ${i + 1}`, color: '#ffffff' });
-                     }
-                     game.defaultTeams[i].name = nameInput.value;
-                     game.defaultTeams[i].color = colorInput.value;
+                const parsed = parseInt(numTeamsSelect.value);
+                if (!isNaN(parsed) && parsed >= 2) {
+                    numTeams = parsed;
+                } else {
+                    numTeams = 2;
                 }
             }
-            
-            game.scoring = {
-                hitPoints: parseInt(document.getElementById('hitPoints').value),
-                sinkPoints: parseInt(document.getElementById('sinkPoints').value),
-                minePenalty: parseInt(document.getElementById('minePenalty').value),
-                accuracyBonus: parseInt(document.getElementById('accuracyBonus').value),
-                missPenalty: parseInt(document.getElementById('missPenalty').value)
-            };
-            
-            // Step 2: Now that all properties are updated, call resetGame to re-initialize the game with the new state.
-            game.resetGame(false); // Call reset without confirmation
-            
-            // Step 3: Final UI updates
-            showToast('تم تطبيق الإعدادات! سيتم إعادة تشغيل اللعبة.', 'success');
-            closeAdminPanel();
-        }
 
-        function resetToDefaults() {
-            game.gridWidth = 7;
-            game.gridHeight = 7;
-            game.numTeams = 3;
-            // Restore the master list to its original state
-            game.defaultTeams = [
-                { name: 'القراصنة', color: '#ff6b6b' },
-                { name: 'البحارة', color: '#4ecdc4' },
-                { name: 'المستكشفون', color: '#45b7d1' },
-                { name: 'العمالقة', color: '#feca57' }
-            ];
-            
-            document.getElementById('gridWidthInput').value = game.gridWidth;
-            document.getElementById('gridHeightInput').value = game.gridHeight;
-            game.resetGame();
-            showToast('تمت استعادة الإعدادات الافتراضية.');
+            const newDuration = parseInt(document.getElementById('newTurnDuration').value);
+            if (!isNaN(newDuration) && newDuration >= 10) {
+                turnManager.duration = newDuration;
+            }
+
+            const newShots = parseInt(document.getElementById('newShotsPerTurn').value);
+            if (!isNaN(newShots) && newShots >= 1) {
+                game.shotsPerTurn = newShots;
+                const quickDropdown = document.getElementById('quickShotsPerTurn');
+                if (quickDropdown && newShots >= 1 && newShots <= 5) {
+                    quickDropdown.value = newShots;
+                }
+            }
+
+            const gridSizeInput = document.getElementById('newGridSize');
+            let newGridSize = prevGridWidth;
+            if (gridSizeInput) {
+                const parsedSize = parseInt(gridSizeInput.value);
+                if (!isNaN(parsedSize) && parsedSize >= 6 && parsedSize <= 14) {
+                    newGridSize = parsedSize;
+                }
+            }
+
+            for (let i = 0; i < numTeams; i++) {
+                const nameInput = document.getElementById(`teamName${i + 1}Input`);
+                const colorInput = document.getElementById(`teamColor${i + 1}Input`);
+                if (nameInput && colorInput) {
+                    if (!game.defaultTeams[i]) {
+                        game.defaultTeams.push({ name: `الفريق ${i + 1}`, color: '#ffffff' });
+                    }
+                    game.defaultTeams[i].name = nameInput.value;
+                    game.defaultTeams[i].color = colorInput.value;
+                }
+            }
+
+            game.scoring = {
+                hitPoints: parseInt(document.getElementById('newHitPoints').value) || 10,
+                sinkPoints: parseInt(document.getElementById('newSinkPoints').value) || 50,
+                minePenalty: parseInt(document.getElementById('newMinePenalty').value) || 50,
+                accuracyBonus: parseInt(document.getElementById('newAccuracyBonus').value) || 20,
+                missPenalty: 5
+            };
+
+            const newRadarEnabled = document.getElementById('radarEnabled').checked;
+            const newDoubleShotEnabled = document.getElementById('planeEnabled').checked;
+
+            game.numTeams = numTeams;
+            game.gridWidth = newGridSize;
+            game.gridHeight = newGridSize;
+            document.documentElement.style.setProperty('--grid-width', newGridSize);
+            game.radarEnabled = newRadarEnabled;
+            game.doubleShotEnabled = newDoubleShotEnabled;
+
+            for (let i = 0; i < game.numTeams && i < game.teams.length; i++) {
+                const team = game.teams[i];
+                const defaults = game.defaultTeams[i];
+                if (team && defaults) {
+                    team.name = defaults.name;
+                    team.color = defaults.color;
+                    const nameEl = document.getElementById(`teamName${team.id}`);
+                    if (nameEl) nameEl.textContent = team.name;
+                    const section = document.querySelector(`.team-section.team-${team.id}`);
+                    if (section) section.style.borderColor = team.color;
+                }
+            }
+
+            game.updateScoreboard();
+            turnManager.updateCurrentPlayer();
+
+            const needsReset =
+                numTeams !== prevNumTeams ||
+                newRadarEnabled !== prevRadarEnabled ||
+                newDoubleShotEnabled !== prevDoubleShotEnabled ||
+                newGridSize !== prevGridWidth;
+
+            if (needsReset) {
+                showConfirmationModal(
+                    'إعادة ضبط مطلوبة',
+                    'لقد قمت بتغيير إعدادات تتطلب بدء لعبة جديدة (مثل عدد الفرق أو القدرات الخاصة). هل تريد حفظ الإعدادات وبدء لعبة جديدة؟',
+                    () => {
+                        saveControlSettingsToStorage(numTeams, newGridSize, newRadarEnabled, newDoubleShotEnabled);
+                        game.resetGame(false);
+                        showToast('تم تطبيق الإعدادات وبدء لعبة جديدة.', 'success');
+                        closeControlCenter();
+                    }
+                );
+            } else {
+                saveControlSettingsToStorage(numTeams, newGridSize, newRadarEnabled, newDoubleShotEnabled);
+                showToast('تم تطبيق الإعدادات بدون إعادة تشغيل اللعبة.', 'success');
+                closeControlCenter();
+            }
         }
         
-        function openTab(evt, tabName) {
-            let i, tabcontent, tablinks;
-            tabcontent = document.querySelectorAll("#adminModal .tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = document.querySelectorAll("#adminModal .tab-button");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+        function saveControlSettingsToStorage(numTeams, gridSize, radarEnabled, doubleShotEnabled) {
+            try {
+                const payload = {
+                    numTeams: numTeams,
+                    gridSize: gridSize,
+                    duration: turnManager.duration,
+                    shotsPerTurn: game.shotsPerTurn,
+                    scoring: game.scoring,
+                    radarEnabled: radarEnabled,
+                    doubleShotEnabled: doubleShotEnabled,
+                    defaultTeams: game.defaultTeams.slice(0, numTeams)
+                };
+                localStorage.setItem(BATTLESHIP_SETTINGS_KEY, JSON.stringify(payload));
+            } catch (e) {}
         }
         
         function setupCustomSelects() {
@@ -3568,7 +4628,9 @@
                         // Trigger change event for team settings update
                         const changeEvent = new Event('change');
                         s.dispatchEvent(changeEvent);
-                        game.renderTeamSettingsInputs(parseInt(s.value));
+                        if (s.id === 'newNumTeamsInput') {
+                            game.renderTeamSettingsInputs(parseInt(s.value));
+                        }
                     });
                     optionsDiv.appendChild(option);
                 }
@@ -3603,14 +4665,138 @@
 
         function toggleScoreboard() {
             game.scoreboardVisible = !game.scoreboardVisible;
-            document.getElementById('scoreboard').style.display = game.scoreboardVisible ? 'block' : 'none';
+            const board = document.getElementById('scoreboard');
+            if (board) {
+                board.style.display = game.scoreboardVisible ? 'block' : 'none';
+            }
+            const btn = document.getElementById('scoreboardToggleBtn');
+            if (btn && typeof game !== 'undefined' && typeof game.getIcon === 'function') {
+                const label = game.scoreboardVisible ? 'إخفاء النقاط' : 'عرض النقاط';
+                btn.innerHTML = `${game.getIcon('scoreboard')} ${label}`;
+            }
+        }
+
+        function toggleTurnControl() {
+            const panel = document.getElementById('turnControlPanel');
+            if (!panel) return;
+            game.turnControlVisible = !game.turnControlVisible;
+            panel.style.display = game.turnControlVisible ? 'block' : 'none';
+            const btn = document.getElementById('turnToggleBtn');
+            if (btn && typeof game !== 'undefined' && typeof game.getIcon === 'function') {
+                const label = game.turnControlVisible ? 'إخفاء الأدوار' : 'عرض الأدوار';
+                btn.innerHTML = `${game.getIcon('timer')} ${label}`;
+            }
+        }
+
+        function setPanelsOrder(prefer) {
+            const turnPanel = document.getElementById('turnControlPanel');
+            const scoreboard = document.getElementById('scoreboard');
+            if (!turnPanel || !scoreboard) return;
+            const parent = turnPanel.parentElement;
+            if (!parent || parent !== scoreboard.parentElement) return;
+            if (prefer === 'scoreFirst') {
+                if (scoreboard.nextSibling !== turnPanel) {
+                    parent.insertBefore(scoreboard, turnPanel);
+                }
+            } else {
+                if (turnPanel.nextSibling !== scoreboard) {
+                    parent.insertBefore(turnPanel, scoreboard);
+                }
+            }
+            try {
+                localStorage.setItem('battleshipPanelsOrder', prefer);
+            } catch (e) {}
+        }
+
+        function applyPanelsOrderFromStorage() {
+            try {
+                const prefer = localStorage.getItem('battleshipPanelsOrder');
+                if (!prefer) return;
+                setPanelsOrder(prefer);
+            } catch (e) {}
+        }
+
+        function resetSpecialAbilities() {
+            if (!game || !game.teams || game.teams.length === 0) {
+                return;
+            }
+
+            game.isRadarActive = false;
+            game.isDoubleShotActive = false;
+            game.clearRadarPreview();
+
+            game.teams.forEach(team => {
+                if (game.radarEnabled !== false) {
+                    team.abilities.canUseRadar = true;
+                }
+                if (game.doubleShotEnabled !== false) {
+                    team.abilities.canUseDoubleShot = true;
+                }
+            });
+
+            game.updateUI();
+            showToast('تم إعادة تفعيل الرادار والضربة المزدوجة لجميع الفرق.', 'success');
         }
 
         window.onclick = e => { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
         
+        function applyStoredSettingsToGlobals() {
+            try {
+                const raw = localStorage.getItem(BATTLESHIP_SETTINGS_KEY);
+                if (!raw) return;
+                const settings = JSON.parse(raw);
+                if (!settings || typeof settings !== 'object') return;
+
+                if (typeof settings.duration === 'number' && settings.duration >= 10) {
+                    turnManager.duration = settings.duration;
+                }
+
+                if (typeof settings.shotsPerTurn === 'number' && settings.shotsPerTurn >= 1) {
+                    game.shotsPerTurn = settings.shotsPerTurn;
+                    const quickDropdown = document.getElementById('quickShotsPerTurn');
+                    if (quickDropdown && settings.shotsPerTurn >= 1 && settings.shotsPerTurn <= 5) {
+                        quickDropdown.value = settings.shotsPerTurn;
+                    }
+                    const pills = document.querySelectorAll('.shots-pill');
+                    pills.forEach(p => {
+                        p.classList.toggle('active', parseInt(p.dataset.shots) === game.shotsPerTurn);
+                    });
+                }
+            } catch (e) {}
+        }
+        
         const soundManager = new SoundManager();
         const turnManager = new TurnManager();
         const game = new BattleshipGame();
+        applyStoredSettingsToGlobals();
+        applyPanelsOrderFromStorage();
+
+        document.addEventListener('click', e => {
+            if (!e.target.classList.contains('shots-pill')) return;
+            const value = parseInt(e.target.dataset.shots);
+            if (isNaN(value)) return;
+            const quickDropdown = document.getElementById('quickShotsPerTurn');
+            if (quickDropdown && value >= 1 && value <= 5) {
+                quickDropdown.value = value;
+            }
+            game.updateShotsPerTurn(value);
+            const pills = document.querySelectorAll('.shots-pill');
+            pills.forEach(p => {
+                p.classList.toggle('active', p === e.target);
+            });
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (!game.gameOver) {
+                game.saveGame();
+            }
+        });
+
+        // Initialize quick dropdown value
+        const initialQuickDropdown = document.getElementById('quickShotsPerTurn');
+        if (initialQuickDropdown) {
+            initialQuickDropdown.value = game.shotsPerTurn || 1;
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
              // This line was causing the error, it's removed.
