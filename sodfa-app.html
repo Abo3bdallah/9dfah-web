@@ -9,15 +9,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        /* إخفاء شريط التمرير */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
+
         /* استيراد خط القاهرة من Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
         
-        html, body {
+        body {
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
-            max-width: 100%;
-            overflow-x: hidden;
         }
         
         /* الخلفية الرئيسية (ألوان زجاجية متدرجة) */

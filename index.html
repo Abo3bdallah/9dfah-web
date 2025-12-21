@@ -68,6 +68,15 @@
         body {
             font-family: 'Tajawal', sans-serif;
         }
+
+        /* إخفاء شريط التمرير (Scrollbar) */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        html {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
         
         /* 4. إعداد الصفحات للانتقال الناعم (Fade Transition) */
         .page {
@@ -123,6 +132,7 @@
         /* --- (جديد) خلفية متدرجة دوارة --- */
         .animated-gradient-background {
             position: relative;
+            z-index: 0; /* (إصلاح) إنشاء سياق تكديس جديد لمنع اختفاء الخلفية في وضع ملئ الشاشة */
             /* (إصلاح) تم حذف height: 100vh و overflow: hidden للسماح بالـ scroll */
         }
 
@@ -228,12 +238,67 @@
         cursor: pointer;
     }
 
+    /* (جديد) إخفاء زر الخروج من التطبيقات وإظهاره عند التحويم */
+    .btn-close-iframe {
+        opacity: 1; /* ظاهر افتراضياً عند التحميل */
+        transition: opacity 0.5s ease-in-out, background-color 0.2s, transform 0.1s;
+    }
+
+    /* كلاس للإخفاء التلقائي */
+    .btn-close-iframe.fade-out {
+        opacity: 0;
+    }
+
+    /* يظهر دائماً عند التحويم */
+    .btn-close-iframe:hover {
+        opacity: 1 !important;
+    }
+
+    /* زيادة مساحة النقر/التحويم لزر الخروج ليسهل الوصول إليه */
+    .btn-close-iframe::after {
+        content: '';
+        position: absolute;
+        top: -40px;   /* توسيع المساحة للأعلى */
+        left: -40px;  /* توسيع المساحة لليسار */
+        right: -40px; /* توسيع المساحة لليمين */
+        bottom: -40px;/* توسيع المساحة للأسفل */
+        z-index: -1;
+    }
+
     </style>
 </head>
 <!-- (جديد) إضافة كلاس الخلفية المتحركة -->
 <!-- (إصلاح) تم حذف ألوان الخلفية الثابتة (bg-zinc-*) لمنع التعارض -->
 <body class="text-zinc-800 dark:text-zinc-200 min-h-screen 
              animated-gradient-background">
+
+    <!-- شاشة التحميل (Loading Screen) لمنع الوميض -->
+    <div id="app-loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: #f4f4f5; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease-out;">
+        <div style="font-size: 4rem; animation: spin 3s infinite linear;">🎲</div>
+        <p style="margin-top: 1rem; font-family: 'Tajawal', sans-serif; font-size: 1.2rem; color: #52525b;">جاري التحميل...</p>
+        <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+        <script>
+            // ضبط لون الخلفية فوراً حسب الوضع الليلي
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                const loader = document.getElementById('app-loading-screen');
+                loader.style.backgroundColor = '#27272a'; // zinc-800
+                loader.querySelector('p').style.color = '#e4e4e7'; // zinc-200
+            }
+        </script>
+    </div>
+    <script>
+        // إخفاء الشاشة بعد اكتمال التحميل
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('app-loading-screen');
+            if (loader) {
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 500);
+                }, 500); // تأخير نصف ثانية لضمان استقرار التنسيقات
+            }
+        });
+    </script>
+
 
     <!-- ======================= -->
     <!--  (جديد) زر القائمة الجانبية (الحساب)     -->
@@ -343,6 +408,18 @@
         </svg>
         <!-- أيقونة الشمس (تظهر في الوضع الداكن) -->
         <img id="theme-toggle-light-icon" src="https://i.postimg.cc/PrQXRtL0/sh.png" alt="شمس" class="h-6 w-6 object-contain">
+    </button>
+
+    <!-- (جديد) زر ملئ الشاشة (أسفل اليسار) -->
+    <button id="fullscreen-toggle" class="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
+        <!-- أيقونة التكبير -->
+        <svg id="fullscreen-icon-enter" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+        </svg>
+        <!-- أيقونة التصغير -->
+        <svg id="fullscreen-icon-exit" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5M15 15l5.25 5.25" />
+        </svg>
     </button>
     <!-- تم حذف أيقونة العصا السحرية -->
 
@@ -1727,6 +1804,35 @@
 
             // عناصر الوضع الليلي
             const themeToggle = document.getElementById('theme-toggle');
+            
+            // (جديد) زر ملئ الشاشة
+            const fullscreenToggle = document.getElementById('fullscreen-toggle');
+            const fullscreenIconEnter = document.getElementById('fullscreen-icon-enter');
+            const fullscreenIconExit = document.getElementById('fullscreen-icon-exit');
+
+            // (جديد) منطق ملئ الشاشة
+            fullscreenToggle.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            // (جديد) تحديث أيقونة ملئ الشاشة عند التغيير
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenIconEnter.classList.add('hidden');
+                    fullscreenIconExit.classList.remove('hidden');
+                } else {
+                    fullscreenIconEnter.classList.remove('hidden');
+                    fullscreenIconExit.classList.add('hidden');
+                }
+            });
             const darkIcon = document.getElementById('theme-toggle-dark-icon'); // قمر
             const lightIcon = document.getElementById('theme-toggle-light-icon'); // شمس
             
@@ -1864,6 +1970,18 @@
                         currentPage.style.display = 'none'; 
                     }
                     pageToShow.style.display = 'flex'; 
+
+                    // (جديد) منطق إخفاء زر الخروج تلقائياً بعد 5 ثواني
+                    const closeBtn = pageToShow.querySelector('.btn-close-iframe');
+                    if (closeBtn) {
+                        closeBtn.classList.remove('fade-out');
+                        // مسح أي مؤقت سابق إذا وجد (لتجنب التداخل)
+                        if (closeBtn.hideTimeout) clearTimeout(closeBtn.hideTimeout);
+                        
+                        closeBtn.hideTimeout = setTimeout(() => {
+                            closeBtn.classList.add('fade-out');
+                        }, 5000);
+                    }
 
                     if (pageConfig.iframe && pageConfig.iframe.src === 'about:blank') {
                         pageConfig.iframe.src = pageConfig.src;
@@ -2116,6 +2234,7 @@
                 // إظهار واجهة التطبيق يدوياً (لأن onAuthStateChange لن يفعل ذلك)
                 btnOpenSidebar.classList.remove('hidden');
                 themeToggle.classList.remove('hidden');
+                fullscreenToggle.classList.remove('hidden'); // (جديد)
                 showPage('welcome', false);
                 // === (جديد) التحقق من الإعلان هنا أيضاً للضيف ===
                 setTimeout(checkAndShowAnnouncement, 500); // تأخير بسيط
@@ -2530,6 +2649,7 @@
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
+                    fullscreenToggle.classList.remove('hidden'); // (جديد)
                     
                     // 2. إخفاء نوافذ المصادقة
                     authModal.style.display = 'none';
@@ -2566,6 +2686,7 @@
                     // 1. إخفاء واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.add('hidden');
                     themeToggle.classList.add('hidden');
+                    fullscreenToggle.classList.add('hidden'); // (جديد)
                     
                     // 2. إخفاء جميع الصفحات
                     allPages.forEach(p => { 
@@ -2586,6 +2707,7 @@
                 // (جديد) المستخدم اختار أن يكون ضيفاً
                 btnOpenSidebar.classList.remove('hidden');
                 themeToggle.classList.remove('hidden');
+                fullscreenToggle.classList.remove('hidden'); // (جديد)
                 showPage('welcome', false);
 
                 // === (جديد) أضف هذا السطر لتشغيل الإعلان للضيف العائد ===
@@ -2613,30 +2735,6 @@
 
         });
     </script>
-    <script>
-    // شبكة أمان: إذا لم تظهر الصفحة خلال 3 ثوانٍ، أظهر الصفحة الرئيسية فوراً
-    setTimeout(() => {
-        const welcomePage = document.getElementById('page-welcome');
-        const loader = document.getElementById('site-loader'); // إذا كنت تستخدمه
-        
-        // إذا كانت الصفحة مخفية، أظهرها بالقوة
-        if (welcomePage && getComputedStyle(welcomePage).display === 'none') {
-            console.log("Force showing welcome page due to timeout");
-            
-            // إخفاء أي نوافذ انتظار
-            if (loader) loader.style.display = 'none';
-            
-            // إظهار الصفحة الرئيسية
-            welcomePage.style.display = 'flex';
-            setTimeout(() => { welcomePage.style.opacity = '1'; }, 50);
-            
-            // إظهار الأزرار العائمة
-            document.getElementById('btn-open-sidebar').classList.remove('hidden');
-            document.getElementById('theme-toggle').classList.remove('hidden');
-        }
-    }, 3000);
-</script>
-
 </body>
 
 </html>

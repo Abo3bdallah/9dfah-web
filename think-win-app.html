@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* إخفاء شريط التمرير */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
+
         :root {
             --color-yellow-light: #fde047;
             --color-yellow-dark: #f59e0b;
@@ -335,7 +339,7 @@
         .help-btn {
             position: fixed;
             top: 1rem;
-            left: 1rem;
+            right: 1rem;
             background-color: #334155;
             color: #e2e8f0;
             width: 3rem;

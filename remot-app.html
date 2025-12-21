@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
+        /* إخفاء شريط التمرير */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
+
         /* Basic styles for the body and to reset margins */
         body, html {
             margin: 0;
@@ -244,7 +248,7 @@
         #helpButton {
             position: fixed;
             top: 20px;
-            left: 20px; /* Top-left for RTL */
+            right: 20px; /* Top-right for RTL */
             width: 50px;
             height: 50px;
             font-size: 24px;

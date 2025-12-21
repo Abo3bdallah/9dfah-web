@@ -6,6 +6,10 @@
     <title>حروف رحال</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* إخفاء شريط التمرير */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
+
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap');
         body { font-family: 'Noto Sans Arabic', sans-serif; }
         .letter-btn:hover { transform: translateY(-2px); }
@@ -46,11 +50,11 @@
         </div>
 
         <!-- Settings Dropdown -->
-        <div class="absolute top-4 left-4 z-50">
+        <div class="absolute top-4 right-4 z-50">
             <button id="settingsBtn" class="text-white text-3xl p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors">
                 ⚙️
             </button>
-            <div id="settingsDropdown" class="hidden absolute top-14 left-0 w-48 bg-white/20 backdrop-blur-lg rounded-xl shadow-2xl p-4 transition-all">
+            <div id="settingsDropdown" class="hidden absolute top-14 right-0 w-48 bg-white/20 backdrop-blur-lg rounded-xl shadow-2xl p-4 transition-all">
                 <h4 class="text-white font-bold mb-2">عدد الفرق</h4>
                 <div class="flex flex-col gap-2 mb-4">
                     <button onclick="setTeamCount(2)" class="w-full text-center py-2 px-4 rounded-lg text-white font-semibold transition-colors bg-white/10 hover:bg-white/30">2 فرق</button>
