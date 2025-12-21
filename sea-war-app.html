@@ -204,6 +204,8 @@
          .ability-btn .front svg {
             width: 20px;
             height: 20px;
+            flex-shrink: 0;
+            overflow: visible;
         }
         .ability-btn:hover { filter: brightness(110%); }
         .ability-btn:hover .front {
@@ -262,6 +264,42 @@
             gap: 8px;
             font-family: var(--font-family);
             backdrop-filter: blur(5px);
+        }
+
+        /* Floating Fullscreen Button */
+        #fullscreenBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-family: "Segoe UI Symbol", sans-serif; /* Ensure symbol support */
+        }
+        
+        #fullscreenBtn:hover {
+            background: rgba(0, 242, 255, 0.2);
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+        
+        #fullscreenBtn:active {
+            transform: scale(0.95);
         }
         
         .neumorphic-btn svg {
@@ -898,34 +936,39 @@
         .cell.ship, .cell.mine { background: rgba(255, 255, 255, 0.05); }
         
         .cell.hit { 
-            background: transparent;
-            box-shadow: inset 0 0 20px var(--hit-color);
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), rgba(255,140,0,0.3), transparent 70%);
+            box-shadow: inset 0 0 22px var(--hit-color);
             border-color: var(--hit-color);
-            animation: hitPulse 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+            animation: hitPulse 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
         .cell.hit::after {
             content: '💥';
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             height: 100%;
         }
-
+        
         .cell.miss {
-            background: transparent;
-            box-shadow: inset 0 0 15px var(--miss-color);
+            background: rgba(0, 80, 140, 0.3);
+            box-shadow: inset 0 0 10px var(--miss-color);
             border-color: var(--miss-color);
-            animation: missRipple 0.6s ease;
         }
         .cell.miss::after {
             content: '';
-            width: 30%;
-            height: 30%;
-            background: var(--miss-color);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20%;
+            height: 20%;
             border-radius: 50%;
-            opacity: 0.5;
+            border: 2px solid var(--miss-color);
+            background: transparent;
+            transform: translate(-50%, -50%) scale(0.4);
+            opacity: 0.9;
+            animation: missRipple 0.6s ease-out forwards;
         }
 
         .cell.sunk { 
@@ -934,6 +977,40 @@
             animation: sunkPulse 2s infinite;
         }
         .cell.sinking-ship { animation: sinkingShip 1.5s ease forwards; }
+        .cell.ship.sunk.ship-reveal,
+        .cell.ship.ship-reveal {
+            animation: shipReveal 0.45s ease-out forwards;
+        }
+        .cell.mine.mine-reveal::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.55), transparent 70%);
+            transform: translate(-50%, -50%) scale(0.4);
+            opacity: 0.9;
+            pointer-events: none;
+            animation: mineReveal 0.7s ease-out forwards;
+        }
+        .cell.shark.shark-reveal::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 40%;
+            height: 40%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 0, 0, 0.85);
+            transform-origin: center;
+            transform: translate(-50%, -50%) scale(0.7);
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            animation: sharkPulse 0.55s ease-out 3;
+        }
         
         .cell.radar-reveal.water { animation: radarPulseWater 1.5s infinite; background: rgba(0, 242, 255, 0.1); }
         .cell.radar-reveal.hit { animation: radarPulseHit 1.5s infinite; background: rgba(255, 0, 0, 0.2); }
@@ -945,13 +1022,26 @@
 
         /* Define Animations */
         @keyframes hitPulse {
-            0% { scale: 1; }
-            50% { scale: 1.2; }
-            100% { scale: 1; }
+            0% { transform: scale(1); box-shadow: inset 0 0 0 rgba(255, 255, 255, 0.8), 0 0 0 rgba(255, 255, 255, 0.5); }
+            35% { transform: scale(1.12); box-shadow: inset 0 0 26px var(--hit-color), 0 0 18px rgba(255, 255, 255, 0.9); }
+            100% { transform: scale(1); box-shadow: inset 0 0 14px var(--hit-color); }
         }
         @keyframes missRipple {
-            0% { background: rgba(255,255,255,0.5); }
-            100% { background: transparent; }
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+            100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+        }
+        @keyframes shipReveal {
+            0% { transform: scale(0.95); filter: brightness(1.1); box-shadow: 0 0 0 var(--ship-wave-color, #ffffff); }
+            40% { transform: scale(1.08); filter: brightness(1.4); box-shadow: 0 0 18px var(--ship-wave-color, #ffffff); }
+            100% { transform: scale(1); filter: brightness(1); box-shadow: 0 0 6px rgba(0,0,0,0.4); }
+        }
+        @keyframes mineReveal {
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+            100% { transform: translate(-50%, -50%) scale(2.1); opacity: 0; }
+        }
+        @keyframes sharkPulse {
+            0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.9; box-shadow: 0 0 10px rgba(255,0,0,0.85); }
+            100% { transform: translate(-50%, -50%) scale(1.9); opacity: 0; box-shadow: 0 0 22px rgba(255,0,0,0); }
         }
 
         .controls { text-align: center; margin-bottom: 25px; }
@@ -1264,6 +1354,27 @@
             transform: translateY(-2px);
             border-color: rgba(255, 255, 255, 0.3);
         }
+        
+        /* Victory Modal Styles */
+        .modal-content.victory-modal-content {
+            background: linear-gradient(135deg, rgba(20, 30, 48, 0.95), rgba(36, 59, 85, 0.95));
+            border: 2px solid var(--primary-color);
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.3);
+        }
+        .victory-icon { font-size: 5rem; margin-bottom: 20px; animation: bounce 2s infinite; }
+        .victory-title { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .victory-team-name { font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: white; }
+        .victory-message { font-size: 1.2rem; color: #ccc; margin-bottom: 30px; }
+        .victory-actions { display: flex; gap: 15px; justify-content: center; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+        #confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+        /* Media Queries */
         .team-card-header {
             display: flex;
             justify-content: space-between;
@@ -1363,14 +1474,17 @@
         .cannonball {
             position: fixed;
             z-index: 9999;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle at 5px 5px, #666, #000);
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, var(--cannon-color), #7f8c8d 40%, #2c3e50);
             border-radius: 50%;
             pointer-events: none;
             left: 0;
             top: 0;
             opacity: 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            transform-origin: center;
+            --cannon-color: #dcdde1;
         }
 
         .particle {
@@ -1382,6 +1496,18 @@
             pointer-events: none;
             border-radius: 50%;
             animation: explode 0.7s ease-out forwards;
+        }
+
+        .trail-particle {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(220, 220, 220, 0.85), rgba(120, 120, 120, 0.7), transparent 70%);
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0.95;
+            animation: cannonTrail 0.6s ease-out forwards;
         }
 
         /* --- New Admin Panel UI --- */
@@ -1556,14 +1682,17 @@
         /* Animations */
         @keyframes fireCannonball {
             0% {
-                transform: translate(var(--start-x), var(--start-y)) scale(0.3);
+                transform: translate(var(--start-x), var(--start-y)) scale(0.4, 0.7);
+                box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
                 opacity: 1;
             }
             40% {
-                transform: translate(var(--mid-x), var(--mid-y)) scale(1.2);
+                transform: translate(var(--mid-x), var(--mid-y)) scale(1.05, 0.95);
+                box-shadow: 0 0 14px rgba(0, 0, 0, 0.9);
             }
             100% {
-                transform: translate(var(--end-x), var(--end-y)) scale(0.2);
+                transform: translate(var(--end-x), var(--end-y)) scale(0.7, 0.9);
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
                 opacity: 1;
             }
         }
@@ -1574,6 +1703,16 @@
             }
             100% {
                 transform: translate(var(--x), var(--y)) scale(0);
+                opacity: 0;
+            }
+        }
+        @keyframes cannonTrail {
+            0% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
                 opacity: 0;
             }
         }
@@ -1638,6 +1777,40 @@
         /* Screen Shake */
         .shake {
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .shake-hard {
+            animation: shakeHard 0.8s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shakeHard {
+            10%, 90% { transform: translate3d(-2px, 2px, 0) rotate(1deg); }
+            20%, 80% { transform: translate3d(4px, -4px, 0) rotate(-2deg); }
+            30%, 50%, 70% { transform: translate3d(-8px, 6px, 0) rotate(3deg); }
+            40%, 60% { transform: translate3d(8px, -6px, 0) rotate(-3deg); }
+        }
+
+        .shake-horizontal {
+            animation: shakeHorizontal 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shakeHorizontal {
+            10%, 90% { transform: translate3d(-5px, 0, 0); }
+            20%, 80% { transform: translate3d(10px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-15px, 0, 0); }
+            40%, 60% { transform: translate3d(15px, 0, 0); }
+        }
+        
+        .flash-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255, 69, 0, 0.4), transparent 90%);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            animation: flashAnim 0.8s ease-out;
+        }
+        @keyframes flashAnim {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.5); }
         }
 
         @keyframes shake {
@@ -1896,10 +2069,654 @@
                 transform: translateY(0);
             }
         }
+/* --- Victory Modal & Confetti --- */
+#gameOverModal {
+    background: radial-gradient(circle at center, rgba(20, 25, 40, 0.95), rgba(0, 0, 0, 0.98));
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Prevent scrolling on the modal container itself */
+    padding: 10px; /* Reduced padding */
+    height: 100vh; /* Full viewport height */
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.victory-modal-content {
+    background: rgba(0, 0, 0, 0.4); 
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    color: white;
+    text-align: center;
+    padding: 20px; /* Compact padding */
+    position: relative;
+    overflow: hidden; /* Contain children */
+    max-width: 1800px; /* Max width */
+    width: 98%; 
+    height: 95vh; /* Take up most of the screen height */
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Distribute space vertically */
+    margin: auto;
+}
+
+/* Podium Styles */
+.podium-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px; 
+    margin-bottom: 0; /* Remove bottom margin */
+    flex: 1; /* Allow to take available space */
+    width: 100%;
+    padding-top: 20px; /* Reduced from 60px to bring everything closer to center if needed, but flex-end handles it */
+    padding-bottom: 20px; /* Add bottom padding */
+    flex-wrap: nowrap; 
+    overflow: visible; /* Allow spillover for ribbons */
+}
+
+.podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    flex: 1;
+    max-width: 33%; /* Ensure 3 columns fit */
+    height: 100%; /* Fill container height */
+}
+
+/* Replaces podium-avatar */
+.podium-team-title {
+    --team-color: #fff; /* Default fallback */
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: -25px;
+    padding: 8px 25px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(40,40,40,0.9));
+    border-radius: 4px; /* Slight round for ribbon feel */
+    border: 2px solid var(--team-color);
+    border-left-width: 5px; /* Accent on sides */
+    border-right-width: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4), 0 0 10px var(--team-color);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease 0.2s;
+    white-space: nowrap;
+    max-width: 140%; 
+    width: auto;
+    min-width: 100px;
+    overflow: visible; /* Allow pseudo-elements */
+    text-overflow: ellipsis;
+    z-index: 20; 
+    position: relative;
+    color: var(--team-color) !important; /* Force team color text */
+}
+
+/* Ribbon Ends Effect */
+.podium-team-title::before,
+.podium-team-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    width: 20px;
+    height: 20px;
+    background: var(--team-color);
+    z-index: -1;
+    filter: brightness(0.6); /* Darker shade for fold */
+}
+.podium-team-title::before {
+    left: 5px;
+    transform: skewX(45deg);
+}
+.podium-team-title::after {
+    right: 5px;
+    transform: skewX(-45deg);
+}
+
+/* Shimmer Animation for First Place */
+@keyframes shimmerEffect {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.podium-place.first .podium-team-title {
+    background: linear-gradient(90deg, 
+        rgba(0,0,0,0.9) 0%, 
+        rgba(0,0,0,0.9) 40%, 
+        rgba(255,255,255,0.4) 50%, 
+        rgba(0,0,0,0.9) 60%, 
+        rgba(0,0,0,0.9) 100%);
+    background-size: 200% 100%;
+    animation: shimmerEffect 4s infinite linear, floatTitle 3s ease-in-out infinite;
+    font-size: 1.5rem;
+    padding: 10px 35px;
+    margin-bottom: -30px;
+    border-width: 3px;
+    border-left-width: 8px;
+    border-right-width: 8px;
+}
+
+.podium-place.second .podium-team-title {
+    background: linear-gradient(90deg, 
+        rgba(0,0,0,0.9) 0%, 
+        rgba(0,0,0,0.9) 40%, 
+        rgba(192,192,192,0.4) 50%, 
+        rgba(0,0,0,0.9) 60%, 
+        rgba(0,0,0,0.9) 100%);
+    background-size: 200% 100%;
+    animation: shimmerEffect 4s infinite linear, floatTitle 3s ease-in-out infinite;
+    font-size: 1.3rem;
+    padding: 10px 30px;
+    margin-bottom: -30px;
+    border-width: 3px;
+    border-left-width: 8px;
+    border-right-width: 8px;
+}
+
+.podium-place.third .podium-team-title {
+    background: linear-gradient(90deg, 
+        rgba(0,0,0,0.9) 0%, 
+        rgba(0,0,0,0.9) 40%, 
+        rgba(205,127,50,0.4) 50%, 
+        rgba(0,0,0,0.9) 60%, 
+        rgba(0,0,0,0.9) 100%);
+    background-size: 200% 100%;
+    animation: shimmerEffect 4s infinite linear, floatTitle 3s ease-in-out infinite;
+    font-size: 1.2rem;
+    padding: 10px 25px;
+    margin-bottom: -30px;
+    border-width: 3px;
+    border-left-width: 8px;
+    border-right-width: 8px;
+}
+
+.podium-place.reveal-visible .podium-team-title {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.podium-rank-display {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 0;
+    line-height: 1;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.4));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+}
+
+.podium-place.first .podium-rank-display {
+    background: linear-gradient(to bottom, #ffd700, #fff8dc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+    font-size: 5rem;
+}
+.podium-place.second .podium-rank-display {
+    background: linear-gradient(to bottom, #c0c0c0, #f5f5f5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.podium-place.third .podium-rank-display {
+    background: linear-gradient(to bottom, #cd7f32, #f4a460);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.podium-bar {
+    width: 90%; 
+    height: 0; /* Start at 0 for animation */
+    /* max-height removed to prevent clamping equal heights */
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    position: relative;
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: height 2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Slower animation */
+    overflow: hidden; 
+}
+
+.podium-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 5px;
+    opacity: 0;
+    transition: opacity 0.5s 0.2s; /* Reveal quickly */
+}
+
+.podium-bar .score-val {
+    margin-top: 5px;
+    font-weight: 900;
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 0 0 15px currentColor;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.5s 0.2s; /* Reveal quickly */
+}
+
+.podium-place.reveal-visible .podium-name,
+.podium-place.reveal-visible .podium-bar .score-val {
+    opacity: 1;
+}
+
+.podium-stats {
+    font-size: 0.9rem;
+    display: flex;
+    gap: 5px;
+    margin-top: auto;
+    background: rgba(0,0,0,0.4);
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 10px; /* Add some bottom spacing inside bar */
+    opacity: 0;
+    transition: opacity 0.5s 1.2s;
+    flex-direction: column;
+    text-align: center;
+}
+.podium-place.reveal-visible .podium-stats {
+    opacity: 1;
+}
+
+/* First Place - The Winner - CENTER */
+.podium-place.first {
+    z-index: 10;
+    order: 2; 
+    margin: 0 10px; 
+}
+/* Sea Background Effect */
+.sea-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    background: radial-gradient(circle at 50% 30%, #003366, #001133, #000000);
+    overflow: hidden;
+    pointer-events: none;
+}
+.bubble {
+    position: absolute;
+    bottom: -20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: rise 10s infinite ease-in;
+}
+@keyframes rise {
+    0% { bottom: -20px; transform: translateX(0); opacity: 0; }
+    10% { opacity: 0.5; }
+    50% { transform: translateX(20px); }
+    100% { bottom: 110%; transform: translateX(-20px); opacity: 0; }
+}
+
+.stats-extra {
+    font-size: 0.85em; 
+    opacity: 0.9; 
+    height: 0; 
+    overflow: hidden; 
+    transition: all 0.3s ease; 
+    border-top: 1px solid rgba(255,255,255,0.2); 
+    margin-top: 0px;
+}
+
+.podium-place:hover .stats-extra { 
+    height: 25px; 
+    margin-top: 5px; 
+}
+
+/* Specific styles for non-first places to keep stats compact */
+.podium-place:not(.first) .podium-stats {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    gap: 2px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+}
+
+.podium-place:not(.first):hover .stats-extra {
+    height: 20px;
+    margin-top: 3px;
+    font-size: 0.8em;
+}
+
+/* Hover Details */
+.podium-bar {
+    cursor: pointer; /* Indicate interactivity */
+}
+.podium-bar:hover .podium-stats {
+    background: rgba(0, 0, 0, 0.85);
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+    border-color: rgba(255,255,255,0.4);
+}
+/* Reduce hover scale for non-first places */
+.podium-place:not(.first) .podium-bar:hover .podium-stats {
+    transform: scale(1.02) translateY(-2px);
+    background: rgba(0, 0, 0, 0.7); /* Slightly less opaque */
+}
+.podium-bar:hover {
+    filter: brightness(1.1);
+}
+
+.podium-place.first .podium-bar {
+    background: linear-gradient(to bottom, rgba(255, 215, 0, 0.2), rgba(0,0,0,0.6));
+    border-top: 6px solid #ffd700;
+    box-shadow: 0 0 80px rgba(255, 215, 0, 0.3);
+}
+.podium-place.first.reveal-visible .podium-bar {
+    height: 50vh; 
+}
+/* Removed duplicate .podium-place.first .podium-team-title block */
+
+@keyframes floatTitle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Second Place - RIGHT (in RTL) */
+.podium-place.second {
+    z-index: 5;
+    order: 1; /* First in visual order (Right) */
+}
+.podium-place.second .podium-bar {
+    background: linear-gradient(to bottom, rgba(192, 192, 192, 0.2), rgba(0,0,0,0.6));
+    border-top: 6px solid #c0c0c0;
+}
+.podium-place.second.reveal-visible .podium-bar {
+    height: 35vh; /* Reduced height for 2nd place to create gap */
+}
+
+/* Third Place - LEFT (in RTL) */
+.podium-place.third {
+    z-index: 5;
+    order: 3; /* Last in visual order (Left) */
+}
+.podium-place.third .podium-bar {
+    background: linear-gradient(to bottom, rgba(205, 127, 50, 0.2), rgba(0,0,0,0.6));
+    border-top: 6px solid #cd7f32;
+}
+.podium-place.third.reveal-visible .podium-bar {
+    height: 25vh; /* Reduced height for 3rd place */
+}
+
+/* Animations classes */
+.reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-pop {
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.victory-title {
+    font-size: 3rem; /* Slightly smaller title to save space */
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to bottom, #ffd700, #fff, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900;
+    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
+    opacity: 0;
+    transition: opacity 0.5s;
+    letter-spacing: -2px;
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 20px;
+}
+
+.victory-message {
+    font-size: 1.6rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.victory-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 100;
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    left: auto;
+    width: 40px; /* Smaller close button */
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fff;
+    transition: all 0.3s;
+    z-index: 1000;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+.close-modal:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); border-color: white; }
+
+/* Confetti */
+#confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #f00;
+    top: -10px;
+    animation: fall linear forwards;
+}
+@keyframes fall {
+    to { transform: translateY(100vh) rotate(720deg); }
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 900px) {
+    .victory-modal-content {
+        padding: 10px;
+        width: 98%;
+        height: 98vh;
+        max-height: 98vh;
+        justify-content: space-between;
+        border-radius: 15px;
+    }
+
+    .victory-title {
+        font-size: 1.8rem;
+        margin-top: 40px; /* Space for close button */
+        margin-bottom: 10px;
+    }
+
+    .podium-container {
+        flex-direction: row; /* Keep row layout */
+        align-items: flex-end;
+        gap: 5px;
+        padding-top: 40px;
+        height: auto;
+        flex: 1;
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    /* Keep order logic from desktop (RTL: 2nd-1st-3rd) */
+    .podium-place { 
+        width: 32%;
+        max-width: 32%;
+        margin: 0;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    
+    /* Adjust bar heights for mobile to fit */
+    .podium-place.first.reveal-visible .podium-bar { height: 28vh; }
+    .podium-place.second.reveal-visible .podium-bar { height: 18vh; }
+    .podium-place.third.reveal-visible .podium-bar { height: 15vh; }
+
+    .podium-bar {
+        width: 100%;
+        max-width: none;
+        flex-direction: column;
+        padding: 5px;
+        justify-content: flex-end;
+        border-radius: 8px 8px 0 0;
+        border-top: none;
+        border-left: none;
+    }
+    
+    /* Restore background/borders from desktop styles */
+    .podium-place.first .podium-bar { background: linear-gradient(to bottom, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.1)); border-top: 4px solid #ffd700; }
+    .podium-place.second .podium-bar { background: linear-gradient(to bottom, rgba(192, 192, 192, 0.4), rgba(192, 192, 192, 0.1)); border-top: 4px solid #c0c0c0; }
+    .podium-place.third .podium-bar { background: linear-gradient(to bottom, rgba(205, 127, 50, 0.4), rgba(205, 127, 50, 0.1)); border-top: 4px solid #cd7f32; }
+
+    .podium-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        border-width: 2px;
+    }
+    
+    .podium-place.first .podium-avatar {
+        width: 60px;
+        height: 60px;
+        top: -35px;
+        font-size: 1.5rem;
+    }
+
+    .podium-name {
+        text-align: center;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+        margin-bottom: 2px;
+    }
+    
+    .podium-bar .score-val {
+        font-size: 1.1rem;
+        margin-top: 0;
+    }
+    
+    .podium-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        padding: 2px;
+    }
+    
+    .stat-item {
+        font-size: 0.6rem;
+        padding: 2px;
+    }
+
+    .victory-actions {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+    
+    .btn.primary-btn, .btn.secondary-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        min-width: auto;
+    }
+    
+    #gameOverModal {
+        align-items: center;
+        padding: 0;
+    }
+}
+
+/* Stats Table Styles */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 0.9rem;
+}
+.stats-table th, .stats-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.stats-table th {
+    background: rgba(255,255,255,0.1);
+    font-weight: bold;
+    color: var(--primary-color);
+}
+.stats-table tr:last-child td {
+    border-bottom: none;
+}
+.stats-table tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+
     </style>
 </head>
 <body>
     <div id="toast-container"></div>
+    
+    <!-- Floating Fullscreen Button -->
+    <button id="fullscreenBtn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
+
     <div class="game-container">
         <div class="game-header">
             <h1 class="game-title"> حروب البحار🚢 </h1>
@@ -2156,15 +2973,15 @@
 
     <!-- Game Over Modal -->
     <div id="gameOverModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">انتهت المعركة!</h2>
-                <span class="close" onclick="closeGameOverModal()">&times;</span>
-            </div>
-            <h3 class="winner-title" id="winnerTitle"></h3>
-            <div class="final-scores" id="finalScores"></div>
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn" onclick="game.resetGame()">🚀 ابدأ لعبة جديدة</button>
+        <div class="modal-content victory-modal-content">
+            <span class="close-modal" onclick="closeGameOverModal()">&times;</span>
+            <div class="victory-icon">🏆</div>
+            <h2 class="victory-title">مبروك للفائز!</h2>
+            <div id="winnerText" class="victory-team-name"></div>
+            <p class="victory-message">لقد سيطرتم على البحار ببراعة!</p>
+            <div class="victory-actions">
+                <button class="neumorphic-btn primary" onclick="game.resetGame(true); closeGameOverModal()">🔄 لعبة جديدة</button>
+                <button class="neumorphic-btn" onclick="closeGameOverModal()">👁️ عرض الخريطة</button>
             </div>
         </div>
     </div>
@@ -2249,7 +3066,310 @@
     <!-- END: How to Play Modal -->
 
 
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content victory-modal-content">
+            <span class="close-modal" onclick="closeGameOverModal()">&times;</span>
+            <div class="victory-icon">🏆</div>
+            <h2 class="victory-title">مبروك للفائز!</h2>
+            <div id="winnerText" class="victory-team-name"></div>
+            <p class="victory-message">لقد سيطرتم على البحار ببراعة!</p>
+            <div class="victory-actions">
+                <button class="neumorphic-btn primary" onclick="game.resetGame(true); closeGameOverModal()">🔄 لعبة جديدة</button>
+                <button class="neumorphic-btn" onclick="closeGameOverModal()">👁️ عرض الخريطة</button>
+            </div>
+        </div>
+    </div>
+    <div id="confetti-container"></div>
     <script>
+        // --- Confetti & Modal Logic ---
+        function startConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#0ff', '#f0f'];
+            
+            for (let i = 0; i < 150; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                conf.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(conf);
+            }
+            
+            setTimeout(() => { container.innerHTML = ''; }, 6000);
+        }
+
+        function showGameOverModal(winnerTeam) {
+            const modal = document.getElementById('gameOverModal');
+            // Try to find or create content wrapper if structure changed
+            let content = modal.querySelector('.victory-modal-content');
+            if(!content) {
+                // Fallback recreation if needed
+                content = document.createElement('div');
+                content.className = 'victory-modal-content';
+                modal.appendChild(content);
+            }
+
+            // 1. Prepare Data
+            // If winnerTeam is provided, use it. Otherwise calculate from sorted.
+            let sortedTeams = [...(game.teams || [])].sort((a, b) => b.score.total - a.score.total);
+            const winner = winnerTeam || sortedTeams[0];
+            
+            // Re-sort ensuring winner is first (in case of ties handling)
+            // Actually, let's trust the input or the score sort.
+            
+            // Clear previous content
+            content.innerHTML = `
+                <div class="sea-background">
+                    ${Array.from({length: 15}).map(() => `
+                        <div class="bubble" style="
+                            left: ${Math.random() * 100}%; 
+                            width: ${Math.random() * 20 + 5}px; 
+                            height: ${Math.random() * 20 + 5}px; 
+                            animation-duration: ${Math.random() * 10 + 5}s; 
+                            animation-delay: ${Math.random() * 5}s;
+                        "></div>
+                    `).join('')}
+                </div>
+                <span class="close-modal" onclick="closeGameOverModal()">&times;</span>
+                <h2 class="victory-title" id="victoryTitle">🏆 الفائز: ${winner ? winner.name : 'تعادل'}</h2>
+                
+                <div class="podium-container" id="podiumContainer">
+                    <!-- Podium will be injected here -->
+                </div>
+
+                <div id="allStatsContainer" style="display:none; width:100%; overflow-y:auto; flex:1; margin:10px 0; background:rgba(0,0,0,0.3); border-radius:15px; padding:10px; z-index: 10;">
+                    <!-- All Stats Table will be injected here -->
+                </div>
+
+                <div class="victory-actions" id="victoryActions">
+                    <button class="neumorphic-btn primary" onclick="game.resetGame(true); closeGameOverModal()">🔄 لعبة جديدة</button>
+                    <button class="neumorphic-btn" id="toggleStatsBtn" onclick="toggleVictoryStats()">📊 عرض الإحصائيات</button>
+                    <button class="neumorphic-btn" onclick="closeGameOverModal()">👁️ عرض الخريطة</button>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+            
+            // 2. Start Animation Sequence
+            const podiumContainer = document.getElementById('podiumContainer');
+            // const statsSummary = document.getElementById('statsSummary'); // Removed
+            const victoryTitle = document.getElementById('victoryTitle');
+            const victoryActions = document.getElementById('victoryActions');
+
+            // Identify top 3
+            const first = sortedTeams[0];
+            const second = sortedTeams.length > 1 ? sortedTeams[1] : null;
+            const third = sortedTeams.length > 2 ? sortedTeams[2] : null;
+
+            // Helper to create podium element
+            const createPodiumEl = (team, rank, extraClass) => {
+                const div = document.createElement('div');
+                div.className = `podium-place ${extraClass}`;
+                
+                // Mini stats for everyone
+                const alive = team.ships.filter(s => !s.sunk).length;
+                const hits = team.score.hits || 0;
+                
+                div.innerHTML = `
+                    <div class="podium-team-title" style="--team-color: ${team.color || '#fff'};">
+                        ${team.name}
+                    </div>
+                    <div class="podium-bar">
+                        <div class="podium-rank-display">#${rank}</div>
+                        
+                        <div class="score-val" id="score-${team.id}">0</div>
+                        <div style="font-size:0.8rem; opacity:0.8;">نقطة</div>
+                        
+                        <div class="podium-stats">
+                            <div style="display:flex; gap:10px; justify-content:center;">
+                                <span title="سفن متبقية">🚢 ${alive}</span>
+                                <span title="إصابات">🎯 ${hits}</span>
+                            </div>
+                            <div class="stats-extra">
+                                <span style="display:block; padding-top:2px;">الدقة: ${Number((team.score.accuracy || 0).toFixed(2))}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return div;
+            };
+
+            // Sequence Timing
+            let delay = 500;
+
+            // 3rd Place
+            // Logic handled in animation sequence below
+            
+            // 2nd Place
+            // Logic handled in animation sequence below
+            
+            // Clear container
+            podiumContainer.innerHTML = '';
+            
+            const p2 = second ? createPodiumEl(second, 2, 'second') : null;
+            const p1 = first ? createPodiumEl(first, 1, 'first') : null;
+            const p3 = third ? createPodiumEl(third, 3, 'third') : null;
+
+            // Append all (CSS 'order' property handles visual arrangement)
+            if(p2) podiumContainer.appendChild(p2);
+            if(p1) podiumContainer.appendChild(p1);
+            if(p3) podiumContainer.appendChild(p3);
+
+            // Now animate visibility
+            delay = 300;
+            
+            // Reveal 3rd
+            if (p3) {
+                setTimeout(() => {
+                    p3.classList.add('reveal-visible', 'reveal-pop');
+                    if(window.soundManager) soundManager._playSwooshSound(300);
+                    animateValue(p3.querySelector('.score-val'), 0, third.score.total, 2000);
+                }, delay);
+                delay += 2500; // Wait for animation to finish
+            }
+
+            // Reveal 2nd
+            if (p2) {
+                setTimeout(() => {
+                    p2.classList.add('reveal-visible', 'reveal-pop');
+                    if(window.soundManager) soundManager._playSwooshSound(400);
+                    animateValue(p2.querySelector('.score-val'), 0, second.score.total, 2000);
+                }, delay);
+                delay += 2500; // Wait for animation to finish
+            }
+
+            // Reveal 1st (Winner)
+            if (p1) {
+                setTimeout(() => {
+                    p1.classList.add('reveal-visible', 'reveal-pop');
+                    victoryTitle.style.opacity = 1;
+                    if(window.soundManager) {
+                        soundManager._playPopSound();
+                        setTimeout(() => soundManager._playVictorySound(), 200);
+                    }
+                    startConfetti();
+                    animateValue(p1.querySelector('.score-val'), 0, first.score.total, 2500);
+                    
+                    // Show Stats for Winner - REMOVED per user request
+                    /*
+                    const w = first;
+                    const alive = w.ships.filter(s => !s.sunk).length;
+                    statsSummary.innerHTML = `
+                        <div style="font-size: 1.2rem; margin-bottom: 10px; color: #ffd700;">إحصائيات البطل</div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-val">${w.score.total}</div>
+                                <div class="stat-lbl">النقاط</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-val">${w.score.hits || 0}</div>
+                                <div class="stat-lbl">إصابات</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-val">${w.score.sinks || 0}</div>
+                                <div class="stat-lbl">إغراق</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-val">${w.score.accuracy || 0}%</div>
+                                <div class="stat-lbl">الدقة</div>
+                            </div>
+                             <div class="stat-box">
+                                <div class="stat-val">${alive}</div>
+                                <div class="stat-lbl">سفن متبقية</div>
+                            </div>
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        statsSummary.classList.add('reveal-visible');
+                        victoryActions.style.opacity = 1;
+                    }, 1000);
+                    */
+                   
+                   // Just show actions
+                   setTimeout(() => {
+                       victoryActions.style.opacity = 1;
+                   }, 500);
+
+                }, delay);
+            }
+        }
+
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function closeGameOverModal() {
+            document.getElementById('gameOverModal').style.display = 'none';
+        }
+
+        function toggleVictoryStats() {
+            const podium = document.getElementById('podiumContainer');
+            const stats = document.getElementById('allStatsContainer');
+            const btn = document.getElementById('toggleStatsBtn');
+            
+            if (stats.style.display === 'none') {
+                // Show Stats
+                podium.style.display = 'none';
+                stats.style.display = 'block';
+                renderAllStatsTable(stats);
+                btn.innerHTML = '🏆 عرض المنصة';
+            } else {
+                // Show Podium
+                stats.style.display = 'none';
+                podium.style.display = 'flex';
+                btn.innerHTML = '📊 عرض الإحصائيات';
+            }
+        }
+
+        function renderAllStatsTable(container) {
+            let sortedTeams = [...(game.teams || [])].sort((a, b) => b.score.total - a.score.total);
+            
+            let html = `
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الفريق</th>
+                            <th>النقاط</th>
+                            <th>إصابات</th>
+                            <th>دقة</th>
+                            <th>سفن متبقية</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            sortedTeams.forEach((team, index) => {
+                const alive = team.ships.filter(s => !s.sunk).length;
+                const accuracy = Number((team.score.accuracy || 0).toFixed(2));
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td style="color:${team.color}; font-weight:bold;">${team.name}</td>
+                        <td style="color:#ffd700;">${team.score.total}</td>
+                        <td>${team.score.hits || 0}</td>
+                        <td>${accuracy}%</td>
+                        <td>${alive}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
         // --- SVG Icons ---
         const icons = {
             settings: `<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>`,
@@ -2258,8 +3378,8 @@
             timer: `<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>`,
             soundOn: `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>`,
             soundOff: `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>`,
-            radar: `<circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>`,
-            doubleShot: `<circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4 4V8"/>`,
+            radar: `<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><line x1="12" y1="12" x2="19" y2="5"></line>`,
+            doubleShot: `<circle cx="12" cy="12" r="9"/><path d="M8 12h8m-4 4V8"/>`,
             save: `<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline>`,
             load: `<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>`,
             undo: `<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>`,
@@ -2321,13 +3441,186 @@
                 
                 switch (type) {
                     case 'fire': this._playFireSound(); break;
+                    case 'whistle': this._playWhistleSound(); break;
                     case 'splash': this._playSplashSound(); break;
                     case 'hit': this._playHitSound(); break;
                     case 'sink': this._playSinkSound(); break;
                     case 'radar': this._playRadarSound(); break;
+                    case 'shark': this._playSharkSound(); break;
+                    case 'explosion': this._playExplosionSound(); break;
+                    case 'shark-bite': this._playSharkBiteSound(); break;
+                    case 'victory': this._playVictorySound(); break;
                 }
             }
             
+            _playSharkBiteSound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                // Crunch sound
+                const bufferSize = context.sampleRate * 0.4;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (context.sampleRate * 0.1));
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+                
+                const noiseFilter = context.createBiquadFilter();
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.setValueAtTime(1000, now);
+                noiseFilter.frequency.linearRampToValueAtTime(100, now + 0.3);
+                
+                const noiseGain = context.createGain();
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+                
+                noiseGain.gain.setValueAtTime(1, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                
+                noise.start(now);
+                noise.stop(now + 0.4);
+
+                // Splash sound overlay
+                const splashOsc = context.createOscillator();
+                const splashGain = context.createGain();
+                splashOsc.connect(splashGain);
+                splashGain.connect(context.destination);
+                splashOsc.type = 'triangle';
+                splashOsc.frequency.setValueAtTime(150, now);
+                splashOsc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+                splashGain.gain.setValueAtTime(0.5, now);
+                splashGain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                splashOsc.start(now);
+                splashOsc.stop(now + 0.3);
+            }
+
+            _playExplosionSound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                // Low frequency oscillator for the "boom"
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                osc.connect(gain);
+                gain.connect(context.destination);
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.exponentialRampToValueAtTime(10, now + 1);
+                
+                gain.gain.setValueAtTime(1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1);
+                
+                osc.start(now);
+                osc.stop(now + 1);
+                
+                // Noise for the "crash/rumble"
+                const bufferSize = context.sampleRate * 1.5;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+                
+                const noiseFilter = context.createBiquadFilter();
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.setValueAtTime(1000, now);
+                noiseFilter.frequency.linearRampToValueAtTime(100, now + 1);
+                
+                const noiseGain = context.createGain();
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+                
+                noiseGain.gain.setValueAtTime(0.8, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+                
+                noise.start(now);
+                noise.stop(now + 1.5);
+            }
+
+            _playVictorySound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                // Fanfare melody: C4, E4, G4, C5 (Staggered for excitement)
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+                const times = [0, 0.15, 0.3, 0.6, 0.75, 1.2]; // Faster arpeggio
+                
+                notes.forEach((freq, i) => {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+                    
+                    osc.type = i % 2 === 0 ? 'triangle' : 'square'; // Mix waves for richness
+                    osc.frequency.value = freq;
+                    
+                    gain.gain.setValueAtTime(0, now + times[i]);
+                    gain.gain.linearRampToValueAtTime(0.4, now + times[i] + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + times[i] + 0.8); // Longer sustain
+                    
+                    osc.start(now + times[i]);
+                    osc.stop(now + times[i] + 1.0);
+                });
+            }
+
+            _playSwooshSound(pitch = 200) {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                const noiseBuffer = context.createBuffer(1, context.sampleRate * 0.5, context.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < noiseBuffer.length; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = context.createBufferSource();
+                noise.buffer = noiseBuffer;
+                const noiseFilter = context.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(pitch, now);
+                noiseFilter.frequency.exponentialRampToValueAtTime(pitch * 4, now + 0.3); // Sweep up
+                noiseFilter.Q.value = 1;
+
+                const gain = context.createGain();
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.3, now + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                noise.connect(noiseFilter);
+                noiseFilter.connect(gain);
+                gain.connect(context.destination);
+
+                noise.start(now);
+            }
+
+            _playPopSound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                
+                osc.connect(gain);
+                gain.connect(context.destination);
+                
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+
+
             _playRadarSound() {
                 const context = this.audioContext;
                 const now = context.currentTime;
@@ -2349,15 +3642,104 @@
             }
 
             _playFireSound() {
-                const context = this.audioContext; const now = context.currentTime;
-                const osc = context.createOscillator(); const gain = context.createGain();
-                osc.connect(gain); gain.connect(context.destination);
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now); osc.stop(now + 0.3);
+                const context = this.audioContext;
+                const now = context.currentTime;
+
+                // LAYER 1: Deep Bass Boom (The heavy expansion)
+                const osc = context.createOscillator();
+                const oscGain = context.createGain();
+                osc.connect(oscGain);
+                oscGain.connect(context.destination);
+
+                osc.type = 'triangle'; // Richer than sine
+                osc.frequency.setValueAtTime(180, now); // Higher start for the "crack"
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.4); // Deep drop
+
+                oscGain.gain.setValueAtTime(0, now);
+                oscGain.gain.linearRampToValueAtTime(1.0, now + 0.01); // Fast attack
+                oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                osc.start(now);
+                osc.stop(now + 0.4);
+
+                // LAYER 2: Air Blast (The explosive noise)
+                const bufferSize = context.sampleRate * 0.8;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1);
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+
+                const noiseFilter = context.createBiquadFilter();
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.setValueAtTime(1500, now); // Sharp start
+                noiseFilter.frequency.exponentialRampToValueAtTime(100, now + 0.3); // Muffles quickly
+
+                const noiseGain = context.createGain();
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+
+                noiseGain.gain.setValueAtTime(0, now);
+                noiseGain.gain.linearRampToValueAtTime(0.8, now + 0.01);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.6); // Long tail
+
+                noise.start(now);
+                noise.stop(now + 0.6);
+            }
+
+            _playWhistleSound() {
+                const context = this.audioContext;
+                const now = context.currentTime;
+                
+                // Whistle / Shell flight sound
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                
+                osc.connect(gain);
+                gain.connect(context.destination);
+                
+                // High pitch sine wave sweeping down (Doppler effect)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.6);
+                
+                // Fade in and out to simulate passing by
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.1, now + 0.1); // Low volume whistle
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+                
+                osc.start(now);
+                osc.stop(now + 0.6);
+
+                // Add wind noise for speed sensation
+                const bufferSize = context.sampleRate * 0.6;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = context.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(600, now);
+                filter.frequency.linearRampToValueAtTime(200, now + 0.6);
+
+                const noiseGain = context.createGain();
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+
+                noiseGain.gain.setValueAtTime(0, now);
+                noiseGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
+                noiseGain.gain.linearRampToValueAtTime(0, now + 0.6);
+
+                noise.start(now);
+                noise.stop(now + 0.6);
             }
 
             _playSplashSound() {
@@ -2376,40 +3758,178 @@
             }
 
             _playHitSound() {
-                const context = this.audioContext; const now = context.currentTime;
-                const thudOsc = context.createOscillator(); const thudGain = context.createGain();
-                thudOsc.connect(thudGain); thudGain.connect(context.destination);
-                thudOsc.type = 'sine';
-                thudOsc.frequency.setValueAtTime(100, now);
-                thudOsc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
-                thudGain.gain.setValueAtTime(0.8, now);
-                thudGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-                thudOsc.start(now); thudOsc.stop(now + 0.15);
+                const context = this.audioContext;
+                const now = context.currentTime;
 
-                const bufferSize = context.sampleRate * 0.2;
+                // 1. Sharp Impact Explosion (The Hit)
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                osc.connect(gain);
+                gain.connect(context.destination);
+
+                // Square wave gives a "distorted" heavy hit sound
+                osc.type = 'square'; 
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+
+                gain.gain.setValueAtTime(0.6, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+
+                // 2. Fire Sizzle (The Burn) - Adds excitement
+                const bufferSize = context.sampleRate * 0.5;
                 const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
                 const output = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
-                const noise = context.createBufferSource(); noise.buffer = buffer;
-                const noiseFilter = context.createBiquadFilter(); noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 1000;
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = context.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(1000, now);
+                
                 const noiseGain = context.createGain();
-                noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(context.destination);
-                noiseGain.gain.setValueAtTime(0.4, now);
-                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                noise.start(now); noise.stop(now + 0.2);
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+
+                noiseGain.gain.setValueAtTime(0.5, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                noise.start(now);
+                noise.stop(now + 0.4);
+
+                // 3. Debris Scatter (High frequency detail)
+                const debrisOsc = context.createOscillator();
+                const debrisGain = context.createGain();
+                debrisOsc.connect(debrisGain);
+                debrisGain.connect(context.destination);
+
+                debrisOsc.type = 'sawtooth';
+                debrisOsc.frequency.setValueAtTime(800, now);
+                debrisOsc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+
+                debrisGain.gain.setValueAtTime(0.3, now);
+                debrisGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                debrisOsc.start(now);
+                debrisOsc.stop(now + 0.2);
             }
 
             _playSinkSound() {
-                const context = this.audioContext; const now = context.currentTime;
-                const osc = context.createOscillator(); const gain = context.createGain();
-                osc.connect(gain); gain.connect(context.destination);
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(200, now);
-                osc.frequency.exponentialRampToValueAtTime(50, now + 1.5);
-                gain.gain.setValueAtTime(0.4, now);
-                gain.gain.linearRampToValueAtTime(0, now + 1.5);
-                osc.start(now); osc.stop(now + 1.5);
-                for(let i = 0; i < 5; i++) { this._createBubble(now + i * 0.25); }
+                const context = this.audioContext;
+                const now = context.currentTime;
+
+                // 1. IMPACT: Muffled Explosion (Underwater boom)
+                // Duration: 0.0s -> 1.0s
+                const boomOsc = context.createOscillator();
+                const boomGain = context.createGain();
+                boomOsc.connect(boomGain);
+                boomGain.connect(context.destination);
+                
+                boomOsc.type = 'triangle'; 
+                boomOsc.frequency.setValueAtTime(120, now);
+                boomOsc.frequency.exponentialRampToValueAtTime(20, now + 1.0); 
+                
+                boomGain.gain.setValueAtTime(0, now);
+                boomGain.gain.linearRampToValueAtTime(0.8, now + 0.05);
+                boomGain.gain.exponentialRampToValueAtTime(0.01, now + 1.0); // Audible tail
+                
+                boomOsc.start(now);
+                boomOsc.stop(now + 1.0);
+
+                // 2. IMPACT TEXTURE: Debris Noise
+                // Duration: 0.0s -> 0.8s
+                const bufferSize = context.sampleRate * 1.0;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = context.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = context.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(600, now);
+                filter.frequency.linearRampToValueAtTime(100, now + 0.8);
+
+                const noiseGain = context.createGain();
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(context.destination);
+
+                noiseGain.gain.setValueAtTime(0.5, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+
+                noise.start(now);
+                noise.stop(now + 0.8);
+
+
+                // 3. STRESS: Metal Groan
+                // Starts: 0.3s (overlaps tail of explosion)
+                // Duration: 1.5s
+                // Ends: 1.8s
+                const createGroan = (freq, startDelay, duration, vol) => {
+                    const osc = context.createOscillator();
+                    const gain = context.createGain();
+                    osc.connect(gain);
+                    gain.connect(context.destination);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + startDelay);
+                    osc.frequency.linearRampToValueAtTime(freq * 0.8, now + startDelay + duration); 
+
+                    gain.gain.setValueAtTime(0, now + startDelay);
+                    gain.gain.linearRampToValueAtTime(vol, now + startDelay + 0.2); 
+                    gain.gain.linearRampToValueAtTime(0, now + startDelay + duration); 
+
+                    osc.start(now + startDelay);
+                    osc.stop(now + startDelay + duration);
+                };
+
+                createGroan(140, 0.3, 1.5, 0.25); 
+                createGroan(144, 0.3, 1.5, 0.20); 
+
+
+                // 4. AFTERMATH: Bubbles & Gurgle
+                // Starts: 0.8s (midway through groan)
+                // Duration: 1.4s
+                // Ends: 2.2s (Total sound approx 2.2s)
+                const createGurgle = (startTime) => {
+                    const bufferSize = context.sampleRate * 2.0;
+                    const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    const noise = context.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = context.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(400, startTime);
+                    filter.frequency.linearRampToValueAtTime(800, startTime + 1.0);
+                    filter.Q.value = 6;
+
+                    const gain = context.createGain();
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(context.destination);
+
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.4, startTime + 0.4); 
+                    gain.gain.linearRampToValueAtTime(0, startTime + 1.4);
+
+                    noise.start(startTime);
+                    noise.stop(startTime + 1.4);
+                };
+
+                createGurgle(now + 0.8); 
             }
 
             _createBubble(startTime){
@@ -2427,6 +3947,33 @@
                 gain.gain.setValueAtTime(0.5, startTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
                 noise.start(startTime); noise.stop(startTime + 0.1);
+            }
+
+            _playSharkSound() {
+                const context = this.audioContext; const now = context.currentTime;
+                const osc = context.createOscillator(); const gain = context.createGain();
+                osc.connect(gain); gain.connect(context.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(60, now + 0.4);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+
+                const bufferSize = context.sampleRate * 0.4;
+                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+                const output = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+                const noise = context.createBufferSource(); noise.buffer = buffer;
+                const filter = context.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.value = 400;
+                filter.Q.value = 1.5;
+                const noiseGain = context.createGain();
+                noise.connect(filter); filter.connect(noiseGain); noiseGain.connect(context.destination);
+                noiseGain.gain.setValueAtTime(0.25, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                noise.start(now); noise.stop(now + 0.4);
             }
         }
 
@@ -2986,15 +4533,30 @@
             updateScoreboard() {
                 if (!this.scoreboardVisible) return;
                 const grid = document.getElementById('scoresGrid');
-                const sorted = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+                // Use original teams array order instead of sorting by score
+                // const sorted = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+                const teamsToDisplay = this.teams; 
                 grid.innerHTML = '';
-                sorted.forEach((team, index) => {
+                teamsToDisplay.forEach((team, index) => {
                     const card = document.createElement('div');
-                    card.className = `score-card rank-${index + 1}`;
-                    const emoji = ['🥇', '🥈', '🥉'][index] || '🏅';
+                    // Calculate rank dynamically for display purposes only, but keep order static
+                    const rank = [...this.teams].sort((a, b) => b.score.total - a.score.total).indexOf(team);
+                    
+                    card.className = `score-card`; // Removed rank-based class to avoid color changes if tied to it
+                    // Or keep rank class if it just styles the card based on its position in the list?
+                    // Let's assume user wants static order, so maybe rank styling is less important or should be based on current score rank?
+                    // User said "لا اريدها ان تتغير حسب المراكز بل اريدها ثابتة بنفس ترتيب الفرق التي في الاسفل"
+                    // So the visual order is fixed. The content (score) updates.
+                    
+                    // Let's find the actual rank to show appropriate emoji if needed, or just remove rank emoji?
+                    // The user didn't explicitly ask to remove rank info, just the ORDER.
+                    // But usually scoreboard shows rank. Let's keep the emoji based on their actual score rank.
+                    
+                    const emoji = ['🥇', '🥈', '🥉'][rank] || '🏅';
+                    
                     card.innerHTML = `<div class="team-score-name">${emoji} ${team.name}</div>
                         <div class="team-total-score">${team.score.total}</div>
-                        <div class="score-details">إصابات: ${team.score.hits} | إغراق: ${team.score.sinks}<br>أخطاء: ${team.score.misses} | دقة: ${team.score.accuracy.toFixed(1)}%</div>`;
+                        <div class="score-details">إصابات: ${team.score.hits} | إغراق: ${team.score.sinks}<br>أخطاء: ${team.score.misses} | دقة: ${Number(team.score.accuracy.toFixed(2))}%</div>`;
                     grid.appendChild(card);
                 });
             }
@@ -3010,7 +4572,7 @@
                         horizontal: true
                     });
                 });
-                this.dockItemTypes.push({ name: 'لغم', type: 'mine', size: 1, totalCount: this.mineCount, placedCount: 0 });
+                this.dockItemTypes.push({ name: 'لغم', type: 'mine', size: 1, totalCount: this.mineCount, placedCount: 0, horizontal: true });
                 this.dockItemTypes.push({ name: 'قرش', type: 'shark', size: 2, totalCount: this.sharkCount, placedCount: 0, horizontal: true });
                 this.renderDockItems();
             }
@@ -3149,11 +4711,10 @@
             renderLegend() {
                 const container = document.querySelector('.legend');
                 container.innerHTML = `
-                    <div class="legend-item"><div class="legend-color" style="background-image: url('https://i.postimg.cc/zvrFxWCn/image.png'); background-size: cover;"></div><span>ماء</span></div>
-                    <div class="legend-item"><div class="legend-color" style="background: var(--surface-color);"></div><span>سفينة</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background: rgba(0, 100, 170, 0.4); border: 1px solid rgba(0, 191, 255, 0.25);"></div><span>ماء</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); background-size: cover;"></div><span>سفينة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--hit-color);"></div><span>إصابة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--miss-color);"></div><span>خطأ</span></div>
-                    <div class="legend-item"><div class="legend-color" style="background: var(--sunk-color);"></div><span>غارقة</span></div>
                     <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم"><span>لغم</span></div>
                 `;
             }
@@ -3164,6 +4725,7 @@
                 document.getElementById('confirmPlacement').addEventListener('click', () => this.confirmPlacement());
                 document.getElementById('startBattle').addEventListener('click', () => this.startBattle());
                 document.getElementById('shipsContainer').addEventListener('dragstart', (e) => this.handleDockDragStart(e));
+                document.getElementById('shipsContainer').addEventListener('dragend', (e) => this.handleDragEnd(e));
                 
                 // Add drop listener to shipsDock to allow returning ships
                 const shipsDock = document.getElementById('shipsDock');
@@ -3199,12 +4761,17 @@
             }
 
             handleDockDragStart(e) {
-                if (e.target.classList.contains('draggable-ship')) {
-                    const typeName = e.target.dataset.typeName;
+                let target = e.target;
+                if (!target.classList.contains('draggable-ship')) {
+                    target = target.closest('.draggable-ship');
+                }
+                
+                if (target) {
+                    const typeName = target.dataset.typeName;
                     const itemType = this.dockItemTypes.find(item => item.name === typeName);
                     if (itemType && itemType.placedCount < itemType.totalCount) {
                         this.draggedShip = { ...itemType, isFromGrid: false };
-                        e.target.classList.add('dragging');
+                        target.classList.add('dragging');
                     } else {
                         e.preventDefault();
                     }
@@ -3213,26 +4780,47 @@
             handleDragOver(e) { e.preventDefault(); }
             handleDragEnter(e) {
                 e.preventDefault();
-                if (this.draggedShip) e.target.classList.add(this.canDropShip(e.target) ? 'drag-over' : 'invalid-drop');
+                let target = e.target;
+                if (!target.classList.contains('cell')) target = target.closest('.cell');
+                if (target && this.draggedShip) target.classList.add(this.canDropShip(target) ? 'drag-over' : 'invalid-drop');
             }
-            handleDragLeave(e) { e.target.classList.remove('drag-over', 'invalid-drop'); }
+            handleDragLeave(e) { 
+                let target = e.target;
+                if (!target.classList.contains('cell')) target = target.closest('.cell');
+                if (target) target.classList.remove('drag-over', 'invalid-drop'); 
+            }
            
             handleGridDragStart(e) {
-                if (!this.placementPhase || parseInt(e.target.dataset.team) !== this.currentTeam + 1) {
+                let target = e.target;
+                if (!target.classList.contains('cell')) {
+                    target = target.closest('.cell');
+                }
+                
+                if (!target || !this.placementPhase || parseInt(target.dataset.team) !== this.currentTeam + 1) {
                     e.preventDefault();
                     return;
                 }
-                const index = parseInt(e.target.dataset.index);
+                const index = parseInt(target.dataset.index);
                 const team = this.teams[this.currentTeam];
                 let piece = null;
 
                 const shipId = team.grid[index];
                 if (shipId > 0) {
-                    piece = { ...team.ships.find(s => s.id === shipId) };
-                } else {
+                    const ship = team.ships.find(s => s.id === shipId);
+                    if (ship) piece = { ...ship };
+                } 
+                
+                if (!piece) {
                     const mine = team.mines.find(m => m.position === index);
                     if (mine) {
-                         piece = { type: 'mine', size: 1, name: 'لغم', position: mine.position };
+                         piece = { 
+                             type: 'mine', 
+                             size: 1, 
+                             name: 'لغم', 
+                             position: mine.position, 
+                             horizontal: true,
+                             positions: [mine.position] // Ensure consistency
+                         };
                     } else {
                         const shark = team.sharks.find(s => s.positions.includes(index));
                         if (shark) {
@@ -3242,9 +4830,12 @@
                 }
 
                 if (piece) {
-                    const isHorizontal = piece.positions ? (piece.positions.length > 1 ? piece.positions[1] - piece.positions[0] === 1 : true) : true;
+                    const isHorizontal = piece.positions && piece.positions.length > 1 ? piece.positions[1] - piece.positions[0] === 1 : true;
                     this.draggedShip = { ...piece, isFromGrid: true, horizontal: isHorizontal };
-                    e.target.classList.add('dragging');
+                    target.classList.add('dragging');
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = 'move';
+                    }
                 } else {
                     e.preventDefault();
                 }
@@ -3287,18 +4878,30 @@
                 e.target.classList.remove('drag-over', 'invalid-drop');
                 if (!this.draggedShip) return;
 
+                // Ensure mine has horizontal property (defensive)
+                if (this.draggedShip.type === 'mine' && this.draggedShip.horizontal === undefined) {
+                    this.draggedShip.horizontal = true;
+                }
+
+                // Handle dropping on non-cell elements inside cell
+                let targetCell = e.target;
+                if (!targetCell.classList.contains('cell')) {
+                    targetCell = targetCell.closest('.cell');
+                }
+                if (!targetCell) return;
+
                 // if (!this.shipCountsLocked) {
                 //     this.shipCountsLocked = true;
                 //     this.renderDockItems(); 
                 // }
 
-                if (!this.canDropShip(e.target)) {
+                if (!this.canDropShip(targetCell)) {
                     this.updateGridDisplay();
                     return;
                 }
 
                 const team = this.teams[this.currentTeam];
-                const start = parseInt(e.target.dataset.index);
+                const start = parseInt(targetCell.dataset.index);
                 const positions = this.getShipPositions(start, this.draggedShip.size, this.draggedShip.horizontal);
 
                 if (this.draggedShip.isFromGrid) {
@@ -3341,6 +4944,7 @@
                 this.renderDockItems();
                 this.updateGridDisplay();
                 this.checkPlacementComplete();
+                this.draggedShip = null;
             }
 
 
@@ -3348,7 +4952,13 @@
                 if (!this.placementPhase || !cell.dataset.index || parseInt(cell.dataset.team) !== this.currentTeam + 1) return false;
                 
                 const team = this.teams[this.currentTeam];
-                const positions = this.getShipPositions(parseInt(cell.dataset.index), this.draggedShip.size, this.draggedShip.horizontal);
+                let positions;
+                if (this.draggedShip.type === 'mine') {
+                    // Force mine to be single cell
+                    positions = [parseInt(cell.dataset.index)];
+                } else {
+                    positions = this.getShipPositions(parseInt(cell.dataset.index), this.draggedShip.size, this.draggedShip.horizontal);
+                }
                 if (!positions) return false;
 
                 let tempGrid = [...team.grid];
@@ -3393,14 +5003,20 @@
 
             handleCellClick(e) {
                 if (!this.isAttackAllowed) return;
-                const index = parseInt(e.target.dataset.index);
-                const teamId = parseInt(e.target.dataset.team);
+                let target = e.target;
+                if (!target.classList.contains('cell')) {
+                    target = target.closest('.cell');
+                }
+                if (!target) return;
+
+                const index = parseInt(target.dataset.index);
+                const teamId = parseInt(target.dataset.team);
 
                 if (this.battlePhase && !this.gameOver && teamId !== this.currentTurn + 1) {
                     if (this.isRadarActive) {
-                        this.performRadarScan(e.target.parentElement, teamId - 1, index);
+                        this.performRadarScan(target.parentElement, teamId - 1, index);
                     } else {
-                        this.makeAttack(e.target, teamId - 1, index);
+                        this.makeAttack(target, teamId - 1, index);
                     }
                 }
             }
@@ -3522,15 +5138,30 @@
                 turnManager.addToHistory('بدأت المعركة!');
             }
 
-            createExplosion(cell, isHit, isMine = false) {
+            createExplosion(cell, isHit, isMine = false, isShark = false) {
                 const rect = cell.getBoundingClientRect();
                 const cellCenterX = rect.left + rect.width / 2;
                 const cellCenterY = rect.top + rect.height / 2;
-                const particleCount = isMine ? 60 : 40;
+                const particleCount = isMine ? 150 : (isShark ? 100 : 40);
                 
                 let colors;
                 if (isMine) {
-                    colors = ['#ff4757', '#ffa502', '#2f3542']; // Red, Orange, Dark Grey
+                    colors = ['#ff4757', '#ffa502', '#2f3542', '#000000', '#ff0000']; // Red, Orange, Dark Grey, Black, Red
+                    
+                    // Add Flash Overlay
+                    const flash = document.createElement('div');
+                    flash.className = 'flash-overlay';
+                    document.body.appendChild(flash);
+                    setTimeout(() => flash.remove(), 900);
+                } else if (isShark) {
+                    colors = ['#8B0000', '#FF0000', '#1e90ff', '#ffffff']; // Dark Red (Blood), Red, Blue (Water), White
+                    
+                    // Add Blood Vignette Overlay
+                    const flash = document.createElement('div');
+                    flash.className = 'flash-overlay';
+                    flash.style.background = 'radial-gradient(circle, transparent 40%, rgba(139, 0, 0, 0.6) 90%)';
+                    document.body.appendChild(flash);
+                    setTimeout(() => flash.remove(), 900);
                 } else if (isHit) {
                     colors = ['#ff9f43', '#ff3838', '#feca57', '#ffffff']; // Orange, Red, Yellow, White
                 } else {
@@ -3545,19 +5176,19 @@
                     particle.style.top = `${cellCenterY}px`;
                     
                     const angle = Math.random() * Math.PI * 2;
-                    const distance = Math.random() * (isMine ? 120 : 60) + 20;
+                    const distance = Math.random() * (isMine ? 250 : (isShark ? 180 : 60)) + (isMine ? 50 : 20);
                     const x = Math.cos(angle) * distance;
                     const y = Math.sin(angle) * distance;
                     
                     particle.style.setProperty('--x', `${x}px`);
                     particle.style.setProperty('--y', `${y}px`);
                     
-                    const size = Math.random() * 6 + 4;
+                    const size = Math.random() * (isMine ? 12 : (isShark ? 10 : 6)) + (isMine ? 8 : 4);
                     particle.style.width = `${size}px`;
                     particle.style.height = `${size}px`;
 
                     document.body.appendChild(particle);
-                    setTimeout(() => particle.remove(), 700);
+                    setTimeout(() => particle.remove(), isMine || isShark ? 1200 : 700);
                 }
             }
 
@@ -3569,15 +5200,29 @@
                 this.isAttackAllowed = false;
                 this.saveMoveState();
                 soundManager.playSound('fire');
+                soundManager.playSound('whistle'); // Sound of projectile flying
                 
                 const cannonball = document.createElement('div');
                 cannonball.className = 'cannonball';
                 document.body.appendChild(cannonball);
 
+                const shooterTeam = this.teams[this.currentTurn];
+                let startX = window.innerWidth / 2;
+                let startY = window.innerHeight;
+                const shooterSection = document.querySelector(`.team-section.team-${shooterTeam.id}`);
+                if (shooterSection) {
+                    const gridEl = document.getElementById(`grid${shooterTeam.id}`);
+                    const sourceRect = gridEl ? gridEl.getBoundingClientRect() : shooterSection.getBoundingClientRect();
+                    startX = sourceRect.left + sourceRect.width / 2;
+                    startY = sourceRect.bottom;
+                }
+
                 const endRect = cell.getBoundingClientRect();
-                const startX = window.innerWidth / 2, startY = window.innerHeight;
                 const endX = endRect.left + endRect.width / 2, endY = endRect.top + endRect.height / 2;
                 const midX = startX + (endX - startX) / 2, midY = Math.min(startY, endY) - 150;
+
+                const teamColor = shooterTeam && shooterTeam.color ? shooterTeam.color : '#dcdde1';
+                cannonball.style.setProperty('--cannon-color', teamColor);
 
                 cannonball.style.setProperty('--start-x', `${startX}px`);
                 cannonball.style.setProperty('--start-y', `${startY}px`);
@@ -3587,14 +5232,51 @@
                 cannonball.style.setProperty('--end-y', `${endY}px`);
                 cannonball.style.animation = 'fireCannonball 0.8s cubic-bezier(0.4, 0, 0.6, 1) forwards';
 
+                const trailDuration = 800;
+                const trailStart = performance.now();
+                const trailInterval = setInterval(() => {
+                    const now = performance.now();
+                    const t = (now - trailStart) / trailDuration;
+                    if (t >= 1) {
+                        clearInterval(trailInterval);
+                        return;
+                    }
+                    let currentX;
+                    let currentY;
+                    if (t <= 0.4) {
+                        const localT = t / 0.4;
+                        currentX = startX + (midX - startX) * localT;
+                        currentY = startY + (midY - startY) * localT;
+                    } else {
+                        const localT = (t - 0.4) / 0.6;
+                        currentX = midX + (endX - midX) * localT;
+                        currentY = midY + (endY - midY) * localT;
+                    }
+                    if (Math.random() < 0.1) {
+                        return;
+                    }
+                    const particle = document.createElement('div');
+                    particle.className = 'trail-particle';
+                    const size = 3 + Math.random() * 5;
+                    const offsetX = (Math.random() - 0.5) * 16;
+                    const offsetY = (Math.random() - 0.5) * 16;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${currentX + offsetX}px`;
+                    particle.style.top = `${currentY + offsetY}px`;
+                    particle.style.boxShadow = `0 0 8px ${teamColor}`;
+                    document.body.appendChild(particle);
+                    setTimeout(() => particle.remove(), 600);
+                }, 45);
+
                 setTimeout(() => {
                     cannonball.remove();
                     
                     const hitMine = targetTeam.mines.find(m => m.position === pos);
                     if (hitMine) {
-                        document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500);
+                        document.body.classList.add('shake-hard'); setTimeout(() => document.body.classList.remove('shake-hard'), 800);
                         this.createExplosion(cell, true, true);
-                        soundManager.playSound('sink');
+                        soundManager.playSound('explosion');
                         this.calculateScore(this.currentTurn, false, false, true);
                         turnManager.addToHistory(`${this.teams[this.currentTurn].name} أصاب لغمًا! -${this.scoring.minePenalty} نقطة.`);
                         targetTeam.hits[pos] = 4;
@@ -3603,6 +5285,16 @@
                         if (mineIndex > -1) targetTeam.mines.splice(mineIndex, 1);
                         
                         this.updateGridDisplay();
+                        
+                        const mineGrid = document.getElementById(`grid${targetTeam.id}`);
+                        if (mineGrid) {
+                            const mineCells = mineGrid.querySelectorAll('.cell');
+                            const mineCell = mineCells[pos];
+                            if (mineCell) {
+                                mineCell.classList.add('mine-reveal');
+                                setTimeout(() => mineCell.classList.remove('mine-reveal'), 750);
+                            }
+                        }
                         
                         this.shotsMadeThisTurn++;
                         const shotsPerTurn = this.shotsPerTurn;
@@ -3620,20 +5312,49 @@
                     
                     const hitShark = targetTeam.sharks.find(s => s.positions.includes(pos));
                     if (hitShark) {
-                        document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500);
+                        const sharkJustRevealed = hitShark.hits >= hitShark.size; // Check before incrementing to know if this hit reveals it
+                        
                         hitShark.hits++;
                         targetTeam.hits[pos] = 2;
-                        if (hitShark.hits >= hitShark.size) {
+                        
+                        // Recalculate if revealed after increment
+                        const isRevealedNow = hitShark.hits >= hitShark.size;
+
+                        if (isRevealedNow) {
                             hitShark.revealed = true;
                             this.teamToSkip = this.currentTurn;
                             turnManager.addToHistory(`${this.teams[this.currentTurn].name} كشف فخ القرش! سيتم حرمانه من الجولة القادمة.`);
                             showToast(`${this.teams[this.currentTurn].name} سيتخطى دوره القادم!`, 'error');
+                            
+                            // Shark Reveal Effects
+                            document.body.classList.add('shake-horizontal'); 
+                            setTimeout(() => document.body.classList.remove('shake-horizontal'), 600);
+                            this.createExplosion(cell, true, false, true); // isShark = true
+                            soundManager.playSound('shark-bite');
                         } else {
-                            turnManager.addToHistory(`${this.teams[this.currentTurn].name} أصاب جزءًا من فخ القرش!`);
+                            // Mask as a normal hit until fully revealed
+                            turnManager.addToHistory(`${this.teams[this.currentTurn].name} حقق إصابة!`);
+                            document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 140);
+                            this.createExplosion(cell, true, false); // Standard hit explosion
+                            soundManager.playSound('hit');
                         }
-                        this.createExplosion(cell, true, true);
-                        soundManager.playSound('hit');
+                        
                         this.updateGridDisplay();
+
+                        if (isRevealedNow) {
+                            const sharkGrid = document.getElementById(`grid${targetTeam.id}`);
+                            if (sharkGrid) {
+                                const sharkCells = sharkGrid.querySelectorAll('.cell');
+                                hitShark.positions.forEach((p, idx) => {
+                                    const sharkCell = sharkCells[p];
+                                    if (!sharkCell) return;
+                                    setTimeout(() => {
+                                        sharkCell.classList.add('shark-reveal');
+                                        setTimeout(() => sharkCell.classList.remove('shark-reveal'), 1700);
+                                    }, idx * 90);
+                                });
+                            }
+                        }
 
                         this.shotsMadeThisTurn++;
                         const shotsPerTurn = this.shotsPerTurn;
@@ -3663,9 +5384,10 @@
                     else if (isHit) soundManager.playSound('hit');
                     else soundManager.playSound('splash');
                     
-                    if (isHit) { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 500); }
+                    if (isHit) { document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 140); }
                     this.createExplosion(cell, isHit);
 
+                    const impactDelay = isHit ? 180 : 120;
                     setTimeout(() => {
                         if (isHit) {
                             targetTeam.hits[pos] = 2; // Hit
@@ -3685,6 +5407,37 @@
                         const result = isHit ? (isSink ? 'إغراق!' : 'إصابة!') : 'خطأ';
                         turnManager.addToHistory(`${this.teams[this.currentTurn].name} هاجم ${targetTeam.name}: ${result}`);
                         this.updateGridDisplay();
+                        if (isSink) {
+                            const sunkShip = targetTeam.ships.find(s => s.id === shipId);
+                            const shipGrid = document.getElementById(`grid${targetTeam.id}`);
+                            if (sunkShip && shipGrid) {
+                                const shipCells = shipGrid.querySelectorAll('.cell');
+                                const waveColor = targetTeam && targetTeam.color ? targetTeam.color : '#ffffff';
+                                const stepDelay = 90;
+                                sunkShip.positions.forEach((p, idx) => {
+                                    const shipCell = shipCells[p];
+                                    if (!shipCell) return;
+                                    setTimeout(() => {
+                                        shipCell.style.setProperty('--ship-wave-color', waveColor);
+                                        shipCell.classList.add('ship-reveal');
+                                        setTimeout(() => shipCell.classList.remove('ship-reveal'), 450);
+                                    }, idx * stepDelay);
+                                });
+                                const reversed = [...sunkShip.positions].reverse();
+                                const returnDelay = (sunkShip.positions.length * stepDelay) + 450;
+                                reversed.forEach((p, idx) => {
+                                    const shipCell = shipCells[p];
+                                    if (!shipCell) return;
+                                    setTimeout(() => {
+                                        shipCell.style.setProperty('--ship-wave-color', waveColor);
+                                        shipCell.classList.remove('ship-reveal');
+                                        void shipCell.offsetWidth; // Trigger reflow
+                                        shipCell.classList.add('ship-reveal');
+                                        setTimeout(() => shipCell.classList.remove('ship-reveal'), 450);
+                                    }, returnDelay + (idx * stepDelay));
+                                });
+                            }
+                        }
                         this.checkGameOver();
                         
                         const shotsPerTurn = this.shotsPerTurn;
@@ -3932,6 +5685,9 @@
 
             checkGameOver() {
                 try {
+                    // Safety check: Don't check for game over if battle hasn't started or no teams
+                    if (!this.battlePhase || !this.teams || this.teams.length === 0) return;
+
                     // Filter teams that have at least one ship that is NOT sunk
                     // We check both the sunk flag AND the hits vs size to be safe
                     const aliveTeams = this.teams.filter(t => t.ships && t.ships.some(s => !s.sunk && s.hits < s.size));
@@ -3940,11 +5696,29 @@
                     
                     if (aliveTeams.length <= 1) {
                         this.gameOver = true;
-                        console.log('Game Over triggered! Winner:', aliveTeams[0]?.name);
+                        console.log('Game Over triggered!');
+                        this.updateGridDisplay();
                         
+                        // Recalculate winner based on POINTS (even in Last Man Standing scenario)
+                        // Because the last survivor might not have the most points if we follow "Points Only" rule strictly.
+                        // However, usually the survivor gets points for sinking others.
+                        // Let's stick to the requested rule: Points Only.
+                        
+                        let winner = null;
+                        const sortedTeams = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+                        if (sortedTeams.length > 0) {
+                            const first = sortedTeams[0];
+                            if (sortedTeams.length > 1) {
+                                const second = sortedTeams[1];
+                                if (first.score.total > second.score.total) winner = first;
+                            } else {
+                                winner = first;
+                            }
+                        }
+
                         // Small delay to allow the last hit animation/sound to play
                         setTimeout(() => {
-                            showGameOverModal(aliveTeams[0]);
+                            showGameOverModal(winner);
                         }, 500);
                         
                         turnManager.stopTimer();
@@ -3987,7 +5761,7 @@
                                     cell.classList.add(`shark-part-${partClassIndex}`);
                                 }
                             }
-                            if (!isHorizontal) cell.classList.add('vertical-ship-part');
+                            if (!isHorizontal && item.size > 1) cell.classList.add('vertical-ship-part');
                         };
 
                         let isPieceHere = false;
@@ -4015,7 +5789,12 @@
                                     cell.classList.add('shark');
                                     applyImage(shark, cell, index);
                                 } else {
-                                    cell.classList.add('hit');
+                                    if (this.gameOver && ship) {
+                                        cell.classList.add('ship', 'sunk');
+                                        applyImage(ship, cell, index);
+                                    } else {
+                                        cell.classList.add('hit');
+                                    }
                                 }
                             } else if (team.hits[index] === 3) {
                                 cell.classList.add('ship', 'sunk');
@@ -4152,7 +5931,26 @@
             }
             
             revealAll() {
-                if (this.gameOver) return;
+                // If game is already over, just show the modal if it's not visible
+                if (this.gameOver) {
+                    const modal = document.getElementById('gameOverModal');
+                    if (modal && modal.style.display !== 'flex') {
+                         let winner = null;
+                         const sortedTeams = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+                         if (sortedTeams.length > 0) {
+                             const first = sortedTeams[0];
+                             if (sortedTeams.length > 1) {
+                                 const second = sortedTeams[1];
+                                 if (first.score.total > second.score.total) winner = first;
+                             } else {
+                                 winner = first;
+                             }
+                         }
+                        showGameOverModal(winner);
+                    }
+                    return;
+                }
+                
                 this.gameOver = true;
                 turnManager.stopTimer();
                 this.teams.forEach(team => {
@@ -4181,7 +5979,26 @@
                 });
                 this.updateGridDisplay();
                 showToast('انتهت اللعبة! تم كشف جميع المواقع.', 'warning');
-                setTimeout(() => showGameOverModal(), 2000);
+                
+                // Determine winner based on POINTS ONLY
+                let winner = null;
+                const sortedTeams = [...this.teams].sort((a, b) => b.score.total - a.score.total);
+
+                if (sortedTeams.length > 0) {
+                     // Check if it's not a tie for first place
+                     const first = sortedTeams[0];
+                     if (sortedTeams.length > 1) {
+                         const second = sortedTeams[1];
+                         if (first.score.total > second.score.total) {
+                             winner = first;
+                         }
+                         // If scores are equal, it remains null (Draw)
+                     } else {
+                         winner = first;
+                     }
+                }
+
+                setTimeout(() => showGameOverModal(winner), 2000);
             }
             
             saveGame() {
@@ -4290,94 +6107,6 @@
                     btn.innerHTML = this.historyVisible ? `${this.getIcon('history')} إخفاء السجل` : `${this.getIcon('history')} إظهار السجل`;
                 }
             }
-        }
-
-        function showGameOverModal(winningTeam) {
-            console.log('Attempting to show Game Over Modal');
-            
-            // Try to find the game object
-            let gameInstance = null;
-            if (typeof game !== 'undefined') gameInstance = game;
-            else if (window.game) gameInstance = window.game;
-
-            if (!gameInstance || !gameInstance.teams) {
-                console.error('Game object or teams not found!');
-                return;
-            }
-
-            try {
-                const modal = document.getElementById('gameOverModal');
-                const winnerTitle = document.getElementById('winnerTitle');
-                const finalScoresContainer = document.getElementById('finalScores');
-
-                if (!modal) {
-                    console.error('Modal element not found');
-                    return;
-                }
-
-                // 1. Sort teams by score
-                const sortedTeams = [...gameInstance.teams].sort((a, b) => b.score.total - a.score.total);
-                
-                // 2. Set winner title
-                if (winningTeam) {
-                    winnerTitle.innerHTML = `🏆 الفائز هو: <span style="color:${winningTeam.color}">${winningTeam.name}</span>`;
-                } else if (sortedTeams.length > 0) {
-                    winnerTitle.innerHTML = `🏆 الفائز هو: <span style="color:${sortedTeams[0].color}">${sortedTeams[0].name}</span>`;
-                }
-
-                // 3. Generate HTML for leaderboard
-                finalScoresContainer.innerHTML = '';
-                
-                sortedTeams.forEach((team, index) => {
-                    const rank = index + 1;
-                    const delay = index * 0.2; // Stagger animation
-                    
-                    const hits = team.stats.hits;
-                    const misses = team.stats.misses;
-                    const sinks = team.stats.sinks;
-                    const totalShots = hits + misses;
-                    const accuracy = totalShots > 0 ? ((hits / totalShots) * 100).toFixed(1) : 0;
-                    
-                    const card = document.createElement('div');
-                    card.className = `leaderboard-card rank-${rank}`;
-                    card.style.animationDelay = `${delay}s`;
-                    
-                    let medal = rank;
-                    if (rank === 1) medal = '🥇';
-                    if (rank === 2) medal = '🥈';
-                    if (rank === 3) medal = '🥉';
-
-                    card.innerHTML = `
-                        <div class="rank-badge">${medal}</div>
-                        <div class="team-info-leaderboard">
-                            <div class="team-name-leaderboard" style="color: ${team.color}">${team.name}</div>
-                            <div class="team-stats-leaderboard">
-                                <div class="stat-item" title="إصابات">🎯 ${hits}</div>
-                                <div class="stat-item" title="إغراق">💥 ${sinks}</div>
-                                <div class="stat-item" title="أخطاء">🌊 ${misses}</div>
-                                <div class="stat-item" title="دقة">📊 ${accuracy}%</div>
-                            </div>
-                        </div>
-                        <div class="total-score-leaderboard">
-                            ${team.score.total}
-                            <div style="font-size: 0.7rem; opacity: 0.7;">نقطة</div>
-                        </div>
-                    `;
-                    
-                    finalScoresContainer.appendChild(card);
-                });
-
-                modal.style.display = 'block';
-                console.log('Game Over Modal displayed successfully');
-                
-                if (window.soundManager) soundManager.playSound('sink');
-            } catch (e) {
-                console.error('Error in showGameOverModal:', e);
-            }
-        }
-
-        function closeGameOverModal() {
-            document.getElementById('gameOverModal').style.display = 'none';
         }
 
         // --- Global Functions ---
@@ -4797,6 +6526,42 @@
         if (initialQuickDropdown) {
             initialQuickDropdown.value = game.shotsPerTurn || 1;
         }
+
+        /* Fullscreen Toggle Function */
+        function toggleFullScreen() {
+            const btn = document.getElementById('fullscreenBtn');
+            
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    // Update Icon to Exit Fullscreen
+                    btn.textContent = '✖';
+                    btn.title = 'خروج من ملء الشاشة';
+                }).catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().then(() => {
+                         // Update Icon to Enter Fullscreen
+                        btn.textContent = '⛶';
+                        btn.title = 'ملء الشاشة';
+                    });
+                }
+            }
+        }
+
+        // Listen for fullscreen change event to update button state if changed via F11 or other means
+        document.addEventListener('fullscreenchange', () => {
+            const btn = document.getElementById('fullscreenBtn');
+            
+            if (document.fullscreenElement) {
+                btn.textContent = '✖';
+                btn.title = 'خروج من ملء الشاشة';
+            } else {
+                btn.textContent = '⛶';
+                btn.title = 'ملء الشاشة';
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
              // This line was causing the error, it's removed.
