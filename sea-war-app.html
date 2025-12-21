@@ -266,41 +266,7 @@
             backdrop-filter: blur(5px);
         }
 
-        /* Floating Fullscreen Button */
-        #fullscreenBtn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-family: "Segoe UI Symbol", sans-serif; /* Ensure symbol support */
-        }
-        
-        #fullscreenBtn:hover {
-            background: rgba(0, 242, 255, 0.2);
-            border-color: var(--primary-color);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
-        }
-        
-        #fullscreenBtn:active {
-            transform: scale(0.95);
-        }
+
         
         .neumorphic-btn svg {
              width: 22px;
@@ -810,7 +776,7 @@
             border: var(--glass-border);
             box-shadow: var(--glass-shadow);
             border-radius: var(--border-radius);
-            padding: 20px;
+            padding: 10px; /* Reduced padding from 20px */
             transition: all 0.3s ease;
             border-left: 5px solid rgba(255, 255, 255, 0.2);
             position: relative;
@@ -865,34 +831,34 @@
         }
         .grid-header {
             display: grid;
-            grid-template-columns: 30px repeat(var(--grid-width, 7), 1fr);
-            gap: 4px;
-            margin-bottom: 8px;
-            padding: 0 10px;
+            grid-template-columns: 20px repeat(var(--grid-width, 7), 1fr); /* Reduced label width */
+            gap: 2px; /* Reduced gap */
+            margin-bottom: 4px; /* Reduced margin */
+            padding: 0 5px; /* Reduced padding */
         }
         .grid-header-cell {
-            height: 25px;
+            height: 20px; /* Reduced height */
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* Slightly smaller font */
             color: var(--primary-color);
             text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
         }
         .grid-with-labels {
             display: grid;
-            grid-template-columns: 30px 1fr;
-            gap: 8px;
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 20px;
+            grid-template-columns: 20px 1fr; /* Reduced label column width */
+            gap: 4px; /* Reduced gap */
+            background: rgba(0,0,0,0.1); /* Reduced background opacity */
+            padding: 5px; /* Significantly reduced padding from 15px */
+            border-radius: 12px; /* Adjusted radius */
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .grid-labels {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px; /* Reduced gap */
         }
         .grid-label {
             flex-grow: 1;
@@ -900,14 +866,14 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* Slightly smaller font */
             color: var(--primary-color);
             text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(var(--grid-width, 7), 1fr);
-            gap: 4px;
+            gap: 2px; /* Reduced gap from 4px */
         }
 
         .cell {
@@ -922,7 +888,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 2px; /* Reduced radius from 6px */
             position: relative;
             overflow: hidden;
         }
@@ -2714,8 +2680,7 @@
 <body>
     <div id="toast-container"></div>
     
-    <!-- Floating Fullscreen Button -->
-    <button id="fullscreenBtn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
+
 
     <div class="game-container">
         <div class="game-header">
@@ -6527,41 +6492,7 @@
             initialQuickDropdown.value = game.shotsPerTurn || 1;
         }
 
-        /* Fullscreen Toggle Function */
-        function toggleFullScreen() {
-            const btn = document.getElementById('fullscreenBtn');
-            
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().then(() => {
-                    // Update Icon to Exit Fullscreen
-                    btn.textContent = '✖';
-                    btn.title = 'خروج من ملء الشاشة';
-                }).catch(err => {
-                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().then(() => {
-                         // Update Icon to Enter Fullscreen
-                        btn.textContent = '⛶';
-                        btn.title = 'ملء الشاشة';
-                    });
-                }
-            }
-        }
 
-        // Listen for fullscreen change event to update button state if changed via F11 or other means
-        document.addEventListener('fullscreenchange', () => {
-            const btn = document.getElementById('fullscreenBtn');
-            
-            if (document.fullscreenElement) {
-                btn.textContent = '✖';
-                btn.title = 'خروج من ملء الشاشة';
-            } else {
-                btn.textContent = '⛶';
-                btn.title = 'ملء الشاشة';
-            }
-        });
 
         document.addEventListener('DOMContentLoaded', () => {
              // This line was causing the error, it's removed.
