@@ -12,10 +12,12 @@
         /* استيراد خط القاهرة من Google Fonts */
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
         
-        body {
+        html, body {
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
+            max-width: 100%;
+            overflow-x: hidden;
         }
         
         /* الخلفية الرئيسية (ألوان زجاجية متدرجة) */
@@ -123,30 +125,144 @@
         
         /* تنسيقات النرد */
         .dice-wrapper { perspective: 800px; display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .dice-container { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .dice-face {
-            position: absolute; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); border: 2px solid #ccc;
-            display: flex; align-items: center; justify-content: center; border-radius: 10px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.1); font-size: 3rem; font-weight: bold; color: #333;
+        
+        /* غلاف للحركة القفزية */
+        .dice-anim-wrapper {
+            position: relative;
+            width: 100px; height: 100px;
         }
+        .dice-anim-wrapper.jumping {
+            animation: diceJump 1.5s ease-out forwards;
+        }
+
+        @keyframes diceJump {
+            0% { transform: translateY(0); }
+            20% { transform: translateY(-150px) scale(1.1); } /* قفزة للأعلى */
+            40% { transform: translateY(0); } /* هبوط */
+            50% { transform: translateY(-30px); } /* ارتداد بسيط */
+            60% { transform: translateY(0); }
+            70% { transform: translateY(-10px); } /* ارتداد أخير */
+            100% { transform: translateY(0); }
+        }
+
+        .dice-container { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .dice-face {
+            position: absolute; width: 100%; height: 100%; background: linear-gradient(145deg, #ffffff, #f0f0f0); border: 1px solid #ddd;
+            display: flex; align-items: center; justify-content: center; border-radius: 4px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.05); font-size: 3rem; font-weight: bold; color: #333;
+            backface-visibility: hidden; /* تحسين الأداء والمظهر */
+        }
+        /* تحسين شكل النقاط/الأرقام لتبدو محفورة */
+        .dice-face {
+             text-shadow: 1px 1px 0 #fff, -1px -1px 0 rgba(0,0,0,0.1);
+        }
+
         .dice-face.one { transform: rotateY(0deg) translateZ(50px); }
-        .dice-face.two { transform: rotateX(90deg) translateZ(50px); }
+        .dice-face.two { transform: rotateX(-90deg) translateZ(50px); } /* تعديل الزاوية لتناسب المنطق */
         .dice-face.three { transform: rotateY(90deg) translateZ(50px); }
         .dice-face.four { transform: rotateY(-90deg) translateZ(50px); }
-        .dice-face.five { transform: rotateX(-90deg) translateZ(50px); }
+        .dice-face.five { transform: rotateX(90deg) translateZ(50px); } /* تعديل الزاوية لتناسب المنطق */
         .dice-face.six { transform: rotateY(180deg) translateZ(50px); }
         
-        /* تنسيقات العملة */
-        .coin-container { perspective: 1000px; }
-        .coin {
-            width: 128px; height: 128px; position: relative; transform-style: preserve-3d;
-            transition: transform 3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        /* تنسيقات العملة المحسنة */
+        .coin-container { 
+            perspective: 1200px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px; /* مساحة كافية للدوران */
         }
-        .coin-face, .coin-side { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .coin-face img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .coin-front { transform: rotateY(0deg) translateZ(6px); }
-        .coin-back { transform: rotateY(180deg) translateZ(6px); }
-        .coin-side { width: 100%; height: 12px; background: linear-gradient(to right, #ccc, #f0f0f0, #ccc); top: 50%; left: 0; transform: translateY(-50%) rotateY(90deg) rotateX(90deg); border-radius: 0; z-index: -1; box-shadow: none; }
+        .coin {
+            width: 200px; 
+            height: 200px; 
+            position: relative; 
+            transform-style: preserve-3d;
+            transition: transform 3s cubic-bezier(0.15, 0.25, 0.25, 1); /* حركة أكثر سلاسة */
+        }
+        
+        /* الطبقات الأساسية */
+        .coin-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            backface-visibility: hidden; /* إخفاء الخلفية لمنع التداخل البصري */
+        }
+
+        /* الوجه الأمامي */
+        .coin-front-face {
+            transform: translateZ(10px); /* تقديم للأمام */
+            background-color: #fcd34d; /* لون ذهبي فاتح */
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+            z-index: 2;
+            border: 1px solid #f8a241; /* إخفاء الحواف البيضاء */
+        }
+        .coin-front-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* الوجه الخلفي */
+        .coin-back-face {
+            transform: rotateY(180deg) translateZ(10px); /* تدوير ودفع للخلف (نفس المسافة الموجبة لأنها دارت) */
+            background-color: #fcd34d; /* لون ذهبي فاتح */
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+            z-index: 2;
+            border: 1px solid #f8a241; /* إخفاء الحواف البيضاء */
+        }
+        .coin-back-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* طبقات الحافة (Edge) */
+        .coin-edge-layer {
+            background: #f8a241;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            /* لا نحتاج backface-visibility هنا لأننا نريد رؤيتها من الجوانب */
+            backface-visibility: visible; 
+            border: 1px solid rgba(0,0,0,0.1); /* حدود خفيفة للواقعية */
+        }
+        
+        /* حركة الرمي للأعلى (Toss) مع محاكاة الجاذبية */
+        @keyframes coinToss {
+            0% { 
+                transform: translateY(0) scale(1); 
+                animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* Ease Out Cubic (Decelerate) */
+            }
+            50% { 
+                transform: translateY(-200px) scale(1.3); /* تقليل الارتفاع والتكبير لعدم الخروج من الشاشة */
+                animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190); /* Ease In Cubic (Accelerate) */
+            }
+            100% { 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .toss-animation {
+            animation: coinToss 1s forwards; /* المدة ستحدد عبر JS */
+        }
+        
+        /* حركة الارتداد عند السقوط (Bounce) */
+        @keyframes coinBounce {
+            0% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            65% { transform: translateY(0); }
+            80% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .bounce-anim {
+            animation: coinBounce 0.4s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
         
         /* تنسيق نوافذ الفرق (لترتيب الأسماء) */
         .team-red { background-color: rgba(220, 38, 38, 0.3); border-color: #dc2626; } 
@@ -325,11 +441,11 @@
         /* للعرض على الشاشات الكبيرة فقط */
         @media (min-width: 1024px) {
             .team-layout-2 {
-                /* فريقان: مستطيلان كبيران فوق بعضهما */
+                /* فريقان: مستطيلان كبيران بجانب بعضهما */
                 display: grid;
-                grid-template-columns: 1fr;
-                grid-template-rows: repeat(2, 1fr);
-                grid-auto-flow: row;
+                grid-template-columns: repeat(2, 1fr);
+                grid-auto-rows: 1fr;
+                gap: 1rem;
             }
             .team-layout-3 {
                 /* ثلاثة فرق: ثلاث مستطيلات بالطول بجانب بعضها */
@@ -361,20 +477,26 @@
                 gap: 1rem;
             }
         }
-        /* لضمان التوافق مع Flexbox على الشاشات الصغيرة وتطبيق العرض الأفقي (Mobile) */
         @media (max-width: 1023px) {
-             #teamsContainer > div {
-                /* هذا يضمن بقاء العناصر أفقية على الجوال */
+            #teamsContainer > div {
                 min-width: 256px; 
                 width: 256px;
                 flex-shrink: 0;
+            }
+            .team-column {
+                height: auto !important;
+                min-height: 16rem;
+                max-height: none !important;
+                overflow-y: visible !important;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
             }
         }
         
         /* تحسين عرض الأسماء على الجوال */
         @media (max-width: 768px) {
             .large-name-display span {
-                white-space: normal !important; /* السماح بالالتفاف */
+                white-space: normal !important;
                 word-wrap: break-word;
                 display: block; 
                 line-height: 1.3;
@@ -385,6 +507,23 @@
             }
         }
 
+        @media (min-width: 1024px) {
+            #teamsContainer.team-layout-3 .team-column,
+            #teamsContainer.team-layout-2 .team-column {
+                height: auto;
+                min-height: 24rem;
+                max-height: 80vh;
+            }
+            #teamsContainer.team-layout-4 .team-column {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-auto-rows: auto;
+                gap: 0.5rem;
+                overflow-y: auto;
+                align-content: flex-start;
+            }
+        }
+
         /* تنسيق زر الحذف (✕) الجديد */
         .remove-btn {
             @apply text-red-300 hover:text-red-100 text-sm p-1 rounded-full w-6 h-6 flex items-center justify-center;
@@ -392,7 +531,6 @@
             line-height: 1; /* لضمان تمركز "✕" */
             font-weight: bold;
         }
-
         /* ------------------------------------------------------------- */
         /* نمط أزرار النرد الصغير (محتفظ به للنرد) */
         /* ------------------------------------------------------------- */
@@ -526,6 +664,16 @@
 <!-- ** إصلاح 1: إزالة flex items-center justify-content-center من body ** -->
 <body class="gradient-bg p-4">
     <div class="max-w-6xl mx-auto w-full">
+        <button
+            id="backToMainBtn"
+            type="button"
+            onclick="showSection('main-menu')"
+            class="hidden fixed top-4 right-4 z-50 w-11 h-11 rounded-full bg-white/20 hover:bg-white/40 border border-white/60 shadow-lg flex items-center justify-center backdrop-blur"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
         <!-- Main Menu Section -->
         <div id="main-menu" class="section">
             <div class="text-center mb-12">
@@ -573,16 +721,9 @@
         </div>
 
         <!-- Wheel Section -->
-        <div id="wheel-section" class="section hidden flex flex-col justify-center items-center h-screen">
-             <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors absolute top-4 right-4 z-20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
+        <div id="wheel-section" class="section hidden flex flex-col justify-center items-center min-h-screen pt-8 pb-10">
             
-            <div class="flex flex-col items-center justify-center w-full h-full -mt-20">
+            <div class="flex flex-col items-center justify-center w-full max-w-full">
                 <div id="wheel-container" class="wheel-container fullscreen-wheel-container" style="--size: min(84vw, 84vh);"> 
                     <canvas id="wheelCanvas" class="wheel fullscreen-wheel" width="320" height="320"></canvas>
                      <!-- المؤشر الجديد (CSS Triangle) -->
@@ -661,16 +802,9 @@
         </div>
 
         <!-- Numbers Section -->
-        <div id="numbers-section" class="section hidden flex flex-col justify-center items-center h-screen">
-             <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors absolute top-4 right-4 z-20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
+        <div id="numbers-section" class="section hidden flex flex-col justify-center items-center min-h-screen pt-8 pb-10">
 
-            <div class="flex flex-col items-center justify-center w-full h-full -mt-20">
+            <div class="flex flex-col items-center justify-center w-full max-w-full">
                 <div id="numberResult" class="text-center">
                     <div id="numberDisplayContainer" class="large-number-circle">
                         <span id="selectedNumber">؟</span>
@@ -747,16 +881,9 @@
         </div>
 
         <!-- Names Section -->
-        <div id="names-section" class="section hidden flex flex-col justify-center items-center h-screen">
-             <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors absolute top-4 right-4 z-20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
+        <div id="names-section" class="section hidden flex flex-col justify-center items-center min-h-screen pt-8 pb-10">
             
-            <div class="flex flex-col items-center justify-center w-full h-full -mt-20">
+            <div class="flex flex-col items-center justify-center w-full max-w-full">
                 <div id="nameResult" class="text-center overflow-x-auto w-full"> <!-- وسم w-full مهم هنا -->
                     <!-- Name Display Rectangle (Modified to large-name-display) -->
                     <div id="nameDisplayContainer" class="large-name-display">
@@ -848,15 +975,8 @@
         </div>
 
         <!-- Dice Section -->
-        <div id="dice-section" class="section hidden">
-            <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
-            <div class="glass-card rounded-2xl p-8">
+        <div id="dice-section" class="section hidden flex flex-col justify-center items-center min-h-screen pt-8 pb-10">
+            <div class="glass-card rounded-2xl p-8 w-full max-w-xl">
                 <h1 class="text-3xl font-bold text-white mb-6 text-center">
                     <img src="https://i.postimg.cc/3xdrzKDf/image.png" alt="النرد" class="inline-block h-8 w-8 ml-2">
                     النرد
@@ -867,20 +987,22 @@
                         <div id="diceContainer" class="flex justify-center gap-4 mb-6"></div>
                     </div>
 
-                    <!-- أزرار التحكم والخيارات (تم نقلها للأعلى) -->
+                    <!-- أزرار التحكم والخيارات -->
                     <div class="text-center mt-12 flex gap-4">
                         <button id="rollDiceButton" onclick="rollDice()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1">
                             رمي النرد
                         </button>
-                        <button onclick="toggleDiceOptionsModal()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all mr-4 flex-shrink-0">
-                            إدارة الخيارات
+                        <button onclick="toggleDiceOptionsModal()" class="bg-white/30 text-white px-4 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-shrink-0" title="الإعدادات">
+                            ⚙️
+                        </button>
+                        <button onclick="toggleDiceHistoryModal()" class="bg-blue-500/30 text-white px-4 py-3 rounded-lg font-bold hover:bg-blue-500/50 transition-all flex-shrink-0" title="السجل">
+                            📜
                         </button>
                     </div>
 
-                    <!-- عدد النرد (تم نقله للأسفل وتصغير عرضه) -->
+                    <!-- عدد النرد -->
                     <div class="mt-6 mb-6">
                         <label class="block text-white font-semibold mb-2">عدد النرد:</label>
-                        <!-- تصغير العرض إلى max-w-xs -->
                         <div class="radio-inputs max-w-xs" id="diceCountRadios">
                             <label class="radio">
                                 <input type="radio" name="dice-count" value="1" onclick="handleDiceCountChange()">
@@ -895,6 +1017,11 @@
                                 <span class="name">3</span>
                             </label>
                         </div>
+                    </div>
+
+                    <!-- عرض النتيجة -->
+                    <div class="mt-6">
+                        <div id="diceResultDisplay" class="text-white text-2xl font-bold mb-4 min-h-[40px]"></div>
                     </div>
                 </div>
             </div>
@@ -925,41 +1052,66 @@
                     <button onclick="toggleDiceOptionsModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">حفظ الإعدادات</button>
                 </div>
             </div>
+
+            <!-- Modal for Dice History -->
+            <div id="diceHistoryModal" class="options-modal">
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-white text-2xl font-bold">سجل الرميات</h3>
+                        <button onclick="toggleDiceHistoryModal()" class="text-white/80 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="glass-card rounded-lg p-4 mb-4">
+                        <div id="diceHistoryContainer" class="space-y-2 max-h-60 overflow-y-auto flex flex-col gap-2">
+                            <p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="clearDiceHistory()" class="w-full bg-red-500/30 text-white px-4 py-2 rounded-lg hover:bg-red-500/50 mb-2">مسح السجل</button>
+                    <button onclick="toggleDiceHistoryModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إغلاق</button>
+                </div>
+            </div>
         </div>
 
         <!-- Coin Section -->
-        <div id="coin-section" class="section hidden">
-            <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
-            <div class="glass-card rounded-2xl p-8 text-center">
+        <div id="coin-section" class="section hidden flex flex-col justify-center items-center min-h-screen pt-8 pb-10">
+            <div class="glass-card rounded-2xl p-8 text-center w-full max-w-xl">
                 <h1 class="text-3xl font-bold text-white mb-6">
                     <img src="https://i.postimg.cc/0jJ3CXQc/image.png" alt="قلب العملة" class="inline-block h-8 w-8 ml-2">
                     قلب العملة
                 </h1>
                 <div class="max-w-md mx-auto">
                     <div class="mb-6 coin-container">
-                        <div id="coin" class="coin mx-auto">
-                            <div class="coin-face coin-front">
-                                <img src="https://i.postimg.cc/0jJ3CXQc/image.png" alt="وجه الصورة">
-                            </div>
-                            <div class="coin-face coin-back">
-                                <img src="https://i.postimg.cc/hhWYZ8Qg/image.png" alt="وجه الكتابة">
-                            </div>
+                        <div id="coin-toss-wrapper" style="transform-style: preserve-3d;">
+                            <div id="coin" class="coin mx-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- إحصائيات فورية -->
+                    <div class="flex justify-center gap-8 mb-8 text-white">
+                        <div class="text-center bg-white/10 px-6 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                            <div class="text-sm opacity-80 mb-1">صورة</div>
+                            <div id="headsCount" class="text-2xl font-bold">0</div>
+                        </div>
+                        <div class="text-center bg-white/10 px-6 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                            <div class="text-sm opacity-80 mb-1">كتابة</div>
+                            <div id="tailsCount" class="text-2xl font-bold">0</div>
                         </div>
                     </div>
                     
-                    <div class="text-center mt-12 flex gap-4">
-                        <button id="flipCoinButton" onclick="flipCoin()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1">
-                            قلب العملة
-                        </button>
-                        <button onclick="toggleCoinOptionsModal()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all mr-4 flex-shrink-0">
-                            إدارة الخيارات
-                        </button>
+                    <div class="text-center mt-8 flex flex-col gap-4">
+                        <div class="flex gap-4 w-full">
+                            <button id="flipCoinButton" onclick="flipCoin()" class="bg-white/30 text-white px-8 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-1 shadow-lg border border-white/20">
+                                قلب العملة
+                            </button>
+                            <button onclick="toggleCoinOptionsModal()" class="bg-white/30 text-white px-4 py-3 rounded-lg font-bold hover:bg-white/50 transition-all flex-shrink-0 shadow-lg border border-white/20" title="الإعدادات">
+                                ⚙️
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -968,7 +1120,7 @@
             <div id="coinOptionsModal" class="options-modal">
                 <div class="modal-content">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-white text-2xl font-bold">إدارة خيارات قلب العملة</h3>
+                        <h3 class="text-white text-2xl font-bold">إعدادات العملة</h3>
                         <button onclick="toggleCoinOptionsModal()" class="text-white/80 hover:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -976,11 +1128,6 @@
                         </button>
                     </div>
                     <div class="glass-card rounded-lg p-6 mb-6">
-                        <div class="w-full flex items-center gap-2 mb-4 text-white">
-                            <label for="coinDuration" class="flex-1 text-sm">مدة الدوران (ثانية):</label>
-                            <input type="range" id="coinDuration" value="3" min="3" max="10" class="flex-1 h-2 bg-white/80 rounded-lg appearance-none cursor-pointer" onchange="saveCoinSettings()">
-                            <span id="coinDurationValue" class="w-10 text-right">3</span>
-                        </div>
                         <div class="w-full flex flex-col items-start justify-start gap-3">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" id="showCoinPopup" class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" onchange="saveCoinSettings()">
@@ -992,20 +1139,19 @@
                             </div>
                         </div>
                     </div>
-                    <button onclick="toggleCoinOptionsModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">حفظ الإعدادات</button>
+                    
+                    <button onclick="toggleCoinHistoryModal()" class="w-full bg-blue-500/30 text-white px-4 py-3 rounded-lg font-bold hover:bg-blue-500/50 transition-all shadow-lg border border-white/20 mb-4 flex items-center justify-center gap-2">
+                        <span class="text-xl">📜</span>
+                        سجل الرميات
+                    </button>
+
+                    <button onclick="toggleCoinOptionsModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إغلاق</button>
                 </div>
             </div>
         </div>
         
         <!-- Drag and Drop Section -->
         <div id="drag-and-drop-section" class="section hidden">
-            <!-- Return Button -->
-            <a onclick="showSection('main-menu')" class="inline-flex items-center text-white/80 hover:text-white transition-colors mb-8">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span class="mr-2">العودة</span>
-            </a>
              <div class="glass-card rounded-2xl p-8">
                 <h1 class="text-3xl font-bold text-white mb-6 text-center">
                     <img src="https://i.postimg.cc/yx1sjBHP/image.png" alt="ترتيب الأسماء" class="inline-block h-8 w-8 ml-2">
@@ -1278,6 +1424,75 @@
 
             osc.start();
             osc.stop(audioCtx.currentTime + 0.06);
+        }
+
+        // ** دالة جديدة: توليد صوت تدحرج النرد على الطاولة (Roll) - محسن ليكون أنقى وأوضح **
+        function playDiceRolling() {
+            initAudioContext();
+            if (!audioCtx) return;
+            
+            const t = audioCtx.currentTime;
+            const duration = 1.2; 
+            
+            const impactCount = 8; // عدد الارتطامات
+            
+            for (let i = 0; i < impactCount; i++) {
+                // توقيت عشوائي مع تباعد يزيد تدريجياً
+                const time = t + (Math.random() * 0.1) + (i * 0.15); 
+                if (time > t + duration) break;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                // استخدام موجة مثلثة (Triangle) بدلاً من Sine ليكون الصوت "أقسى" وأقل كتمة
+                osc.type = 'triangle';
+                
+                // رفع التردد ليبدو النرد أصغر وأصلب (بلاستيك على خشب)
+                // يبدأ من ~400Hz وينزل لـ ~100Hz
+                osc.frequency.setValueAtTime(350 + Math.random() * 100, time);
+                osc.frequency.exponentialRampToValueAtTime(80, time + 0.08);
+                
+                // التحكم في الصوت (Envelope)
+                const vol = (1 - (i/impactCount)) * (0.4 + Math.random() * 0.2);
+                
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(vol, time + 0.005); // هجوم أسرع لصوت "تكة"
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.08); 
+                
+                osc.start(time);
+                osc.stop(time + 0.1);
+            }
+        }
+
+        // ** دالة جديدة: توليد صوت ارتطام النرد بالأرض (Final Hit) - واضح **
+        function playDiceHit() {
+            initAudioContext();
+            if (!audioCtx) return;
+            
+            const t = audioCtx.currentTime;
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            // موجة مثلثة لصوت واضح
+            osc.type = 'triangle';
+            
+            // ضربة قوية وواضحة
+            osc.frequency.setValueAtTime(450, t);
+            osc.frequency.exponentialRampToValueAtTime(60, t + 0.12);
+            
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.6, t + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+            
+            osc.start(t);
+            osc.stop(t + 0.2);
         }
 
         // متغير للتحكم في مدة صوت التشجيع
@@ -1614,23 +1829,36 @@
         // ** دالة حفظ إعدادات العملة الجديدة **
         function saveCoinSettings() {
             const settings = {
-                duration: document.getElementById('coinDuration').value,
+                // duration: document.getElementById('coinDuration').value, // تمت إزالته لأنه أصبح ديناميكي
                 showPopup: document.getElementById('showCoinPopup').checked,
                 showConfetti: document.getElementById('showCoinConfetti').checked,
             };
             saveToLocalStorage('coinSettings', settings);
+            
+            // حفظ السجل والإحصائيات
+            saveToLocalStorage('coinHistory', coinHistory);
+            saveToLocalStorage('coinStats', { heads: headsCount, tails: tailsCount });
         }
 
         // ** دالة تحميل إعدادات العملة الجديدة **
         function loadCoinSettings() {
              const settings = loadFromLocalStorage('coinSettings', {
-                duration: 3, showPopup: false, showConfetti: false // الافتراضي: عدم تفعيل النافذة المنبثقة والقصاصات
+                showPopup: false, showConfetti: false // الافتراضي
             });
 
-            document.getElementById('coinDuration').value = settings.duration;
-            document.getElementById('coinDurationValue').textContent = settings.duration;
+            // document.getElementById('coinDuration').value = settings.duration || 3; // تمت إزالته
+            // document.getElementById('coinDurationValue').textContent = settings.duration || 3; // تمت إزالته
             document.getElementById('showCoinPopup').checked = settings.showPopup;
             document.getElementById('showCoinConfetti').checked = settings.showConfetti;
+            
+            // تحميل السجل والإحصائيات
+            coinHistory = loadFromLocalStorage('coinHistory', []);
+            const stats = loadFromLocalStorage('coinStats', { heads: 0, tails: 0 });
+            headsCount = stats.heads;
+            tailsCount = stats.tails;
+            
+            updateCoinStats();
+            renderCoinHistory();
         }
         
         // ----------------- حفظ إعدادات السحب والإفلات (الفرق) -----------------
@@ -1762,6 +1990,15 @@
             const sectionId = sectionName === 'main-menu' ? 'main-menu' : sectionName + '-section';
             const sectionElement = document.getElementById(sectionId);
             
+            const backBtn = document.getElementById('backToMainBtn');
+            if (backBtn) {
+                if (sectionName === 'main-menu') {
+                    backBtn.classList.add('hidden');
+                } else {
+                    backBtn.classList.remove('hidden');
+                }
+            }
+
             if (sectionElement) {
                 sectionElement.classList.remove('hidden');
                 
@@ -1836,6 +2073,19 @@
         // ** دالة فتح وإغلاق إعدادات النرد الجديدة **
         function toggleDiceOptionsModal() {
             document.getElementById('diceOptionsModal').classList.toggle('visible');
+        }
+
+        // ** دالة فتح وإغلاق سجل النرد **
+        function toggleDiceHistoryModal() {
+            const modal = document.getElementById('diceHistoryModal');
+            if (modal) {
+                if (modal.classList.contains('visible')) {
+                    modal.classList.remove('visible');
+                } else {
+                    renderDiceHistory();
+                    modal.classList.add('visible');
+                }
+            }
         }
         
         // دالة لتغيير عدد النرد مع حفظ الإعدادات
@@ -2948,6 +3198,7 @@
                     
                     // تشغيل صوت الفوز (Cheer)
                     playSound('cheer');
+                    setTimeout(() => stopCheerSound(), 3000); // إيقاف الصوت بعد 3 ثواني
 
                     // تحديد ما إذا كان سيتم عرض زر الحذف التلقائي أم زر الحذف اليدوي
                     const deleteCallback = autoRemove ? null : 'removeWinningName';
@@ -3063,6 +3314,11 @@
             container.innerHTML = '';
             
             for (let i = 0; i < count; i++) {
+                // إنشاء غلاف للحركة القفزية
+                const wrapper = document.createElement('div');
+                wrapper.className = 'dice-anim-wrapper';
+                wrapper.id = `dice-wrapper-${i}`;
+
                 const dice = document.createElement('div');
                 dice.className = 'dice-container';
                 dice.id = `dice-${i}`;
@@ -3074,7 +3330,8 @@
                     dice.appendChild(face);
                 }
 
-                container.appendChild(dice);
+                wrapper.appendChild(dice);
+                container.appendChild(wrapper);
             }
             saveDiceSettings(); // ** الحفظ بعد التحديث **
         }
@@ -3091,6 +3348,8 @@
             }
         }
         
+        let diceHistory = [];
+
         // دالة لرمي النرد
         function rollDice() {
             document.getElementById('rollDiceButton').disabled = true;
@@ -3105,17 +3364,37 @@
             const showPopup = document.getElementById('showDicePopup').checked;
             const showConfetti = document.getElementById('showDiceConfetti').checked;
 
+            // إعادة تعيين عرض النتيجة
+            const resultDiv = document.getElementById('diceResultDisplay');
+            if (resultDiv) resultDiv.textContent = '';
+
             // تشغيل صوت رمي النرد مرة واحدة
-            playSound('dice');
+            playDiceRolling(); // ** تحديث: استخدام صوت الدحرجة بدلاً من الاهتزاز **
             
             diceElements.forEach((dice) => {
+                // إعادة تعيين الحركة
                 dice.style.transition = 'none';
-                dice.offsetHeight;
+                dice.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)'; // إعادة للوضع الصفري بشكل مؤقت
+                
+                // تفعيل حركة القفز على الغلاف
+                const wrapper = dice.parentElement;
+                if (wrapper && wrapper.classList.contains('dice-anim-wrapper')) {
+                    wrapper.classList.remove('jumping');
+                    void wrapper.offsetWidth; // Force reflow
+                    wrapper.classList.add('jumping');
+                }
+
+                dice.offsetHeight; // Force reflow for dice
 
                 const finalValue = Math.floor(Math.random() * 6) + 1;
                 
-                const baseRotX = (Math.floor(Math.random() * 5) + 5) * 360;
-                const baseRotY = (Math.floor(Math.random() * 5) + 5) * 360;
+                // تخزين القيمة في العنصر نفسه لإصلاح خطأ الحساب
+                dice.dataset.value = finalValue;
+
+                // زيادة عدد اللفات لجعل الحركة أكثر إثارة
+                const baseRotX = (Math.floor(Math.random() * 8) + 8) * 360;
+                const baseRotY = (Math.floor(Math.random() * 8) + 8) * 360;
+                const baseRotZ = (Math.floor(Math.random() * 4) + 2) * 360; // دوران إضافي حول المحور Z
                 
                 let rotX = 0;
                 let rotY = 0;
@@ -3132,18 +3411,31 @@
                 const finalX = baseRotX + rotX;
                 const finalY = baseRotY + rotY;
                 
-                
-                dice.style.transition = 'transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+                // استخدام دالة توقيت (easing) مرنة لمحاكاة الفيزياء
+                dice.style.transition = 'transform 1.5s cubic-bezier(0.15, 0.9, 0.35, 1.05)';
+                dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg) rotateZ(${baseRotZ}deg)`;
                 
                 dice.addEventListener('transitionend', () => {
+                    // تشغيل صوت ارتطام خفيف عند الانتهاء
+                    playDiceHit(); // ** تحديث: استخدام الصوت المولد الجديد **
+
                     finishedDice++;
                     if (finishedDice === diceCount) {
                         
+                        // حساب المجموع الصحيح بقراءة القيم المخزنة
                         const totalResult = Array.from(document.querySelectorAll('.dice-container')).reduce((sum, d) => {
-                            // هذه مجرد محاكاة، نحتاج لتتبع القيمة الفعلية (لكنها كافية للتطبيق)
-                            return sum + finalValue; 
+                            return sum + parseInt(d.dataset.value || 0);
                         }, 0);
+                        
+                        // عرض النتيجة على الشاشة
+                        if (resultDiv) {
+                            resultDiv.textContent = `المجموع: ${totalResult}`;
+                            resultDiv.classList.add('pop-number'); // إضافة تأثير حركي
+                            setTimeout(() => resultDiv.classList.remove('pop-number'), 500);
+                        }
+
+                        // إضافة للسجل
+                        updateDiceHistory(totalResult, diceCount);
                         
                         if (showPopup || showConfetti) { 
                             showConfettiPopup('نتيجة النرد', `النتيجة النهائية: ${totalResult}`, null, null, showConfetti, showPopup);
@@ -3155,43 +3447,383 @@
                 }, { once: true });
             });
         }
+
+        function updateDiceHistory(total, count) {
+            const timestamp = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            diceHistory.unshift({ total: total, count: count, time: timestamp });
+            if (diceHistory.length > 10) diceHistory.pop();
+            renderDiceHistory();
+        }
+
+        function renderDiceHistory() {
+            const container = document.getElementById('diceHistoryContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (diceHistory.length === 0) {
+                container.innerHTML = '<p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>';
+                return;
+            }
+            
+            diceHistory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-white/20 p-2 rounded hover:bg-white/30 transition-colors';
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-white/60 text-sm font-mono">${index + 1}.</span>
+                        <span class="text-white font-bold">المجموع: ${item.total}</span>
+                        <span class="text-white/60 text-xs">(${item.count} نرد)</span>
+                    </div>
+                    <span class="text-white/50 text-xs bg-black/20 px-2 py-1 rounded">${item.time}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function clearDiceHistory() {
+            diceHistory = [];
+            renderDiceHistory();
+        }
         
 
         // --- دوال قسم قلب العملة ---
 
-        // دالة لقلب العملة
+        // تهيئة العملة ثلاثية الأبعاد (محسنة)
+        function initCoin3D() {
+            const coin = document.getElementById('coin');
+            if (!coin) return;
+            
+            coin.innerHTML = ''; 
+            
+            // زيادة السماكة لتكون أوضح
+            const thickness = 20; 
+            const fragment = document.createDocumentFragment();
+
+            // 1. الوجه الأمامي
+            const front = document.createElement('div');
+            front.className = 'coin-layer coin-front-face';
+            front.innerHTML = '<img src="https://i.postimg.cc/0jJ3CXQc/image.png" alt="وجه الصورة">';
+            fragment.appendChild(front);
+
+            // 2. الوجه الخلفي
+            const back = document.createElement('div');
+            back.className = 'coin-layer coin-back-face';
+            back.innerHTML = '<img src="https://i.postimg.cc/hhWYZ8Qg/image.png" alt="وجه الكتابة">';
+            fragment.appendChild(back);
+
+            // 3. طبقات الحافة (لإعطاء سماكة)
+            // نوزع الطبقات بين -10px و +10px (بناءً على translateZ للوجهين)
+            const step = 20 / thickness; // 20px هي المسافة الكلية بين الوجهين (10 - (-10) نظرياً)
+            // لكن بما أن الوجهين عند +10 (واحد مقلوب)، سنملأ الفراغ بينهما
+            
+            for (let i = 0; i < thickness; i++) {
+                const layer = document.createElement('div');
+                layer.className = 'coin-layer coin-edge-layer';
+                
+                // تدرج لوني للحافة
+                // نستخدم ألواناً مختلفة قليلاً لإعطاء تأثير معدني
+                const isEven = i % 2 === 0;
+                layer.style.background = isEven ? '#f8a241' : '#d68b35'; 
+                
+                // الحيلة هنا: توزيع الطبقات على المحور Z
+                // الوجه الأمامي عند +10
+                // الوجه الخلفي عند +10 (لكن مقلوب، يعني كأنه عند -10 من وجهة نظر المشاهد)
+                // لذا نوزع الطبقات من -9 إلى +9
+                const z = -9 + (i * (18 / thickness)); 
+                
+                layer.style.transform = `translateZ(${z}px)`;
+                fragment.appendChild(layer);
+            }
+
+            coin.appendChild(fragment);
+        }
+
+        // استدعاء التهيئة عند التحميل
+        document.addEventListener('DOMContentLoaded', initCoin3D);
+        document.addEventListener('DOMContentLoaded', setupCoinGestures);
+        if (document.readyState === 'complete') {
+            initCoin3D();
+            setupCoinGestures();
+        }
+
+        // ** إعداد إيماءات اللمس للعملة (سحب للأعلى) **
+        function setupCoinGestures() {
+            const container = document.querySelector('.coin-container');
+            const wrapper = document.getElementById('coin-toss-wrapper');
+            if (!container || !wrapper) return;
+
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            // منع السكرول أثناء سحب العملة
+            container.style.touchAction = 'none'; 
+
+            container.addEventListener('touchstart', (e) => {
+                if (document.getElementById('flipCoinButton').disabled) return;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+                wrapper.style.transition = 'none'; // تعطيل الانتقال السلس أثناء السحب لاستجابة فورية
+            }, { passive: false });
+
+            container.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                const deltaY = currentY - startY;
+
+                // السماح فقط بالسحب للأعلى (قيم سالبة)
+                if (deltaY < 0) {
+                    e.preventDefault(); // منع سحب الصفحة
+                    // إضافة مقاومة كلما سحبنا أكثر (Damping)
+                    const resistance = 1 + (Math.abs(deltaY) / 300);
+                    const translateY = deltaY / resistance;
+                    wrapper.style.transform = `translateY(${translateY}px)`;
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const deltaY = currentY - startY;
+                
+                if (deltaY < -80) {
+                    wrapper.style.transition = 'transform 0.2s ease-out';
+                    wrapper.style.transform = 'translateY(0)';
+                    flipCoin();
+                } else {
+                    wrapper.style.transition = 'transform 0.3s ease-out';
+                    wrapper.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        // توليد صوت رنين العملة (Ping)
+        function playCoinFlipSound() {
+            initAudioContext();
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(2800, t);
+            osc.frequency.exponentialRampToValueAtTime(1200, t + 0.3);
+
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.3, t + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+
+            osc.start(t);
+            osc.stop(t + 0.4);
+        }
+
+        // توليد صوت ارتطام العملة (Hit & Wobble)
+        function playCoinHitSound() {
+            initAudioContext();
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+
+            // ارتطام
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1000, t);
+            
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.4, t + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+            
+            osc.start(t);
+            osc.stop(t + 0.15);
+
+            // اهتزاز (Rattle)
+            for (let i = 0; i < 4; i++) {
+                const rt = t + 0.08 + (i * 0.06);
+                const rOsc = audioCtx.createOscillator();
+                const rGain = audioCtx.createGain();
+                rOsc.connect(rGain);
+                rGain.connect(audioCtx.destination);
+                
+                rOsc.type = 'sine';
+                rOsc.frequency.setValueAtTime(900 + (Math.random() * 200), rt);
+                
+                const vol = 0.15 / (i + 1);
+                rGain.gain.setValueAtTime(0, rt);
+                rGain.gain.linearRampToValueAtTime(vol, rt + 0.005);
+                rGain.gain.exponentialRampToValueAtTime(0.01, rt + 0.05);
+                
+                rOsc.start(rt);
+                rOsc.stop(rt + 0.05);
+            }
+        }
+
+        // متغيرات لتخزين سجل العملة
+        let coinHistory = [];
+        let headsCount = 0;
+        let tailsCount = 0;
+
+        // دالة لقلب العملة (محدثة)
         function flipCoin() {
             const showPopup = document.getElementById('showCoinPopup').checked;
             const showConfetti = document.getElementById('showCoinConfetti').checked;
 
             document.getElementById('flipCoinButton').disabled = true;
             const coin = document.getElementById('coin');
+            const coinWrapper = document.getElementById('coin-toss-wrapper');
+            
+            // تأكد من وجود الطبقات
+            if (coin.children.length === 0) initCoin3D();
+
             const result = Math.random() < 0.5 ? 'صورة' : 'كتابة';
             
-            const duration = parseFloat(document.getElementById('coinDuration').value);
-            const totalRotations = (duration * 2) + Math.floor(Math.random() * 3) + 1;
+            // وقت ديناميكي بين 2 و 3.5 ثواني كما طلب المستخدم
+            const duration = 2 + Math.random() * 1.5;
+            
+            // حساب عدد دورات المحور Y (يمين-يسار)
+            // تم تقليل مضاعف الدوران من 3 إلى 2 لتقليل السرعة وجعلها أقل إزعاجاً
+            const totalRotations = Math.floor(duration * 2) + Math.floor(Math.random() * 3) + 2;
 
             const finalRotation = (result === 'صورة' ? 0 : 180) + (totalRotations * 360);
             
+            // إعادة تعيين الحالة مع ميلان ثابت للمحور X لإعطاء تأثير ثلاثي الأبعاد (Tilted Spin)
             coin.style.transition = 'none';
-            coin.style.transform = `rotateY(0deg)`;
-            coin.offsetHeight;
+            coin.style.transform = `rotateX(10deg) rotateZ(-5deg) rotateY(0deg)`;
+            coin.classList.remove('wobble-anim');
             
-            playSound('coin'); // صوت بداية دوران العملة
+            if (coinWrapper) {
+                coinWrapper.classList.remove('toss-animation');
+                coinWrapper.classList.remove('bounce-anim');
+                coinWrapper.style.animation = 'none';
+                coinWrapper.style.transform = 'translateY(0)';
+                coinWrapper.offsetHeight; // Trigger reflow
+            }
+            
+            coin.offsetHeight; // Trigger reflow
+            
+            playCoinFlipSound(); // صوت جديد
 
-            coin.style.transition = `transform ${duration}s cubic-bezier(0.68, -0.55, 0.27, 1.55)`;
-            coin.style.transform = `rotateY(${finalRotation}deg)`;
+            // بدء حركة الرمي (Toss)
+            if (coinWrapper) {
+                // نضبط مدة حركة الرمي لتكون متزامنة مع مدة الدوران
+                // نستخدم linear لأن التوقيت الحقيقي (الجاذبية) محدد داخل الـ keyframes
+                coinWrapper.style.animation = `coinToss ${duration}s linear forwards`;
+            }
+
+            // بدء حركة الدوران
+            // استخدام منحنى "Ease Out Quint" لدوران سريع جداً في البداية وتباطؤ تدريجي حتى التوقف
+            // نحافظ على الميلان (rotateX و rotateZ) طوال فترة الدوران
+            coin.style.transition = `transform ${duration}s cubic-bezier(0.23, 1, 0.32, 1)`;
+            coin.style.transform = `rotateX(10deg) rotateZ(-5deg) rotateY(${finalRotation}deg)`;
             
             coin.addEventListener('transitionend', () => {
-                stopCoinSound(); // إيقاف صوت العملة
+                playCoinHitSound(); // صوت ارتطام
                 
+                // إضافة تأثير الارتداد للحاوية بدلاً من العملة لضمان عدم تداخل التحويلات
+                if (coinWrapper) {
+                    coinWrapper.style.animation = 'none';
+                    coinWrapper.style.transform = 'translateY(0)';
+                    coinWrapper.offsetHeight; // Force reflow
+                    
+                    coinWrapper.classList.add('bounce-anim');
+                    setTimeout(() => {
+                        coinWrapper.classList.remove('bounce-anim');
+                        coinWrapper.style.transform = 'translateY(0)';
+                    }, 400);
+                } else {
+                     coin.classList.add('wobble-anim');
+                }
+
+                // تحديث السجل والإحصائيات
+                addToCoinHistory(result);
+
                 // عرض النتيجة
                 if (showPopup || showConfetti) { 
-                    showConfettiPopup('نتيجة العملة', `النتيجة: ${result}`, null, null, showConfetti, showPopup);
+                    setTimeout(() => {
+                        showConfettiPopup('نتيجة العملة', `النتيجة: ${result}`, null, null, showConfetti, showPopup);
+                        document.getElementById('flipCoinButton').disabled = false;
+                    }, 600);
+                } else {
+                    document.getElementById('flipCoinButton').disabled = false;
                 }
-                
-                document.getElementById('flipCoinButton').disabled = false;
             }, { once: true });
+        }
+
+        // دوال سجل العملة والإحصائيات
+        function addToCoinHistory(result) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            coinHistory.unshift({ result, time: timeString }); // إضافة للأعلى
+            
+            // تحديث العدادات
+            if (result === 'صورة') headsCount++;
+            else tailsCount++;
+            
+            updateCoinStats();
+            renderCoinHistory();
+            saveCoinSettings(); // حفظ السجل
+        }
+
+        function updateCoinStats() {
+            const headsEl = document.getElementById('headsCount');
+            const tailsEl = document.getElementById('tailsCount');
+            if (headsEl) headsEl.textContent = headsCount;
+            if (tailsEl) tailsEl.textContent = tailsCount;
+        }
+
+        function renderCoinHistory() {
+            const list = document.getElementById('coinHistoryList');
+            if (!list) return;
+            
+            if (coinHistory.length === 0) {
+                list.innerHTML = '<p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>';
+                return;
+            }
+
+            list.innerHTML = '';
+            coinHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-white/10 p-2 rounded border border-white/10 animate-fade-in';
+                
+                // تلوين النتيجة
+                const colorClass = item.result === 'صورة' ? 'text-yellow-300' : 'text-blue-300';
+                
+                div.innerHTML = `
+                    <span class="font-bold ${colorClass}">${item.result}</span>
+                    <span class="text-xs text-white/60 dir-ltr">${item.time}</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function clearCoinHistory() {
+            coinHistory = [];
+            headsCount = 0;
+            tailsCount = 0;
+            updateCoinStats();
+            renderCoinHistory();
+            saveCoinSettings();
+            
+            // إغلاق النافذة
+            toggleCoinHistoryModal();
+            
+            // رسالة تأكيد
+            playSound('click');
+        }
+
+        function toggleCoinHistoryModal() {
+            const modal = document.getElementById('coinHistoryModal');
+            modal.classList.toggle('visible');
+            if (modal.classList.contains('visible')) {
+                renderCoinHistory();
+            }
         }
         
         // --- دوال قسم السحب والإفلات ---
@@ -3403,7 +4035,7 @@
                             </svg>
                         </button>
                     </h2>
-                    <div id="${teamId}" class="h-48 lg:h-96 p-3 border-2 border-dashed rounded-lg overflow-y-auto ${config.bgClass}"></div>
+                    <div id="${teamId}" class="team-column h-64 lg:h-96 p-3 border-2 border-dashed rounded-lg overflow-y-auto ${config.bgClass}"></div>
                 `;
                 container.appendChild(teamDiv);
                 
@@ -3516,8 +4148,11 @@
         }
 
         function handleNameClick(e) {
+            if (e.target.closest('.remove-btn')) {
+                return;
+            }
             e.stopPropagation();
-
+            
             const selectedName = document.querySelector('.name-item.selected');
             if (selectedName) {
                 selectedName.classList.remove('selected');
@@ -3847,5 +4482,33 @@
             <button onclick="toggleHistoryModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إغلاق</button>
         </div>
     </div>
+    <!-- Coin History Modal -->
+    <div id="coinHistoryModal" class="options-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-white text-2xl font-bold">سجل الرميات</h3>
+                <button onclick="toggleCoinHistoryModal()" class="text-white/80 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="glass-card rounded-lg p-4 mb-4">
+                <div class="flex justify-between text-white/80 text-sm mb-2 border-b border-white/10 pb-2">
+                    <span>النتيجة</span>
+                    <span>الوقت</span>
+                </div>
+                <div id="coinHistoryList" class="space-y-2 max-h-60 overflow-y-auto">
+                    <!-- History items will be here -->
+                    <p class="text-white/50 text-center py-4">لا يوجد سجل حالياً</p>
+                </div>
+            </div>
+            
+            <button onclick="clearCoinHistory()" class="w-full bg-red-500/30 text-white px-4 py-2 rounded-lg hover:bg-red-500/50 mb-2">مسح السجل</button>
+            <button onclick="toggleCoinHistoryModal()" class="w-full bg-white/30 text-white px-4 py-2 rounded-lg hover:bg-white/50">إغلاق</button>
+        </div>
+    </div>
 </body>
 </html>
+
