@@ -254,6 +254,25 @@
         opacity: 1 !important;
     }
 
+    /* (جديد) نفس سلوك الإخفاء لزر ملئ الشاشة عند تفعيله في التطبيقات */
+    #fullscreen-toggle.fade-out-enabled {
+        transition: opacity 0.5s ease-in-out, transform 0.1s;
+        opacity: 1;
+    }
+    #fullscreen-toggle.fade-out-enabled.fade-out {
+        opacity: 0;
+    }
+    #fullscreen-toggle.fade-out-enabled:hover {
+        opacity: 1 !important;
+    }
+    /* زيادة مساحة النقر */
+    #fullscreen-toggle.fade-out-enabled::after {
+        content: '';
+        position: absolute;
+        top: -40px; left: -40px; right: -40px; bottom: -40px;
+        z-index: -1;
+    }
+
     /* زيادة مساحة النقر/التحويم لزر الخروج ليسهل الوصول إليه */
     .btn-close-iframe::after {
         content: '';
@@ -1810,6 +1829,9 @@
             const fullscreenIconEnter = document.getElementById('fullscreen-icon-enter');
             const fullscreenIconExit = document.getElementById('fullscreen-icon-exit');
 
+            // (جديد) متغير لتتبع الخروج اليدوي من ملئ الشاشة
+            let isManualFullscreenExit = false;
+
             // (جديد) منطق ملئ الشاشة
             fullscreenToggle.addEventListener('click', () => {
                 if (!document.fullscreenElement) {
@@ -1818,6 +1840,7 @@
                     });
                 } else {
                     if (document.exitFullscreen) {
+                        isManualFullscreenExit = true;
                         document.exitFullscreen();
                     }
                 }
@@ -1831,6 +1854,16 @@
                 } else {
                     fullscreenIconEnter.classList.remove('hidden');
                     fullscreenIconExit.classList.add('hidden');
+                    
+                    // معالجة زر الرجوع في الجوال: إذا لم يكن الخروج يدوياً، نرجع للخلف
+                    if (!isManualFullscreenExit) {
+                         // التحقق من أنه جهاز محمول (لمس) لتجنب التأثير على سطح المكتب (ESC)
+                         const isMobile = window.matchMedia('(pointer:coarse)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                         if (isMobile) {
+                             history.back();
+                         }
+                    }
+                    isManualFullscreenExit = false;
                 }
             });
             const darkIcon = document.getElementById('theme-toggle-dark-icon'); // قمر
@@ -1943,11 +1976,43 @@
                 // (تعديل) التحقق من وجود المستخدم أو الضيف قبل إظهار الأزرار
                 const isUserOrGuest = currentUser || sessionStorage.getItem('isGuest') === 'true';
                 if (pageConfig.iframe) {
+                    // إخفاء الأزرار عند دخول التطبيقات
                     btnOpenSidebar.classList.add('hidden');
                     themeToggle.classList.add('hidden');
+                    
+                    // (تعديل) زر ملئ الشاشة يظهر ويختفي تلقائياً (مثل زر الإغلاق)
+                    if (typeof fullscreenToggle !== 'undefined') {
+                        fullscreenToggle.classList.remove('hidden');
+                        fullscreenToggle.style.display = '';
+                        fullscreenToggle.classList.add('fade-out-enabled');
+                        fullscreenToggle.classList.remove('fade-out');
+                        
+                        if (fullscreenToggle.hideTimeout) clearTimeout(fullscreenToggle.hideTimeout);
+                        fullscreenToggle.hideTimeout = setTimeout(() => {
+                            fullscreenToggle.classList.add('fade-out');
+                        }, 5000);
+                    }
+                    
+                    // ضمان الإخفاء (للحالات المستعصية)
+                    btnOpenSidebar.style.display = 'none';
+                    themeToggle.style.display = 'none';
                 } else if (isUserOrGuest) {
+                    // إظهار الأزرار في الصفحات الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
+                    
+                    if (typeof fullscreenToggle !== 'undefined') {
+                        fullscreenToggle.classList.remove('hidden');
+                        fullscreenToggle.style.display = '';
+                        // تعطيل خاصية الاختفاء التلقائي في القوائم الرئيسية
+                        fullscreenToggle.classList.remove('fade-out-enabled');
+                        fullscreenToggle.classList.remove('fade-out');
+                        if (fullscreenToggle.hideTimeout) clearTimeout(fullscreenToggle.hideTimeout);
+                    }
+                    
+                    // استعادة العرض
+                    btnOpenSidebar.style.display = '';
+                    themeToggle.style.display = '';
                 }
 
                 // إخفاء الصفحة الحالية
