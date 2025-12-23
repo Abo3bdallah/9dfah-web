@@ -23,7 +23,7 @@
         #homeButton {
             position: fixed; 
             top: 20px;
-            left: 20px;
+            right: 20px;
             z-index: 1500; 
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
@@ -44,6 +44,33 @@
         #homeButton:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
+        }
+
+        #statusButton {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1500;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 1.3rem;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        #statusButton:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.08);
         }
         
         .container {
@@ -155,6 +182,52 @@
              outline: none;
             border-color: #ff6b6b;
             box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .time-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.4rem;
+        }
+
+        .time-input-field {
+            background: rgba(20, 20, 20, 0.95);
+            color: #ffffff;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            width: 60px;
+            height: 34px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0 0.5rem;
+        }
+
+        .time-input-field:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        .time-btn {
+            background: rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .time-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .button-3d {
@@ -282,11 +355,11 @@
         }
         
         .player-box {
-            background: linear-gradient(145deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 20, 0.95));
-            backdrop-filter: blur(15px);
-            border: 3px solid rgba(80, 80, 80, 0.5);
-            border-radius: 25px;
-            padding: 0 20px;
+            background: linear-gradient(135deg, #3a3a3a 0%, #121212 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -296,12 +369,43 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.03);
             background-size: initial; 
             background-position: initial;
             background-repeat: initial; 
+        }
+
+        .player-name {
+            font-weight: 900;
+            color: #f0f0f0;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.8);
+            width: 100%;
+            line-height: 1.1;
+            z-index: 2;
+            word-break: break-word;
+            padding: 5px;
+            /* Default large size for short names */
+            font-size: 3.5rem;
+        }
+
+        /* Dynamic Font Sizes based on Name Length */
+        .player-name.name-short { font-size: 3.5rem; }
+        .player-name.name-medium { font-size: 2.8rem; }
+        .player-name.name-long { font-size: 2.2rem; }
+        .player-name.name-xl { font-size: 1.8rem; }
+
+        @media (max-width: 768px) {
+            .player-name {
+                 /* Default mobile size */
+                 font-size: 2.2rem;
+            }
+            .player-name.name-short { font-size: 2.5rem; }
+            .player-name.name-medium { font-size: 2.0rem; }
+            .player-name.name-long { font-size: 1.6rem; }
+            .player-name.name-xl { font-size: 1.3rem; }
         }
         
         .players-grid {
@@ -470,11 +574,22 @@
             position: absolute;
             top: 8px;
             right: 8px;
-            font-size: 1.6rem;
+            font-size: 2.6rem;
             color: #ff6b6b;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
             animation: lockPulse 2s ease-in-out infinite;
             z-index: 10;
+        }
+
+        .timer-icon {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 2.6rem;
+            color: #74b9ff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 10;
+            cursor: pointer;
         }
         
         @keyframes lockPulse {
@@ -711,14 +826,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9); 
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.95); 
+            backdrop-filter: blur(15px);
             z-index: 1000;
             display: flex;
             align-items: center; 
             justify-content: center; 
-            transition: opacity 0.5s ease;
-            padding: 20px;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 15px;
             box-sizing: border-box; 
         }
 
@@ -726,69 +841,115 @@
             display: none;
         }
 
-        .modal-content {
-            background: linear-gradient(145deg, rgba(40, 40, 40, 0.9), rgba(20, 20, 20, 0.8));
-            border: 1px solid rgba(80, 80, 80, 0.3);
-            border-radius: 25px;
+        #statusModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            max-width: 90vw; 
+            box-sizing: border-box;
+        }
+
+        #statusModal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 95vw; 
             max-height: 90vh; 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.1);
             text-align: center;
             position: relative;
-            width: 500px; 
-            
+            width: 550px; 
             display: flex;
             flex-direction: column;
             align-items: center; 
             justify-content: center; 
             box-sizing: border-box;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         #modalRoleImage {
             width: 100%;
             height: auto;
-            max-width: 400px; 
-            max-height: 40vh; 
-            
+            max-width: 320px; 
+            max-height: 35vh; 
             object-fit: contain; 
-            margin: 10px auto; 
-            border-radius: 15px;
+            margin: 15px auto; 
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
             transition: all 0.5s ease;
             display: block;
         }
 
         #roleModal h2 {
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.6);
             color: #ff4757;
             background: none; 
             padding: 0;
-            border-radius: 10px;
             margin: 0 auto 10px auto; 
-            font-size: 2.2rem; 
+            font-size: 2.8rem; 
+            font-weight: 800;
+            letter-spacing: -1px;
         }
+
         #modalPlayerName {
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
-            background: none; 
-            padding: 0;
-            border-radius: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: fit-content;
-            margin: 5px auto; 
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 10px auto; 
+            text-align: center;
+            word-break: break-word;
             color: #ffd700;
-            font-size: 2rem; 
+            font-size: 2.2rem; 
             font-weight: 900;
         }
+
         #modalVoteCount {
-             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
-             background: none; 
-             padding: 0;
-             margin: 10px auto; 
-             font-size: 1.1rem; 
-             color: #ddd;
+             margin: 15px auto; 
+             font-size: 1.3rem; 
+             color: #a0aec0;
+             font-weight: 500;
         }
         
         #modalContinueSection {
-            margin-top: 15px; 
+            margin-top: 25px; 
+            width: 100%;
+        }
+        
+        #modalContinueSection button {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        
+        #modalContinueSection button:active {
+            transform: scale(0.98);
         }
         
         .results {
@@ -844,15 +1005,31 @@
         }
         
         #detectiveResultContent {
-            font-size: 4rem;
-            font-weight: 900;
-            text-shadow: 0 0 20px rgba(255,255,255,0.7);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 25px auto;
+            padding: 15px 30px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: fit-content;
+            max-width: 90%;
+            white-space: nowrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         #detectiveResultContent.mafia {
             color: #ff4757;
+            background: rgba(255, 71, 87, 0.15);
+            border-color: rgba(255, 71, 87, 0.4);
         }
         #detectiveResultContent.citizen {
-            color: #74b9ff;
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.15);
+            border-color: rgba(46, 204, 113, 0.4);
         }
 
         #nightKillSpinner {
@@ -874,37 +1051,241 @@
             color: #ff4757; 
             animation: eliminatedPulse 1s ease-in-out;
         }
+
+        /* --- تصميم الروليت الجديد (الأسماء السريعة) --- */
+        .roulette-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            transition: font-size 0.1s, color 0.2s;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .roulette-name.blur-text {
+            filter: blur(2px);
+            opacity: 0.8;
+        }
+
+        .roulette-name.pop-name {
+            animation: popName 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            filter: none;
+            opacity: 1;
+            font-size: 3rem;
+            color: #ff4757; /* لون مميز للفائز/القتيل */
+        }
+        
+        .roulette-name.pop-name.safe {
+             color: #2ecc71; /* لون أخضر للنجاة */
+        }
+
+        @keyframes popName {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.3); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- تصميم الروليت القاتل (قديم - يمكن حذفه أو تركه) --- */
+        .roulette-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px; /* Increased height */
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.8); /* Darker background */
+            border-top: 3px solid #ffd700;
+            border-bottom: 3px solid #ffd700;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) inset; /* Inner shadow for depth */
+            /* Fade edges */
+            mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+            border-radius: 10px; /* Soften corners */
+        }
+
+        .roulette-strip {
+            display: flex;
+            height: 100%;
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); /* Slower, smoother spin */
+            will-change: transform;
+        }
+
+        .roulette-item {
+            flex: 0 0 130px; /* Fixed width, no shrinking/growing */
+            width: 130px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ecf0f1;
+            background: linear-gradient(to bottom, #34495e, #2c3e50);
+            padding: 0 10px;
+            text-align: center;
+            box-sizing: border-box;
+            white-space: normal; /* Allow text wrapping */
+            word-break: break-word;
+        }
+
+        /* Highlight the center selection area */
+        .roulette-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px; /* Same as item width */
+            height: 100%;
+            border: 2px solid #ff4757;
+            box-sizing: border-box;
+            background: rgba(255, 71, 87, 0.1);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .roulette-item.victim-card {
+            background: linear-gradient(to bottom, #c0392b, #8e44ad);
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+            font-size: 1.3rem; /* Slightly larger for winner */
+        }
+        
+        .roulette-item.safe-card {
+            background: linear-gradient(to bottom, #27ae60, #16a085);
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+             font-size: 1.3rem;
+        }
+
+        .roulette-pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: #ff4757;
+            z-index: 10;
+            box-shadow: 0 0 15px #ff4757;
+        }
+        
+        .roulette-pointer::before {
+            content: '▼';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff4757;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 2px rgba(0,0,0,0.5);
+        }
+        .roulette-pointer::after {
+            content: '▲';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff4757;
+            font-size: 1.8rem;
+            text-shadow: 0 -2px 2px rgba(0,0,0,0.5);
+        }
+
+        .modal-backdrop.dark-mode {
+            background: rgba(0,0,0,0.95) !important;
+        }
         
         /* --- (إضافة) تنسيقات شاشة الفوز --- */
         #finalRolesList {
             text-align: right;
-            max-width: 300px;
-            margin: 20px auto;
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 10px;
-        }
-        #finalRolesList h3 {
-            font-size: 1.2rem;
-            color: #ffd700;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #ffd700;
-            padding-bottom: 5px;
-        }
-        #finalRolesList ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        #finalRolesList li {
-            font-size: 1rem;
-            color: #fff;
-            margin-bottom: 5px;
+            width: 100%;
+            max-width: 420px;
+            margin: 20px auto 10px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         #finalRolesList .mafia-role { color: #ff6b6b; }
         #finalRolesList .doctor-role { color: #74b9ff; }
         #finalRolesList .detective-role { color: #fdcb6e; }
-        
+
+        .win-container {
+            margin-top: 20px;
+            padding: 22px 20px;
+            background: linear-gradient(145deg, rgba(15, 15, 15, 0.96), rgba(40, 40, 40, 0.98));
+            border-radius: 18px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+            animation: winPulse 2s ease-in-out infinite alternate;
+        }
+
+        .win-title {
+            color: #ffd700;
+            font-size: 2.1rem;
+            margin: 0 0 10px 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .win-reason {
+            font-size: 1rem;
+            color: #f5f5f5;
+            text-align: center;
+            margin: 0 0 15px 0;
+        }
+
+        .final-role-group {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            padding: 10px 12px;
+        }
+
+        .final-role-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .final-role-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .final-role-title.mafia { color: #ff6b6b; }
+        .final-role-title.doctor { color: #74b9ff; }
+        .final-role-title.detective { color: #fdcb6e; }
+
+        .final-role-count {
+            font-size: 0.85rem;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+
+        .final-role-names {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .final-role-pill {
+            font-size: 0.9rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.07);
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
         .win-buttons-container {
             display: flex;
             justify-content: center;
@@ -919,10 +1300,18 @@
         @media (max-width: 768px) {
             #homeButton {
                 top: 15px;
-                left: 15px;
+                right: 15px;
                 width: 45px;
                 height: 45px;
                 font-size: 1.3rem;
+            }
+
+            #statusButton {
+                top: 75px;
+                right: 15px;
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
             }
 
             .container {
@@ -975,9 +1364,15 @@
             }
             
             .lock-icon {
-                font-size: 1.3rem;
+                font-size: 2.1rem;
                 top: 6px;
                 right: 6px;
+            }
+
+            .timer-icon {
+                font-size: 2.1rem;
+                top: 6px;
+                left: 6px;
             }
             
             .eliminated-label {
@@ -1016,10 +1411,18 @@
         @media (max-width: 480px) {
             #homeButton {
                 top: 10px;
-                left: 10px;
+                right: 10px;
                 width: 40px;
                 height: 40px;
                 font-size: 1.2rem;
+            }
+
+            #statusButton {
+                top: 60px;
+                right: 10px;
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
             }
 
             .container {
@@ -1081,8 +1484,7 @@
             }
             
             .player-name {
-                font-size: 1.3rem; 
-                padding: 6px 12px; 
+                 /* Inherit base styles, specific overrides handled by main media query above */
             }
 
             .skull-icon {
@@ -1092,9 +1494,15 @@
             }
             
             .lock-icon {
-                font-size: 1.1rem;
+                font-size: 2.3rem;
                 top: 4px;
                 right: 4px;
+            }
+
+            .timer-icon {
+                font-size: 2.3rem;
+                top: 4px;
+                left: 4px;
             }
             
             .eliminated-label {
@@ -1140,6 +1548,29 @@
                  justify-content: center;
             }
             
+            .win-container {
+                padding: 18px 14px;
+                margin-top: 15px;
+            }
+            .win-title {
+                font-size: 1.7rem;
+                margin-bottom: 8px;
+            }
+            .win-reason {
+                font-size: 0.95rem;
+            }
+            #finalRolesList {
+                max-width: 100%;
+                margin-top: 15px;
+            }
+            .final-role-title {
+                font-size: 0.9rem;
+            }
+            .final-role-pill {
+                font-size: 0.85rem;
+                padding: 3px 8px;
+            }
+            
             #modalRoleImage {
                 width: 95%; 
                 height: auto;
@@ -1166,13 +1597,94 @@
                 font-size: 2rem;
             }
         }
+        /* Toggle Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #e74c3c;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #e74c3c;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(24px);
+            -ms-transform: translateX(24px);
+            transform: translateX(24px);
+        }
+
+        /* --- تحسين الأداء للجوال --- */
+        @media (max-width: 768px) {
+            .setup-section, .voting-section, .player-box, .vote-option, .night-action-option, #homeButton {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+            .setup-section, .voting-section {
+                background: rgba(30, 30, 30, 0.98) !important;
+            }
+            .player-box {
+                background: rgba(40, 40, 40, 0.98) !important;
+            }
+            .vote-option, .night-action-option {
+                background: rgba(50, 50, 50, 0.95) !important;
+            }
+            /* تقليل الحركات الثقيلة */
+            * {
+                box-shadow: none !important; /* تخفيف الظلال */
+            }
+            .player-box:hover {
+                transform: none !important; /* إيقاف التكبير عند اللمس */
+            }
+        }
     </style>
 </head>
 <body>
     <button id="homeButton" class="hidden" onclick="showExitConfirm()">🏠</button>
+    <button id="statusButton" class="hidden" onclick="showStatusSummary()">📊</button>
 
     <div class="container">
-        <h1>🎭 مافيا 🎭</h1>
+        <h1>
+            <img src="https://i.postimg.cc/j2qBtN6M/mafya-hydr2.webp" alt="شعار مسابقة مافيا" style="max-width: 100%; height: auto; border-radius: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);">
+        </h1>
         
         <!-- مرحلة الإعداد -->
         <div id="setup-phase">
@@ -1247,10 +1759,34 @@
                                 <button class="button-3d button-3d-minus" data-input="detectiveCount" data-action="decrement">
                                     <div class="button-base"></div><div class="button-bottom"></div><div class="button-top">-</div>
                                 </button>
-                                <input type="number" id="detectiveCount" class="number-input-display" min="0" value="0"> 
+                                <input type="number" id="detectiveCount" class="number-input-display" min="0" value="1"> 
                                 <button class="button-3d button-3d-plus" data-input="detectiveCount" data-action="increment">
                                     <div class="button-base"></div><div class="button-bottom"></div><div class="button-top">+</div>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <label for="hideEliminatedIdentity" style="margin: 0; cursor: pointer; color: #eee; font-weight: bold; font-size: 1rem;">
+                                    إخفاء هوية من يخرج من اللعبة
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" id="hideEliminatedIdentity">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                <span style="color: #eee; font-size: 0.95rem; font-weight: bold;">
+                                    مدة الحديث لكل لاعب (بالثواني):
+                                </span>
+                                <div class="time-input-container" style="flex: 0 0 auto;">
+                                    <button class="time-btn time-btn-minus" data-input="speakTimeSeconds" data-action="decrement">-</button>
+                                    <input type="number" id="speakTimeSeconds" class="time-input-field" min="5" max="300" value="30">
+                                    <button class="time-btn time-btn-plus" data-input="speakTimeSeconds" data-action="increment">+</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1262,12 +1798,14 @@
         
         <!-- مرحلة عرض الأدوار -->
         <div id="roles-phase" class="hidden">
-            <h2 style="text-align: center; margin-bottom: 20px;">اضغط على اسمك لمعرفة دورك</h2>
+            <div id="rolesPhaseHeader" style="text-align: center; margin-bottom: 25px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.5s ease;">
+                <h2 id="rolesPhaseTitle" style="margin: 0; color: #ffd700; font-size: 1.3rem; transition: all 0.5s ease;">اختر اسمك واعرف دورك</h2>
+            </div>
             <div id="playersGrid" class="players-grid">
                 <!-- سيتم إنشاء صناديق اللاعبين هنا -->
             </div>
             
-            <button class="vote-btn" id="rolesPhaseButton" onclick="startNightPhase()">بدء مرحلة الليل</button>
+            <button class="vote-btn" id="rolesPhaseButton" onclick="startNightPhase()">بدء اللعبة</button>
         </div>
 
         <div id="night-phase" class="hidden">
@@ -1284,19 +1822,28 @@
             </div>
 
             <!-- شاشة التسليم (الجديدة) -->
-            <div id="night-handoff-screen" class="voting-section hidden" style="text-align: center;">
-                <h2 id="handoff-title" style="color: #ffd700; font-size: 1.8rem;">الرجاء تمرير الجهاز إلى...</h2>
-                <p id="handoff-role-name" style="font-size: 2.5rem; color: #fff; margin: 40px 0;"></p>
-                <button id="startNightRoleButton" style="background: linear-gradient(45deg, #74b9ff, #0984e3); padding: 18px 40px; font-size: 1.3rem;">
-                    أنا جاهز (اضغط لبدء دورك)
-                </button>
+            <div id="night-handoff-screen" class="modal-backdrop hidden">
+                <div class="modal-content">
+                    <h2 id="handoff-title" style="color: #ffd700; font-size: 1.8rem;">الرجاء تمرير الجهاز إلى...</h2>
+                    <p id="handoff-role-name" style="font-size: 2.5rem; color: #fff; margin: 40px 0;"></p>
+                    <button id="startNightRoleButton" style="background: linear-gradient(45deg, #74b9ff, #0984e3); padding: 18px 40px; font-size: 1.3rem;">
+                        أنا جاهز (اضغط لبدء دورك)
+                    </button>
+                </div>
             </div>
         </div>
         
         <!-- مرحلة التصويت -->
         <div id="voting-phase" class="hidden">
             <div class="voting-section">
-                <h2 style="text-align: center;">صوت لإخراج لاعب من اللعبة</h2>
+                <div id="votingPhaseHeader" style="text-align: center; margin-bottom: 25px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.5s ease;">
+                    <h2 id="votingPhaseTitle" style="margin: 0; color: #ffd700; font-size: 1.4rem; transition: all 0.5s ease;">
+                        جولة التصويت الجماعي
+                    </h2>
+                    <p style="margin: 8px 0 0; font-size: 0.95rem; color: #e0e0e0;">
+                        صوتوا لاختيار لاعب واحد يخرج من اللعبة في هذه الجولة
+                    </p>
+                </div>
                 <div id="votingGrid" class="voting-grid">
                     <!-- سيتم إنشاء خيارات التصويت هنا -->
                 </div>
@@ -1308,7 +1855,14 @@
         <!-- مرحلة التبرير -->
         <div id="justification-phase" class="hidden">
             <div class="voting-section">
-                <h2 style="text-align: center;">مرحلة التبرير</h2>
+                <div id="justificationPhaseHeader" style="text-align: center; margin-bottom: 25px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h2 id="justificationPhaseTitle" style="margin: 0; color: #ffd700; font-size: 1.3rem;">
+                        جولة التبرير
+                    </h2>
+                    <p style="margin: 8px 0 0; font-size: 0.95rem; color: #e0e0e0;">
+                        يتحدث كل مرشح بالترتيب لشرح نفسه خلال الوقت المحدد
+                    </p>
+                </div>
                 <div id="justificationContent" style="text-align: center;">
                     <!-- سيتم إنشاء محتوى التبرير هنا -->
                 </div>
@@ -1318,9 +1872,13 @@
         <!-- التصويت النهائي -->
         <div id="final-voting-phase" class="hidden">
             <div class="voting-section">
-                <h2 style="text-align: center;">التصويت النهائي - اختر من يخرج</h2>
-                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); border-radius: 15px;">
-                    <p style="color: #ffd700; font-size: 1.1rem;">صوت لاختيار من يخرج من اللعبة نهائياً</p>
+                <div id="finalVotingPhaseHeader" style="text-align: center; margin-bottom: 25px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <h2 id="finalVotingPhaseTitle" style="margin: 0; color: #ffd700; font-size: 1.3rem;">
+                        جولة التصويت النهائي
+                    </h2>
+                    <p style="color: #e0e0e0; font-size: 0.95rem; margin: 8px 0 0;">
+                        اختروا الآن من سيغادر اللعبة نهائياً من بين المشرحِين
+                    </p>
                 </div>
                 <div id="finalVotingGrid" class="voting-grid">
                     <!-- سيتم إنشاء خيارات التصويت النهائي هنا -->
@@ -1334,28 +1892,33 @@
             <div class="results">
                 <h2>نتائج التصويت</h2>
                 <div id="votingResults"></div>
-                <button onclick="startNightPhase()" style="margin: 20px auto; display: block;">بدء الليل التالي</button>
             </div>
         </div>
     </div>
     
     <div id="roleModal" class="hidden">
         <div class="modal-content">
-            <h2 id="modalTitle">
-                تم إخراج
-            </h2>
+            <h2 id="modalTitle"></h2>
             
             <div id="modalPlayerName">
-                <!-- اسم اللاعب سيظهر هنا -->
             </div>
             
-            <div style="margin: 10px 0;">
-                <div style="font-size: 1.1rem; color: #ddd; margin-bottom: 10px;">دوره كان:</div>
+            <div style="margin: 10px 0; text-align: center;">
+                <div id="roleRevealLabel" style="margin: 0 0 10px; font-size: 1.4rem; font-weight: 800; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.9); letter-spacing: 1px;">
+                    دوره كان
+                </div>
                 
                 <img src="" alt="Role Slot" id="modalRoleImage">
-
-                <div id="modalVoteCount">
-                    <!-- عدد الأصوات سيظهر هنا -->
+                
+                <div id="modalRoleInfoBox" style="display: none; margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(0,0,0,0.35), rgba(0,0,0,0.1)); border: 1px solid rgba(255,255,255,0.12); text-align: center;">
+                    <div style="margin-bottom: 6px;">
+                        <span id="modalRoleText" style="font-size: 1.5rem; font-weight: 800;"></span>
+                    </div>
+                    <div style="display: none; justify-content: space-between; align-items: center; font-size: 0.95rem;">
+                        <span style="color: #dddddd;">عدد الأصوات:</span>
+                        <span id="modalVoteCount" style="font-weight: 700; color: #ffffff;">
+                        </span>
+                    </div>
                 </div>
             </div>
             
@@ -1368,19 +1931,51 @@
             </div>
         </div>
     </div>
+
+    <!-- (جديد) نافذة حالة اللاعبين المستقلة -->
+    <div id="statusModal" class="hidden">
+        <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
+            <h2 style="color: #ffd700; margin-bottom: 20px;">حالة اللاعبين</h2>
+            <div id="statusModalContent" style="width: 100%;">
+            </div>
+            <button onclick="closeStatusModal()" style="margin-top: 20px; background: linear-gradient(45deg, #74b9ff, #0984e3); padding: 12px 25px; font-size: 1rem; border-radius: 15px; width: 100%; max-width: 200px;">
+                إغلاق
+            </button>
+        </div>
+    </div>
+    
+    <div id="nightPreparationModal" class="modal-backdrop hidden">
+        <div class="modal-content" style="max-width: 450px;">
+            <h2 style="color: #ffd700;">بدء مرحلة الليل</h2>
+            <p style="font-size: 1.1rem; color: #fff; margin: 20px 0;">
+                استعدوا جميعاً للبدء في مرحلة الليل، ستتم استدعاء الأدوار على حدة
+            </p>
+            <ul style="font-size: 1rem; color: #fff; margin: 20px 0; text-align: right; padding-right: 20px; list-style-type: disc;">
+                <li>ستتم استدعاء المافيا أولاً</li>
+                <li>ثم سيتم استدعاء الطبيب</li>
+                <li>ثم سيتم استدعاء المحقق</li>
+            </ul>
+            <button id="startNightPreparationButton" style="background: linear-gradient(45deg, #74b9ff, #0984e3); padding: 12px 25px; font-size: 1.1rem; margin-top: 20px;">
+                بدء مرحلة الليل
+            </button>
+            <button id="skipToDialogueButton" style="background: linear-gradient(45deg, #ff6b6b, #ff4757); padding: 10px 22px; font-size: 1rem; margin-top: 14px; display: block; width: 100%; max-width: 260px; margin-left: auto; margin-right: auto;">
+                التخطي إلى جولة الحوار
+            </button>
+        </div>
+    </div>
     
     <div id="exitConfirmModal" class="modal-backdrop hidden">
         <div class="modal-content" style="max-width: 400px;">
-            <h2 style="color: #ff6b6b;">تأكيد الخروج</h2>
+            <h2 style="color: #ff6b6b;">العودة للشاشة الرئيسية</h2>
             <p style="font-size: 1.1rem; color: #fff; margin: 20px 0;">
-                هل أنت متأكد أنك تريد الخروج إلى شاشة الإعداد؟
+                سيتم إنهاء الجولة الحالية والعودة إلى شاشة الإعداد مع الاحتفاظ بالإعدادات الأساسية.
             </p>
             <div style="display: flex; justify-content: space-around; width: 100%; margin-top: 20px;">
                 <button onclick="hideExitConfirm()" style="background: linear-gradient(45deg, #74b9ff, #0984e3); width: 120px; padding: 12px 20px;">
                     إلغاء
                 </button>
-                <button onclick="clearGameState()" style="background: linear-gradient(45deg, #ff6b6b, #c44569); width: 120px; padding: 12px 20px;">
-                    نعم، اخرج
+                <button onclick="clearGameState()" style="background: linear-gradient(45deg, #ff6b6b, #c44569); width: 140px; padding: 12px 20px;">
+                    نعم، العودة للرئيسية
                 </button>
             </div>
         </div>
@@ -1435,11 +2030,21 @@
         let nightActionOrder = [];
         let currentNightRoleIndex = 0;
 
+        let activeSpeakTimerId = null;
+        let activeSpeakPlayerIndex = null;
+        let activeSpeakRemaining = 0;
+
         const roleImages = {
             'مافيا': 'https://i.postimg.cc/zft6CjJT/1.png', 
             'مواطن': 'https://i.postimg.cc/TP7FV9R0/2.png', 
             'محقق': 'https://i.postimg.cc/zft6CjJj/3.png', 
             'طبيب': 'https://i.postimg.cc/W4WCGn26/4.png'  
+        };
+
+        const nightRoleImages = {
+            'مافيا': 'https://i.postimg.cc/nzWdJZgW/mafya-w.webp', 
+            'محقق': 'https://i.postimg.cc/t42RNmLg/mhqq.webp', 
+            'طبيب': 'https://i.postimg.cc/fRBWfg63/altbyb.webp'
         };
         
         const roleColors = {
@@ -1450,9 +2055,49 @@
         };
         
         const rolesList = ['مافيا', 'مواطن', 'محقق', 'طبيب']; 
-        
+
+        // --- وظائف الصوت للروليت ---
+        let audioCtx = null;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // دالة لتوليد صوت تكة رقمي (Digital Tick)
+        function playDigitalTick(rate = 1) {
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const time = audioCtx.currentTime;
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.type = 'square'; // موجة مربعة لصوت "رقمي"
+            
+            // التردد يتغير مع السرعة (كلما كان أسرع، كان الصوت أحد)
+            const freq = 800 + (rate * 400); 
+            osc.frequency.setValueAtTime(freq, time);
+
+            // تشكيل الصوت (Envelope) قصير جداً
+            const vol = 0.05; // خفض الصوت قليلاً
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(vol, time + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.08); 
+            
+            osc.start(time);
+            osc.stop(time + 0.1);
+        }
+
         function setupNumberInputListeners() {
-            document.querySelectorAll('.button-3d').forEach(button => {
+            document.querySelectorAll('[data-input][data-action]').forEach(button => {
                 button.addEventListener('click', () => {
                     const inputId = button.dataset.input;
                     const action = button.dataset.action;
@@ -1463,14 +2108,15 @@
                     let currentValue = parseInt(inputElement.value);
                     const min = parseInt(inputElement.min);
                     const max = parseInt(inputElement.max) || 99; // (إصلاح) الافتراضي 99
+                    const step = inputId === 'speakTimeSeconds' ? 5 : 1;
 
                     if (action === 'increment') {
                         if (currentValue < max) {
-                            currentValue++;
+                            currentValue = Math.min(currentValue + step, max);
                         }
                     } else if (action === 'decrement') {
                         if (currentValue > min) {
-                            currentValue--;
+                            currentValue = Math.max(currentValue - step, min);
                         }
                     }
                     
@@ -1480,46 +2126,91 @@
 
                     if (inputId === 'playerCount') {
                         inputElement.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                    
-                    if (inputId !== 'playerCount') {
+                    } else {
                         updateCitizensCount();
                     }
+                    saveGameState();
                 });
             });
 
             document.querySelectorAll('.number-input-display').forEach(input => {
+                // (تحسين) السماح بالكتابة بحرية والتحقق عند الانتهاء
                 input.addEventListener('input', (e) => {
+                    let rawValue = e.target.value;
+                    if (rawValue === '') return; // السماح بالحقل الفارغ مؤقتاً
+
+                    let value = parseInt(rawValue);
+                    const min = parseInt(e.target.min);
+                    const max = parseInt(e.target.max) || 99; 
+
+                    if (isNaN(value)) return;
+
+                    // منع تجاوز الحد الأقصى فقط أثناء الكتابة
+                    if (value > max) {
+                        value = max;
+                        e.target.value = value;
+                    }
+                    
+                    updateButtonStates(e.target.id, value, min, max);
+
+                    // تحديث المنطق فقط إذا كانت القيمة صالحة
+                    if (value >= min) {
+                        if (e.target.id === 'playerCount') {
+                             updateRoleDistribution(value);
+                             updatePlayerNameInputs(value);
+                        } else {
+                             updateCitizensCount();
+                        }
+                    }
+                });
+
+                // التحقق النهائي عند الخروج من الحقل
+                input.addEventListener('blur', (e) => {
                     let value = parseInt(e.target.value);
                     const min = parseInt(e.target.min);
                     const max = parseInt(e.target.max) || 99; 
 
-                    if (isNaN(value)) value = min;
-                    if (value < min) value = min;
-                    if (value > max) value = max;
-                    
-                    e.target.value = value; 
-                    
-                    updateButtonStates(e.target.id, value, min, max);
-
-                    if (e.target.id === 'playerCount') {
-                         updateRoleDistribution(value);
-                         updatePlayerNameInputs(value);
-                    } else {
-                         updateCitizensCount();
+                    if (isNaN(value) || value < min) {
+                        value = min;
+                        e.target.value = value;
+                        
+                        // تحديث إجباري
+                        if (e.target.id === 'playerCount') {
+                             updateRoleDistribution(value);
+                             updatePlayerNameInputs(value);
+                        } else {
+                             updateCitizensCount();
+                        }
                     }
+                    updateButtonStates(e.target.id, value, min, max);
+                    saveGameState();
                 });
 
-                let value = parseInt(input.value);
+                const initialValue = parseInt(input.value);
                 const min = parseInt(input.min);
                 const max = parseInt(input.max) || 99; 
-                updateButtonStates(input.id, value, min, max);
+                updateButtonStates(input.id, initialValue, min, max);
             });
         }
 
         function updateButtonStates(inputId, value, min, max) {
-            const decrementButton = document.querySelector(`.button-3d-minus[data-input="${inputId}"]`);
-            const incrementButton = document.querySelector(`.button-3d-plus[data-input="${inputId}"]`);
+            const decrementButton = document.querySelector(`.button-3d-minus[data-input="${inputId}"], .time-btn-minus[data-input="${inputId}"]`);
+            const incrementButton = document.querySelector(`.button-3d-plus[data-input="${inputId}"], .time-btn-plus[data-input="${inputId}"]`);
+
+            if (decrementButton) {
+                decrementButton.classList.toggle('disabled', value <= min);
+                decrementButton.disabled = value <= min;
+            }
+            if (incrementButton) {
+                const isMaxDisabled = !isNaN(max) && value >= max;
+                incrementButton.classList.toggle('disabled', isMaxDisabled);
+                incrementButton.disabled = isMaxDisabled;
+            }
+        }
+
+        function updateButtonStates(inputId, value, min, max) {
+            const decrementButton = document.querySelector(`.button-3d-minus[data-input="${inputId}"], .time-btn-minus[data-input="${inputId}"]`);
+            const incrementButton = document.querySelector(`.button-3d-plus[data-input="${inputId}"], .time-btn-plus[data-input="${inputId}"]`);
 
             if (decrementButton) {
                 decrementButton.classList.toggle('disabled', value <= min);
@@ -1552,6 +2243,10 @@
                     input.value = existingNames[i-1];
                 }
                 
+                input.addEventListener('input', () => {
+                    saveGameState();
+                });
+                
                 container.appendChild(input);
             }
         }
@@ -1561,6 +2256,7 @@
             const count = parseInt(this.value);
             updatePlayerNameInputs(count);
             updateRoleDistribution(count);
+            saveGameState();
         });
 
         function updateRoleDistribution(playerCount) {
@@ -1617,14 +2313,43 @@
         });
 
 
+        function setDayMode() {}
+
+        function setNightMode() {}
+
         function saveGameState() {
+            const visiblePhase = document.querySelector('div[id$="-phase"]:not(.hidden)');
+            const currentPhaseId = gameState.currentPhase || (visiblePhase ? visiblePhase.id : 'setup-phase');
+
+            const playerCountInput = document.getElementById('playerCount');
+            const citizenCountInput = document.getElementById('citizenCount');
+            const mafiaCountInput = document.getElementById('mafiaCount');
+            const doctorCountInput = document.getElementById('doctorCount');
+            const detectiveCountInput = document.getElementById('detectiveCount');
+            const hideEliminatedIdentityInput = document.getElementById('hideEliminatedIdentity');
+            const speakTimeInput = document.getElementById('speakTimeSeconds');
+
+            const playerCountValue = playerCountInput ? (parseInt(playerCountInput.value) || 4) : (players.length || 4);
+            const citizenCountValue = citizenCountInput ? (parseInt(citizenCountInput.value) || 0) : 0;
+            const mafiaCountValue = mafiaCountInput ? (parseInt(mafiaCountInput.value) || 0) : 0;
+            const doctorCountValue = doctorCountInput ? (parseInt(doctorCountInput.value) || 0) : 0;
+            const detectiveCountValue = detectiveCountInput ? (parseInt(detectiveCountInput.value) || 0) : 0;
+            const hideEliminatedIdentityValue = hideEliminatedIdentityInput ? hideEliminatedIdentityInput.checked : false;
+            const speakTimeSecondsValue = speakTimeInput ? (parseInt(speakTimeInput.value) || 30) : 30;
+
+            const rawPlayerNames = [];
+            for (let i = 1; i <= playerCountValue; i++) {
+                const input = document.getElementById(`player${i}`);
+                rawPlayerNames.push(input ? input.value : '');
+            }
+
             gameState = {
                 players: players,
                 roles: roles,
                 eliminatedPlayers: eliminatedPlayers,
                 lockedBoxes: lockedBoxes,
                 isRolesPhaseActive: isRolesPhaseActive,
-                currentPhase: document.querySelector('div[id$="-phase"]:not(.hidden)')?.id || 'setup-phase',
+                currentPhase: currentPhaseId,
                 votes: votes,
                 topTwoCandidates: topTwoCandidates,
                 currentJustifyingPlayer: currentJustifyingPlayer,
@@ -1634,14 +2359,81 @@
                 doctorSaveTarget: doctorSaveTarget,
                 detectiveCheckTarget: detectiveCheckTarget,
                 nightActionOrder: nightActionOrder,
-                currentNightRoleIndex: currentNightRoleIndex
+                currentNightRoleIndex: currentNightRoleIndex,
+                hideEliminatedRole: hideEliminatedIdentityValue,
+                playerConfig: {
+                    playerCount: playerCountValue,
+                    citizenCount: citizenCountValue,
+                    mafiaCount: mafiaCountValue,
+                    doctorCount: doctorCountValue,
+                    detectiveCount: detectiveCountValue,
+                    hideEliminatedIdentity: hideEliminatedIdentityValue,
+                    rawNames: rawPlayerNames,
+                    speakTimeSeconds: speakTimeSecondsValue
+                }
             };
+
             localStorage.setItem('mafiaGameState', JSON.stringify(gameState));
+        }
+
+        function restoreSetupInputs(playerConfig) {
+            if (!playerConfig || !Number.isInteger(playerConfig.playerCount)) return;
+
+            const playerCountInputEl = document.getElementById('playerCount');
+            const citizenCountInputEl = document.getElementById('citizenCount');
+            const mafiaCountInputEl = document.getElementById('mafiaCount');
+            const doctorCountInputEl = document.getElementById('doctorCount');
+            const detectiveCountInputEl = document.getElementById('detectiveCount');
+            const hideEliminatedIdentityInputEl = document.getElementById('hideEliminatedIdentity');
+            const speakTimeInputEl = document.getElementById('speakTimeSeconds');
+
+            if (playerCountInputEl) playerCountInputEl.value = playerConfig.playerCount;
+            if (citizenCountInputEl) citizenCountInputEl.value = playerConfig.citizenCount;
+            if (mafiaCountInputEl) mafiaCountInputEl.value = playerConfig.mafiaCount;
+            if (doctorCountInputEl) doctorCountInputEl.value = playerConfig.doctorCount;
+            if (detectiveCountInputEl) detectiveCountInputEl.value = playerConfig.detectiveCount;
+            if (hideEliminatedIdentityInputEl) hideEliminatedIdentityInputEl.checked = playerConfig.hideEliminatedIdentity || false;
+            if (speakTimeInputEl && Number.isInteger(playerConfig.speakTimeSeconds)) speakTimeInputEl.value = playerConfig.speakTimeSeconds;
+
+            if (playerCountInputEl) {
+                const pcMin = parseInt(playerCountInputEl.min);
+                const pcMax = parseInt(playerCountInputEl.max) || 99;
+                updateButtonStates('playerCount', parseInt(playerCountInputEl.value), pcMin, pcMax);
+            }
+            if (citizenCountInputEl) {
+                const cMin = parseInt(citizenCountInputEl.min) || 0;
+                updateButtonStates('citizenCount', parseInt(citizenCountInputEl.value), cMin, 99);
+            }
+            if (mafiaCountInputEl) {
+                const mMin = parseInt(mafiaCountInputEl.min) || 0;
+                updateButtonStates('mafiaCount', parseInt(mafiaCountInputEl.value), mMin, 99);
+            }
+            if (doctorCountInputEl) {
+                const dMin = parseInt(doctorCountInputEl.min) || 0;
+                updateButtonStates('doctorCount', parseInt(doctorCountInputEl.value), dMin, 99);
+            }
+            if (detectiveCountInputEl) {
+                const detMin = parseInt(detectiveCountInputEl.min) || 0;
+                updateButtonStates('detectiveCount', parseInt(detectiveCountInputEl.value), detMin, 99);
+            }
+
+            const restoredCount = playerConfig.playerCount;
+            updatePlayerNameInputs(restoredCount);
+
+            if (Array.isArray(playerConfig.rawNames)) {
+                for (let i = 1; i <= restoredCount; i++) {
+                    const input = document.getElementById(`player${i}`);
+                    if (input && typeof playerConfig.rawNames[i - 1] === 'string') {
+                        input.value = playerConfig.rawNames[i - 1];
+                    }
+                }
+            }
         }
 
         function loadGameState() {
             const savedState = localStorage.getItem('mafiaGameState');
             const homeButton = document.getElementById('homeButton');
+            const statusButton = document.getElementById('statusButton');
             
             if (savedState) {
                 gameState = JSON.parse(savedState);
@@ -1650,44 +2442,94 @@
                 roles = gameState.roles || [];
                 eliminatedPlayers = gameState.eliminatedPlayers || [];
                 lockedBoxes = gameState.lockedBoxes || [];
-                isRolesPhaseActive = gameState.isRolesPhaseActive;
+                isRolesPhaseActive = typeof gameState.isRolesPhaseActive === 'boolean' ? gameState.isRolesPhaseActive : true;
                 votes = gameState.votes || {};
                 topTwoCandidates = gameState.topTwoCandidates || [];
                 currentJustifyingPlayer = gameState.currentJustifyingPlayer || 0;
                 finalVotes = gameState.finalVotes || {};
                 
                 currentNightRole = gameState.currentNightRole || '';
-                mafiaKillTarget = gameState.mafiaKillTarget || -1;
-                doctorSaveTarget = gameState.doctorSaveTarget || -1;
-                detectiveCheckTarget = gameState.detectiveCheckTarget || -1;
-                nightActionOrder = gameState.nightActionOrder || [];
-                currentNightRoleIndex = gameState.currentNightRoleIndex || 0;
+                mafiaKillTarget = Object.prototype.hasOwnProperty.call(gameState, 'mafiaKillTarget') ? gameState.mafiaKillTarget : -1;
+                doctorSaveTarget = Object.prototype.hasOwnProperty.call(gameState, 'doctorSaveTarget') ? gameState.doctorSaveTarget : -1;
+                detectiveCheckTarget = Object.prototype.hasOwnProperty.call(gameState, 'detectiveCheckTarget') ? gameState.detectiveCheckTarget : -1;
+                nightActionOrder = Array.isArray(gameState.nightActionOrder) ? gameState.nightActionOrder : [];
+                currentNightRoleIndex = Object.prototype.hasOwnProperty.call(gameState, 'currentNightRoleIndex') ? gameState.currentNightRoleIndex : 0;
 
+                const playerConfig = gameState.playerConfig;
+
+                // (إصلاح) استعادة المدخلات دائماً إذا وجدت الإعدادات
+                if (playerConfig) {
+                    restoreSetupInputs(playerConfig);
+                }
+
+                if ((!players || players.length === 0) && playerConfig && Number.isInteger(playerConfig.playerCount)) {
+                    document.getElementById('setup-phase').classList.remove('hidden');
+                    homeButton.classList.add('hidden'); 
+                    statusButton.classList.add('hidden');
+                    setDayMode();
+                    return;
+                }
 
                 if (players.length === 0) {
                      document.getElementById('playerCount').dispatchEvent(new Event('input'));
                      homeButton.classList.add('hidden'); 
+                     statusButton.classList.add('hidden');
                      return;
                 }
                 
                 document.getElementById('setup-phase').classList.add('hidden');
                 homeButton.classList.remove('hidden'); 
+                statusButton.classList.remove('hidden');
                 
                 const currentPhase = gameState.currentPhase || 'roles-phase';
                 
                 switch(currentPhase) {
                     case 'roles-phase':
                         createPlayerBoxes();
+                        
+                        const titleEl = document.getElementById('rolesPhaseTitle');
+                        const headerEl = document.getElementById('rolesPhaseHeader');
+
                         if (isRolesPhaseActive) {
-                            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
+                            setupRolesPhaseButton('startNightPhase', 'بدء اللعبة');
+                            if (titleEl) {
+                                titleEl.textContent = "اختر اسمك واعرف دورك";
+                                titleEl.style.fontSize = "1.3rem";
+                                titleEl.style.textShadow = "none";
+                                titleEl.style.color = "#ffd700";
+                            }
+                            if (headerEl) {
+                                headerEl.style.background = "rgba(255, 255, 255, 0.05)";
+                                headerEl.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+                                headerEl.style.boxShadow = "none";
+                                headerEl.style.transform = "scale(1)";
+                            }
                         } else {
                             setupRolesPhaseButton('showVoting', 'بدء التصويت');
+                            if (titleEl) {
+                                titleEl.innerHTML = "🗣️ جولة الحوار 🗣️";
+                                titleEl.style.fontSize = "1.8rem";
+                                titleEl.style.textShadow = "0 0 10px rgba(255, 215, 0, 0.5)";
+                                titleEl.style.color = "#ffffff";
+                            }
+                            if (headerEl) {
+                                headerEl.style.background = "linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)";
+                                headerEl.style.border = "2px solid #ffd700";
+                                headerEl.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.3)";
+                                headerEl.style.transform = "scale(1.05)";
+                            }
                         }
                         document.getElementById('roles-phase').classList.remove('hidden');
+                        if (isRolesPhaseActive) {
+                            setNightMode();
+                        } else {
+                            setDayMode();
+                        }
                         break;
                     case 'night-phase':
                         createPlayerBoxes(); 
                         document.getElementById('night-phase').classList.remove('hidden');
+                        setNightMode();
                         if (currentNightRole) {
                             showNightHandoffScreen(currentNightRole);
                         } else {
@@ -1697,34 +2539,71 @@
                     case 'voting-phase':
                         createPlayerBoxes(); 
                         showVoting(); 
+                        setDayMode();
                         break;
                     case 'justification-phase':
                          createPlayerBoxes();
                          startJustificationPhase(); 
+                         setDayMode();
                          break;
                     case 'final-voting-phase':
                         createPlayerBoxes();
                         startFinalVoting(); 
+                        setDayMode();
                         break;
                     case 'results-phase':
                          createPlayerBoxes();
                          document.getElementById('results-phase').classList.remove('hidden');
+                         setDayMode();
                          break;
                     default:
                          document.getElementById('setup-phase').classList.remove('hidden');
                          document.getElementById('playerCount').dispatchEvent(new Event('input'));
                          homeButton.classList.add('hidden'); 
+                         statusButton.classList.add('hidden');
+                         setDayMode();
                 }
 
             } else {
                  document.getElementById('playerCount').dispatchEvent(new Event('input'));
                  homeButton.classList.add('hidden'); 
+                 const statusButtonEl = document.getElementById('statusButton');
+                 if (statusButtonEl) statusButtonEl.classList.add('hidden');
+                 setDayMode();
             }
         }
         
         function clearGameState() {
+            // (تعديل) الاحتفاظ بإعدادات اللاعبين عند إعادة اللعبة
+            const savedState = localStorage.getItem('mafiaGameState');
+            let configToKeep = null;
+            
+            if (savedState) {
+                try {
+                    const parsedState = JSON.parse(savedState);
+                    if (parsedState.playerConfig) {
+                        configToKeep = parsedState.playerConfig;
+                    }
+                } catch (e) {
+                    console.error("Error parsing state for reset", e);
+                }
+            }
+
             localStorage.removeItem('mafiaGameState');
+            for (let i = 0; i < 50; i++) {
+                localStorage.removeItem(`player-opened-${i}`);
+            }
             gameState = {}; 
+
+            // إعادة حفظ الإعدادات فقط
+            if (configToKeep) {
+                const newState = {
+                    currentPhase: 'setup-phase',
+                    playerConfig: configToKeep
+                };
+                localStorage.setItem('mafiaGameState', JSON.stringify(newState));
+            }
+
             window.location.reload();
         }
 
@@ -1759,10 +2638,33 @@
             const mafiaCount = parseInt(document.getElementById('mafiaCount').value);
             const doctorCount = parseInt(document.getElementById('doctorCount').value);
             const detectiveCount = parseInt(document.getElementById('detectiveCount').value); 
+            const hideEliminatedIdentity = document.getElementById('hideEliminatedIdentity').checked;
             
             const totalRoles = citizenCount + mafiaCount + doctorCount + detectiveCount; 
             if (totalRoles !== actualPlayerCount) { 
                 showCustomAlert(`مجموع الأدوار (${totalRoles}) يجب أن يساوي عدد اللاعبين الفعلي (${actualPlayerCount})`);
+                return;
+            }
+
+            if (mafiaCount < 1) {
+                showCustomAlert('يجب أن يكون هناك على الأقل لاعب مافيا واحد');
+                return;
+            }
+
+            if (mafiaCount > Math.floor(actualPlayerCount / 3)) {
+                showCustomAlert('عدد المافيا كبير جداً مقارنة بعدد اللاعبين، يفضّل ألا يتجاوز ثلث اللاعبين');
+                return;
+            }
+
+            const specialRolesCount = doctorCount + detectiveCount;
+            if (specialRolesCount > Math.floor(actualPlayerCount / 2)) {
+                showCustomAlert('إجمالي الأدوار الخاصة (طبيب + محقق) كبير جداً مقارنة بعدد اللاعبين');
+                return;
+            }
+
+            const goodSideCount = actualPlayerCount - mafiaCount;
+            if (goodSideCount <= mafiaCount + 1) {
+                showCustomAlert('يجب أن يكون عدد غير المافيا أعلى من عدد المافيا بفارق مريح لعدالة اللعبة');
                 return;
             }
             
@@ -1779,62 +2681,245 @@
             
             createPlayerBoxes();
             
-            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل');
+            // (تحديث) إعادة تعيين العنوان عند بدء اللعبة
+            const titleElement = document.getElementById('rolesPhaseTitle');
+            const headerElement = document.getElementById('rolesPhaseHeader');
+
+            if (titleElement) {
+                titleElement.textContent = "اختر اسمك واعرف دورك";
+                titleElement.style.fontSize = "1.3rem";
+                titleElement.style.textShadow = "none";
+                titleElement.style.color = "#ffd700";
+            }
+
+            if (headerElement) {
+                headerElement.style.background = "rgba(255, 255, 255, 0.05)";
+                headerElement.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+                headerElement.style.boxShadow = "none";
+                headerElement.style.transform = "scale(1)";
+            }
+
+            setupRolesPhaseButton('startNightPhase', 'بدء اللعبة');
             
             document.getElementById('setup-phase').classList.add('hidden');
             document.getElementById('roles-phase').classList.remove('hidden');
             document.getElementById('homeButton').classList.remove('hidden'); 
-
+            document.getElementById('statusButton').classList.remove('hidden');
+            setNightMode();
+            gameState.currentPhase = 'roles-phase';
+            gameState.hideEliminatedRole = hideEliminatedIdentity;
             saveGameState(); 
 
             history.pushState({ gameStarted: true }, '', location.href);
         }
 
+        function getNameLengthClass(name) {
+            const length = name.length;
+            if (length <= 4) return 'name-short';
+            if (length <= 8) return 'name-medium';
+            if (length <= 12) return 'name-long';
+            return 'name-xl';
+        }
+
+        function getSpeakTimeSeconds() {
+            if (gameState && gameState.playerConfig && Number.isInteger(gameState.playerConfig.speakTimeSeconds) && gameState.playerConfig.speakTimeSeconds > 0) {
+                return gameState.playerConfig.speakTimeSeconds;
+            }
+            const input = document.getElementById('speakTimeSeconds');
+            if (input) {
+                const v = parseInt(input.value);
+                if (Number.isInteger(v) && v > 0) return v;
+            }
+            return 30;
+        }
+
+        function formatSecondsToMMSS(totalSeconds) {
+            const s = Math.max(0, parseInt(totalSeconds) || 0);
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            const mm = m.toString().padStart(2, '0');
+            const ss = sec.toString().padStart(2, '0');
+            return mm + ':' + ss;
+        }
+
+        function clearActiveSpeakTimerVisuals() {
+            if (activeSpeakPlayerIndex === null || activeSpeakPlayerIndex === undefined) return;
+            const oldBox = document.getElementById(`player-box-${activeSpeakPlayerIndex}`);
+            const oldTimerEl = document.getElementById(`speak-timer-${activeSpeakPlayerIndex}`);
+            if (oldBox) {
+                oldBox.classList.remove('speaking-timer-active');
+                oldBox.style.boxShadow = '';
+                oldBox.style.border = '';
+            }
+            if (oldTimerEl) {
+                oldTimerEl.style.display = 'none';
+            }
+        }
+
+        function playSpeakTimerEndSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const gain = ctx.createGain();
+                gain.gain.value = 0.25;
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime || 0;
+
+                function scheduleBeep(startTime, duration, frequency) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = frequency;
+                    osc.connect(gain);
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                }
+
+                scheduleBeep(now, 0.3, 1100);
+                scheduleBeep(now + 0.45, 0.3, 1100);
+                scheduleBeep(now + 0.9, 0.3, 1100);
+
+                setTimeout(() => {
+                    ctx.close();
+                }, 2000);
+            } catch (e) {}
+        }
+
+        function stopSpeakTimer() {
+            if (activeSpeakTimerId !== null) {
+                clearInterval(activeSpeakTimerId);
+                activeSpeakTimerId = null;
+            }
+            clearActiveSpeakTimerVisuals();
+            activeSpeakPlayerIndex = null;
+            activeSpeakRemaining = 0;
+        }
+
+        function startSpeakTimerFor(playerIndex) {
+            if (eliminatedPlayers.includes(playerIndex)) return;
+            if (isRolesPhaseActive) return;
+
+            if (activeSpeakPlayerIndex === playerIndex && activeSpeakTimerId !== null) {
+                stopSpeakTimer();
+                return;
+            }
+
+            const box = document.getElementById(`player-box-${playerIndex}`);
+            const timerEl = document.getElementById(`speak-timer-${playerIndex}`);
+            if (!box || !timerEl) return;
+
+            if (activeSpeakTimerId !== null) {
+                clearInterval(activeSpeakTimerId);
+                clearActiveSpeakTimerVisuals();
+            }
+
+            activeSpeakPlayerIndex = playerIndex;
+            const totalSeconds = getSpeakTimeSeconds();
+            activeSpeakRemaining = totalSeconds;
+
+            timerEl.textContent = formatSecondsToMMSS(activeSpeakRemaining);
+            timerEl.style.display = 'flex';
+
+            box.classList.add('speaking-timer-active');
+            box.style.boxShadow = '0 0 18px rgba(116,185,255,0.9)';
+            box.style.border = '2px solid #74b9ff';
+
+            activeSpeakTimerId = setInterval(() => {
+                activeSpeakRemaining -= 1;
+                if (activeSpeakRemaining <= 0) {
+                    timerEl.textContent = '00:00';
+                    clearInterval(activeSpeakTimerId);
+                    activeSpeakTimerId = null;
+                    playSpeakTimerEndSound();
+                    setTimeout(() => {
+                        clearActiveSpeakTimerVisuals();
+                    }, 600);
+                    return;
+                }
+                timerEl.textContent = formatSecondsToMMSS(activeSpeakRemaining);
+            }, 1000);
+        }
+
         function createPlayerBoxes() {
             const container = document.getElementById('playersGrid');
             container.innerHTML = '';
+            const baseSpeakSeconds = getSpeakTimeSeconds();
+            const baseSpeakLabel = formatSecondsToMMSS(baseSpeakSeconds);
+            const isDialoguePhase = !isRolesPhaseActive && gameState && gameState.currentPhase === 'roles-phase';
             
             players.forEach((player, index) => {
                 const role = roles[index];
                 const roleClass = getRoleClass(role);
                 const roleImgSrc = roleImages[role];
+                const nameLengthClass = getNameLengthClass(player);
 
                 const box = document.createElement('div');
                 
                 const roleImage = `<img src="${roleImgSrc}" alt="${role}" class="role-image-overlay" id="role-img-${index}">`;
                 
+                const isInitiallyOpened = localStorage.getItem(`player-opened-${index}`) === 'true';
+
                 if (eliminatedPlayers.includes(index)) {
-                    box.className = `player-box eliminated opened role-${roleClass}`;
+                    let displayRoleClass = roleClass;
+                    let displayRoleImage = roleImage;
+                    
+                    // Check if roles should be hidden
+                    const shouldHideRole = gameState.hideEliminatedRole || (gameState.playerConfig && gameState.playerConfig.hideEliminatedIdentity);
+                    
+                    if (shouldHideRole) {
+                          displayRoleClass = 'unknown';
+                          const hiddenImgSrc = 'https://i.postimg.cc/fbMtQknR/astfham.webp';
+                          displayRoleImage = `<img src="${hiddenImgSrc}" alt="مجهول" class="role-image-overlay" id="role-img-${index}" style="opacity: 0.8;">`;
+                     }
+
+                    box.className = `player-box eliminated opened role-${displayRoleClass}`;
                     box.innerHTML = `
-                        ${roleImage} 
+                        ${displayRoleImage} 
                         <div class="eliminated-overlay"></div> 
                         <div class="skull-icon">💀</div>      
-                        <div class="player-name">${player}</div> 
+                        <div class="player-name ${nameLengthClass}">${player}</div> 
                         <div class="eliminated-label">مُقصى</div> 
                     `;
-                } else if (lockedBoxes.includes(index) || !isRolesPhaseActive) {
-                    
-                    const isInitiallyOpened = localStorage.getItem(`player-opened-${index}`) === 'true';
-
+                } else if (isDialoguePhase) {
                     box.className = 'player-box closed locked';
                     box.innerHTML = `
                         ${roleImage} 
-                        <div class="player-name">${player}</div>
-                        <div class="lock-icon" id="lock-${index}">🔒</div>
+                        <div class="player-name ${nameLengthClass}">${player}</div>
+                        <div class="lock-icon" id="lock-${index}" style="margin: 0;">🔒</div>
+                        <div class="timer-icon" id="speak-trigger-${index}">
+                            ⏱
+                        </div>
+                        <div class="speak-timer" id="speak-timer-${index}" style="position: absolute; inset: 0; display: none; align-items: center; justify-content: center; font-size: 4.8rem; font-weight: 900; color: #ffffff; text-shadow: 0 0 18px rgba(0,0,0,1); background: rgba(0,0,0,0.65); z-index: 5;">
+                            ${baseSpeakLabel}
+                        </div>
                     `;
-                    
+                    box.style.position = 'relative';
+
                     if (isInitiallyOpened) {
                         box.classList.remove('closed');
                         box.classList.add('opened', `role-${roleClass}`);
                         const nameElement = box.querySelector('.player-name');
                         if (nameElement) nameElement.style.opacity = '0';
                     }
-                    
+                } else if (lockedBoxes.includes(index) || !isRolesPhaseActive) {
+                    box.className = 'player-box closed locked';
+                    box.innerHTML = `
+                        ${roleImage} 
+                        <div class="player-name ${nameLengthClass}">${player}</div>
+                        <div class="lock-icon" id="lock-${index}" style="margin: 0;">🔒</div>
+                    `;
+                    if (isInitiallyOpened) {
+                        box.classList.remove('closed');
+                        box.classList.add('opened', `role-${roleClass}`);
+                        const nameElement = box.querySelector('.player-name');
+                        if (nameElement) nameElement.style.opacity = '0';
+                    }
                 } else {
                     box.className = 'player-box closed';
                     box.innerHTML = `
                         ${roleImage} 
-                        <div class="player-name">${player}</div>
+                        <div class="player-name ${nameLengthClass}">${player}</div>
                         <div class="lock-icon hidden" id="lock-${index}">🔒</div>
                     `;
                     box.addEventListener('click', () => toggleRole(index));
@@ -1842,6 +2927,16 @@
                 
                 box.id = `player-box-${index}`;
                 container.appendChild(box);
+
+                if (isDialoguePhase && !eliminatedPlayers.includes(index)) {
+                    const trigger = box.querySelector(`#speak-trigger-${index}`);
+                    if (trigger) {
+                        trigger.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            startSpeakTimerFor(index);
+                        });
+                    }
+                }
 
                 if (box.classList.contains('opened')) {
                     const imgElement = box.querySelector(`#role-img-${index}`);
@@ -1914,9 +3009,16 @@
 
 
         function startNightPhase() {
+            stopSpeakTimer();
             document.getElementById('roles-phase').classList.add('hidden');
             document.getElementById('night-phase').classList.remove('hidden');
+            setNightMode();
             
+            // (إصلاح) إغلاق جميع البطاقات المفتوحة عند الانتقال للمرحلة التالية
+            for (let i = 0; i < players.length; i++) {
+                localStorage.removeItem(`player-opened-${i}`);
+            }
+
             mafiaKillTarget = -1;
             doctorSaveTarget = -1;
             detectiveCheckTarget = -1;
@@ -1940,6 +3042,7 @@
             } else {
                 showHandoffScreenForResults("انتهى الليل (لا أدوار نشطة)", "اضغطوا لعرض النتائج");
             }
+            gameState.currentPhase = 'night-phase';
             saveGameState();
         }
 
@@ -1962,36 +3065,86 @@
             const roleNameEl = document.getElementById('handoff-role-name');
             const handoffTitle = document.getElementById('handoff-title');
             const startButton = document.getElementById('startNightRoleButton');
+            const handoffContent = document.getElementById('night-handoff-screen').querySelector('.modal-content');
 
             let roleDisplayName = '';
             let roleColor = '#fff';
+            let roleImg = '';
+            let bgGradient = '';
 
             // (إصلاح) استخدام الأسماء العربية
             switch(role) {
                 case 'مافيا':
-                    roleDisplayName = 'المافيا 🔪';
+                    roleDisplayName = 'المافيا';
                     roleColor = roleColors['مافيا'];
-                    handoffTitle.textContent = title || "المافيا، استيقظوا!";
+                    roleImg = nightRoleImages['مافيا'];
+                    handoffTitle.textContent = title || "استيقظوا يا مافيا";
+                    bgGradient = 'linear-gradient(135deg, #2d0505 0%, #000000 100%)';
                     break;
                 case 'طبيب':
-                    roleDisplayName = 'الطبيب 🧑‍⚕️';
+                    roleDisplayName = 'الطبيب';
                     roleColor = roleColors['طبيب'];
-                    handoffTitle.textContent = title || "الطبيب، استيقظ!";
+                    roleImg = nightRoleImages['طبيب'];
+                    handoffTitle.textContent = title || "استيقظ يا طبيب";
+                    bgGradient = 'linear-gradient(135deg, #051b2d 0%, #000000 100%)';
                     break;
                 case 'محقق':
-                    roleDisplayName = 'المحقق 🕵️';
+                    roleDisplayName = 'المحقق';
                     roleColor = roleColors['محقق'];
-                    handoffTitle.textContent = title || "المحقق، استيقظ!";
+                    roleImg = nightRoleImages['محقق'];
+                    handoffTitle.textContent = title || "استيقظ يا محقق";
+                    bgGradient = 'linear-gradient(135deg, #2d2305 0%, #000000 100%)';
                     break;
             }
 
-            roleNameEl.textContent = roleDisplayName;
-            roleNameEl.style.color = roleColor;
-            startButton.textContent = buttonText || "أنا جاهز (اضغط لبدء دورك)";
+            // تطبيق التصميم الجديد
+            handoffContent.style.background = bgGradient;
+            handoffContent.style.border = `2px solid ${roleColor}`;
+            handoffContent.style.boxShadow = `0 0 50px ${roleColor}40`;
+            handoffContent.style.width = '90%';
+            handoffContent.style.maxWidth = '400px';
+            handoffContent.style.borderRadius = '30px';
+            
+            // تحديث المحتوى ليكون أكثر جمالية
+            roleNameEl.innerHTML = `
+                <div style="position: relative; width: 280px; height: 280px; margin: 0 auto 30px;">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; background: ${roleColor}; opacity: 0.2; filter: blur(30px); animation: pulse 2s infinite;"></div>
+                    <img src="${roleImg}" style="width: 100%; height: 100%; object-fit: contain; position: relative; z-index: 2; drop-shadow: 0 15px 30px rgba(0,0,0,0.6);">
+                </div>
+            `;
+            
+            handoffTitle.style.fontSize = '1.5rem';
+            handoffTitle.style.opacity = '0.9';
+            handoffTitle.style.marginBottom = '40px';
+
+            startButton.textContent = buttonText || "أنا جاهز";
+            startButton.style.background = `linear-gradient(45deg, ${roleColor}, ${roleColor}dd)`;
+            startButton.style.boxShadow = `0 10px 30px ${roleColor}60`;
+            startButton.style.fontSize = '1.3rem';
+            startButton.style.padding = '15px 40px';
+            startButton.style.width = '100%';
+            startButton.style.borderRadius = '20px';
+            startButton.style.border = 'none';
+            startButton.style.transform = 'scale(1)';
+            startButton.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+            // إضافة تأثيرات التفاعل للزر
+            startButton.onmouseover = () => {
+                startButton.style.transform = 'scale(1.05) translateY(-5px)';
+                startButton.style.boxShadow = `0 20px 40px ${roleColor}80`;
+            };
+            startButton.onmouseout = () => {
+                startButton.style.transform = 'scale(1)';
+                startButton.style.boxShadow = `0 10px 30px ${roleColor}60`;
+            };
 
             const newStartButton = startButton.cloneNode(true);
             startButton.parentNode.replaceChild(newStartButton, startButton);
             newStartButton.id = 'startNightRoleButton'; 
+            
+            // إعادة ربط أحداث الماوس للزر الجديد
+            newStartButton.onmouseover = startButton.onmouseover;
+            newStartButton.onmouseout = startButton.onmouseout;
             
             newStartButton.onclick = () => {
                 document.getElementById('night-handoff-screen').classList.add('hidden');
@@ -2064,7 +3217,9 @@
 
                 // (إصلاح) استخدام 'مافIA' بدلاً من 'mafia' لتعطيل الزملاء
                 if (role === 'مافيا' && roles[playerIndex] === 'مافيا') {
-                    option.classList.add('disabled');
+                    // تم التعديل: إزالة المظهر "المعطل" (disabled) لكي لا يتم كشف المافيا للمراقبين
+                    // نجعلها تبدو طبيعية ولكن غير قابلة للنقر
+                    option.style.cursor = 'default'; 
                     option.onclick = null; 
                 } else {
                     option.onclick = () => selectNightTarget(playerIndex, option);
@@ -2122,10 +3277,10 @@
             
             // (إصلاح) استخدام الأسماء العربية
             if (targetRole === 'مافيا') {
-                resultElement.textContent = 'نعم (مافيا)';
+                resultElement.innerHTML = '⚠️ مافيا ⚠️';
                 resultElement.className = 'mafia';
             } else {
-                resultElement.textContent = 'لا (ليس مافيا)';
+                resultElement.innerHTML = '✅ ليس مافيا';
                 resultElement.className = 'citizen';
             }
 
@@ -2161,81 +3316,164 @@
             const spinner = document.getElementById('nightKillSpinner');
             const resultText = document.getElementById('nightKillResultText');
             const continueBtn = document.getElementById('nightKillContinueButton');
+            const modalTitle = modal.querySelector('h2'); 
+            
+            modal.classList.remove('dark-mode'); 
+            if(modalTitle) modalTitle.classList.remove('hidden'); 
 
-            spinner.innerHTML = '';
-            spinner.className = '';
+            // إعداد واجهة الروليت الجديدة (نص واحد كبير)
+            spinner.innerHTML = '<div id="rouletteName" class="roulette-name">...</div>';
+            const nameElement = document.getElementById('rouletteName');
+
             resultText.classList.add('hidden');
             continueBtn.classList.add('hidden');
             modal.classList.remove('hidden');
 
+            // قائمة الأسماء الحية للتنقل بينها
             const livingPlayers = players
                 .map((name, index) => ({ name, index }))
-                .filter(p => !eliminatedPlayers.includes(p.index));
-            
+                .filter(p => !eliminatedPlayers.includes(p.index))
+                .map(p => p.name);
+
             if (livingPlayers.length === 0) {
-                modal.classList.add('hidden');
-                return; 
+                 modal.classList.add('hidden');
+                 return;
             }
 
-            let spinCount = 0;
-            const maxSpins = 30; 
-            const spinSpeed = 100; 
-            let currentSpinIndex = 0;
+            // إعدادات الأنيميشن (مستوحاة من sodfa-app)
+            let duration = 4000; // 4 ثواني
+            const startTime = Date.now();
+            let animationInterval = null;
 
-            const spinInterval = setInterval(() => {
-                spinner.textContent = livingPlayers[currentSpinIndex].name;
-                currentSpinIndex = (currentSpinIndex + 1) % livingPlayers.length;
-                spinCount++;
+            // تهيئة الصوت
+            initAudioContext();
 
-                if (spinCount >= maxSpins) {
-                    clearInterval(spinInterval);
-                    
-                    setTimeout(() => {
-                        if (killSuccess) {
-                            const killedName = players[targetPlayerIndex];
-                            spinner.textContent = killedName;
-                            spinner.classList.add('final-kill');
-                            resultText.textContent = "اغتيال ناجح!";
-                            eliminatedPlayers.push(targetPlayerIndex);
-                        } else {
-                            spinner.textContent = "اغتيال فاشل";
-                            spinner.classList.add('final-fail');
-                            if (doctorSaveTarget === mafiaKillTarget && mafiaKillTarget !== -1) {
-                                resultText.textContent = "تم إنقاذ الهدف!";
-                            } else {
-                                resultText.textContent = "لم يمت أحد الليلة.";
-                            }
-                        }
-                        
-                        resultText.classList.remove('hidden');
-                        
-                        const gameEnded = checkWinConditions();
-                        
-                        // (إصلاح) نقل إعادة ربط الزر إلى هنا
-                        if (!gameEnded) {
-                            const newContinueBtn = continueBtn.cloneNode(true);
-                            continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
-                            newContinueBtn.id = 'nightKillContinueButton';
-                            newContinueBtn.classList.remove('hidden');
-        
-                            newContinueBtn.onclick = () => {
-                                modal.classList.add('hidden');
-                                showDaytimeRolesPage(); 
-                            };
-                        } else {
-                            modal.classList.add('hidden');
-                        }
-                        saveGameState();
-                    }, 500);
+            const tick = () => {
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // حساب التأخير (تسارع سلبي - يبدأ سريعاً ثم يتباطأ)
+                // المعادلة: 50 + (350 * progress^3)
+                const currentDelay = 50 + (350 * Math.pow(progress, 3));
+
+                // معدل سرعة الصوت
+                let rate = 50 / currentDelay;
+                if (rate < 0.2) rate = 0.2;
+
+                playDigitalTick(rate);
+
+                // عرض اسم عشوائي
+                const randomName = livingPlayers[Math.floor(Math.random() * livingPlayers.length)];
+                nameElement.textContent = randomName;
+                
+                // إعادة تفعيل الأنيميشن للنص
+                nameElement.classList.remove('blur-text');
+                
+                // إضافة ضبابية خفيفة أثناء السرعة العالية
+                if (progress < 0.8) {
+                    nameElement.classList.add('blur-text');
                 }
-            }, spinSpeed);
+
+                if (progress < 1) {
+                    animationInterval = setTimeout(tick, currentDelay);
+                } else {
+                    // انتهاء الأنيميشن
+                    finishAnimation();
+                }
+            };
+
+            const finishAnimation = () => {
+                nameElement.classList.remove('blur-text');
+                
+                if (killSuccess) {
+                    const victimName = players[targetPlayerIndex];
+                    nameElement.textContent = victimName;
+                    nameElement.classList.add('pop-name');
+                    nameElement.classList.remove('safe');
+                    
+                    resultText.textContent = `تم اغتيال ${victimName}!`;
+                    resultText.style.color = "#ff4757";
+
+                    // تحديث حالة اللاعب المقتول
+                    if (!eliminatedPlayers.includes(targetPlayerIndex)) {
+                        eliminatedPlayers.push(targetPlayerIndex);
+                    }
+                    const playerBox = document.getElementById(`player-box-${targetPlayerIndex}`);
+                    if(playerBox) playerBox.classList.add('eliminated');
+
+                } else {
+                    nameElement.textContent = "نجا الجميع";
+                    nameElement.classList.add('pop-name', 'safe');
+                    
+                    resultText.textContent = "مرت الليلة بسلام...";
+                    resultText.style.color = "#2ecc71";
+                }
+
+                resultText.classList.remove('hidden');
+
+                // إعداد زر المتابعة
+                const newContinueBtn = continueBtn.cloneNode(true);
+                continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
+                newContinueBtn.id = 'nightKillContinueButton';
+                newContinueBtn.textContent = "متابعة";
+                newContinueBtn.classList.remove('hidden');
+                
+                const gameEnded = checkWinConditions();
+                if (!gameEnded) {
+                    newContinueBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        showDaytimeRolesPage(); 
+                    };
+                } else {
+                     newContinueBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                    };
+                }
+                saveGameState();
+            };
+
+            // بدء حلقة الأنيميشن
+            tick();
         }
 
         function showDaytimeRolesPage() {
             isRolesPhaseActive = false; 
+            stopSpeakTimer();
+            
+            // التأكد من إخفاء جميع الشاشات الأخرى قبل إظهار شاشة النهار
+            document.getElementById('night-phase').classList.add('hidden');
+            document.getElementById('nightKillAnimationModal').classList.add('hidden');
+            document.getElementById('voting-phase').classList.add('hidden');
+            document.getElementById('final-voting-phase').classList.add('hidden');
+            document.getElementById('results-phase').classList.add('hidden');
+            document.getElementById('justification-phase').classList.add('hidden');
+
+            // (تحديث) تغيير العنوان إلى "جولة الحوار" في النهار بتصميم مميز
+            const titleElement = document.getElementById('rolesPhaseTitle');
+            const headerElement = document.getElementById('rolesPhaseHeader');
+            
+            if (titleElement) {
+                titleElement.innerHTML = "🗣️ جولة الحوار 🗣️";
+                titleElement.style.fontSize = "1.8rem";
+                titleElement.style.textShadow = "0 0 10px rgba(255, 215, 0, 0.5)";
+                titleElement.style.color = "#ffffff";
+            }
+            
+            if (headerElement) {
+                headerElement.style.background = "linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)";
+                headerElement.style.border = "2px solid #ffd700";
+                headerElement.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.3)";
+                headerElement.style.transform = "scale(1.05)";
+            }
+
+            // إعادة إنشاء صناديق اللاعبين لتحديث الحالة (حي/ميت)
             createPlayerBoxes(); 
+            
             setupRolesPhaseButton('showVoting', 'بدء التصويت');
+            setDayMode();
             document.getElementById('roles-phase').classList.remove('hidden');
+            gameState.currentPhase = 'roles-phase';
             saveGameState();
         }
 
@@ -2248,7 +3486,9 @@
                 newButton.id = 'rolesPhaseButton'; 
                 
                 if (onclickAction === 'startNightPhase') {
-                    newButton.addEventListener('click', startNightPhase);
+                    newButton.addEventListener('click', () => {
+                        showNightPreparationOrStartNight();
+                    });
                 } else if (onclickAction === 'showVoting') {
                     newButton.addEventListener('click', showVoting);
                 }
@@ -2258,6 +3498,7 @@
 
         function showVoting() {
             isRolesPhaseActive = false; 
+            stopSpeakTimer();
 
             const container = document.getElementById('votingGrid');
             container.innerHTML = '';
@@ -2293,7 +3534,8 @@
             document.getElementById('roles-phase').classList.add('hidden');
             document.getElementById('night-phase').classList.add('hidden'); 
             document.getElementById('voting-phase').classList.remove('hidden');
-
+            setDayMode();
+            gameState.currentPhase = 'voting-phase';
             saveGameState(); 
         }
 
@@ -2338,7 +3580,8 @@
                 resultsContainer.innerHTML = '<div>لا توجد أصوات كافية لإخراج أي لاعب</div>';
                 document.getElementById('voting-phase').classList.add('hidden');
                 document.getElementById('results-phase').classList.remove('hidden');
-                
+                setDayMode();
+                gameState.currentPhase = 'results-phase';
                 saveGameState(); 
                 return;
             }
@@ -2387,6 +3630,8 @@
                     resultsContainer.innerHTML = '<div>لا توجد أصوات كافية لإخراج أي لاعب</div>';
                     document.getElementById('voting-phase').classList.add('hidden');
                     document.getElementById('results-phase').classList.remove('hidden');
+                    setDayMode();
+                    gameState.currentPhase = 'results-phase';
                     saveGameState(); 
                     return;
                 }
@@ -2411,20 +3656,25 @@
             `;
             document.getElementById('voting-phase').classList.add('hidden');
             document.getElementById('results-phase').classList.remove('hidden');
-
+            setDayMode();
+            gameState.currentPhase = 'results-phase';
             saveGameState(); 
         }
         
         function backToVoting() {
              document.getElementById('results-phase').classList.add('hidden');
              document.getElementById('voting-phase').classList.remove('hidden');
+             setDayMode();
+             gameState.currentPhase = 'voting-phase';
+             saveGameState();
         }
 
         function startJustificationPhase() {
             currentJustifyingPlayer = 0;
             document.getElementById('voting-phase').classList.add('hidden');
             document.getElementById('justification-phase').classList.remove('hidden');
-            
+            setDayMode();
+            gameState.currentPhase = 'justification-phase';
             showCurrentJustification();
             saveGameState(); 
         }
@@ -2439,34 +3689,74 @@
 
             const candidate = topTwoCandidates[currentJustifyingPlayer];
             const playerName = players[candidate.index];
-            
-            const candidatesInfo = topTwoCandidates.map(candidate => 
-                `${players[candidate.index]} (${candidate.votes} أصوات)`
-            ).join(' و ');
+
+            const candidatesListHtml = topTwoCandidates.map((c, index) => {
+                const name = players[c.index];
+                const isCurrent = index === currentJustifyingPlayer;
+                const highlightStyle = isCurrent
+                    ? 'border-color: #ffd700; background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);'
+                    : '';
+                const badge = isCurrent
+                    ? '<span style="padding: 4px 10px; border-radius: 999px; background: rgba(255, 215, 0, 0.15); color: #ffd700; font-size: 0.8rem; font-weight: 700;">الدور الحالي</span>'
+                    : '';
+                return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.06); ${highlightStyle}">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; color: #ffd700;">
+                                ${index + 1}
+                            </span>
+                            <span style="font-size: 1rem; font-weight: 700; color: #ffffff;">
+                                ${name}
+                            </span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 0.9rem; color: #ffd700;">
+                                ${c.votes} أصوات
+                            </span>
+                            ${badge}
+                        </div>
+                    </div>
+                `;
+            }).join('');
             
             container.innerHTML = `
-                <div style="margin-bottom: 30px; padding: 20px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); border-radius: 15px;">
-                    <h3 style="color: #ffd700; margin-bottom: 15px;">المرشحون لجولة التبرير:</h3>
-                    <p style="font-size: 1.2rem; color: #fff;">${candidatesInfo}</p>
+                <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)); border-radius: 18px;">
+                    <h3 style="color: #ffd700; margin-bottom: 12px; font-size: 1.15rem;">
+                        قائمة المشرحِين لجولة التبرير
+                    </h3>
+                    <p style="font-size: 0.95rem; color: #d0d0d0; margin-bottom: 15px;">
+                        الترتيب يوضح من يتحدث أولاً، مع عدد الأصوات لكل لاعب
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 8px; text-align: right;">
+                        ${candidatesListHtml}
+                    </div>
                 </div>
                 
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #ff6b6b; font-size: 2rem; margin-bottom: 20px;">
-                        دور ${playerName} في التبرير (${currentJustifyingPlayer + 1}/${topTwoCandidates.length})
+                    <div style="font-size: 0.95rem; color: #ffd700; margin-bottom: 8px;">
+                        الآن يتحدث
+                    </div>
+                    <h3 style="color: #ff6b6b; font-size: 2rem; margin-bottom: 10px;">
+                        ${playerName}
                     </h3>
-                    <div style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)); 
-                                padding: 30px; border-radius: 20px; margin: 20px 0;">
-                        <p style="font-size: 1.3rem; margin-bottom: 20px;">
-                            ${playerName} حصل على ${candidate.votes} أصوات
-                        </p>
-                        <div id="timer" style="font-size: 3rem; color: #ffd700; font-weight: 900; 
-                                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); margin: 20px 0;">
-                            01:00
+                    <div style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)); 
+                                padding: 24px; border-radius: 20px; margin: 15px 0;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="font-size: 0.95rem; color: #f0f0f0;">
+                                الدور: ${currentJustifyingPlayer + 1}/${topTwoCandidates.length} • حصل على ${candidate.votes} أصوات
+                            </div>
+                            <div style="font-size: 0.9rem; color: #d0d0d0;">
+                                الوقت المتبقي:
+                            </div>
+                            <div id="timer" style="font-size: 3rem; color: #ffd700; font-weight: 900; 
+                                                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); margin: 10px 0;">
+                                01:00
+                            </div>
+                            <p style="font-size: 1rem; color: #ddd; margin: 5px 0 0;">
+                                استخدم هذه الدقيقة للدفاع عن نفسك وشرح موقفك
+                            </p>
                         </div>
-                        <p style="font-size: 1.1rem; color: #ddd;">
-                            لديك دقيقة واحدة للدفاع عن نفسك
-                        </p>
-                        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                        <div style="margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                             <button onclick="skipJustification()" 
                                     style="background: linear-gradient(45deg, #74b9ff, #0984e3); 
                                            margin: 0; padding: 12px 25px; font-size: 1rem;">
@@ -2487,6 +3777,7 @@
         
         let timeLeft = 60;
         let isPaused = false;
+        let timerEndTime = 0; // (جديد) لتتبع الوقت الحقيقي
         
         function startTimer() {
             timeLeft = 60; 
@@ -2494,9 +3785,19 @@
             
             if (justificationTimer) clearInterval(justificationTimer); 
 
+            // حساب وقت الانتهاء المتوقع
+            timerEndTime = Date.now() + (timeLeft * 1000);
+
             justificationTimer = setInterval(() => {
                 if (!isPaused) {
                     
+                    // حساب الوقت المتبقي بناءً على ساعة النظام
+                    const now = Date.now();
+                    const remainingMs = timerEndTime - now;
+                    timeLeft = Math.ceil(remainingMs / 1000);
+
+                    if (timeLeft < 0) timeLeft = 0;
+
                     const timerElement = document.getElementById('timer');
                     if (!timerElement) {
                          clearInterval(justificationTimer);
@@ -2516,15 +3817,13 @@
                          timerElement.style.animation = 'none';
                     }
                     
-                    timeLeft--;
-                    
-                    if (timeLeft < 0) {
+                    if (timeLeft <= 0) {
                         clearInterval(justificationTimer);
                         justificationTimer = null; 
                         nextJustification();
                     }
                 }
-            }, 1000);
+            }, 200); // تحديث أسرع للشاشة
         }
         
         function pauseTimer() {
@@ -2534,9 +3833,12 @@
             if (isPaused) {
                 pauseBtn.innerHTML = 'استئناف ▶️';
                 pauseBtn.style.background = 'linear-gradient(45deg, #00b894, #00a085)';
+                // عند الإيقاف، timeLeft يحتوي على الثواني المتبقية الحالية
             } else {
                 pauseBtn.innerHTML = 'إيقاف مؤقت ⏸️';
                 pauseBtn.style.background = 'linear-gradient(45deg, #fdcb6e, #e17055)';
+                // عند الاستئناف، نعيد حساب وقت الانتهاء بناءً على ما تبقى
+                timerEndTime = Date.now() + (timeLeft * 1000);
             }
         }
         
@@ -2593,6 +3895,8 @@
             
             document.getElementById('justification-phase').classList.add('hidden');
             document.getElementById('final-voting-phase').classList.remove('hidden');
+            setDayMode();
+            gameState.currentPhase = 'final-voting-phase';
             saveGameState(); 
         }
         
@@ -2652,7 +3956,8 @@
                 resultsContainer.innerHTML = '<div>تعادل في الأصوات - لم يتم إخراج أي لاعب</div>';
                 document.getElementById('final-voting-phase').classList.add('hidden');
                 document.getElementById('results-phase').classList.remove('hidden');
-                
+                setDayMode();
+                gameState.currentPhase = 'results-phase';
                 const gameEnded = checkWinConditions();
                 if (gameEnded) {
                     resultsContainer.querySelector('button')?.classList.add('hidden');
@@ -2661,12 +3966,38 @@
             saveGameState(); 
         }
 
+        function showNightPreparationOrStartNight() {
+            const nightPrepModal = document.getElementById('nightPreparationModal');
+            const startButton = document.getElementById('startNightPreparationButton');
+            const skipButton = document.getElementById('skipToDialogueButton');
+            if (nightPrepModal && startButton) {
+                nightPrepModal.classList.remove('hidden');
+                const newStartButton = startButton.cloneNode(true);
+                startButton.parentNode.replaceChild(newStartButton, startButton);
+                newStartButton.id = 'startNightPreparationButton';
+                newStartButton.onclick = function () {
+                    nightPrepModal.classList.add('hidden');
+                    startNightPhase();
+                };
+                if (skipButton) {
+                    const newSkipButton = skipButton.cloneNode(true);
+                    skipButton.parentNode.replaceChild(newSkipButton, skipButton);
+                    newSkipButton.id = 'skipToDialogueButton';
+                    newSkipButton.onclick = function () {
+                        nightPrepModal.classList.add('hidden');
+                        showDaytimeRolesPage();
+                    };
+                }
+            } else {
+                startNightPhase();
+            }
+        }
+
         function hideModalAndContinue() {
             document.getElementById('roleModal').classList.add('hidden');
             const gameEnded = checkWinConditions();
             if (!gameEnded) {
-                // (إصلاح) العودة إلى مرحلة الليل
-                startNightPhase(); 
+                showNightPreparationOrStartNight();
             }
             saveGameState(); 
         }
@@ -2674,8 +4005,18 @@
         function showRoleRevealAnimation(playerIndex, voteCount, eliminationType) {
             const playerName = players[playerIndex];
             const actualRole = roles[playerIndex];
-            const roleImgSrc = roleImages[actualRole]; 
-            const finalRoleColor = roleColors[actualRole];
+            
+            let roleImgSrc = roleImages[actualRole]; 
+            let finalRoleColor = roleColors[actualRole];
+            let revealLabelText = "دوره كان";
+            
+            const shouldHideRole = gameState.hideEliminatedRole || (gameState.playerConfig && gameState.playerConfig.hideEliminatedIdentity);
+
+            if (shouldHideRole) {
+                roleImgSrc = 'https://i.postimg.cc/fbMtQknR/astfham.webp';
+                finalRoleColor = '#888888';
+                revealLabelText = "تم إخراجه (هوية مجهولة)";
+            }
             
             document.getElementById('voting-phase').classList.add('hidden');
             document.getElementById('final-voting-phase').classList.add('hidden');
@@ -2683,22 +4024,65 @@
             document.getElementById('roleModal').classList.remove('hidden');
 
             const modalRoleImage = document.getElementById('modalRoleImage');
+            const roleLabelEl = document.getElementById('roleRevealLabel');
+            const roleTextEl = document.getElementById('modalRoleText');
+            const voteCountEl = document.getElementById('modalVoteCount');
+            const roleInfoBox = document.getElementById('modalRoleInfoBox');
+
             document.getElementById('modalPlayerName').textContent = playerName;
-            document.getElementById('modalVoteCount').textContent = `عدد الأصوات: ${voteCount}`;
+            if (roleLabelEl) {
+                roleLabelEl.style.display = "block";
+                roleLabelEl.textContent = revealLabelText;
+            }
+            if (roleInfoBox) {
+                roleInfoBox.style.display = "none";
+            }
+
+            if (shouldHideRole) {
+                if (roleInfoBox) roleInfoBox.style.opacity = '0.8';
+                if (roleTextEl) {
+                    roleTextEl.textContent = 'مخفي حسب إعدادات اللعبة';
+                    roleTextEl.style.color = '#ffffff';
+                }
+            } else {
+                if (roleInfoBox) roleInfoBox.style.opacity = '1';
+                if (roleTextEl) {
+                    roleTextEl.textContent = actualRole;
+                    let roleColor = '#ffffff';
+                    if (actualRole === 'مافيا') roleColor = '#ff4b4b';
+                    else if (actualRole === 'مواطن') roleColor = '#ffffff';
+                    else if (actualRole === 'محقق') roleColor = '#ffd700';
+                    else if (actualRole === 'طبيب') roleColor = '#2ecc71';
+                    roleTextEl.style.color = roleColor;
+                }
+            }
+
+            if (voteCountEl) {
+                voteCountEl.textContent = `${voteCount}`;
+            }
+
             document.getElementById('modalContinueSection').style.display = 'none'; 
             
             const rolesList = ['مافيا', 'مواطن', 'محقق', 'طبيب']; 
             
             let currentIndex = 0;
             let iterations = 0;
-            const maxIterations = 20; 
-            const rollSpeed = 100; 
+            const maxIterations = 25; 
+            let rollSpeed = 80;
             
             modalRoleImage.src = '';
             modalRoleImage.style.transform = 'scale(1)';
             modalRoleImage.style.boxShadow = 'none';
+            modalRoleImage.style.opacity = '1'; // تأكد من أن الشفافية 1
             
-            const slotInterval = setInterval(() => {
+            function animateSlot() {
+                // اختيار عشوائي للدور بدلاً من الترتيب المنظم
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * rolesList.length);
+                } while (newIndex === currentIndex && rolesList.length > 1);
+                currentIndex = newIndex;
+
                 const currentRole = rolesList[currentIndex];
                 const currentImgSrc = roleImages[currentRole];
                 
@@ -2707,36 +4091,47 @@
                 modalRoleImage.style.transform = iterations % 2 === 0 ? 'scale(1.05)' : 'scale(1.0)';
                 modalRoleImage.style.boxShadow = `0 0 15px ${iterations % 2 === 0 ? '#fff' : 'rgba(255, 255, 255, 0.5)'}`;
                 
-                currentIndex = (currentIndex + 1) % rolesList.length;
                 iterations++;
                 
-                if (iterations >= maxIterations) {
-                    clearInterval(slotInterval);
-                    
-                    setTimeout(() => {
-                        modalRoleImage.src = roleImgSrc;
-                        
-                        modalRoleImage.style.boxShadow = `0 0 40px ${finalRoleColor}`;
-                        modalRoleImage.style.transform = 'scale(1.1)';
-
-                        let flashCount = 0;
-                        const flashInterval = setInterval(() => {
-                            modalRoleImage.style.opacity = modalRoleImage.style.opacity === '0.3' ? '1' : '0.3';
-                            flashCount++;
-                            if (flashCount >= 6) {
-                                clearInterval(flashInterval);
-                                modalRoleImage.style.opacity = '1';
-                                
-                                setTimeout(() => {
-                                    document.getElementById('modalContinueSection').style.display = 'block';
-                                }, 1000);
-                            }
-                        }, 200);
-                        
-                    }, 500); 
+                if (iterations < maxIterations) {
+                    // تباطؤ تدريجي
+                    if (iterations > maxIterations - 10) rollSpeed += 20;
+                    setTimeout(() => requestAnimationFrame(animateSlot), rollSpeed);
+                } else {
+                    finalizeReveal();
                 }
-                
-            }, rollSpeed);
+            }
+
+            function finalizeReveal() {
+                setTimeout(() => {
+                    modalRoleImage.src = roleImgSrc;
+                    
+                    modalRoleImage.style.boxShadow = `0 0 40px ${finalRoleColor}`;
+                    modalRoleImage.style.transform = 'scale(1.1)';
+
+                    let flashCount = 0;
+                    const flashInterval = setInterval(() => {
+                        modalRoleImage.style.opacity = modalRoleImage.style.opacity === '0.3' ? '1' : '0.3';
+                        flashCount++;
+                        if (flashCount >= 6) {
+                            clearInterval(flashInterval);
+                            modalRoleImage.style.opacity = '1';
+
+                            const roleInfoBox = document.getElementById('modalRoleInfoBox');
+                            if (roleInfoBox) {
+                                roleInfoBox.style.display = 'block';
+                            }
+                            
+                            setTimeout(() => {
+                                document.getElementById('modalContinueSection').style.display = 'block';
+                            }, 1000);
+                        }
+                    }, 200);
+                    
+                }, 500); 
+            }
+            
+            requestAnimationFrame(animateSlot);
         }
         
         function checkWinConditions() {
@@ -2762,7 +4157,7 @@
                 document.getElementById('roleModal').classList.add('hidden'); 
                 return true; 
             } else if (aliveMafia >= aliveGoodGuys) {
-                showWinMessage('المافIA', 'أصبح عدد المافIA يساوي أو يفوق عدد المواطنين! 😈');
+                showWinMessage('المافيا', 'أصبح عدد المافيا يساوي أو يفوق عدد المواطنين! 😈');
                 document.getElementById('roleModal').classList.add('hidden'); 
                 return true; 
             }
@@ -2775,6 +4170,8 @@
             resultsContainer.innerHTML = ''; 
             
             document.getElementById('results-phase').classList.remove('hidden');
+            setDayMode();
+            gameState.currentPhase = 'results-phase';
             
             let mafiaNames = [];
             let doctorNames = [];
@@ -2787,33 +4184,55 @@
             });
 
             const winMessage = document.createElement('div');
-            winMessage.style.cssText = `
-                margin-top: 30px;
-                padding: 30px;
-                background: linear-gradient(145deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
-                border: 3px solid #ffd700;
-                border-radius: 20px;
-                box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-                animation: winPulse 2s ease-in-out infinite alternate;
-            `;
+            winMessage.className = 'win-container';
             
             let rolesListHtml = '<div id="finalRolesList">';
             if (mafiaNames.length > 0) {
-                rolesListHtml += `<h3>المافيا 🔪:</h3><ul>${mafiaNames.map(name => `<li class="mafia-role">${name}</li>`).join('')}</ul>`;
+                rolesListHtml += `
+                    <div class="final-role-group">
+                        <div class="final-role-header">
+                            <span class="final-role-title mafia">المافيا 🔪</span>
+                            <span class="final-role-count">${mafiaNames.length}</span>
+                        </div>
+                        <div class="final-role-names">
+                            ${mafiaNames.map(name => `<span class="final-role-pill mafia-role">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
             }
             if (doctorNames.length > 0) {
-                rolesListHtml += `<h3 style="margin-top: 15px;">الطبيب 🧑‍⚕️:</h3><ul>${doctorNames.map(name => `<li class="doctor-role">${name}</li>`).join('')}</ul>`;
+                rolesListHtml += `
+                    <div class="final-role-group">
+                        <div class="final-role-header">
+                            <span class="final-role-title doctor">الطبيب 🧑‍⚕️</span>
+                            <span class="final-role-count">${doctorNames.length}</span>
+                        </div>
+                        <div class="final-role-names">
+                            ${doctorNames.map(name => `<span class="final-role-pill doctor-role">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
             }
             if (detectiveNames.length > 0) {
-                rolesListHtml += `<h3 style="margin-top: 15px;">المحقق 🕵️:</h3><ul>${detectiveNames.map(name => `<li class="detective-role">${name}</li>`).join('')}</ul>`;
+                rolesListHtml += `
+                    <div class="final-role-group">
+                        <div class="final-role-header">
+                            <span class="final-role-title detective">المحقق 🕵️</span>
+                            <span class="final-role-count">${detectiveNames.length}</span>
+                        </div>
+                        <div class="final-role-names">
+                            ${detectiveNames.map(name => `<span class="final-role-pill detective-role">${name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
             }
             rolesListHtml += '</div>';
 
             winMessage.innerHTML = `
-                <h2 style="color: #ffd700; font-size: 2.5rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">
+                <h2 class="win-title">
                     🏆 فوز ${winner}! 🏆
                 </h2>
-                <p style="font-size: 1.3rem; color: #fff; margin-bottom: 20px;">
+                <p class="win-reason">
                     ${reason}
                 </p>
                 
@@ -2839,16 +4258,17 @@
             if(oldButton) oldButton.classList.add('hidden');
             
             const style = document.createElement('style');
-            if (!document.querySelector('#winPulseStyle')) { 
-                style.id = 'winPulseStyle';
-                style.textContent = `
-                    @keyframes winPulse {
-                        0% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
-                        100% { transform: scale(1.02); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
+                if (!document.querySelector('#winPulseStyle')) { 
+                    style.id = 'winPulseStyle';
+                    style.textContent = `
+                        @keyframes winPulse {
+                            0% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+                            100% { transform: scale(1.02); box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            saveGameState();
         }
         
         function restartGame() {
@@ -2861,9 +4281,10 @@
             isRolesPhaseActive = false; 
             createPlayerBoxes(); 
             // (إصلاح) العودة إلى مرحلة الليل
-            setupRolesPhaseButton('startNightPhase', 'بدء مرحلة الليل'); 
+            setupRolesPhaseButton('startNightPhase', 'بدء اللعبة');
             document.getElementById('roles-phase').classList.remove('hidden'); 
-            
+            setDayMode();
+            gameState.currentPhase = 'roles-phase';
             saveGameState();
         }
 
@@ -2873,7 +4294,8 @@
             document.getElementById('modalPlayerName').textContent = message;
             document.getElementById('modalPlayerName').style.fontSize = "1.5rem"; 
             document.getElementById('modalRoleImage').style.display = 'none'; 
-            document.getElementById('modalVoteCount').style.display = 'none'; 
+            document.getElementById('modalRoleInfoBox').style.display = 'none'; 
+            document.getElementById('roleRevealLabel').style.display = 'none';
             
             const continueBtn = document.getElementById('modalContinueSection').querySelector('button');
             continueBtn.textContent = "موافق";
@@ -2889,13 +4311,111 @@
             modal.classList.remove('hidden');
         }
 
+        function showStatusSummary() {
+            const totalPlayers = players.length;
+            let aliveCount = 0;
+            let deadCount = 0;
+            let aliveMafia = 0;
+            let aliveDoctor = 0;
+            let aliveDetective = 0;
+
+            players.forEach((player, index) => {
+                const isDead = eliminatedPlayers.includes(index);
+                if (isDead) {
+                    deadCount++;
+                } else {
+                    aliveCount++;
+                    const role = roles[index];
+                    if (role === 'مافيا') aliveMafia++;
+                    else if (role === 'طبيب') aliveDoctor++;
+                    else if (role === 'محقق') aliveDetective++;
+                }
+            });
+
+            const aliveCitizens = aliveCount - (aliveMafia + aliveDoctor + aliveDetective);
+
+            let rows = [];
+            const shouldHideRole = gameState.hideEliminatedRole || (gameState.playerConfig && gameState.playerConfig.hideEliminatedIdentity);
+
+            if (shouldHideRole) {
+                rows = [
+                    { label: 'إجمالي اللاعبين', value: totalPlayers },
+                    { label: 'الأحياء', value: aliveCount },
+                    { label: 'المخرجون', value: deadCount },
+                    { label: 'المافيا الأحياء', value: '؟' },
+                    { label: 'المواطنون الأحياء', value: '؟' },
+                    { label: 'الأطباء الأحياء', value: '؟' },
+                    { label: 'المحققون الأحياء', value: '؟' }
+                ];
+            } else {
+                rows = [
+                    { label: 'إجمالي اللاعبين', value: totalPlayers },
+                    { label: 'الأحياء', value: aliveCount },
+                    { label: 'المخرجون', value: deadCount },
+                    { label: 'المافيا الأحياء', value: aliveMafia },
+                    { label: 'المواطنون الأحياء (بدون أسماء)', value: aliveCitizens < 0 ? 0 : aliveCitizens },
+                    { label: 'الأطباء الأحياء', value: aliveDoctor },
+                    { label: 'المحققون الأحياء', value: aliveDetective }
+                ];
+            }
+
+            let tableHtml = '<table style="width:100%; border-collapse:collapse; direction:rtl; text-align:center; font-size:0.95rem;">';
+            tableHtml += '<thead><tr>';
+            tableHtml += '<th style="padding:6px 4px; border-bottom:1px solid rgba(255,255,255,0.2); color:#ffd700;">الفئة</th>';
+            tableHtml += '<th style="padding:6px 4px; border-bottom:1px solid rgba(255,255,255,0.2); color:#ffd700;">العدد</th>';
+            tableHtml += '</tr></thead><tbody>';
+
+            rows.forEach(row => {
+                tableHtml += '<tr>';
+                tableHtml += `<td style="padding:4px 3px; border-bottom:1px solid rgba(255,255,255,0.08); color:#f1f1f1;">${row.label}</td>`;
+                tableHtml += `<td style="padding:4px 3px; border-bottom:1px solid rgba(255,255,255,0.08); color:#f1f1f1; font-weight:700;">${row.value}</td>`;
+                tableHtml += '</tr>';
+            });
+
+            tableHtml += '</tbody></table>';
+
+            const modal = document.getElementById('statusModal');
+            const contentDiv = document.getElementById('statusModalContent');
+            
+            contentDiv.innerHTML = tableHtml;
+            contentDiv.style.fontSize = "0.95rem";
+            contentDiv.style.whiteSpace = "normal";
+            contentDiv.style.textAlign = "center";
+            contentDiv.style.wordBreak = "break-word";
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.add('hidden');
+        }
+
         function hideModalAndRestore() {
             document.getElementById('roleModal').classList.add('hidden');
             
-            document.getElementById('modalTitle').textContent = "تم إخراج";
-            document.getElementById('modalPlayerName').style.fontSize = ""; 
+            document.getElementById('modalTitle').textContent = "";
+            const modalPlayerName = document.getElementById('modalPlayerName');
+            modalPlayerName.style.fontSize = ""; 
+            modalPlayerName.style.whiteSpace = "";
+            modalPlayerName.style.textAlign = "";
+            modalPlayerName.style.width = "";
+            modalPlayerName.style.maxHeight = "";
+            modalPlayerName.style.overflowY = "";
+            modalPlayerName.style.overflowX = "";
+            modalPlayerName.style.margin = "";
+            modalPlayerName.style.wordBreak = "";
             document.getElementById('modalRoleImage').style.display = 'block';
             document.getElementById('modalVoteCount').style.display = 'block';
+            const roleLabel = document.getElementById('roleRevealLabel');
+            if (roleLabel) {
+                roleLabel.style.display = 'none';
+                roleLabel.textContent = "";
+            }
+            const roleInfoBox = document.getElementById('modalRoleInfoBox');
+            if (roleInfoBox) {
+                roleInfoBox.style.display = 'none';
+                roleInfoBox.style.opacity = '1';
+            }
             
             const continueBtn = document.getElementById('modalContinueSection').querySelector('button');
             continueBtn.textContent = "متابعة اللعبة";
