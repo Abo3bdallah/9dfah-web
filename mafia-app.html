@@ -3467,13 +3467,14 @@
                 headerElement.style.transform = "scale(1.05)";
             }
 
+            gameState.currentPhase = 'roles-phase';
+
             // إعادة إنشاء صناديق اللاعبين لتحديث الحالة (حي/ميت)
             createPlayerBoxes(); 
             
             setupRolesPhaseButton('showVoting', 'بدء التصويت');
             setDayMode();
             document.getElementById('roles-phase').classList.remove('hidden');
-            gameState.currentPhase = 'roles-phase';
             saveGameState();
         }
 
@@ -4279,12 +4280,12 @@
             document.getElementById('results-phase').classList.add('hidden');
             
             isRolesPhaseActive = false; 
+            gameState.currentPhase = 'roles-phase';
             createPlayerBoxes(); 
             // (إصلاح) العودة إلى مرحلة الليل
             setupRolesPhaseButton('startNightPhase', 'بدء اللعبة');
             document.getElementById('roles-phase').classList.remove('hidden'); 
             setDayMode();
-            gameState.currentPhase = 'roles-phase';
             saveGameState();
         }
 
