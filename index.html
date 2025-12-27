@@ -2630,8 +2630,8 @@
                 }
 
                 const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.href,
-                });
+                        redirectTo: window.location.origin + window.location.pathname,
+                    });
                 
                 if (error) {
                     showAuthError(error.message);
@@ -2913,8 +2913,8 @@
                 
                 let currentPageId = window.location.hash.substring(1);
                 
-                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص أو اكتشفنا الرابط متأخراً
-                if (event === 'PASSWORD_RECOVERY' || currentPageId.includes('type=recovery')) {
+                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص أو اكتشفنا الرابط متأخراً أو وجدنا رمز الوصول
+                if (event === 'PASSWORD_RECOVERY' || currentPageId.includes('type=recovery') || (event === 'SIGNED_IN' && currentPageId.includes('type=recovery'))) {
                     isRecoveryMode = true;
                 }
                 
@@ -2973,8 +2973,8 @@
                 setTimeout(checkAndShowAnnouncement, 500);
                 // === (نهاية الإضافة) ===
                 
-                // (تعديل) لا تمسح الرابط إذا كنا في وضع الاستعادة
-                if (!isRecoveryMode) {
+                // (تعديل) لا تمسح الرابط إذا كنا في وضع الاستعادة أو إذا كان هناك رموز وصول (للسماح لـ Supabase بالمعالجة)
+                if (!isRecoveryMode && !window.location.hash.includes('access_token') && !window.location.hash.includes('type=recovery')) {
                     try {
                         history.replaceState({ page: 'welcome' }, '', `#welcome`);
                     } catch(e) { console.warn("History API (replaceState) not available.", e); }
