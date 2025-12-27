@@ -1657,6 +1657,15 @@
     <!-- كود الجافاسكربت للتنقل... -->
     <!-- ============================================== -->
     <script>
+        // === (تعديل جذري) الكشف المبكر جداً عن وضع استعادة كلمة المرور ===
+        // يتم هذا الفحص قبل أي شيء آخر لضمان التقاط الرابط قبل أن تقوم أي مكتبة بتغييره
+        const isRecoveryUrl = window.location.hash.includes('type=recovery') || 
+                              window.location.search.includes('type=recovery') ||
+                              window.location.href.includes('type=recovery');
+        
+        // متغير عام للتحكم في الوضع
+        let isRecoveryMode = isRecoveryUrl;
+
         // --- 0. تهيئة Supabase ---
         // استبدل بالقيم الخاصة بك!
         const SUPABASE_URL = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
@@ -2893,9 +2902,8 @@
             announcementModalOverlay.addEventListener('click', hideAnnouncementModal);
             // === (نهاية الإضافة) ===
             
-            // (جديد) تعريف متغير للتحكم في حالة الاستعادة، ويتم فحصه فوراً عند التحميل
-            // نستخدم window.location.href للبحث في الرابط كاملاً لأن Supabase قد يضع المعاملات في الهاش أو الكويري
-            let isRecoveryMode = window.location.href.includes('type=recovery');
+            // (إزالة) تم نقل تعريف isRecoveryMode للأعلى
+            // let isRecoveryMode = window.location.href.includes('type=recovery');
 
             if (supabase) {
             supabase.auth.onAuthStateChange((event, session) => {
@@ -2910,6 +2918,8 @@
                 // (جديد) إذا اكتشفنا أننا في وضع الاستعادة، نمنع تغيير الصفحة أو إخفاء النافذة
                 if (isRecoveryMode) {
                      // تأكد من أننا نعرض واجهة الاستعادة
+                     // (هام) إزالة فئة hidden يدوياً لضمان الظهور
+                     if (authResetFields) authResetFields.classList.remove('hidden');
                      showResetPasswordView();
                      authModal.style.display = 'flex';
                 }
@@ -2955,12 +2965,15 @@
                 setTimeout(checkAndShowAnnouncement, 500);
                 // === (نهاية الإضافة) ===
                 
-                try {
-                    history.replaceState({ page: 'welcome' }, '', `#welcome`);
-                        } catch(e) { console.warn("History API (replaceState) not available.", e); }
-                    } else {
-                        showPage(currentPageId, false);
-                    }
+                // (تعديل) لا تمسح الرابط إذا كنا في وضع الاستعادة
+                if (!isRecoveryMode) {
+                    try {
+                        history.replaceState({ page: 'welcome' }, '', `#welcome`);
+                    } catch(e) { console.warn("History API (replaceState) not available.", e); }
+                }
+            } else {
+                showPage(currentPageId, false);
+            }
                     
                 } else {
                     // المستخدم سجل خروجه (أو زائر جديد)
