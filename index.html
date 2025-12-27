@@ -580,6 +580,20 @@
                 <div class="mb-6">
                     <label for="auth-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور (6 أحرف على الأقل)</label>
                     <input type="password" id="auth-password" required minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    <!-- (جديد) زر نسيت كلمة المرور -->
+                    <button type="button" id="btn-show-forgot-password" class="text-sm text-blue-600 hover:underline mt-1 dark:text-blue-400">نسيت كلمة المرور؟</button>
+                </div>
+
+                <!-- (جديد) حقول إعادة تعيين كلمة المرور (مخفي) -->
+                <div id="auth-reset-fields" class="mb-6 hidden">
+                    <div class="mb-4">
+                        <label for="auth-new-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور الجديدة</label>
+                        <input type="password" id="auth-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="auth-confirm-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تأكيد كلمة المرور</label>
+                        <input type="password" id="auth-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
                 </div>
 
                 <!-- (جديد) حقل الموافقة على الشروط (يظهر عند إنشاء حساب) -->
@@ -605,6 +619,13 @@
                     <button type="submit" id="btn-signup-submit" class="w-full bg-green-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-green-700 transition shadow-lg active:scale-95">
                         إنشاء حساب جديد
                     </button>
+                    <!-- (جديد) أزرار استعادة كلمة المرور -->
+                    <button type="button" id="btn-forgot-password-submit" class="w-full bg-yellow-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-yellow-700 transition shadow-lg active:scale-95 hidden">
+                        إرسال رابط التحقق
+                    </button>
+                    <button type="button" id="btn-reset-password-submit" class="w-full bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition shadow-lg active:scale-95 hidden">
+                        حفظ كلمة المرور الجديدة
+                    </button>
                 </div>
 
                 <!-- (جديد) زر التبديل بين تسجيل الدخول وإنشاء الحساب -->
@@ -614,6 +635,10 @@
                     </button>
                     <button type="button" id="btn-show-login-view" class="text-sm text-blue-600 hover:underline dark:text-blue-400 hidden">
                         لديك حساب بالفعل؟ سجّل الدخول
+                    </button>
+                    <!-- (جديد) زر العودة من شاشة نسيت كلمة المرور -->
+                    <button type="button" id="btn-back-to-login-from-forgot" class="text-sm text-zinc-500 hover:underline dark:text-zinc-400 hidden">
+                        العودة لتسجيل الدخول
                     </button>
                 </div>
 
@@ -708,23 +733,15 @@
                         </div>
                     </div>
 
-                    <!-- قسم: تغيير كلمة المرور (مخفي) -->
-                    <div class="mb-6">
-                        <button type="button" id="btn-show-password-fields" class="w-full px-3 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 transition text-sm font-medium">
-                            إظهار خيارات تغيير كلمة المرور
+                    <!-- قسم: تغيير كلمة المرور -->
+                    <div class="mb-6 border border-zinc-200 rounded-lg p-4 dark:border-zinc-700">
+                        <h3 class="font-bold text-zinc-800 dark:text-zinc-200 mb-2">تغيير كلمة المرور</h3>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+                            لضمان أمان حسابك، يتم تغيير كلمة المرور عن طريق إرسال رابط تحقق إلى بريدك الإلكتروني.
+                        </p>
+                        <button type="button" id="btn-settings-reset-password" class="w-full px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">
+                            إرسال رابط تغيير كلمة المرور
                         </button>
-                        
-                        <div id="password-fields-container" class="hidden space-y-4 mt-4">
-                            <div>
-                                <label for="settings-new-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">كلمة المرور الجديدة (6 أحرف على الأقل)</label>
-                                <input type="password" id="settings-new-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                            </div>
-                            <div>
-                                <label for="settings-confirm-password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">تأكيد كلمة المرور الجديدة</label>
-                                <input type="password" id="settings-confirm-password" minlength="6" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                            </div>
-                            <button type="submit" id="btn-update-password" class="w-full px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">حفظ كلمة المرور الجديدة</button>
-                        </div>
                     </div>
                     
                     <!-- (جديد) قسم: حذف الحساب -->
@@ -1701,6 +1718,16 @@
             const btnShowSignupView = document.getElementById('btn-show-signup-view');
             const btnShowLoginView = document.getElementById('btn-show-login-view');
             
+            // (جديد) عناصر استعادة كلمة المرور
+            const btnShowForgotPassword = document.getElementById('btn-show-forgot-password');
+            const btnForgotPasswordSubmit = document.getElementById('btn-forgot-password-submit');
+            const btnResetPasswordSubmit = document.getElementById('btn-reset-password-submit');
+            const btnBackToLoginFromForgot = document.getElementById('btn-back-to-login-from-forgot');
+            const authResetFields = document.getElementById('auth-reset-fields');
+            const authNewPasswordInput = document.getElementById('auth-new-password');
+            const authConfirmPasswordInput = document.getElementById('auth-confirm-password');
+            const authPasswordInput = document.getElementById('auth-password'); // موجود بالفعل لكن نعيد تعريفه للوضوح إذا لزم الأمر
+            
             // (جديد) عناصر وضع الضيف
             const btnShowGuestWarning = document.getElementById('btn-show-guest-warning');
             const guestWarningModal = document.getElementById('guest-warning-modal');
@@ -1742,11 +1769,13 @@
             const settingsTabAccount = document.getElementById('settings-tab-account');
             const settingsTabGeneral = document.getElementById('settings-tab-general');
             // (جديد) عناصر تغيير كلمة المرور
-            const btnShowPasswordFields = document.getElementById('btn-show-password-fields');
-            const passwordFieldsContainer = document.getElementById('password-fields-container');
-            const settingsNewPassword = document.getElementById('settings-new-password');
-            const settingsConfirmPassword = document.getElementById('settings-confirm-password');
-            const btnUpdatePassword = document.getElementById('btn-update-password');
+            // تم حذف btnShowPasswordFields و passwordFieldsContainer لأننا غيرنا التصميم
+            // const btnShowPasswordFields = document.getElementById('btn-show-password-fields');
+            // const passwordFieldsContainer = document.getElementById('password-fields-container');
+            // const settingsNewPassword = document.getElementById('settings-new-password');
+            // const settingsConfirmPassword = document.getElementById('settings-confirm-password');
+            // const btnUpdatePassword = document.getElementById('btn-update-password');
+            const btnSettingsResetPassword = document.getElementById('btn-settings-reset-password');
             // (جديد) عناصر حذف الحساب
             const btnShowDeleteAccount = document.getElementById('btn-show-delete-account');
             const deleteAccountModal = document.getElementById('delete-account-modal');
@@ -2292,10 +2321,22 @@
                 authTitle.textContent = 'تسجيل الدخول';
                 btnLoginSubmit.classList.remove('hidden');
                 btnSignupSubmit.classList.add('hidden');
+                btnForgotPasswordSubmit.classList.add('hidden'); // (جديد)
+                btnResetPasswordSubmit.classList.add('hidden'); // (جديد)
+                
                 authUsernameField.classList.add('hidden');
                 authTermsField.classList.add('hidden');
+                authResetFields.classList.add('hidden'); // (جديد)
+                
+                // إظهار حقول الدخول الأساسية
+                document.querySelector('label[for="auth-email"]').parentElement.classList.remove('hidden');
+                document.querySelector('label[for="auth-password"]').parentElement.classList.remove('hidden');
+                
                 btnShowSignupView.classList.remove('hidden');
                 btnShowLoginView.classList.add('hidden');
+                btnBackToLoginFromForgot.classList.add('hidden'); // (جديد)
+                btnShowForgotPassword.classList.remove('hidden'); // (جديد)
+                
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
             }
@@ -2305,10 +2346,72 @@
                 authTitle.textContent = 'إنشاء حساب جديد';
                 btnLoginSubmit.classList.add('hidden');
                 btnSignupSubmit.classList.remove('hidden');
+                btnForgotPasswordSubmit.classList.add('hidden'); // (جديد)
+                btnResetPasswordSubmit.classList.add('hidden'); // (جديد)
+
                 authUsernameField.classList.remove('hidden');
                 authTermsField.classList.remove('hidden');
+                authResetFields.classList.add('hidden'); // (جديد)
+                
+                // إظهار حقول الدخول الأساسية
+                document.querySelector('label[for="auth-email"]').parentElement.classList.remove('hidden');
+                document.querySelector('label[for="auth-password"]').parentElement.classList.remove('hidden');
+
                 btnShowSignupView.classList.add('hidden');
                 btnShowLoginView.classList.remove('hidden');
+                btnBackToLoginFromForgot.classList.add('hidden'); // (جديد)
+                btnShowForgotPassword.classList.add('hidden'); // (جديد) - لا نعرض نسيت كلمة المرور في التسجيل
+
+                authError.classList.add('hidden');
+                authSuccess.classList.add('hidden');
+            }
+
+            // (جديد) دالة لإظهار عرض "نسيت كلمة المرور"
+            function showForgotPasswordView() {
+                authTitle.textContent = 'استعادة كلمة المرور';
+                btnLoginSubmit.classList.add('hidden');
+                btnSignupSubmit.classList.add('hidden');
+                btnForgotPasswordSubmit.classList.remove('hidden');
+                btnResetPasswordSubmit.classList.add('hidden');
+
+                authUsernameField.classList.add('hidden');
+                authTermsField.classList.add('hidden');
+                authResetFields.classList.add('hidden');
+                
+                // إظهار الايميل وإخفاء الباسورد
+                document.querySelector('label[for="auth-email"]').parentElement.classList.remove('hidden');
+                document.querySelector('label[for="auth-password"]').parentElement.classList.add('hidden');
+
+                btnShowSignupView.classList.add('hidden');
+                btnShowLoginView.classList.add('hidden');
+                btnBackToLoginFromForgot.classList.remove('hidden');
+                btnShowForgotPassword.classList.add('hidden');
+
+                authError.classList.add('hidden');
+                authSuccess.classList.add('hidden');
+            }
+
+            // (جديد) دالة لإظهار عرض "تعيين كلمة المرور الجديدة"
+            function showResetPasswordView() {
+                authTitle.textContent = 'تعيين كلمة المرور الجديدة';
+                btnLoginSubmit.classList.add('hidden');
+                btnSignupSubmit.classList.add('hidden');
+                btnForgotPasswordSubmit.classList.add('hidden');
+                btnResetPasswordSubmit.classList.remove('hidden');
+
+                authUsernameField.classList.add('hidden');
+                authTermsField.classList.add('hidden');
+                authResetFields.classList.remove('hidden');
+                
+                // إخفاء الايميل والباسورد القديم
+                document.querySelector('label[for="auth-email"]').parentElement.classList.add('hidden');
+                document.querySelector('label[for="auth-password"]').parentElement.classList.add('hidden');
+
+                btnShowSignupView.classList.add('hidden');
+                btnShowLoginView.classList.add('hidden');
+                btnBackToLoginFromForgot.classList.add('hidden');
+                btnShowForgotPassword.classList.add('hidden');
+                
                 authError.classList.add('hidden');
                 authSuccess.classList.add('hidden');
             }
@@ -2316,6 +2419,8 @@
             // (جديد) ربط أزرار التبديل
             btnShowSignupView.addEventListener('click', showSignupView);
             btnShowLoginView.addEventListener('click', showLoginView);
+            btnShowForgotPassword.addEventListener('click', showForgotPasswordView);
+            btnBackToLoginFromForgot.addEventListener('click', showLoginView);
             
             // (جديد) دالة لتحديث حالة "وضع الضيف" في الواجهة
             function setGuestMode(isGuest) {
@@ -2476,44 +2581,85 @@
             btnSettingsTabAccount.addEventListener('click', () => showSettingsTab('account'));
             btnSettingsTabGeneral.addEventListener('click', () => showSettingsTab('general'));
             
-            // (جديد) إظهار حقول كلمة المرور
-            btnShowPasswordFields.addEventListener('click', () => {
-                passwordFieldsContainer.classList.remove('hidden');
-                btnShowPasswordFields.classList.add('hidden');
+            // (جديد) إرسال رابط تغيير كلمة المرور من الإعدادات
+            btnSettingsResetPassword.addEventListener('click', async () => {
                 hideSettingsMessages();
-            });
-
-            // (جديد) تحديث كلمة المرور
-            btnUpdatePassword.addEventListener('click', async (e) => {
-                e.preventDefault();
-                hideSettingsMessages();
-                const newPassword = settingsNewPassword.value;
-                const confirmPassword = settingsConfirmPassword.value;
-                
-                if (newPassword.length < 6) {
-                    showSettingsError('يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل.');
-                    return;
-                }
-                if (newPassword !== confirmPassword) {
-                    showSettingsError('كلمتا المرور غير متطابقتين.');
+                if (!currentUser || !currentUser.email) {
+                    showSettingsError('لا يمكن العثور على البريد الإلكتروني للمستخدم.');
                     return;
                 }
                 
-                showSettingsSuccess('يتم تحديث كلمة المرور...');
-                if (!supabase || !supabase.auth || !supabase.auth.updateUser) {
+                if (!supabase || !supabase.auth || !supabase.auth.resetPasswordForEmail) {
                     showSettingsError('خدمة المصادقة غير متاحة حالياً.');
                     return;
                 }
-                const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+                
+                showSettingsSuccess('جاري إرسال رابط التحقق...');
+                const { data, error } = await supabase.auth.resetPasswordForEmail(currentUser.email, {
+                    redirectTo: window.location.href,
+                });
                 
                 if (error) {
                     showSettingsError(error.message);
                 } else {
-                    showSettingsSuccess('تم تحديث كلمة المرور بنجاح!');
-                    settingsNewPassword.value = '';
-                    settingsConfirmPassword.value = '';
-                    passwordFieldsContainer.classList.add('hidden');
-                    btnShowPasswordFields.classList.remove('hidden');
+                    showSettingsSuccess('تم إرسال رابط تغيير كلمة المرور إلى بريدك الإلكتروني.');
+                }
+            });
+
+            // (جديد) زر إرسال رابط نسيت كلمة المرور (من شاشة الدخول)
+            btnForgotPasswordSubmit.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                if (!email) {
+                    showAuthError('يرجى إدخال البريد الإلكتروني.');
+                    return;
+                }
+                
+                showAuthSuccess('جاري إرسال الرابط...');
+                if (!supabase || !supabase.auth || !supabase.auth.resetPasswordForEmail) {
+                    showAuthError('خدمة المصادقة غير متاحة حالياً.');
+                    return;
+                }
+
+                const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.href,
+                });
+                
+                if (error) {
+                    showAuthError(error.message);
+                } else {
+                    showAuthSuccess('تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني.');
+                }
+            });
+
+            // (جديد) زر حفظ كلمة المرور الجديدة (بعد النقر على الرابط)
+            btnResetPasswordSubmit.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const newPassword = authNewPasswordInput.value;
+                const confirmPassword = authConfirmPasswordInput.value;
+                
+                if (newPassword.length < 6) {
+                    showAuthError('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    showAuthError('كلمتا المرور غير متطابقتين.');
+                    return;
+                }
+                
+                showAuthSuccess('جاري تحديث كلمة المرور...');
+                const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+                
+                if (error) {
+                    showAuthError(error.message);
+                } else {
+                    showAuthSuccess('تم تحديث كلمة المرور بنجاح! سيتم تحويلك...');
+                    setTimeout(() => {
+                        authModal.style.display = 'none';
+                        // تحويل المستخدم للصفحة الرئيسية
+                        showPage('welcome', false);
+                        try { history.replaceState(null, null, ' '); } catch(e) {} // تنظيف الرابط
+                    }, 1500);
                 }
             });
 
@@ -2771,8 +2917,13 @@
                     themeToggle.classList.remove('hidden');
                     fullscreenToggle.classList.remove('hidden'); // (جديد)
                     
-                    // 2. إخفاء نوافذ المصادقة
-                    authModal.style.display = 'none';
+                    // 2. إخفاء نوافذ المصادقة (مع مراعاة استعادة كلمة المرور)
+                    if (event === 'PASSWORD_RECOVERY') {
+                        showResetPasswordView();
+                        authModal.style.display = 'flex';
+                    } else {
+                        authModal.style.display = 'none';
+                    }
                     guestWarningModal.style.display = 'none';
                     
                     // 3. تحديث القائمة الجانبية
