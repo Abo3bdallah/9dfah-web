@@ -1663,8 +1663,16 @@
                               window.location.search.includes('type=recovery') ||
                               window.location.href.includes('type=recovery');
         
-        // متغير عام للتحكم في الوضع
-        let isRecoveryMode = isRecoveryUrl;
+        // التحقق من التخزين المؤقت (للحماية من التحديث)
+        const isStoredRecovery = sessionStorage.getItem('supabase_recovery_mode') === 'true';
+
+        // متغير عام للتحكم في الوضع - يكون صحيحاً إذا كان الرابط موجوداً أو الحالة مخزنة
+        let isRecoveryMode = isRecoveryUrl || isStoredRecovery;
+        
+        // إذا اكتشفنا الرابط لأول مرة، نقوم بتخزين الحالة فوراً
+        if (isRecoveryUrl) {
+            sessionStorage.setItem('supabase_recovery_mode', 'true');
+        }
 
         // --- 0. تهيئة Supabase ---
         // استبدل بالقيم الخاصة بك!
@@ -2668,8 +2676,10 @@
                         await supabase.auth.signOut();
                         authModal.style.display = 'none';
                         isRecoveryMode = false;
+                        sessionStorage.removeItem('supabase_recovery_mode'); // تنظيف حالة الاستعادة
                         
                         // إعادة تهيئة الواجهة
+                        authModal.style.backgroundColor = ''; // إزالة لون الخلفية المخصص
                         btnCloseAuth.classList.remove('hidden'); // إعادة زر الإغلاق
                         showLoginView(); // العودة لشاشة الدخول
                         showAuthSuccess('تم تغيير كلمة المرور. يرجى تسجيل الدخول الآن.');
@@ -2927,6 +2937,7 @@
                 // === التصحيح هنا: الاستماع للحدث هو الأهم === 
                 if (event === 'PASSWORD_RECOVERY' || isRecoveryHash) { 
                     isRecoveryMode = true; 
+                    sessionStorage.setItem('supabase_recovery_mode', 'true'); // تثبيت الحالة
                     
                     // إجبار النافذة على الظهور فوراً 
                     console.log("Password Recovery Mode Detected!"); // للتأكد في الكونسول 
@@ -2972,8 +2983,11 @@
                         // ضمان ظهور نافذة الاستعادة وإزالة زر الإغلاق
                         if (authResetFields) authResetFields.classList.remove('hidden');
                         showResetPasswordView();
+                        
+                        // إجبار النافذة لتكون خلفية كاملة
                         authModal.style.display = 'flex';
-                        authModal.style.zIndex = '99999';
+                        authModal.style.zIndex = '999999';
+                        authModal.style.backgroundColor = '#18181b'; // خلفية داكنة (zinc-900) لإخفاء أي شيء خلفها
                         btnCloseAuth.classList.add('hidden'); // إخفاء زر الإغلاق
                         
                         return; // توقف هنا ولا تكمل تحميل التطبيق
