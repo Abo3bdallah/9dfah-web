@@ -2661,13 +2661,22 @@
                 if (error) {
                     showAuthError(error.message);
                 } else {
-                    showAuthSuccess('تم تحديث كلمة المرور بنجاح! سيتم تحويلك...');
-                    setTimeout(() => {
+                    showAuthSuccess('تم تحديث كلمة المرور بنجاح! جاري تسجيل الخروج...');
+                    
+                    // (تعديل هام) تسجيل الخروج بعد التحديث لفرض الدخول بكلمة المرور الجديدة
+                    setTimeout(async () => {
+                        await supabase.auth.signOut();
                         authModal.style.display = 'none';
-                        isRecoveryMode = false; // (جديد) إعادة تعيين الوضع
-                        // تحويل المستخدم للصفحة الرئيسية
-                        showPage('welcome', false);
-                        try { history.replaceState(null, null, ' '); } catch(e) {} // تنظيف الرابط
+                        isRecoveryMode = false;
+                        
+                        // إعادة تهيئة الواجهة
+                        btnCloseAuth.classList.remove('hidden'); // إعادة زر الإغلاق
+                        showLoginView(); // العودة لشاشة الدخول
+                        showAuthSuccess('تم تغيير كلمة المرور. يرجى تسجيل الدخول الآن.');
+                        authModal.style.display = 'flex'; // إظهار النافذة مرة أخرى للدخول
+                        
+                        // تنظيف الرابط
+                        try { history.replaceState(null, null, window.location.pathname); } catch(e) {}
                     }, 1500);
                 }
             });
@@ -2944,6 +2953,31 @@
                     // (جديد) جلب المفضلة الخاصة بالمستخدم
                     userFavorites = session.user.user_metadata?.favorites || [];
                     updateFavoriteIcons();
+
+                    // === (جديد) وضع الاستعادة الصارم: إخفاء التطبيق تماماً ===
+                    if (isRecoveryMode) {
+                        console.log("Strict Recovery Mode: Hiding App UI");
+                        
+                        // إخفاء عناصر التحكم الرئيسية
+                        btnOpenSidebar.classList.add('hidden');
+                        themeToggle.classList.add('hidden');
+                        fullscreenToggle.classList.add('hidden');
+                        
+                        // إخفاء كل الصفحات
+                        allPages.forEach(p => { 
+                            p.style.display = 'none'; 
+                            p.style.opacity = '0'; 
+                        });
+                        
+                        // ضمان ظهور نافذة الاستعادة وإزالة زر الإغلاق
+                        if (authResetFields) authResetFields.classList.remove('hidden');
+                        showResetPasswordView();
+                        authModal.style.display = 'flex';
+                        authModal.style.zIndex = '99999';
+                        btnCloseAuth.classList.add('hidden'); // إخفاء زر الإغلاق
+                        
+                        return; // توقف هنا ولا تكمل تحميل التطبيق
+                    }
                     
                     // 1. إظهار واجهة التطبيق الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
