@@ -2652,6 +2652,7 @@
                     showAuthSuccess('تم تحديث كلمة المرور بنجاح! سيتم تحويلك...');
                     setTimeout(() => {
                         authModal.style.display = 'none';
+                        isRecoveryMode = false; // (جديد) إعادة تعيين الوضع
                         // تحويل المستخدم للصفحة الرئيسية
                         showPage('welcome', false);
                         try { history.replaceState(null, null, ' '); } catch(e) {} // تنظيف الرابط
@@ -2892,10 +2893,18 @@
             announcementModalOverlay.addEventListener('click', hideAnnouncementModal);
             // === (نهاية الإضافة) ===
             
+            // (جديد) تعريف متغير للتحكم في حالة الاستعادة
+            let isRecoveryMode = false;
+
             if (supabase) {
             supabase.auth.onAuthStateChange((event, session) => {
                 
                 let currentPageId = window.location.hash.substring(1);
+                // (جديد) التحقق مما إذا كان الرابط يحتوي على type=recovery
+                if (currentPageId.includes('type=recovery') || event === 'PASSWORD_RECOVERY') {
+                    isRecoveryMode = true;
+                }
+
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
                 let isGuest = sessionStorage.getItem('isGuest') === 'true'; // (جديد) التحقق من وضع الضيف
 
@@ -2914,7 +2923,7 @@
                     fullscreenToggle.classList.remove('hidden'); // (جديد)
                     
                     // 2. إخفاء نوافذ المصادقة (مع مراعاة استعادة كلمة المرور)
-                    if (event === 'PASSWORD_RECOVERY') {
+                    if (isRecoveryMode) {
                         showResetPasswordView();
                         authModal.style.display = 'flex';
                     } else {
