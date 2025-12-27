@@ -2503,12 +2503,8 @@
                     settingsUsernameInput.value = currentUser.user_metadata.username;
                 }
                 hideSettingsMessages();
-                // (جديد) إعادة تعيين التبويبات وكلمة المرور
+                // (جديد) إعادة تعيين التبويبات
                 showSettingsTab('account'); 
-                passwordFieldsContainer.classList.add('hidden');
-                btnShowPasswordFields.classList.remove('hidden');
-                settingsNewPassword.value = '';
-                settingsConfirmPassword.value = '';
                 
                 settingsModal.style.display = 'flex';
                 closeSidebar(); 
