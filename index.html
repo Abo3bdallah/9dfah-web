@@ -2893,16 +2893,25 @@
             announcementModalOverlay.addEventListener('click', hideAnnouncementModal);
             // === (نهاية الإضافة) ===
             
-            // (جديد) تعريف متغير للتحكم في حالة الاستعادة
-            let isRecoveryMode = false;
+            // (جديد) تعريف متغير للتحكم في حالة الاستعادة، ويتم فحصه فوراً عند التحميل
+            // نستخدم window.location.href للبحث في الرابط كاملاً لأن Supabase قد يضع المعاملات في الهاش أو الكويري
+            let isRecoveryMode = window.location.href.includes('type=recovery');
 
             if (supabase) {
             supabase.auth.onAuthStateChange((event, session) => {
                 
                 let currentPageId = window.location.hash.substring(1);
-                // (جديد) التحقق مما إذا كان الرابط يحتوي على type=recovery
-                if (currentPageId.includes('type=recovery') || event === 'PASSWORD_RECOVERY') {
+                
+                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص
+                if (event === 'PASSWORD_RECOVERY') {
                     isRecoveryMode = true;
+                }
+                
+                // (جديد) إذا اكتشفنا أننا في وضع الاستعادة، نمنع تغيير الصفحة أو إخفاء النافذة
+                if (isRecoveryMode) {
+                     // تأكد من أننا نعرض واجهة الاستعادة
+                     showResetPasswordView();
+                     authModal.style.display = 'flex';
                 }
 
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
