@@ -2272,6 +2272,9 @@
              * يتحقق إذا كان يجب عرض الإعلان (لم يُرَ من قبل + نحن في الصفحة الرئيسية)
              */
             function checkAndShowAnnouncement() {
+                // (جديد) لا تعرض الإعلان إذا كنا في وضع استعادة كلمة المرور
+                if (isRecoveryMode) return;
+
                 // نتأكد أننا في الصفحة الرئيسية
                 if (currentPage !== pageWelcome) {
                     return;
@@ -2910,8 +2913,8 @@
                 
                 let currentPageId = window.location.hash.substring(1);
                 
-                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص
-                if (event === 'PASSWORD_RECOVERY') {
+                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص أو اكتشفنا الرابط متأخراً
+                if (event === 'PASSWORD_RECOVERY' || currentPageId.includes('type=recovery')) {
                     isRecoveryMode = true;
                 }
                 
@@ -2943,10 +2946,15 @@
                     
                     // 2. إخفاء نوافذ المصادقة (مع مراعاة استعادة كلمة المرور)
                     if (isRecoveryMode) {
+                        // (هام) التأكد من إظهار النافذة وتجهيزها
+                        if (authResetFields) authResetFields.classList.remove('hidden');
                         showResetPasswordView();
                         authModal.style.display = 'flex';
+                        // (جديد) رفع الطبقة لضمان الظهور فوق أي نافذة أخرى
+                        authModal.style.zIndex = '9999';
                     } else {
                         authModal.style.display = 'none';
+                        authModal.style.zIndex = ''; // إعادة الوضع الطبيعي
                     }
                     guestWarningModal.style.display = 'none';
                     
