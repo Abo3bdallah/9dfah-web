@@ -2604,7 +2604,7 @@
                 
                 showSettingsSuccess('جاري إرسال رابط التحقق...');
                 const { data, error } = await supabase.auth.resetPasswordForEmail(currentUser.email, {
-                    redirectTo: window.location.href,
+                    redirectTo: 'https://www.tryabqar.com',
                 });
                 
                 if (error) {
@@ -2630,7 +2630,7 @@
                 }
 
                 const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-                        redirectTo: window.location.origin + window.location.pathname,
+                        redirectTo: 'https://www.tryabqar.com',
                     });
                 
                 if (error) {
@@ -2911,20 +2911,26 @@
             if (supabase) {
             supabase.auth.onAuthStateChange((event, session) => {
                 
-                let currentPageId = window.location.hash.substring(1);
-                
-                // (جديد) تحديث حالة الاستعادة إذا وصل حدث خاص أو اكتشفنا الرابط متأخراً أو وجدنا رمز الوصول
-                if (event === 'PASSWORD_RECOVERY' || currentPageId.includes('type=recovery') || (event === 'SIGNED_IN' && currentPageId.includes('type=recovery'))) {
-                    isRecoveryMode = true;
-                }
-                
-                // (جديد) إذا اكتشفنا أننا في وضع الاستعادة، نمنع تغيير الصفحة أو إخفاء النافذة
-                if (isRecoveryMode) {
-                     // تأكد من أننا نعرض واجهة الاستعادة
-                     // (هام) إزالة فئة hidden يدوياً لضمان الظهور
-                     if (authResetFields) authResetFields.classList.remove('hidden');
-                     showResetPasswordView();
-                     authModal.style.display = 'flex';
+                // التحقق من الرابط كخطة احتياطية 
+                let currentPageId = window.location.hash.substring(1); 
+                const isRecoveryHash = currentPageId.includes('type=recovery') || window.location.href.includes('type=recovery'); 
+            
+                // === التصحيح هنا: الاستماع للحدث هو الأهم === 
+                if (event === 'PASSWORD_RECOVERY' || isRecoveryHash) { 
+                    isRecoveryMode = true; 
+                    
+                    // إجبار النافذة على الظهور فوراً 
+                    console.log("Password Recovery Mode Detected!"); // للتأكد في الكونسول 
+                    
+                    // تجهيز الحقول 
+                    if (authResetFields) authResetFields.classList.remove('hidden'); 
+                    
+                    // استدعاء دالة عرض واجهة الاستعادة 
+                    showResetPasswordView(); 
+                    
+                    // إظهار النافذة فوق كل شيء 
+                    authModal.style.display = 'flex'; 
+                    authModal.style.zIndex = '99999'; // لضمان ظهورها فوق أي شيء آخر 
                 }
 
                 const isAuthHash = currentPageId.includes('access_token=') || currentPageId.includes('error=');
