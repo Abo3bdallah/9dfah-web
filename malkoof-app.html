@@ -132,7 +132,8 @@
         /* --- Mobile Images (max-width: 639px) --- */
         @media (max-width: 639px) {
             .card-img-overlay {
-                /* Restored to original behavior (no forced background-size) */
+                /* CHANGED: Changed from 'contain' to 'cover' to remove edges */
+                background-size: cover; 
             }
         }
 
