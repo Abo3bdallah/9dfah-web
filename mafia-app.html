@@ -1683,7 +1683,7 @@
 
     <div class="container">
         <h1>
-            <img src="https://i.postimg.cc/j2qBtN6M/mafya-hydr2.webp" alt="شعار مسابقة مافيا" style="max-width: 100%; height: auto; border-radius: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);">
+            <img src="images/mafya-hydr2.webp" alt="شعار مسابقة مافيا" style="max-width: 100%; height: auto; border-radius: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);">
         </h1>
         
         <!-- مرحلة الإعداد -->
@@ -2035,16 +2035,16 @@
         let activeSpeakRemaining = 0;
 
         const roleImages = {
-            'مافيا': 'https://i.postimg.cc/zft6CjJT/1.png', 
-            'مواطن': 'https://i.postimg.cc/TP7FV9R0/2.png', 
-            'محقق': 'https://i.postimg.cc/zft6CjJj/3.png', 
-            'طبيب': 'https://i.postimg.cc/W4WCGn26/4.png'  
+            'مافيا': 'images/zft6CjJT-1.png', 
+            'مواطن': 'images/TP7FV9R0-2.png', 
+            'محقق': 'images/zft6CjJj-3.png', 
+            'طبيب': 'images/W4WCGn26-4.png'  
         };
 
         const nightRoleImages = {
-            'مافيا': 'https://i.postimg.cc/nzWdJZgW/mafya-w.webp', 
-            'محقق': 'https://i.postimg.cc/t42RNmLg/mhqq.webp', 
-            'طبيب': 'https://i.postimg.cc/fRBWfg63/altbyb.webp'
+            'مافيا': 'images/mafya-w.webp', 
+            'محقق': 'images/mhqq.webp', 
+            'طبيب': 'images/altbyb.webp'
         };
         
         const roleColors = {
@@ -2869,7 +2869,7 @@
                     
                     if (shouldHideRole) {
                           displayRoleClass = 'unknown';
-                          const hiddenImgSrc = 'https://i.postimg.cc/fbMtQknR/astfham.webp';
+                          const hiddenImgSrc = 'images/astfham.webp';
                           displayRoleImage = `<img src="${hiddenImgSrc}" alt="مجهول" class="role-image-overlay" id="role-img-${index}" style="opacity: 0.8;">`;
                      }
 
@@ -4014,7 +4014,7 @@
             const shouldHideRole = gameState.hideEliminatedRole || (gameState.playerConfig && gameState.playerConfig.hideEliminatedIdentity);
 
             if (shouldHideRole) {
-                roleImgSrc = 'https://i.postimg.cc/fbMtQknR/astfham.webp';
+                roleImgSrc = 'images/astfham.webp';
                 finalRoleColor = '#888888';
                 revealLabelText = "تم إخراجه (هوية مجهولة)";
             }

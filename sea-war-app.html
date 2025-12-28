@@ -1145,25 +1145,25 @@
             background-color: transparent;
         }
 
-        .ship-part.single-ship, .cell.ship.single-ship { background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); }
+        .ship-part.single-ship, .cell.ship.single-ship { background-image: url('images/hG9FCk67-image.png'); }
         
-        .ship-part.ship-2-part-1, .cell.ship.ship-2-part-1 { background-image: url('https://i.postimg.cc/Y0Sgj3M9/3.png'); }
-        .ship-part.ship-2-part-2, .cell.ship.ship-2-part-2 { background-image: url('https://i.postimg.cc/gj0RrDm9/4.png'); }
+        .ship-part.ship-2-part-1, .cell.ship.ship-2-part-1 { background-image: url('images/Y0Sgj3M9-3.png'); }
+        .ship-part.ship-2-part-2, .cell.ship.ship-2-part-2 { background-image: url('images/gj0RrDm9-4.png'); }
         
-        .ship-part.ship-3-part-1, .cell.ship.ship-3-part-1 { background-image: url('https://i.postimg.cc/8cZTK7zj/4.png'); }
-        .ship-part.ship-3-part-2, .cell.ship.ship-3-part-2 { background-image: url('https://i.postimg.cc/Y0dtnvCm/3.png'); }
-        .ship-part.ship-3-part-3, .cell.ship.ship-3-part-3 { background-image: url('https://i.postimg.cc/90Lc8DQw/2.png'); }
+        .ship-part.ship-3-part-1, .cell.ship.ship-3-part-1 { background-image: url('images/8cZTK7zj-4.png'); }
+        .ship-part.ship-3-part-2, .cell.ship.ship-3-part-2 { background-image: url('images/Y0dtnvCm-3.png'); }
+        .ship-part.ship-3-part-3, .cell.ship.ship-3-part-3 { background-image: url('images/90Lc8DQw-2.png'); }
 
-        .ship-part.ship-4-part-1, .cell.ship.ship-4-part-1 { background-image: url('https://i.postimg.cc/T1nWhY4K/14.png'); }
-        .ship-part.ship-4-part-2, .cell.ship.ship-4-part-2 { background-image: url('https://i.postimg.cc/0j7Jr2Bb/13.png'); }
-        .ship-part.ship-4-part-3, .cell.ship.ship-4-part-3 { background-image: url('https://i.postimg.cc/Xq9yX7zX/12.png'); }
-        .ship-part.ship-4-part-4, .cell.ship.ship-4-part-4 { background-image: url('https://i.postimg.cc/Kz6MZgJ8/11.png'); }
+        .ship-part.ship-4-part-1, .cell.ship.ship-4-part-1 { background-image: url('images/T1nWhY4K-14.png'); }
+        .ship-part.ship-4-part-2, .cell.ship.ship-4-part-2 { background-image: url('images/0j7Jr2Bb-13.png'); }
+        .ship-part.ship-4-part-3, .cell.ship.ship-4-part-3 { background-image: url('images/Xq9yX7zX-12.png'); }
+        .ship-part.ship-4-part-4, .cell.ship.ship-4-part-4 { background-image: url('images/Kz6MZgJ8-11.png'); }
         
-        .ship-part.ship-5-part-1, .cell.ship.ship-5-part-1 { background-image: url('https://i.postimg.cc/B6SJG7BP/6.png'); }
-        .ship-part.ship-5-part-2, .cell.ship.ship-5-part-2 { background-image: url('https://i.postimg.cc/LXx24kx9/7.png'); }
-        .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('https://i.postimg.cc/sXTsfPT2/8.png'); }
-        .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('https://i.postimg.cc/j5Mtq6ML/9.png'); }
-        .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('https://i.postimg.cc/G2Xd3PXB/10.png'); }
+        .ship-part.ship-5-part-1, .cell.ship.ship-5-part-1 { background-image: url('images/B6SJG7BP-6.png'); }
+        .ship-part.ship-5-part-2, .cell.ship.ship-5-part-2 { background-image: url('images/LXx24kx9-7.png'); }
+        .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('images/sXTsfPT2-8.png'); }
+        .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('images/j5Mtq6ML-9.png'); }
+        .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('images/G2Xd3PXB-10.png'); }
 
         .mine-image {
             width: 100%;
@@ -4251,8 +4251,8 @@
             }
             
             applyTrapStyles() {
-                const sharkImg1 = "https://i.postimg.cc/Pr2b8HzN/15.png";
-                const sharkImg2 = "https://i.postimg.cc/Pr2b8Hz5/14.png";
+                const sharkImg1 = "images/Pr2b8HzN-15.png";
+                const sharkImg2 = "images/Pr2b8Hz5-14.png";
                 const styleEl = document.getElementById('dynamic-styles');
                 if(styleEl) {
                     styleEl.innerHTML = `
@@ -4579,7 +4579,7 @@
                     if (item.type === 'mine') {
                         const part = document.createElement('div');
                         part.className = 'ship-part';
-                        part.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
+                        part.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
                         el.appendChild(part);
                     } else {
                         for (let i = 0; i < item.size; i++) {
@@ -4681,10 +4681,10 @@
                 const container = document.querySelector('.legend');
                 container.innerHTML = `
                     <div class="legend-item"><div class="legend-color" style="background: rgba(0, 100, 170, 0.4); border: 1px solid rgba(0, 191, 255, 0.25);"></div><span>ماء</span></div>
-                    <div class="legend-item"><div class="legend-color" style="background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); background-size: cover;"></div><span>سفينة</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background-image: url('images/hG9FCk67-image.png'); background-size: cover;"></div><span>سفينة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--hit-color);"></div><span>إصابة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--miss-color);"></div><span>خطأ</span></div>
-                    <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم"><span>لغم</span></div>
+                    <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="images/alfkh.webp" alt="لغم"><span>لغم</span></div>
                 `;
             }
 
@@ -5743,7 +5743,7 @@
                             } else if (mine) {
                                 isPieceHere = true;
                                 cell.classList.add('mine');
-                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
+                                cell.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
                             } else if (isShark) {
                                 isPieceHere = true;
                                 cell.classList.add('shark');
@@ -5770,7 +5770,7 @@
                                 applyImage(ship, cell, index);
                             } else if (team.hits[index] === 4) {
                                 cell.classList.add('mine');
-                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
+                                cell.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
                             }
                         }
 
