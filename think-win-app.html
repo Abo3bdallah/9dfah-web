@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خمسة تربح</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* إخفاء شريط التمرير */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
+
+        :root {
+            --color-yellow-light: #fde047;
+            --color-yellow-dark: #f59e0b;
+            --color-red-light: #f87171;
+            --color-red-dark: #dc2626;
+            --color-blue-light: #60a5fa;
+            --color-blue-dark: #2563eb;
+            --color-green-light: #4ade80;
+            --color-green-dark: #16a34a;
+            --color-purple-light: #c084fc;
+            --color-purple-dark: #9333ea;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #e2e8f0; 
+            position: relative;
+            overflow-x: hidden; 
+        }
+        .game-container {
+            background-color: #1e293b; 
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); 
+            max-width: 90%;
+            width: 1200px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem; 
+            animation: fadeIn 1s ease-in-out;
+            border: 1px solid #334155; 
+            color: #e2e8f0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 800px; 
+            aspect-ratio: 1 / 1;
+            padding: 1rem;
+        }
+        .circle-button {
+            position: relative;
+            background-color: #0f172a; 
+            width: 100%;
+            padding-top: 100%;
+            border-radius: 50%;
+            border: 1px solid #334155; 
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .circle-button:not(.taken):hover {
+            transform: scale(1.05);
+            background-color: #1e293b;
+            border-color: #475569;
+        }
+
+        .circle-button.taken {
+            cursor: not-allowed;
+            animation: captureEffect 0.5s ease-out;
+        }
+        @keyframes captureEffect {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .circle-button.taken .circle-number {
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5); 
+        }
+        .circle-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem; 
+            font-weight: bold;
+            color: #475569; 
+            transition: color 0.3s ease;
+        }
+        .circle-button:not(.taken):hover .circle-number {
+            color: #64748b;
+        }
+
+        .taken-yellow {
+            background: radial-gradient(circle, var(--color-yellow-light) 0%, var(--color-yellow-dark) 100%);
+            box-shadow: 0 0 12px var(--color-yellow-dark), 0 0 20px var(--color-yellow-dark), inset 0 2px 3px rgba(255,255,255,0.3);
+            border: 1px solid var(--color-yellow-light);
+        }
+        .taken-red {
+            background: radial-gradient(circle, var(--color-red-light) 0%, var(--color-red-dark) 100%);
+            box-shadow: 0 0 12px var(--color-red-dark), 0 0 20px var(--color-red-dark), inset 0 2px 3px rgba(255,255,255,0.3);
+            border: 1px solid var(--color-red-light);
+        }
+        .taken-blue {
+            background: radial-gradient(circle, var(--color-blue-light) 0%, var(--color-blue-dark) 100%);
+            box-shadow: 0 0 12px var(--color-blue-dark), 0 0 20px var(--color-blue-dark), inset 0 2px 3px rgba(255,255,255,0.3);
+            border: 1px solid var(--color-blue-light);
+        }
+        .taken-green {
+            background: radial-gradient(circle, var(--color-green-light) 0%, var(--color-green-dark) 100%);
+            box-shadow: 0 0 12px var(--color-green-dark), 0 0 20px var(--color-green-dark), inset 0 2px 3px rgba(255,255,255,0.3);
+            border: 1px solid var(--color-green-light);
+        }
+        .taken-purple {
+            background: radial-gradient(circle, var(--color-purple-light) 0%, var(--color-purple-dark) 100%);
+            box-shadow: 0 0 12px var(--color-purple-dark), 0 0 20px var(--color-purple-dark), inset 0 2px 3px rgba(255,255,255,0.3);
+            border: 1px solid var(--color-purple-light);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); 
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: #1e293b; 
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+            position: relative;
+            border: 1px solid #334155;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .answer-status-modal .modal-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .answer-status-modal .status-text {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .answer-status-modal .status-icon {
+            position: static;
+            transform: none;
+            font-size: 6rem;
+            opacity: 1;
+            animation: pulse-icon 1s ease-in-out infinite;
+        }
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .question-modal .answer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .question-modal .answer-button {
+            background-color: #334155; 
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid #475569;
+        }
+        .question-modal .answer-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            background-color: #475569; 
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #60a5fa, #a5b4fc); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .color-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem; 
+            margin-top: 0.5rem; 
+        }
+        .color-arrow {
+            background-color: #334155;
+            color: #e2e8f0;
+            border: none;
+            border-radius: 50%;
+            width: 3rem; 
+            height: 3rem; 
+            font-size: 1.5rem; 
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .color-arrow:hover {
+            background-color: #475569;
+        }
+        .color-display {
+            width: 3rem; 
+            height: 3rem; 
+            border-radius: 50%;
+            border: 4px solid #334155; 
+            background-color: #1e293b; 
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 200;
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px; 
+            border: 1px solid #334155;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.21, 1.02, 0.73, 1); 
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast-icon {
+            font-size: 1.25rem;
+            margin-left: 0.75rem;
+        }
+        .toast-message {
+            font-weight: bold;
+        }
+        
+        .player-turn-pulse {
+            animation: pulse-turn 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-turn {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 10px var(--shadow-color, transparent);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 20px var(--shadow-color, transparent), 0 0 30px var(--shadow-color, transparent);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 10px var(--shadow-color, transparent);
+            }
+        }
+        
+        .game-info-pulse {
+            animation: pulse-info-text 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-info-text {
+            0% { 
+                transform: scale(1);
+                text-shadow: 0 0 8px var(--shadow-color, transparent);
+            }
+            50% { 
+                transform: scale(1.03);
+                text-shadow: 0 0 16px var(--shadow-color, transparent), 0 0 24px var(--shadow-color, transparent);
+            }
+            100% { 
+                transform: scale(1);
+                text-shadow: 0 0 8px var(--shadow-color, transparent);
+            }
+        }
+
+        /* (جديد: زر المساعدة العائم) */
+        .help-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: #334155;
+            color: #e2e8f0;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            border: 1px solid #475569;
+            font-size: 1.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 90;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .help-btn:hover {
+            background-color: #475569;
+            transform: scale(1.1);
+        }
+
+        /* (جديد: تنسيق نافذة الشرح) */
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            text-align: right;
+            padding: 0 1rem;
+        }
+        .modal-body h2 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--color-blue-light);
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+        .modal-body p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .modal-body ul {
+            list-style-type: disc;
+            margin-right: 2rem;
+            margin-bottom: 1rem;
+        }
+        .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+        .modal-body strong {
+            color: #fde047; /* (لون أصفر مميز للكلمات المهمة) */
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200"> 
+
+    <!-- (جديد: زر المساعدة) -->
+    <button id="help-btn" class="help-btn">؟</button>
+
+    <div id="toast-container"></div>
+
+    <div class="game-container">
+        <h1 class="text-4xl font-extrabold text-white text-gradient">خمسة تربح</h1>
+
+        <div id="setup-screen" class="w-full flex flex-col items-center gap-6">
+            <p class="text-center text-lg text-slate-400 mb-4">أدخل أسماء الفرق واختر الألوان لبدء اللعبة.</p>
+
+            <div class="mb-4">
+                <label for="team-count-select" class="text-xl font-bold text-slate-300">عدد الفرق:</label>
+                <select id="team-count-select" class="bg-slate-700 border border-slate-600 rounded-lg p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+
+            <div id="team-setup-container" class="flex flex-row flex-wrap gap-4 w-full justify-center">
+                <!-- سيتم ملء هذا القسم بواسطة جافاسكربت -->
+            </div>
+
+            <button id="start-game-btn" class="mt-8 px-12 py-4 text-xl font-bold text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-full shadow-lg hover:from-blue-600 hover:to-blue-800 transform hover:scale-105 transition duration-300">ابدأ اللعبة</button>
+        </div>
+
+        <div id="game-screen" class="hidden flex flex-col items-center w-full">
+            <div id="game-info"></div> 
+            <div id="score-board" class="score-board"></div>
+            <div id="board" class="grid-container mb-4"></div>
+            
+            <div id="manual-turn-selector" class="w-full mb-6"></div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="restart-btn" class="px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-slate-500 to-slate-700 rounded-full shadow-lg hover:from-slate-600 hover:to-slate-800 transform hover:scale-105 transition duration-300">إعادة اللعبة</button>
+                <button id="remove-color-btn" class="px-8 py-3 text-lg font-bold text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full shadow-lg hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition duration-300">حذف اللون</button>
+                <button id="manual-color-btn" class="px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-green-500 to-green-700 rounded-full shadow-lg hover:from-green-600 hover:to-green-800 transform hover:scale-105 transition duration-300">تلوين يدوي</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="question-modal" class="modal question-modal">
+        <div class="modal-content">
+            <div id="timer-display" class="text-6xl font-extrabold text-blue-400 mb-6">00:45</div>
+            <p id="question-text" class="text-2xl font-bold mb-8"></p>
+            <div id="answer-options" class="answer-options"></div>
+            <p id="timer-status" class="mt-4 text-xl font-bold"></p>
+        </div>
+    </div>
+
+    <!-- Answer Status Modal -->
+    <div id="answer-status-modal" class="modal answer-status-modal">
+        <div class="modal-content bg-slate-800 text-white rounded-3xl p-12">
+            <h2 id="status-text" class="status-text"></h2>
+            <i id="status-icon" class="status-icon"></i>
+        </div>
+    </div>
+
+    <!-- Win Modal -->
+    <div id="win-modal" class="modal">
+        <div class="modal-content bg-gradient-to-br from-green-500 to-green-700 text-white p-8 rounded-2xl shadow-xl text-center">
+            <i class="fa-solid fa-trophy text-[6rem] mb-4 text-yellow-300"></i>
+            <h2 class="text-4xl font-bold">مبروك الفوز</h2>
+            <p class="text-2xl font-bold">للفريق</p>
+            <p id="winner-name" class="font-extrabold text-white text-5xl mb-6"></p>
+            
+            <div class="flex gap-4 justify-center">
+                <button id="win-restart-btn" class="px-8 py-3 text-lg font-bold text-green-700 bg-white rounded-full shadow-lg hover:bg-gray-100 transform hover:scale-105 transition duration-300">إعادة اللعبة</button>
+                <button id="win-close-btn" class="px-8 py-3 text-lg font-bold text-slate-800 bg-slate-200 rounded-full shadow-lg hover:bg-slate-300 transform hover:scale-105 transition duration-300">العودة للساحة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- (جديد: نافذة شرح اللعبة) -->
+    <div id="how-to-play-modal" class="modal">
+        <div class="modal-content max-w-2xl"> 
+            <h1 class="text-3xl font-bold mb-4 text-gradient">شرح اللعبة</h1>
+            <div id="how-to-play-body" class="modal-body">
+                <!-- سيتم ملء هذا المحتوى بواسطة جافاسكربت -->
+            </div>
+            <button id="how-to-play-close-btn" class="mt-6 px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-blue-500 to-blue-700 rounded-full shadow-lg hover:from-blue-600 hover:to-blue-800 transform hover:scale-105 transition duration-300">
+                فهمت، لنبدأ!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game state variables
+        let gameStarted = false;
+        let teams = []; 
+        let teamColors = []; 
+        let currentPlayerIndex = 0;
+        let boardData = []; 
+        const WIN_LENGTH = 5;
+        const BOARD_SIZE = 9;
+        let isRemoveColorMode = false;
+        let isColoringMode = false; 
+        let questionBank = []; 
+
+        // Timer variables
+        const initialTime = 45;
+        let timer = initialTime;
+        let timerInterval;
+
+        // Question state
+        let currentCircleData = null;
+        let currentCircleElement = null;
+
+        // DOM elements
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const board = document.getElementById('board');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const removeColorBtn = document.getElementById('remove-color-btn');
+        const manualColorBtn = document.getElementById('manual-color-btn'); 
+        
+        const teamCountSelect = document.getElementById('team-count-select');
+        const teamSetupContainer = document.getElementById('team-setup-container');
+        const toastContainer = document.getElementById('toast-container'); 
+
+        const gameInfo = document.getElementById('game-info');
+        const scoreBoard = document.getElementById('score-board');
+        const manualTurnSelector = document.getElementById('manual-turn-selector');
+        const answerStatusModal = document.getElementById('answer-status-modal');
+        const statusText = document.getElementById('status-text');
+        const statusIcon = document.getElementById('status-icon');
+        const questionModal = document.getElementById('question-modal');
+        const questionText = document.getElementById('question-text');
+        const answerOptionsDiv = document.getElementById('answer-options');
+        const timerDisplay = document.getElementById('timer-display');
+        const winModal = document.getElementById('win-modal');
+        const winnerNameText = document.getElementById('winner-name');
+        const winRestartBtn = document.getElementById('win-restart-btn');
+        const winCloseBtn = document.getElementById('win-close-btn'); 
+
+        // (جديد: عناصر نافذة الشرح)
+        const helpBtn = document.getElementById('help-btn');
+        const howToPlayModal = document.getElementById('how-to-play-modal');
+        const howToPlayBody = document.getElementById('how-to-play-body');
+        const howToPlayCloseBtn = document.getElementById('how-to-play-close-btn');
+
+        const colorMap = {
+            'yellow': 'taken-yellow',
+            'red': 'taken-red',
+            'blue': 'taken-blue',
+            'green': 'taken-green',
+            'purple': 'taken-purple'
+        };
+        const colorShadowMap = {
+             'yellow': 'var(--color-yellow-dark)',
+            'red': 'var(--color-red-dark)',
+            'blue': 'var(--color-blue-dark)',
+            'green': 'var(--color-green-dark)',
+            'purple': 'var(--color-purple-dark)'
+        };
+
+        const availableColors = ['yellow', 'red', 'blue', 'green', 'purple'];
+        const colorStyles = {
+            'yellow': 'background: radial-gradient(circle, var(--color-yellow-light) 0%, var(--color-yellow-dark) 100%);',
+            'red': 'background: radial-gradient(circle, var(--color-red-light) 0%, var(--color-red-dark) 100%);',
+            'blue': 'background: radial-gradient(circle, var(--color-blue-light) 0%, var(--color-blue-dark) 100%);',
+            'green': 'background: radial-gradient(circle, var(--color-green-light) 0%, var(--color-green-dark) 100%);',
+            'purple': 'background: radial-gradient(circle, var(--color-purple-light) 0%, var(--color-purple-dark) 100%);'
+        };
+
+
+        const btnClasses = {
+            removeInactive: 'px-8 py-3 text-lg font-bold text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full shadow-lg hover:from-yellow-500 hover:to-yellow-600 transform hover:scale-105 transition duration-300',
+            removeActive: 'px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-red-600 to-red-800 rounded-full shadow-lg transform hover:scale-105 transition duration-300',
+            colorInactive: 'px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-green-500 to-green-700 rounded-full shadow-lg hover:from-green-600 hover:to-green-800 transform hover:scale-105 transition duration-300',
+            colorActive: 'px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-green-700 to-green-900 ring-4 ring-white rounded-full shadow-lg transform hover:scale-105 transition duration-300'
+        };
+
+        // --- بنك الأسئلة (150 سؤال مُصحح) ---
+        const allQuestions = [
+            {"question":"ما مقدار نسبة الماء في جسم الإنسان؟", "options": ["0.7", "0.2", "0.45", "0.75"], "correctAnswer": "0.75"},
+            {"question":"في أي عام اخترع الأخوان رايت الطائرة؟", "options": ["1890", "1910", "1950", "1903"], "correctAnswer": "1903"},
+            {"question":"ما هي أكبر الكائنات الحية حجماً؟", "options": ["الزرافة", "سمك القرش", "الفيل", "الحوت الأزرق"], "correctAnswer": "الحوت الأزرق"},
+            {"question":"ما اسم العضو الذي يختزن فيه الطائر الطعام؟", "options": ["الأمعاء", "المرئ", "المعدة", "الحوصلة"], "correctAnswer": "الحوصلة"},
+            {"question":"إذا فقد شخص إحدى عينيه فإن نسبة ما يفقده من بصره؟", "options": ["ثلاثة أرباع", "العشر", "الربع", "الخُمس"], "correctAnswer": "الخُمس"},
+            {"question":"ما هو عدد المجالات التي تمنح فيها جائزة نوبل؟", "options": ["5", "7", "10", "6"], "correctAnswer": "6"},
+            {"question":"الشوشب هو من أسماء أي الحيوانات؟", "options": ["الضب", "السلحفاة", "الثعبان", "العقرب"], "correctAnswer": "الضب"},
+            {"question":"كم سجدة في جزء عم؟", "options": ["4", "1", "3", "2"], "correctAnswer": "1"},
+            {"question":"ماذا يعني وجود (ج) بين الآيات في القرآن الكريم؟", "options": ["جواز الوقف", "المد", "وجوب الوصل", "وجوب الوقف"], "correctAnswer": "جواز الوقف"},
+            {"question":"من أول من قال: \"لا إله إلا الله الواحد القهار\"؟", "options": ["يعقوب", "إبراهيم", "آدم", "نوح"], "correctAnswer": "نوح"},
+            {"question":"ما هي الأعداد الثلاثة التي يساوي حاصل ضربها حاصل جمعها؟", "options": ["5,1,2", "2,1,4", "4,3,2", "1,2,3"], "correctAnswer": "1,2,3"},
+            {"question":"الشمس أكبر من الأرض بـ؟", "options": ["50,000", "1,000,000", "100", "1,300,000"], "correctAnswer": "1,300,000"},
+            {"question":"كم سنة ظل القرآن ينزل في المدينة بعد الهجرة؟", "options": ["8", "11", "9", "10"], "correctAnswer": "10"},
+            {"question":"كم بايت في الكيلوبايت؟", "options": ["1000 بايت", "1024 ميجا", "1000 كيلوبايت", "1024 بايت"], "correctAnswer": "1024 بايت"},
+            {"question":"كم يوماً تزيد السنة الشمسية عن القمرية؟", "options": ["15", "10", "12", "11"], "correctAnswer": "11"},
+            {"question":"بعد كم سنة يحتفل باليوبيل الفضي؟", "options": ["100", "50", "75", "25"], "correctAnswer": "25"},
+            {"question":"كم عدد التكبيرات في الركعة الأولى في صلاة العيد؟", "options": ["5", "8", "6", "7"], "correctAnswer": "7"},
+            {"question":"كم ثانية في ربع ساعة؟", "options": ["550", "800", "600", "900"], "correctAnswer": "900"},
+            {"question":"ما هو أكثر الحروف الإنجليزية استخداماً؟", "options": ["E", "V", "C", "U"], "correctAnswer": "E"},
+            {"question":"يخصك أنت وكل الناس تستعمله إلا أنت؟", "options": ["قلمك", "بيتك", "ثوبك", "اسمك"], "correctAnswer": "اسمك"},
+            {"question":"ما أعلى قمة في جبال العالم؟", "options": ["آجا", "سودة", "الهملايا", "إفرست"], "correctAnswer": "إفرست"},
+            {"question":"ما الكوكب الذي يمكن رؤيته ليلاً ونهاراً بالعين؟", "options": ["المريخ", "القمر", "الشمس", "الأرض"], "correctAnswer": "القمر"},
+            {"question":"كله ثقوب ويحفظ الماء؟", "options": ["الشبكة", "البحر", "الحفرة", "الإسفنج"], "correctAnswer": "الإسفنج"},
+            {"question":"الدولة العربية الوحيدة التي يحمل علمها نجمة سباعية؟", "options": ["سوريا", "اليمن", "مصر", "الأردن"], "correctAnswer": "الأردن"},
+            {"question":"كم عدد الغزوات التي قاتل فيها الرسول ﷺ؟", "options": ["7", "10", "8", "9"], "correctAnswer": "9"},
+            {"question":"ماذا كان يطلق العرب على الذهب؟", "options": ["الأصفر", "الأحمر", "الذهبي", "الأصفر الرنان"], "correctAnswer": "الأصفر الرنان"},
+            {"question":"ما اسم المدينة الجزائرية التي أصابها الزلزال المدمر؟", "options": ["وهران", "تلمسان", "معسكر", "الأصنام"], "correctAnswer": "الأصنام"},
+            {"question":"ما أشهر كتب الإمام الشافعي في الفقه؟", "options": ["بداية المجتهد", "الأم", "السياسة الشرعية", "كشف الأسرار"], "correctAnswer": "الأم"},
+            {"question":"كم عدد بحور الشعر؟", "options": ["17", "10", "12", "16"], "correctAnswer": "16"},
+            {"question":"لحمُه من الخارج وشعره من الداخل؟", "options": ["الرأس", "القدم", "العين", "الأنف"], "correctAnswer": "الأنف"},
+            {"question":"ما هي السورة التي تعادل ثلث القرآن؟", "options": ["البقرة", "العصر", "الفاتحة", "الإخلاص"], "correctAnswer": "الإخلاص"},
+            {"question":"ماذا تعني كلمة الإنجيل؟", "options": ["ليس لها معنى", "الكتاب", "الأخبار", "البشارة"], "correctAnswer": "البشارة"},
+            {"question":"ما هي أطول سورة في القرآن الكريم؟", "options": ["الكهف", "النساء", "آل عمران", "البقرة"], "correctAnswer": "البقرة"},
+            {"question":"المدينة الإيطالية التي يستخدم فيها الجندول؟", "options": ["تورينو", "فينيسيا", "روما", "البندقية"], "correctAnswer": "البندقية"},
+            {"question":"في أي تقويم تسمى السنوات بأسماء الحيوانات؟", "options": ["البريطاني", "الروسي", "الياباني", "الصيني"], "correctAnswer": "الصيني"},
+            {"question":"ما هي السورة التي تسمى براءة؟", "options": ["الأحقاف", "الإسراء", "الكهف", "التوبة"], "correctAnswer": "التوبة"},
+            {"question":"ما المقصود بكلمة الغوغاء؟", "options": ["الذباب", "الزحام", "الفوضى", "الجراد الصغير"], "correctAnswer": "الجراد الصغير"},
+            {"question":"من هو صاحب معجم \"العين\"؟", "options": ["بطرس البستاني", "ابن منظور", "فيروز آبادي", "الخليل بن أحمد"], "correctAnswer": "الخليل بن أحمد"},
+            {"question":"ما الشيء الذي ليس له بداية ولا نهاية؟", "options": ["البحر", "الخط", "الطريق", "الدائرة"], "correctAnswer": "الدائرة"},
+            {"question":"كم عدد سجدات التلاوة في القرآن؟", "options": ["16", "20", "12", "15"], "correctAnswer": "15"},
+            {"question":"أول ما يقضى به بين الناس يوم القيامة؟", "options": ["الظلم", "العهود", "الدين", "الدماء"], "correctAnswer": "الدماء"},
+            {"question":"من أول من سل سيفاً في الإسلام؟", "options": ["أبو بكر", "عثمان", "عمر", "الزبير"], "correctAnswer": "الزبير"},
+            {"question":"حامل ومحمول نصفه ناشف ونصفه مبلول؟", "options": ["الطريق", "السيارة", "البحر", "السفينة"], "correctAnswer": "السفينة"},
+            {"question":"كم عدد خزنة جهنم؟", "options": ["4", "8", "11", "19"], "correctAnswer": "19"},
+            {"question":"ما الشيء الذي من خارجه عظام ومن داخله لحم؟", "options": ["الخنافس", "الثعبان", "البطريق", "السلحفاة"], "correctAnswer": "السلحفاة"},
+            {"question":"ما الميتتان اللتان أحلهما الله؟", "options": ["الجراد والضان", "السمك والجمال", "الخروف والبقر", "السمك والجراد"], "correctAnswer": "السمك والجراد"},
+            {"question":"ما الشيء الذي ورد في القرآن أنه يتنفس بلا روح؟", "options": ["الجبال", "البغال", "الليل", "الصبح"], "correctAnswer": "الصبح"},
+            {"question":"في أي عام وقعت معركة القادسية؟", "options": ["13 هـ", "20 هـ", "16 هـ", "14 هـ"], "correctAnswer": "14 هـ"},
+            {"question":"أكبر صحراء في العالم؟", "options": ["صحراء الهند الغربية", "النفوذ", "الربع الخالي", "الصحراء الكبرى"], "correctAnswer": "الصحراء الكبرى"},
+            {"question":"ما هي أقدم لغة مكتوبة؟", "options": ["رموز مبهمة", "الهيروغليفية", "الفرعونية", "الصينية"], "correctAnswer": "الهيروغليفية"},
+            {"question":"يخترق الزجاج ولا يكسره؟", "options": ["الماء", "الجاج", "الحديد", "الضوء"], "correctAnswer": "الضوء"},
+            {"question":"ما هي الوليمة؟", "options": ["طعام القادم من السفر", "طعام الضيف", "طعام سابع المولود", "الطعام في العرس"], "correctAnswer": "الطعام في العرس"},
+            {"question":"الاسم الذي يطلق على تاجر اللؤلؤ في الخليج؟", "options": ["النوخذة", "الدنجل", "النهام", "الطواش"], "correctAnswer": "الطواش"},
+            {"question":"ماذا يسمى الطعام الذي يقدم في سابع المولود؟", "options": ["الخرس", "المأدبة", "الوليمة", "العقيقة"], "correctAnswer": "العقيقة"},
+            {"question":"فصل الدين عن الدولة شعار أي حركة؟", "options": ["البهائية", "الوجودية", "الماسونية", "العلمانية"], "correctAnswer": "العلمانية"},
+            {"question":"الأنفال كلمة وردت في القرآن، ماذا تعني؟", "options": ["الأرزاق", "الجبال", "الطرق", "الغنائم"], "correctAnswer": "الغنائم"},
+            {"question":"ما هو البليون؟", "options": ["500 مليون", "5 مليون", "100 مليون", "1000 مليون"], "correctAnswer": "1000 مليون"},
+            {"question":"إذا وضعناه في الثلاجة لا يبرد؟", "options": ["الملح", "السكر", "الثلج", "الفلفل"], "correctAnswer": "الفلفل"},
+            {"question":"أصابع خمس وليس فيها لحم ولا عظم؟", "options": ["القدم", "المروحة", "اليد", "القفاز"], "correctAnswer": "القفاز"},
+            {"question":"ورد في القرآن، ماذا كان المعدود 11؟", "options": ["أهل الكهف", "حملة العرش", "خزنة جهنم", "الكواكب"], "correctAnswer": "الكواكب"},
+            {"question":"ترى كل شيء وليس لها عيون؟", "options": ["المنظار", "العدسة", "العين", "المرآة"], "correctAnswer": "المرآة"},
+            {"question":"ما هو أكبر كوكب؟", "options": ["عطارد", "الزهرة", "المريخ", "المشتري"], "correctAnswer": "المشتري"},
+            {"question":"ما اسم الفرقة التي أثارت مسألة خلق القرآن؟", "options": ["الصوفية", "المرجئة", "الخوارج", "المعتزلة"], "correctAnswer": "المعتزلة"},
+            {"question":"له كفان وليس هو إنسان؟", "options": ["الشجر", "الكأس", "الملعقة", "الميزان"], "correctAnswer": "الميزان"},
+            {"question":"ما الشيء يأكل ولا يشبع وإذا شرب مات؟", "options": ["الشمس", "الحطب", "الماء", "النار"], "correctAnswer": "النار"},
+            {"question":"في أي سورة وردت \"الطامة\"؟", "options": ["البقرة", "الأعلى", "القيامة", "النازعات"], "correctAnswer": "النازعات"},
+            {"question":"من الطيور لا تموت ولكنها تنتحر بسبب المرض؟", "options": ["الحمام", "البوم", "الصقور", "النسور"], "correctAnswer": "البوم"},
+            {"question":"الترمَيت هو الاسم العلمي لأي الكائنات؟", "options": ["السمك", "النحل", "العنكبوت", "النمل الأبيض"], "correctAnswer": "النمل الأبيض"},
+            {"question":"معنى اسم جعفر؟", "options": ["مجرى السيل", "البحر الزاخر", "الجبل", "النهر"], "correctAnswer": "النهر"},
+            {"question":"من صاحب كتاب \"رياض الصالحين\"؟", "options": ["ابن تيمية", "العسقلاني", "الغزالي", "النووي"], "correctAnswer": "النووي"},
+            {"question":"من أول من عرف التدخين؟", "options": ["الصينيون", "الأوروبيون", "الأمريكان", "الهنود الحمر"], "correctAnswer": "الهنود الحمر"},
+            {"question":"طائر يلد ولا يبيض؟", "options": ["البومة", "النعامة", "الأوز", "الوطواط"], "correctAnswer": "الوطواط"},
+            {"question":"ما اسم العملة الأوروبية الموحدة؟", "options": ["الدينار", "الين", "الدولار", "اليورو"], "correctAnswer": "اليورو"},
+            {"question":"زهرة تضاعف نفسها وملأت الحوض في اليوم العاشر، متى كان نصفه؟", "options": ["السابع", "العاشر", "الثامن", "التاسع"], "correctAnswer": "التاسع"},
+            {"question":"من صاحب كتاب \"إحياء علوم الدين\"؟", "options": ["ابن القيم", "ابن تيمية", "ابن حجر العسقلاني", "الغزالي"], "correctAnswer": "الغزالي"},
+            {"question":"من صاحب كتاب \"الأغاني\"؟", "options": ["ابن حجر العسقلاني", "ابن طفيل", "الجاحظ", "أبو الفرج الأصفهاني"], "correctAnswer": "أبو الفرج الأصفهاني"},
+            {"question":"ما عدة الأرملة غير الحامل؟", "options": ["4 أشهر و7 أيام", "5 أشهر", "4 أشهر", "4 أشهر و10 أيام"], "correctAnswer": "4 أشهر و10 أيام"},
+            {"question":"من هي الصحابية ذات النطاقين؟", "options": ["أم حارثة", "عائشة", "أسماء بنت عمير", "أسماء بنت أبي بكر"], "correctAnswer": "أسماء بنت أبي بكر"},
+            {"question":"من الصحابي الذي استمعت إليه الملائكة وهو يقرأ البقرة؟", "options": ["زيد بن سهل", "أبو العاص بن الربيع", "حكيم بن حزام", "أسيد بن حضير"], "correctAnswer": "أسيد بن حضير"},
+            {"question":"من صاحب كتاب \"طوق الحمامة\"؟", "options": ["المتنبي", "ابن حجر", "ابن طفيل", "ابن حزم الأندلسي"], "correctAnswer": "ابن حزم الأندل"},
+            {"question":"من صاحب كتاب \"حي بن يقظان\"؟", "options": ["ابن خلدون", "الجاحظ", "ابن رشد", "ابن طفيل"], "correctAnswer": "ابن طفيل"},
+            {"question":"ما هو الإعجاز القرآني في \"بلى قادرين على أن نسوي بنانه\"؟", "options": ["خلق الأصابع", "تحريك الأصابع", "تطابق الأصابع", "اختلاف بصمات الأصابع"], "correctAnswer": "اختلاف بصمات الأصابع"},
+            {"question":"ماذا تسمى الباء في \"هذا بذاك فما ملام عليك\"؟", "options": ["باء من الكلمة", "باء الجر", "باء العطف", "باء البدل"], "correctAnswer": "باء العطف"},
+            {"question":"أكمل: كالمستجير من الرمضاء …؟", "options": ["بالظل", "بالحر", "باللهب", "بالنار"], "correctAnswer": "بالنار"},
+            {"question":"أكمل: على أهلها جنت …؟", "options": ["هند", "سماء", "ليلى", "براقش"], "correctAnswer": "براقش"},
+            {"question":"ما أول دولة استخدمت طوابع البريد؟", "options": ["اليابان", "النمسا", "الهند", "بريطانيا"], "correctAnswer": "بريطانيا"},
+            {"question":"أي مدينة تسمى دار السلام؟", "options": ["القدس", "حيفا", "دمشق", " بغداد"], "correctAnswer": " بغداد"},
+            {"question":"ما هو أبعد كوكب عن الشمس؟", "options": ["الزهرة", "المشتري", "عطارد", "بلوتو"], "correctAnswer": "بلوتو"},
+            {"question":"ما اسم الخنساء؟", "options": ["ماوية", "ليلى الأخيلية", "هند بنت عمرو", "تماضر بنت عمرو"], "correctAnswer": "تماضر بنت عمرو"},
+            {"question":"أكمل القاعدة: درء المفاسد مقدم على …؟", "options": ["العلوم", "المنافع", "الإتيان بالفوائد", "جلب المنافع"], "correctAnswer": "جلب المنافع"},
+            {"question":"ما معنى أورشليم؟", "options": ["الطاهرة", "أرض الرسالة", "المسلمة", "حامية السلام"], "correctAnswer": "حامية السلام"},
+            {"question":"ما المدينة التي تسمى جلق؟", "options": ["القاهرة", "حلب", "بغداد", "دمشق"], "correctAnswer": "دمشق"},
+            {"question":"ما عاصمة مملكة سبأ؟", "options": ["يافع", "عدن", "صنعاء", "مأرب"], "correctAnswer": "مأرب"},
+            {"question":"من هي أول ممرضة في الإسلام؟", "options": ["أسماء بنت عمير", "الخنساء", "زينب بنت جحش", "رفيدة بنت سعد"], "correctAnswer": "رفيدة بنت سعد"},
+            {"question":"من هي أول ملكة في الإسلام؟", "options": ["نفرتيتي", "بلقيس", "زبيدة", "شجرة الدر"], "correctAnswer": "شجرة الدر"},
+            {"question":"أكبر شركة فندقية عالمية تمتلك 1863 فندقاً؟", "options": ["ماريوت", "هيلتون", "هوليداي إن", "شيراتون"], "correctAnswer": "هوليداي إن"},
+            {"question":"من الأديب البريطاني الملقب بأمير القصة العالمية؟", "options": ["شكسبير", "تشارلز ديكنز", "أوسكار وايلد", "جورج أورويل"], "correctAnswer": "تشارلز ديكنز"},
+            {"question":"ما الاسم الذي كان يطلق على يوم السبت في الجاهلية؟", "options": ["أهون", "جبار", "مؤنس", "شيار"], "correctAnswer": "شيار"},
+            {"question":"ما هو الشادن؟", "options": ["صغير الأسد", "صغير الغزال", "صغير النسر", "صغير الحصان"], "correctAnswer": "صغير الغزال"},
+            {"question":"ما الصلاة التي يركع فيها المصلي أربع مرات ويسجد أربع مرات؟", "options": ["العيد", "الاستسقاء", "صلاة الكسوف والخسوف", "الجنازة"], "correctAnswer": "صلاة الكسوف والخسوف"},
+            {"question":"أول أمين عام لجامعة الدول العربية؟", "options": ["عبد الرحمن عزام", "عمرو موسى", "أحمد أبو الغيط", "نبيل العربي"], "correctAnswer": "عبد الرحمن عزام"},
+            {"question":"من الصحابي أصدق الأمة حياء؟", "options": ["أبو بكر الصديق", "عمر بن الخطاب", "علي بن أبي طالب", "عثمان بن عفان"], "correctAnswer": "عثمان بن عفان"},
+            {"question":"في عهد أي خليفة فتحت القدس؟", "options": ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], "correctAnswer": "عمر بن الخطاب"},
+            {"question":"من قال: \"لا أمل ثوبي ما وسعني…\"؟", "options": ["عمر بن الخطاب", "علي بن أبي طالب", "أبو بكر الصديق", "عثمان بن عفان"], "correctAnswer": "علي بن أبي طالب"},
+            {"question":"ما اسم المعركة التي انتصر فيها المماليك على المغول 1260م؟", "options": ["حطين", "عين جالوت", "القادسية", "اليرموك"], "correctAnswer": "عين جالوت"},
+            {"question":"أين ألقيت ثاني قنبلة ذرية في التاريخ؟", "options": ["طوكيو", "هيروشيما", "ناغازاكي", "أوكيناوا"], "correctAnswer": "ناغازاكي"},
+            {"question":"ما حروف القلقلة؟", "options": ["أ، و، ي", "ي، ر، م، ل، و، ن", "ق، ط، ب، ج، د", "ب، ف، م"], "correctAnswer": "ق، ط، ب، ج، د"},
+            {"question":"من أين يستخرج العنبر؟", "options": ["كبد الحوت", "أمعاء الحوت", "جلد الحوت", "من الأشجار"], "correctAnswer": "كبد الحوت"},
+            {"question":"ما معنى اسم درويش؟", "options": ["الغني", "الملك", "القوي", "الفقير"], "correctAnswer": "الفقير"},
+            {"question":"لماذا تطفو البيضة الفاسدة؟", "options": ["لخفة وزنها", "لوجود غازات فاسدة", "لقشرتها الصلبة", "لأنها مسلوقة"], "correctAnswer": "لوجود غازات فاسدة"},
+            {"question":"كم مطاراً دولياً في السعودية؟", "options": ["1", "2", "3", "4"], "correctAnswer": "3"},
+            {"question":"ماذا تقال عن عضة النحلة؟", "options": ["عضة", "قرصة", "لسعة", "لدغة"], "correctAnswer": "لسعة"},
+            {"question":"من هو الملك الموكل بالنار؟", "options": ["جبريل", "ميكائيل", "رضوان", "مالك"], "correctAnswer": "مالك"},
+            {"question":"ما اسم زوجة حاتم الطائي المذكورة في شعره؟", "options": ["ليلى", "ماوية", "سلمى", "هند"], "correctAnswer": "ماوية"},
+            {"question":"ما المعركة التي استشهد فيها الحسين بن علي؟", "options": ["الجمل", "صفين", "كربلاء", "النهروان"], "correctAnswer": "كربلاء"},
+            {"question":"ما هي أكبر مكتبة في العالم؟", "options": ["مكتبة الإسكندرية", "المكتبة البريطانية", "مكتبة الكونجرس الأمريكي", "مكتبة نيويورك"], "correctAnswer": "مكتبة الكونجرس الأمريكي"},
+            {"question":"كلمة \"ريال\" أصلها إسباني، ماذا تعني؟", "options": ["ملكي", "ذهبي", "عملة", "فضة"], "correctAnswer": "ملكي"},
+            {"question":"من أين يستخرج المرجان؟", "options": ["من الجبال", "من البحر", "من البراكين", "من الأنهار"], "correctAnswer": "من البحر"},
+            {"question":"أي نهر تقع عليه باريس؟", "options": ["الدانوب", "الراين", "السين", "التايمز"], "correctAnswer": "نهر السين"},
+            {"question":"من هو سيف الله المسلول؟", "options": ["علي بن أبي طالب", "حمزة بن عبد المطلب", "خالد بن الوليد", "عمر بن الخطاب"], "correctAnswer": "خالد بن الوليد"},
+            {"question":"كم سنة استغرق تنزيل القرآن الكريم؟", "options": ["20", "21", "22", "23"], "correctAnswer": "23"},
+            {"question":"في أي سنة ميلادية وُلد النبي ﷺ؟", "options": ["570", "571", "572", "573"], "correctAnswer": "571"},
+            {"question":"كم آية في القرآن الكريم؟", "options": ["6236", "6000", "6230", "6240"], "correctAnswer": "6236"},
+            {"question":"كم كلمة في القرآن الكريم؟", "options": ["79000", "78000", "80000", "77000"], "correctAnswer": "79000"},
+            {"question":"كم حرفًا في القرآن الكريم؟", "options": ["323670", "320000", "310000", "330000"], "correctAnswer": "323670"},
+            {"question":"ما عدد مواضع السجود في القرآن؟", "options": ["12", "13", "14", "15"], "correctAnswer": "14"},
+            {"question":"من زوجة النبي ﷺ الأولى؟", "options": ["عائشة", "حفصة", "خديجة", "ميمونة"], "correctAnswer": "خديجة"},
+            {"question":"من آخر زوجة للنبي ﷺ؟", "options": ["صفية", "أم سلمة", "جويرية", "ميمونة"], "correctAnswer": "ميمونة"},
+            {"question":"من المرأة التي لُقبت بسيدة نساء العالمين؟", "options": ["صفية", "مريم", "خديجة", "فاطمة"], "correctAnswer": "صفية بنت يحيى"},
+            {"question":"كم عدد سور القرآن الكريم؟", "options": ["112", "113", "114", "115"], "correctAnswer": "114"},
+            {"question":"على من أنزل الزبور؟", "options": ["موسى", "عيسى", "داود", "إبراهيم"], "correctAnswer": "داود"},
+            {"question":"من القائد الذي فتح جزيرة صقلية؟", "options": ["طارق بن زياد", "أسد بن الفرات", "عقبة بن نافع", "محمد بن القاسم"], "correctAnswer": "أسد بن الفرات"},
+            {"question":"من النبي المسمى \"ذي النون\"؟", "options": ["موسى", "نوح", "يونس", "هارون"], "correctAnswer": "يونس"},
+            {"question":"من نقيب بني عبد الأشهل؟", "options": ["أسيد بن الحضير", "سعد بن معاذ", "أبو أيوب", "عبادة بن الصامت"], "correctAnswer": "أسيد بن الحضير"},
+            {"question":"في أي يوم تُذبح أضحية العيد؟", "options": ["قبل صلاة العيد", "بعد صلاة العيد", "في أي وقت", "اليوم الثاني فقط"], "correctAnswer": "بعد صلاة العيد"},
+            {"question":"في أي سنة بدأ التاريخ الهجري؟", "options": ["620", "621", "622", "623"], "correctAnswer": "622"},
+            {"question":"من النبي الذي صام ثلاثة أيام ليرزقه الله ولداً؟", "options": ["إبراهيم", "زكريا", "نوح", "لوط"], "correctAnswer": "زكريا"},
+            {"question":"ما هي قبة الصخرة؟", "options": ["مسجد", "حصن", "الصخرة التي عُرج منها النبي ﷺ", "مكان دفن"], "correctAnswer": "الصخرة التي عُرج منها النبي ﷺ"},
+	        {"question":"من أول من أمّ المسلمين في صلاتهم بالمدينة؟", "options": ["عمر", "مصعب بن عمير", "أبو بكر", "معاذ"], "correctAnswer": "مصعب بن عمير"},
+            {"question":"من الذي آمن بنبوة محمد ﷺ قبل أن يُبعث؟", "options": ["بحيرا الراهب", "ورقة بن نوفل", "زيد بن عمرو", "سلمان الفارسي"], "correctAnswer": "ورقة بن نوفل"},
+            {"question":"من الملقب بصقر قريش؟", "options": ["عبد الملك", "معاوية", "عبد الرحمن بن معاوية", "الوليد"], "correctAnswer": "عبد الرحمن بن معاوية"},
+            {"question":"من باني الكعبة المشرفة؟", "options": ["نوح", "موسى", "إبراهيم وإسماعيل", "محمد ﷺ"], "correctAnswer": "إبراهيم وإسماعيل"},
+            {"question":"من أول من أسلم من الرجال؟", "options": ["علي", "عثمان", "أبو بكر", "حمزة"], "correctAnswer": "أبو بكر"},
+            {"question":"من واضع المعجم المفهرس لكلمات القرآن؟", "options": ["ابن منظور", "محمد فؤاد عبد الباقي", "الزركشي", "السيوطي"], "correctAnswer": "محمد فؤاد عبد الباقي"},
+            {"question":"من مولى النبي ﷺ؟", "options": ["زيد بن ثابت", "أنس بن مالك", "أسامة بن زيد", "بلال بن رباح"], "correctAnswer": "أسامة بن زيد"},
+            {"question":"من الملقب بسيف الله المسلول؟", "options": ["عمر", "علي", "خالد بن الوليد", "حمزة"], "correctAnswer": "خالد بن الوليد"},
+            {"question":"من آخر من مات من العشرة المبشرين بالجنة؟", "options": ["سعد بن أبي وقاص", "علي", "طلحة", "الزبير"], "correctAnswer": "سعد بن أبي وقاص"},
+            {"question":"متى فرضت زكاة الفطر؟", "options": ["السنة الأولى", "السنة الثانية", "السنة الثالثة", "الرابعة"], "correctAnswer": "السنة الثانية"},
+            {"question":"على أي صلاة يُطلق اسم البردين؟", "options": ["الفجر والعشاء", "الظهر والعصر", "العصر والفجر", "المغرب والعشاء"], "correctAnswer": "الفجر والعصر"},
+            {"question":"ما السورة التي خُتمت باسم نبيين؟", "options": ["الأعراف", "الأعلى", "الصافات", "الأنبياء"], "correctAnswer": "الأعلى"}
+        ];
+
+        // --- (وظيفة جديدة: لرسم إعدادات الفرق) ---
+        function renderTeamSetup(teamCount) {
+            teamSetupContainer.className = `flex flex-row flex-nowrap w-full justify-center gap-4`; 
+            teamSetupContainer.innerHTML = ''; 
+            teamColors = new Array(teamCount).fill(null); 
+            
+            let blockWidthClass = '';
+            switch(teamCount) {
+                case 2:
+                    blockWidthClass = 'w-full md:w-[45%]'; 
+                    break;
+                case 3:
+                    blockWidthClass = 'w-full md:w-[30%]'; 
+                    break;
+                case 4:
+                    blockWidthClass = 'w-full md:w-[24%]' 
+                    break;
+                case 5:
+                    blockWidthClass = 'w-full md:w-[19%]' 
+                    break;
+            }
+
+            for (let i = 0; i < teamCount; i++) {
+                const teamBlock = document.createElement('div');
+                teamBlock.className = `flex flex-col items-center gap-4 p-6 rounded-2xl bg-slate-800 shadow-inner team-setup-block ${blockWidthClass}`;
+                teamBlock.dataset.teamIndex = i; 
+
+                const label = document.createElement('label');
+                label.className = 'text-xl font-bold';
+                label.textContent = `الفريق ${i + 1}`;
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = `اسم الفريق ${i + 1}`;
+                input.className = 'team-name-input w-full text-center p-3 rounded-xl border border-slate-600 bg-slate-700 placeholder-slate-400 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition';
+                
+                const colorContainer = document.createElement('div');
+
+                if (teamCount <= 3) {
+                    colorContainer.className = 'flex gap-2 mt-2';
+                    availableColors.forEach(color => {
+                        const colorBtn = document.createElement('button');
+                        colorBtn.className = 'color-btn w-12 h-12 rounded-full border-4 border-transparent focus:border-blue-500 transition-all duration-200';
+                        colorBtn.dataset.color = color;
+                        colorBtn.style = colorStyles[color];
+                        colorContainer.appendChild(colorBtn);
+                    });
+                } else {
+                    colorContainer.className = 'color-selector';
+                    
+                    const btnLeft = document.createElement('button');
+                    btnLeft.className = 'color-arrow color-arrow-left';
+                    btnLeft.innerHTML = '&lt;'; 
+                    btnLeft.dataset.dir = '-1';
+                    
+                    const displayCircle = document.createElement('div');
+                    displayCircle.className = 'color-display w-12 h-12'; 
+                    displayCircle.innerHTML = '?'; 
+                    displayCircle.classList.add('flex', 'items-center', 'justify-center', 'text-2xl', 'font-bold', 'text-slate-500');
+                    
+                    const btnRight = document.createElement('button');
+                    btnRight.className = 'color-arrow color-arrow-right';
+                    btnRight.innerHTML = '&gt;'; 
+                    btnRight.dataset.dir = '1';
+                    
+                    btnLeft.classList.add('w-12', 'h-12', 'text-2xl');
+                    btnRight.classList.add('w-12', 'h-12', 'text-2xl');
+
+
+                    colorContainer.appendChild(btnLeft);
+                    colorContainer.appendChild(displayCircle);
+                    colorContainer.appendChild(btnRight);
+                }
+
+                teamBlock.appendChild(label);
+                teamBlock.appendChild(input);
+                teamBlock.appendChild(colorContainer);
+                teamSetupContainer.appendChild(teamBlock);
+            }
+
+            if(teamCount <= 3) {
+                updateColorPickers(); 
+            } else {
+                updateArrowPickers(); 
+            }
+        }
+        
+        function updateColorPickers() {
+            const allColorBtns = document.querySelectorAll('.color-btn');
+            const selectedColors = teamColors.filter(color => color !== null);
+
+            allColorBtns.forEach(btn => {
+                const color = btn.dataset.color;
+                const teamBlock = btn.closest('.team-setup-block');
+                const teamIndex = parseInt(teamBlock.dataset.teamIndex);
+                
+                const isSelectedByOther = selectedColors.includes(color) && teamColors[teamIndex] !== color;
+
+                if (isSelectedByOther) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-25', 'cursor-not-allowed');
+                    btn.classList.remove('border-blue-500'); 
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-25', 'cursor-not-allowed');
+                }
+
+                if (teamColors[teamIndex] === color) {
+                    btn.classList.add('border-blue-500');
+                } else {
+                    btn.classList.remove('border-blue-500');
+                }
+            });
+        }
+
+        function updateArrowPickers() {
+            const teamBlocks = document.querySelectorAll('.team-setup-block');
+            teamBlocks.forEach((block, index) => {
+                const displayCircle = block.querySelector('.color-display');
+                if (!displayCircle) return; 
+
+                const currentColor = teamColors[index];
+                
+                if (currentColor) {
+                    displayCircle.style = colorStyles[currentColor];
+                    displayCircle.style.borderColor = 'var(--color-blue-dark)'; 
+                    displayCircle.innerHTML = ''; 
+                } else {
+                    displayCircle.style = '';
+                    displayCircle.style.borderColor = '#334155';
+                    displayCircle.style.backgroundColor = '#1e293b';
+                    displayCircle.innerHTML = '?'; 
+                    displayCircle.classList.add('flex', 'items-center', 'justify-center', 'text-2xl', 'font-bold', 'text-slate-500');
+                }
+            });
+        }
+        
+        function changeColor(teamIndex, direction) {
+            const selectedColors = teamColors.filter((c, i) => i !== teamIndex && c !== null);
+            // (تعديل: إضافة null هنا لحل مشكلة التوقف التام)
+            const availablePickerColors = [null, ...availableColors.filter(c => !selectedColors.includes(c))];
+
+            const currentColor = teamColors[teamIndex];
+            let newColorIndex;
+
+            const currentIndexInAvailable = availablePickerColors.indexOf(currentColor);
+
+            if (currentIndexInAvailable === -1) { 
+                newColorIndex = 0; 
+            } else {
+                newColorIndex = (currentIndexInAvailable + direction + availablePickerColors.length) % availablePickerColors.length;
+            }
+            
+            teamColors[teamIndex] = availablePickerColors[newColorIndex];
+            
+            updateArrowPickers();
+        }
+
+        // --- Event Listeners ---
+        startGameBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+        winRestartBtn.addEventListener('click', restartGame);
+        winCloseBtn.addEventListener('click', () => { 
+            winModal.style.display = 'none';
+        });
+
+        // (جديد: مستمعات نافذة الشرح)
+        helpBtn.addEventListener('click', () => {
+            howToPlayModal.style.display = 'flex';
+        });
+        howToPlayCloseBtn.addEventListener('click', () => {
+            howToPlayModal.style.display = 'none';
+        });
+
+        teamCountSelect.addEventListener('change', (e) => {
+            renderTeamSetup(parseInt(e.target.value));
+        });
+
+        teamSetupContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return; 
+
+            if (btn.classList.contains('color-btn') && !btn.disabled) {
+                const teamDiv = btn.closest('.team-setup-block');
+                const teamIndex = parseInt(teamDiv.dataset.teamIndex);
+                const selectedColor = btn.dataset.color;
+
+                if (teamColors[teamIndex] === selectedColor) {
+                    teamColors[teamIndex] = null;
+                    btn.classList.remove('border-blue-500');
+                } else {
+                    teamColors[teamIndex] = selectedColor;
+                    teamDiv.querySelectorAll('.color-btn').forEach(b => b.classList.remove('border-blue-500'));
+                    btn.classList.add('border-blue-500');
+                }
+                updateColorPickers(); 
+            
+            } else if (btn.classList.contains('color-arrow')) {
+                const teamDiv = btn.closest('.team-setup-block');
+                const teamIndex = parseInt(teamDiv.dataset.teamIndex);
+                const direction = parseInt(btn.dataset.dir);
+                changeColor(teamIndex, direction);
+            }
+        });
+
+        
+        removeColorBtn.addEventListener('click', () => {
+            isRemoveColorMode = !isRemoveColorMode;
+            isColoringMode = false; 
+            
+            if (isRemoveColorMode) {
+                removeColorBtn.className = btnClasses.removeActive; 
+                manualColorBtn.className = btnClasses.colorInactive; 
+                showNotification("وضع حذف اللون مفعل. اختر دائرة لحذفها.", true, 'toast'); 
+            } else {
+                removeColorBtn.className = btnClasses.removeInactive; 
+            }
+        });
+
+        manualColorBtn.addEventListener('click', () => {
+            isColoringMode = !isColoringMode;
+            isRemoveColorMode = false; 
+
+            if (isColoringMode) {
+                manualColorBtn.className = btnClasses.colorActive; 
+                removeColorBtn.className = btnClasses.removeInactive; 
+                showNotification("وضع التلوين اليدوي مفعل. اختر دائرة لتلوينها.", true, 'toast'); 
+            } else {
+                manualColorBtn.className = btnClasses.colorInactive; 
+            }
+        });
+
+        // --- Core Game Functions ---
+
+        function startGame() {
+            const teamBlocks = document.querySelectorAll('.team-setup-block');
+            let newTeams = [];
+            let hasError = false;
+
+            teamColors.forEach((color, index) => {
+                if (color === null) {
+                    hasError = true; 
+                }
+                const nameInput = teamBlocks[index].querySelector('.team-name-input');
+                const name = nameInput.value.trim() || `الفريق ${index + 1}`;
+                newTeams.push({ name, color });
+            });
+
+            if (hasError) {
+                showNotification("الرجاء اختيار لون لكل فريق.", false, 'modal'); 
+                return;
+            }
+
+            const uniqueColors = new Set(teamColors);
+            if (uniqueColors.size !== teamColors.length) {
+                 showNotification("حدث خطأ، الرجاء اختيار ألوان فريدة.", false, 'modal'); 
+                 return;
+            }
+
+            teams = newTeams; 
+            
+            gameStarted = true;
+            currentPlayerIndex = 0;
+            
+            const shuffledQuestions = shuffleArray([...allQuestions]);
+            boardData = [];
+            for(let i=0; i < BOARD_SIZE * BOARD_SIZE; i++){
+                boardData.push({
+                    question: shuffledQuestions[i % shuffledQuestions.length], 
+                    owner: null,
+                    disabledOptions: []
+                });
+            }
+
+            questionBank = shuffledQuestions.slice(BOARD_SIZE * BOARD_SIZE);
+            if (questionBank.length < 10) { 
+                 questionBank = [...questionBank, ...shuffleArray([...allQuestions])];
+            }
+            
+            setupScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            createBoard();
+            updateGameInfo();
+            updateScoreBoard();
+            renderTurnSelector();
+            showNotification(`بدأت اللعبة! الدور الآن على ${teams[currentPlayerIndex].name}.`, true, 'toast'); 
+        }
+
+        function restartGame() {
+            gameStarted = false;
+            teams = []; 
+            teamColors = []; 
+            currentPlayerIndex = 0;
+            boardData = [];
+            isRemoveColorMode = false;
+            isColoringMode = false; 
+            currentCircleData = null;
+            currentCircleElement = null;
+            
+            board.innerHTML = '';
+            manualTurnSelector.innerHTML = '';
+            setupScreen.classList.remove('hidden');
+            gameScreen.classList.add('hidden');
+            winModal.style.display = 'none';
+
+            removeColorBtn.className = btnClasses.removeInactive;
+            manualColorBtn.className = btnClasses.colorInactive;
+
+            teamCountSelect.value = "3";
+            renderTeamSetup(3); 
+        }
+
+        function createBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('circle-button');
+                circle.dataset.index = i;
+
+                const number = document.createElement('span');
+                number.classList.add('circle-number');
+                number.textContent = i + 1;
+                circle.appendChild(number);
+
+                circle.addEventListener('click', () => handleCircleClick(circle, i));
+                board.appendChild(circle);
+            }
+        }
+        
+        function handleCircleClick(circleElement, index) {
+            const circleData = boardData[index];
+
+            if (isColoringMode) {
+                const player = teams[currentPlayerIndex];
+                circleData.owner = currentPlayerIndex;
+                
+                circleElement.className = 'circle-button'; 
+                circleElement.classList.add(colorMap[player.color], 'taken');
+                circleElement.innerHTML = `<span class="circle-number">${index + 1}</span>`;
+
+                isColoringMode = false; 
+                manualColorBtn.className = btnClasses.colorInactive; 
+
+                if (checkForWin(index)) {
+                    endGame(player);
+                }
+                return;
+            }
+
+            if (isRemoveColorMode) {
+                if (circleData.owner !== null) {
+                    circleData.owner = null; 
+                    circleElement.className = 'circle-button'; 
+                    const numberSpan = document.createElement('span');
+                    numberSpan.classList.add('circle-number');
+                    numberSpan.textContent = index + 1;
+                    circleElement.innerHTML = ''; 
+                    circleElement.appendChild(numberSpan);
+
+                    if (questionBank.length > 0) {
+                        circleData.question = questionBank.pop(); 
+                    } else {
+                        console.log("إعادة ملء بنك الأسئلة الاحتياطي.");
+                        questionBank = shuffleArray([...allQuestions]);
+                        circleData.question = questionBank.pop();
+                    }
+                    circleData.disabledOptions = []; 
+
+                    isRemoveColorMode = false;
+                    removeColorBtn.className = btnClasses.removeInactive; 
+                    showNotification("تم حذف اللون وتعيين سؤال جديد.", true, 'toast'); 
+                } else { 
+                    isRemoveColorMode = false;
+                    removeColorBtn.className = btnClasses.removeInactive;
+                }
+                return;
+            }
+
+            if (!gameStarted || circleData.owner !== null) return;
+
+            currentCircleData = circleData;
+            currentCircleElement = circleElement;
+            displayQuestion(circleData);
+        }
+
+        function displayQuestion(circleData) { 
+            questionText.textContent = circleData.question.question;
+            answerOptionsDiv.innerHTML = '';
+            
+            const options = shuffleArray([...circleData.question.options]);
+
+            options.forEach(option => {
+                if(circleData.disabledOptions.includes(option)) {
+                    return;
+                }
+
+                const button = document.createElement('button');
+                button.classList.add('answer-button');
+                button.textContent = option;
+                button.onclick = () => handleAnswer(option);
+
+                answerOptionsDiv.appendChild(button);
+            });
+            questionModal.style.display = 'flex';
+            startTimer();
+        }
+
+        function handleAnswer(selectedOption) {
+            stopTimer();
+            questionModal.style.display = 'none';
+            const correctAnswer = currentCircleData.question.correctAnswer;
+
+            if (selectedOption === correctAnswer) {
+                showNotification("إجابة صحيحة!", true, 'modal'); 
+                const player = teams[currentPlayerIndex];
+                
+                currentCircleData.owner = currentPlayerIndex;
+                
+                currentCircleElement.className = 'circle-button'; 
+                currentCircleElement.classList.add(colorMap[player.color], 'taken');
+                currentCircleElement.innerHTML = `<span class="circle-number">${parseInt(currentCircleElement.dataset.index) + 1}</span>`;
+
+                
+                if (checkForWin(parseInt(currentCircleElement.dataset.index))) {
+                    endGame(player);
+                } else {
+                    nextTurn();
+                }
+            } else {
+                showNotification("إجابة خاطئة!", false, 'modal'); 
+                currentCircleData.disabledOptions.push(selectedOption);
+                nextTurn();
+            }
+        }
+        
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % teams.length;
+            updateGameInfo();
+            renderTurnSelector();
+        }
+
+        function checkForWin(lastMoveIndex) {
+            const player = boardData[lastMoveIndex].owner;
+            if (player === null) return false;
+
+            const col = lastMoveIndex % BOARD_SIZE;
+            const row = Math.floor(lastMoveIndex / BOARD_SIZE);
+            const directions = [{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: -1 }];
+
+            for (const dir of directions) {
+                let count = 1;
+                for (let i = 1; i < WIN_LENGTH; i++) {
+                    const newCol = col + i * dir.x, newRow = row + i * dir.y;
+                    if (newCol >= 0 && newCol < BOARD_SIZE && newRow >= 0 && newRow < BOARD_SIZE && boardData[newRow * BOARD_SIZE + newCol].owner === player) count++; else break;
+                }
+                for (let i = 1; i < WIN_LENGTH; i++) {
+                    const newCol = col - i * dir.x, newRow = row - i * dir.y;
+                     if (newCol >= 0 && newCol < BOARD_SIZE && newRow >= 0 && newRow < BOARD_SIZE && boardData[newRow * BOARD_SIZE + newCol].owner === player) count++; else break;
+                }
+                if (count >= WIN_LENGTH) return true;
+            }
+            return false;
+        }
+
+        function endGame(winner) {
+            winnerNameText.textContent = winner.name;
+            winModal.style.display = 'flex';
+        }
+
+        // --- UI & Helper Functions ---
+
+        function showNotification(text, isCorrect, type = 'toast') {
+            if (type === 'toast') {
+                showToast(text, isCorrect);
+            } else if (type === 'modal') {
+                showAnswerStatusModal(text, isCorrect);
+            }
+        }
+        
+        function showToast(text, isCorrect) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const icon = document.createElement('i');
+            icon.className = `toast-icon fa-solid ${isCorrect ? 'fa-check text-green-400' : 'fa-info-circle text-yellow-400'}`;
+            
+            const message = document.createElement('span');
+            message.className = 'toast-message';
+            message.textContent = text;
+            
+            toast.appendChild(message);
+            toast.appendChild(icon);
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100); 
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 500); 
+            }, 3000); 
+        }
+
+        function showAnswerStatusModal(text, isCorrect) {
+            statusText.textContent = text;
+            statusIcon.className = 'status-icon fa-solid';
+            
+            if (isCorrect) {
+                statusIcon.classList.add('fa-check', 'text-green-400');
+                statusIcon.style.textShadow = '0 0 15px var(--color-green-light)';
+            } else {
+                statusIcon.classList.add('fa-xmark', 'text-red-400');
+                statusIcon.style.textShadow = '0 0 15px var(--color-red-light)';
+            }
+            
+            answerStatusModal.style.display = 'flex';
+            setTimeout(() => { answerStatusModal.style.display = 'none'; }, 1500);
+        }
+
+        function renderTurnSelector() {
+            manualTurnSelector.innerHTML = '';
+            const title = document.createElement('p');
+            title.className = 'text-center text-lg font-bold mb-2 text-slate-300';
+            title.textContent = 'اختر الدور يدويًا:';
+            manualTurnSelector.appendChild(title);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'flex justify-center gap-4 flex-wrap'; 
+
+            teams.forEach((team, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = team.name;
+                
+                const colorLight = `var(--color-${team.color}-light)`;
+                const colorDark = `var(--color-${team.color}-dark)`;
+
+                let btnClass = 'px-6 py-2 rounded-full font-semibold transition-all duration-300 transform ';
+                
+                if (index === currentPlayerIndex) {
+                    btnClass += `text-white ring-4 ring-offset-2 ring-offset-slate-800 ring-blue-400 player-turn-pulse`; 
+                    btn.style.background = `radial-gradient(circle, ${colorLight} 0%, ${colorDark} 100%)`;
+                    btn.style.setProperty('--shadow-color', colorShadowMap[team.color]);
+                } else {
+                    btnClass += ' bg-slate-700 hover:bg-slate-600 text-slate-300 hover:scale-105';
+                }
+                btn.className = btnClass;
+
+                btn.addEventListener('click', () => {
+                    manualTurnSelector.querySelectorAll('button').forEach(b => {
+                        b.style.background = '';
+                        b.style.boxShadow = '';
+                    });
+
+                    currentPlayerIndex = index;
+                    updateGameInfo();
+                    renderTurnSelector(); 
+                });
+                buttonContainer.appendChild(btn);
+            });
+            manualTurnSelector.appendChild(buttonContainer);
+        }
+
+        function updateGameInfo() {
+            if (!gameStarted) return;
+            const currentPlayer = teams[currentPlayerIndex];
+            
+            gameInfo.className = 'mb-4 w-full text-center text-2xl font-bold game-info-pulse'; 
+            gameInfo.textContent = `دور الفريق: ${currentPlayer.name}`;
+            gameInfo.style.color = `var(--color-${currentPlayer.color}-light)`;
+            gameInfo.style.setProperty('--shadow-color', colorShadowMap[currentPlayer.color]);
+        }
+        
+        function updateScoreBoard() {
+             scoreBoard.innerHTML = '';
+             teams.forEach(team => {
+                 const scoreItem = document.createElement('div');
+                 scoreItem.classList.add('score-item');
+                 const colorCircle = document.createElement('div');
+                 colorCircle.classList.add('w-6', 'h-6', 'rounded-full');
+                 colorCircle.style.background = `radial-gradient(circle, var(--color-${team.color}-light) 0%, var(--color-${team.color}-dark) 100%)`;
+                 scoreItem.appendChild(colorCircle);
+                 const nameSpan = document.createElement('span');
+                 nameSpan.textContent = team.name;
+                 scoreItem.appendChild(nameSpan);
+                 scoreBoard.appendChild(scoreItem);
+             });
+        }
+
+        function startTimer() {
+            timer = initialTime;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimerDisplay();
+                if (timer <= 0) {
+                    stopTimer();
+                    questionModal.style.display = 'none';
+                    showNotification("انتهى الوقت!", false, 'modal'); 
+                    
+                    nextTurn();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+            const seconds = (timer % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // (جديد: وظيفة لملء نافذة الشرح بالمحتوى المنسق)
+        function populateHowToPlayModal() {
+            howToPlayBody.innerHTML = `
+                <p>الهدف بسيط: أن تكون أول فريق ينجح في تلوين <strong>خمسة دوائر</strong> بلونه في صف واحد (أفقي، عمودي، أو قطري).</p>
+
+                <h2>خطوات بدء اللعبة:</h2>
+                <ul>
+                    <li><strong>اختيار الفرق:</strong> يقوم مُقدّم اللعبة أولاً باختيار عدد الفرق المشاركة (من 2 إلى 5 فرق).</li>
+                    <li><strong>إدخال الأسماء:</strong> يتم إدخال اسم لكل فريق.</li>
+                    <li><strong>اختيار الألوان:</strong> يختار كل فريق لوناً فريداً يمثله في اللعبة.</li>
+                    <li><strong>بدء اللعب:</strong> يضغط المُقدّم على "ابدأ اللعبة".</li>
+                </ul>
+
+                <h2>طريقة اللعب:</h2>
+                <ul>
+                    <li><strong>الدور:</strong> تبدأ اللعبة ويظهر اسم الفريق الذي عليه الدور (الاسم في الأعلى سيضيء بلون الفريق).</li>
+                    <li><strong>اختيار الدائرة:</strong> يقوم الفريق باختيار رقم دائرة فارغة من اللوحة (من 1 إلى 81).</li>
+                    <li><strong>السؤال:</strong> بمجرد اختيار الدائرة، سيظهر سؤال مع 4 خيارات ومؤقت لمدة 45 ثانية.</li>
+                    <li><strong>الإجابة:</strong>
+                        <ul>
+                            <li><strong>إذا كانت الإجابة صحيحة:</strong> سيتم تلوين الدائرة بلون الفريق، وينتقل الدور للفريق التالي.</li>
+                            <li><strong>إذا كانت الإجابة خاطئة:</strong> يخسر الفريق دوره. (ملاحظة: هذا الخيار الخاطئ سيختفي إذا حاول فريق آخر الإجابة على نفس السؤال).</li>
+                            <li><strong>إذا انتهى الوقت:</strong> يخسر الفريق دوره، ويبقى السؤال بجميع خياراته متاحة.</li>
+                        </ul>
+                    </li>
+                    <li><strong>الفوز:</strong> يستمر اللعب بهذه الطريقة، فريقاً تلو الآخر، حتى يتمكن أحد الفرق من تكوين خط مستقيم من 5 دوائر ملونة بلونه.</li>
+                </ul>
+
+                <h2>أدوات مُقدّم اللعبة:</h2>
+                <ul>
+                    <li><strong>تغيير الدور:</strong> يمكنه اختيار دور أي فريق يدوياً في أي وقت.</li>
+                    <li><strong>تلوين يدوي:</strong> يمكنه تلوين دائرة لأي فريق (دون الحاجة لسؤال) كنوع من الجائزة أو المساعدة.</li>
+                    <li><strong>حذف اللون:</strong> يمكنه حذف لون من دائرة ملونة. عند حذف اللون، ستحصل هذه الدائرة على سؤال "جديد" وتصبح متاحة للعب مرة أخرى.</li>
+                </ul>
+                
+                <h2 style="text-align: center; border: none; margin-top: 2rem; font-size: 1.5rem;">استمتعوا باللعبة!</h2>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTeamSetup(parseInt(teamCountSelect.value));
+            populateHowToPlayModal(); // (جديد: ملء النافذة عند تحميل الصفحة)
+        });
+
+    </script>
+</body>
+</html>
