@@ -402,6 +402,11 @@
                 <button onclick="toggleControlPanel(true)" class="bg-slate-700/80 hover:bg-slate-600 p-2.5 rounded-xl border border-slate-500 transition-all hover:scale-105 hover:shadow-lg group" title="غرفة التحكم">
                     <span class="text-xl group-hover:rotate-90 transition-transform duration-300">🎛️</span>
                 </button>
+                <!-- حالة السحابة -->
+        <div onclick="syncWithCloud()" class="flex flex-col items-center justify-center bg-slate-900/80 px-3 py-1 rounded-lg border border-slate-700/50 min-w-[80px] cursor-pointer hover:bg-slate-800 transition-colors group" title="اضغط للمزامنة اليدوية">
+            <span id="cloudStatusIcon" class="text-xl grayscale opacity-50 transition-all duration-300 group-hover:scale-110">☁️</span>
+            <span id="cloudStatusText" class="text-[10px] text-slate-500 transition-colors duration-300">جاري الاتصال...</span>
+        </div>
                 <!-- زر الإعدادات -->
                 <button onclick="toggleSettingsModal(true)" class="bg-indigo-600/80 hover:bg-indigo-500 p-2.5 rounded-xl border border-indigo-400 transition-all hover:scale-105 hover:shadow-lg group" title="الإعدادات">
                     <span class="text-xl group-hover:rotate-180 transition-transform duration-500">⚙️</span>
@@ -1008,9 +1013,21 @@
         async function initGameWithCloud() {
         if (!supabaseClient) {
             // Supabase غير متوفر: استخدام الحفظ المحلي بصمت
+            updateCloudStatus(false);
             initGame();
             return;
         }
+
+        // إعداد مستمع لتغيرات حالة المصادقة
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                currentUserId = session.user.id;
+                updateCloudStatus(true);
+            } else {
+                currentUserId = null;
+                updateCloudStatus(false);
+            }
+        });
 
         try {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -1018,61 +1035,119 @@
             
             if (session) {
                 currentUserId = session.user.id;
+                updateCloudStatus(true);
                 await loadFromCloud();
             } else {
                 // زائر: استخدام الحفظ المحلي
+                updateCloudStatus(false);
                 initGame(); 
             }
         } catch (err) {
             console.error("خطأ في الاتصال بالسحابة:", err);
+            updateCloudStatus(false);
             initGame(); // Fallback to local
         }
     }
 
-       async function loadFromCloud() {
-            const { data, error } = await supabaseClient
-                .from('game_saves')
-                .select('save_data')
-                .eq('user_id', currentUserId)
-                .eq('game_name', GAME_ID)
-                .single();
+    function updateCloudStatus(isConnected, message = null) {
+        const icon = document.getElementById('cloudStatusIcon');
+        const text = document.getElementById('cloudStatusText');
+        if (!icon || !text) return;
 
-            if (data && data.save_data) {
-                loadGameState(data.save_data);
-                
-                // --- هذا السطر ضروري جداً لكي لا تختفي البيانات عند فتح المحرر ---
-                editorState.originalTreasures = JSON.parse(JSON.stringify(initialTreasureData)); 
-                // -------------------------------------------------------------
-
-                // تحديث الواجهة
-                createTreasureGrid();
-                updateTeamSelectors();
-                updateScoreboard();
-                updateReopenBoxSelect();
-                
-                // ضبط الفريق الحالي
-                const currentTeamEl = document.getElementById('currentTeam');
-                if(currentTeamEl) {
-                    currentTeamEl.value = gameState.currentTeam;
-                }
-            } else {
-                initGame(); 
-            }
+        if (isConnected) {
+            icon.classList.remove('grayscale', 'opacity-50');
+            icon.classList.add('text-blue-400');
+            text.textContent = message || 'متصل بالسحابة';
+            text.className = 'text-[10px] text-blue-400 transition-colors duration-300 font-bold';
+        } else {
+            icon.classList.add('grayscale', 'opacity-50');
+            icon.classList.remove('text-blue-400');
+            text.textContent = message || 'غير متصل';
+            text.className = 'text-[10px] text-slate-500 transition-colors duration-300';
         }
+    }
 
-        async function saveToCloud(dataToSave) {
-            if (!currentUserId || !supabaseClient) return;
-            try {
-                await supabaseClient.from('game_saves').upsert({ 
-                    user_id: currentUserId, 
-                    game_name: GAME_ID, 
-                    save_data: dataToSave,
-                    updated_at: new Date()
-                }, { onConflict: 'user_id, game_name' });
-            } catch (err) {
-                console.error('Error saving to cloud:', err);
-            }
+    // دالة المزامنة اليدوية
+    async function syncWithCloud() {
+        if (!currentUserId || !supabaseClient) {
+            showPointsAnimation('⚠️ يجب تسجيل الدخول أولاً', 'red');
+            return;
         }
+        
+        const text = document.getElementById('cloudStatusText');
+        const originalText = text.textContent;
+        text.textContent = 'جاري المزامنة...';
+        
+        try {
+            await loadFromCloud();
+            showPointsAnimation('✅ تمت المزامنة بنجاح', 'green');
+            text.textContent = 'متصل بالسحابة';
+        } catch (err) {
+            console.error(err);
+            showPointsAnimation('❌ فشل المزامنة', 'red');
+            text.textContent = originalText;
+        }
+    }
+
+    async function loadFromCloud() {
+        if (!currentUserId || !supabaseClient) return;
+        
+        const { data, error } = await supabaseClient
+            .from('game_saves')
+            .select('save_data')
+            .eq('user_id', currentUserId)
+            .eq('game_name', GAME_ID)
+            .single();
+
+        if (data && data.save_data) {
+            console.log("Loading from cloud...");
+            loadGameState(data.save_data);
+            
+            // --- هذا السطر ضروري جداً لكي لا تختفي البيانات عند فتح المحرر ---
+            editorState.originalTreasures = JSON.parse(JSON.stringify(initialTreasureData)); 
+            // -------------------------------------------------------------
+
+            // تحديث الواجهة
+            createTreasureGrid();
+            updateTeamSelectors();
+            updateScoreboard();
+            updateReopenBoxSelect();
+            
+            // ضبط الفريق الحالي
+            const currentTeamEl = document.getElementById('currentTeam');
+            if(currentTeamEl) {
+                currentTeamEl.value = gameState.currentTeam;
+            }
+        } else {
+            // لا يوجد حفظ سحابي، نستخدم المحلي أو الجديد
+            // initGame(); // لا نعيد التهيئة هنا لتجنب مسح الحالة المحلية إذا كان الخطأ مجرد عدم وجود حفظ
+        }
+    }
+
+    async function saveToCloud(dataToSave) {
+        if (!currentUserId || !supabaseClient) return;
+        
+        const text = document.getElementById('cloudStatusText');
+        if(text) text.textContent = 'جاري الحفظ...';
+
+        try {
+            await supabaseClient.from('game_saves').upsert({ 
+                user_id: currentUserId, 
+                game_name: GAME_ID, 
+                save_data: dataToSave,
+                updated_at: new Date()
+            }, { onConflict: 'user_id, game_name' });
+            
+            if(text) text.textContent = 'تم الحفظ ✔️';
+            setTimeout(() => {
+                if(text && text.textContent === 'تم الحفظ ✔️') text.textContent = 'متصل بالسحابة';
+            }, 2000);
+            
+        } catch (err) {
+            console.error('Error saving to cloud:', err);
+            if(text) text.textContent = 'فشل الحفظ ❌';
+        }
+    }
         // مصفوفة روابط صور الخزائن المرقمة (تم التحديث هنا)
         const TREASURE_IMAGE_URLS = [
             // 1-9
