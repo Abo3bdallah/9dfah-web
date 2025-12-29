@@ -1143,12 +1143,14 @@
         if(text) text.textContent = 'جاري الحفظ...';
 
         try {
-            await supabaseClient.from('game_saves').upsert({ 
+            const { error } = await supabaseClient.from('game_saves').upsert({ 
                 user_id: currentUserId, 
                 game_name: GAME_ID, 
                 save_data: dataToSave,
                 updated_at: new Date()
             }, { onConflict: 'user_id, game_name' });
+
+            if (error) throw error;
             
             if(text) text.textContent = 'تم الحفظ ✔️';
             setTimeout(() => {
@@ -1157,7 +1159,12 @@
             
         } catch (err) {
             console.error('Error saving to cloud:', err);
-            if(text) text.textContent = 'فشل الحفظ ❌';
+            // إظهار تنبيه للمستخدم في حالة الخطأ
+            if(text) {
+                text.textContent = 'فشل الحفظ ❌';
+                // عرض رسالة خطأ تفصيلية في الكونسول للمطور
+                console.log("Save failed details:", err.message, err.details, err.hint);
+            }
         }
     }
         // مصفوفة روابط صور الخزائن المرقمة (تم التحديث هنا)
@@ -1306,6 +1313,9 @@
         // 1. دالة حفظ حالة اللعبة في localStorage
         function saveGameState() {
             try {
+                // جلب فتحات الحفظ لإدراجها في السحابة
+                const currentSaveSlots = JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || [null, null, null];
+
                 const stateToSave = {
                     teams: gameState.teams,
                     currentTeam: gameState.currentTeam,
@@ -1313,7 +1323,8 @@
                     openedBoxes: Array.from(gameState.openedBoxes), 
                     treasures: gameState.treasures,
                     teamNames: TEAM_NAMES,
-                    teamImages: TEAM_IMAGE_URLS
+                    teamImages: TEAM_IMAGE_URLS,
+                    saveSlots: currentSaveSlots // إضافة فتحات الحفظ للمزامنة
                 };
                 
                 // 1. الحفظ المحلي
@@ -1335,6 +1346,7 @@
                 // أولوية للسحابة
                 if (cloudData) {
                     loadedState = cloudData;
+                    console.log("Loading cloud state:", loadedState);
                 } else {
                     const savedState = localStorage.getItem(STORAGE_KEY);
                     if (savedState) loadedState = JSON.parse(savedState);
@@ -1351,9 +1363,12 @@
 
                     gameState.openedBoxes = new Set(loadedState.openedBoxes || []);
 
-                    if (loadedState.treasures && loadedState.treasures.length === initialTreasureData.length) {
+                    // تحميل الخزائن (مع دعم المرونة في العدد)
+                    if (loadedState.treasures && Array.isArray(loadedState.treasures) && loadedState.treasures.length > 0) {
+                        console.log("Restoring edited treasures from save...");
                         gameState.treasures = loadedState.treasures;
                     } else {
+                        console.warn("No valid treasures in save, using default.");
                         gameState.treasures = JSON.parse(JSON.stringify(initialTreasureData));
                     }
                     
@@ -1363,6 +1378,17 @@
 
                     if (loadedState.teamImages && loadedState.teamImages.length === 4) {
                         TEAM_IMAGE_URLS = loadedState.teamImages;
+                    }
+
+                    // استعادة فتحات الحفظ (إذا كانت موجودة في السحابة)
+                    if (loadedState.saveSlots) {
+                        console.log("Restoring save slots from cloud...");
+                        localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(loadedState.saveSlots));
+                        // تحديث واجهة الفتحات إذا كانت مفتوحة
+                        const slotsModal = document.getElementById('saveSlotsModal');
+                        if (slotsModal && !slotsModal.classList.contains('hidden')) {
+                            renderSaveSlots();
+                        }
                     }
                     
                     return true;
