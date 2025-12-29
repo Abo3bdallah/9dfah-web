@@ -980,6 +980,14 @@
     </div>
 
     <script>
+        // معالج أخطاء شامل لعرض المشاكل في حال توقف التطبيق
+        window.onerror = function(msg, url, line, col, error) {
+            console.error("Global Error:", msg, "at", line, ":", col);
+            // لا نعرض رسالة للمستخدم العادي لتجنب الإزعاج، لكن الخطأ مسجل في الكونسول
+            // يمكن تفعيل عرض الخطأ هنا إذا دعت الحاجة
+            return false; 
+        };
+
         // مفتاح الحفظ في localStorage
         const STORAGE_KEY = 'robbans_vault_state';
         const SAVE_SLOTS_KEY = 'captainSafe_saveSlots';
@@ -1036,7 +1044,10 @@
             if (session) {
                 currentUserId = session.user.id;
                 updateCloudStatus(true);
-                await loadFromCloud();
+                const loaded = await loadFromCloud();
+                if (!loaded) {
+                    initGame();
+                }
             } else {
                 // زائر: استخدام الحفظ المحلي
                 updateCloudStatus(false);
@@ -1090,7 +1101,7 @@
     }
 
     async function loadFromCloud() {
-        if (!currentUserId || !supabaseClient) return;
+        if (!currentUserId || !supabaseClient) return false;
         
         const { data, error } = await supabaseClient
             .from('game_saves')
@@ -1118,9 +1129,10 @@
             if(currentTeamEl) {
                 currentTeamEl.value = gameState.currentTeam;
             }
+            return true;
         } else {
             // لا يوجد حفظ سحابي، نستخدم المحلي أو الجديد
-            // initGame(); // لا نعيد التهيئة هنا لتجنب مسح الحالة المحلية إذا كان الخطأ مجرد عدم وجود حفظ
+            return false;
         }
     }
 
@@ -2003,10 +2015,23 @@
         
         // إنشاء شبكة الخزائن
         function createTreasureGrid() {
+            // تحقق وإصلاح تلقائي للبيانات التالفة
+            if (!gameState.treasures || gameState.treasures.length === 0) {
+                 console.warn("Found empty treasures in state, resetting...");
+                 gameState.treasures = JSON.parse(JSON.stringify(initialTreasureData));
+            }
+
             const grid = document.getElementById('treasureGrid');
+            if (!grid) return;
             grid.innerHTML = '';
             
-            for (let i = 1; i <= 50; i++) {
+            // استخدام طول المصفوفة الأصلية بدلاً من الرقم الثابت 50
+            const totalTreasures = initialTreasureData.length;
+
+            for (let i = 1; i <= totalTreasures; i++) {
+                // تخطي إذا كانت البيانات ناقصة لهذا العنصر
+                if (!gameState.treasures[i-1]) continue;
+
                 const box = document.createElement('div');
                 // نستخدم flex لجعل الصورة تملأ المربع
                 box.className = `treasure-chest rounded-xl cursor-pointer flex justify-center items-center ${gameState.openedBoxes.has(i) ? 'opened' : ''}`;
@@ -2882,6 +2907,17 @@
         document.addEventListener('DOMContentLoaded', () => {
             // استدعاء الدالة الذكية بدلاً من initGame المباشرة
             initGameWithCloud();
+            
+            // احتياطي: إذا لم يتم تحميل الخزائن خلال 2 ثانية، نقوم بالتهيئة القسرية
+            // هذا يحل مشكلة تعليق التحميل السحابي أو الأخطاء غير المتوقعة
+            setTimeout(() => {
+                const grid = document.getElementById('treasureGrid');
+                if (grid && grid.children.length === 0) {
+                    console.warn("Initialization fallback triggered: Grid is empty after timeout.");
+                    // نحاول التهيئة المحلية
+                    initGame();
+                }
+            }, 2000);
 
             // إضافة مستمع حدث لتحديث الفريق الحالي عند تغييره يدوياً
             const currentTeamSelect = document.getElementById('currentTeam');
