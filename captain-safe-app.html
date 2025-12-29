@@ -15,7 +15,8 @@
         
         body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #0ea5e9 75%, #06b6d4 100%);
+            background: radial-gradient(circle at top center, #1e3a8a 0%, #0f172a 100%);
+            min-height: 100vh;
             position: relative;
             overflow-x: hidden;
         }
@@ -27,10 +28,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                linear-gradient(180deg, rgba(30,58,138,0.8) 0%, rgba(6,182,212,0.6) 100%);
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
             pointer-events: none;
             z-index: -1;
         }
@@ -100,11 +98,12 @@
         
         .ship-container {
             position: relative;
-            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-            border: 2px solid #0284c7;
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
             box-shadow: 
-                0 8px 25px rgba(2,132,199,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.2);
+                0 20px 40px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
         }
         
         /* إخفاء القارب القديم */
@@ -167,14 +166,12 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: 200%;
-            height: 100px;
-            background: linear-gradient(90deg, 
-                rgba(6,182,212,0.3) 0%, 
-                rgba(14,165,233,0.2) 50%, 
-                rgba(6,182,212,0.3) 100%);
-            animation: oceanWave 8s linear infinite;
+            width: 100%;
+            height: 300px;
+            background: radial-gradient(ellipse at bottom center, rgba(6,182,212,0.15) 0%, transparent 70%);
             z-index: -1;
+            animation: none;
+            pointer-events: none;
         }
         
         @keyframes oceanWave {
@@ -234,68 +231,181 @@
         .close-button:hover {
             background: rgba(255, 0, 0, 0.8);
         }
+
+        /* --- New UI Styles --- */
+        
+        /* Mission Card Style */
+        .mission-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border: 1px dashed #fbbf24;
+            border-radius: 16px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* Team Selection Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .team-card-select {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid #475569;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .team-card-select:hover {
+            transform: translateY(-3px);
+            border-color: #94a3b8;
+        }
+        .team-card-select.selected {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+        .team-card-select.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #fbbf24;
+            color: #000;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .team-card-select img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+        .team-card-select span {
+            font-size: 10px;
+            font-weight: bold;
+            color: #e2e8f0;
+            text-align: center;
+        }
+
+        /* Smart Stepper */
+        .stepper-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        .stepper-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, filter 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        .stepper-btn:active {
+            transform: scale(0.95);
+        }
+        .stepper-btn.minus {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .stepper-btn.plus {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .stepper-display {
+            flex: 1;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: white;
+            background: transparent;
+            border: none;
+            font-family: 'Courier New', monospace;
+            width: 80px;
+        }
+        
+        /* 3D Action Buttons */
+        .btn-3d {
+            transition: all 0.1s;
+            position: relative;
+            top: 0;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+        }
+        .btn-3d:active {
+            top: 3px;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body class="min-h-screen text-white relative">
     <div class="ocean-waves"></div>
     <!-- الشاشة الرئيسية -->
     <div id="mainScreen" class="container mx-auto px-4 py-6">
-        <!-- شريط الإدارة العلوي -->
-        <div class="ship-container backdrop-blur-md rounded-2xl p-4 md:p-6 mb-8 border border-cyan-300/30 wave-animation">
-            <!-- العنوان و زر الإعدادات -->
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-amber-300 flex items-center justify-center gap-2 flex-grow">
-                    <!-- استبدال أيقونة القارب بصورة -->
-                    <img src="images/rs4LLx24-image.png" alt="Boat Icon" class="w-8 h-8 md:w-10 md:h-10 transform -scale-x-100">
-                    <span>خزنة ربان</span>
-                    <span class="text-2xl">⚓</span>
-                </h1>
-                
-                <!-- زر الإعدادات -->
-                <button onclick="toggleSettingsModal(true)" class="bg-indigo-600 hover:bg-indigo-700 p-3 rounded-full font-semibold transition-colors border border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    <span class="text-xl">⚙️</span>
-                </button>
-            </div>
+        <!-- شريط كابتن السفينة (HUD) -->
+        <div class="ship-container backdrop-blur-md rounded-2xl p-3 mb-8 border border-cyan-300/30 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-4 z-40 shadow-2xl">
             
-            <!-- اختيار الطاقم -->
-            <div class="mb-4">
-                <select id="currentTeam" class="w-full bg-cyan-600 text-white px-4 py-3 rounded-lg font-semibold border border-cyan-400 text-center">
-                    <!-- سيتم ملؤه بواسطة JavaScript -->
-                </select>
+            <!-- الجزء الأيمن: العنوان -->
+            <div class="flex items-center gap-3 order-1 md:order-1">
+                 <img src="images/rs4LLx24-image.png" alt="Boat Icon" class="w-12 h-12 transform -scale-x-100 drop-shadow-lg filter brightness-110">
+                 <div class="hidden md:block text-right">
+                     <h1 class="text-2xl font-bold text-amber-300" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">خزنة ربان</h1>
+                     <p class="text-xs text-cyan-300 opacity-80">الإصدار الذهبي ⚓</p>
+                 </div>
             </div>
-            
-            <!-- أزرار الإدارة الرئيسية (تبقى الأهم) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                <!-- إضافة نقاط -->
-                <div class="flex gap-2">
-                    <input type="number" id="addPointsInput" placeholder="النقاط" class="flex-1 bg-cyan-800/50 text-white placeholder-cyan-200 px-3 py-2 rounded-lg text-center border border-cyan-400" min="0">
-                    <button onclick="addPoints()" class="bg-emerald-600 hover:bg-emerald-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-emerald-400 whitespace-nowrap">
-                        <span class="text-lg">💰</span> إضافة
-                    </button>
-                </div>
-                
-                <!-- خصم نقاط -->
-                <div class="flex gap-2">
-                    <input type="number" id="subtractPointsInput" placeholder="النقاط" class="flex-1 bg-cyan-800/50 text-white placeholder-cyan-200 px-3 py-2 rounded-lg text-center border border-cyan-400" min="0">
-                    <button onclick="subtractPoints()" class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-red-400 whitespace-nowrap">
-                        <span class="text-lg">⚡</span> خصم
-                    </button>
-                </div>
-                
-                <!-- إعادة فتح خزنة -->
-                <div class="flex gap-2 col-span-1 sm:col-span-2 lg:col-span-1">
-                    <select id="reopenBoxSelect" class="flex-1 bg-cyan-800/50 text-white px-3 py-2 rounded-lg border border-cyan-400">
-                        <option value="">اختر خزنة</option>
-                    </select>
-                    <button onclick="reopenBox()" class="bg-amber-600 hover:bg-amber-700 px-3 py-2 rounded-lg font-semibold transition-colors border border-amber-400 whitespace-nowrap">
-                        <span class="text-lg">🗝️</span> فتح
-                    </button>
-                </div>
-            </div>
-            
-            <!-- لوحة النقاط -->
-            <div id="scoreboard" class="grid gap-4 mt-6">
+
+            <!-- الجزء الأوسط: لوحة النقاط (شريط أفقي) -->
+            <div id="scoreboard" class="flex-1 w-full md:w-auto order-3 md:order-2 flex flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
                 <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+
+            <!-- الجزء الأيسر: الأدوات -->
+            <div class="flex items-center gap-2 order-2 md:order-3">
+                <!-- زر غرفة التحكم (جديد) -->
+                <button onclick="toggleControlPanel(true)" class="bg-slate-700/80 hover:bg-slate-600 p-2.5 rounded-xl border border-slate-500 transition-all hover:scale-105 hover:shadow-lg group" title="غرفة التحكم">
+                    <span class="text-xl group-hover:rotate-90 transition-transform duration-300">🎛️</span>
+                </button>
+                <!-- زر الإعدادات -->
+                <button onclick="toggleSettingsModal(true)" class="bg-indigo-600/80 hover:bg-indigo-500 p-2.5 rounded-xl border border-indigo-400 transition-all hover:scale-105 hover:shadow-lg group" title="الإعدادات">
+                    <span class="text-xl group-hover:rotate-180 transition-transform duration-500">⚙️</span>
+                </button>
             </div>
         </div>
         
@@ -306,47 +416,98 @@
     </div>
     
     <!-- شاشة الإعدادات -->
-    <div id="settingsModal" class="settings-container hidden">
-        <div class="settings-card">
-            <h2 class="text-2xl font-bold text-amber-300 mb-6 text-center">⚙️ إعدادات اللعبة ⚓</h2>
+    <div id="settingsModal" class="modal-container hidden">
+        <div class="modal-card bg-gradient-to-b from-slate-800 to-slate-900 border-2 border-cyan-500/30 max-w-lg w-full transform transition-all shadow-[0_0_50px_rgba(6,182,212,0.15)] rounded-2xl p-6 relative overflow-hidden">
+            <!-- خلفية زخرفية -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -ml-32 -mb-32 pointer-events-none"></div>
 
-            <div class="space-y-4">
-                
-                <!-- تحرير الفرق (تم استبدال اختيار عدد الفرق وزر القلم) -->
-                <button onclick="openTeamConfigModal(); toggleSettingsModal(false);" class="w-full bg-indigo-600 hover:bg-indigo-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-indigo-400">
-                    <span class="text-lg">🚢</span> إعدادات وتعديل الفرق
-                </button>
-                
-                <!-- تحرير الخزائن (نقل إلى الإعدادات) -->
-                <button onclick="openTreasureEditor(); toggleSettingsModal(false);" class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-purple-400">
-                    <span class="text-lg">✏️</span> تحرير وتعديل الخزائن
-                </button>
+            <div class="relative z-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-black text-white drop-shadow-md flex items-center justify-center gap-3 tracking-wide">
+                        <span class="text-4xl filter drop-shadow-lg">⚙️</span>
+                        إعدادات اللعبة
+                    </h2>
+                    <div class="h-1 w-24 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto mt-3 rounded-full opacity-70"></div>
+                </div>
 
-                <!-- فتح جميع الخزائن -->
-                <button onclick="reopenAllBoxes(); toggleSettingsModal(false);" class="w-full bg-amber-600 hover:bg-amber-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-amber-400">
-                    <span class="text-lg">🗝️</span> إعادة فتح جميع الخزائن
-                </button>
-                
-                <!-- تصفير النقاط -->
-                <button onclick="resetPoints(); toggleSettingsModal(false);" class="w-full bg-red-600 hover:bg-red-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-red-400">
-                    <span class="text-lg">🌊</span> تصفير نقاط جميع الفرق
-                </button>
-                
-                <!-- إعادة تعيين الكل -->
-                <button onclick="resetBoxes(); toggleSettingsModal(false);" class="w-full bg-yellow-600 hover:bg-yellow-700 px-4 py-3 rounded-xl font-semibold transition-colors border border-yellow-400">
-                    <span class="text-lg">⚓</span> إعادة تعيين الكل (نقاط وخزائن وتعديلات)
-                </button>
-            </div>
+                <div class="grid grid-cols-1 gap-5">
+                    
+                    <!-- مجموعة التحرير والإدارة (أزرار كبيرة ملونة) -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="openTeamConfigModal(); toggleSettingsModal(false);" class="group relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 border-t border-white/10 shadow-lg rounded-2xl p-5 transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <span class="text-4xl block mb-3 filter drop-shadow-md">🚢</span>
+                            <span class="font-extrabold text-white text-xl block tracking-wide drop-shadow-sm">إعداد الفرق</span>
+                            <span class="text-sm text-blue-50 block mt-1 font-semibold opacity-90">الأسماء • العدد • النقاط</span>
+                        </button>
 
-            <div class="text-center mt-6">
-                <!-- خانة أحمد الذبياني -->
-                <p class="text-sm text-cyan-200/50 mb-4">
-                    إعداد: أحمد الذبياني
-                </p>
-                
-                <button onclick="toggleSettingsModal(false)" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-lg transition-colors border border-cyan-400">
-                    إغلاق الإعدادات
-                </button>
+                        <button onclick="openTreasureEditor(); toggleSettingsModal(false);" class="group relative overflow-hidden bg-gradient-to-br from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 border-t border-white/10 shadow-lg rounded-2xl p-5 transition-all duration-300 transform hover:-translate-y-1">
+                            <div class="absolute right-0 top-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <span class="text-4xl block mb-3 filter drop-shadow-md">✏️</span>
+                            <span class="font-extrabold text-white text-xl block tracking-wide drop-shadow-sm">محرر الخزائن</span>
+                            <span class="text-sm text-purple-50 block mt-1 font-semibold opacity-90">المحتوى • الجوائز • الصور</span>
+                        </button>
+                    </div>
+
+                    <!-- فاصل -->
+                    <div class="relative py-2">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-700"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">إجراءات النظام</span>
+                        </div>
+                    </div>
+
+                    <!-- مجموعة الإجراءات (قائمة أنيقة) -->
+                    <div class="space-y-3">
+                         <button onclick="reopenAllBoxes(); toggleSettingsModal(false);" class="w-full flex items-center justify-between bg-slate-800/80 hover:bg-slate-700 border border-slate-700 hover:border-amber-500/50 px-5 py-4 rounded-xl group transition-all duration-200 shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:scale-110 transition-all duration-300 border border-amber-500/20 group-hover:border-amber-500">
+                                    <span class="text-2xl">🗝️</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-white font-extrabold text-lg group-hover:text-amber-300 transition-colors">إعادة فتح جميع الخزائن</span>
+                                    <span class="block text-sm text-slate-400 group-hover:text-amber-100/80 transition-colors font-medium">استعادة الصناديق المغلقة فقط</span>
+                                </div>
+                            </div>
+                            <span class="text-slate-500 group-hover:text-amber-500 text-xl font-bold">↺</span>
+                        </button>
+
+                        <button onclick="resetPoints(); toggleSettingsModal(false);" class="w-full flex items-center justify-between bg-slate-800/80 hover:bg-slate-700 border border-slate-700 hover:border-red-500/50 px-5 py-4 rounded-xl group transition-all duration-200 shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center group-hover:bg-red-500 group-hover:scale-110 transition-all duration-300 border border-red-500/20 group-hover:border-red-500">
+                                    <span class="text-2xl">🌊</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-white font-extrabold text-lg group-hover:text-red-300 transition-colors">تصفير النقاط</span>
+                                    <span class="block text-sm text-slate-400 group-hover:text-red-100/80 transition-colors font-medium">إعادة جميع الفرق إلى 50 نقطة</span>
+                                </div>
+                            </div>
+                            <span class="text-slate-500 group-hover:text-red-500 text-xl font-bold">↺</span>
+                        </button>
+
+                         <button onclick="resetBoxes(); toggleSettingsModal(false);" class="w-full flex items-center justify-between bg-slate-800/80 hover:bg-slate-700 border border-slate-700 hover:border-orange-500/50 px-5 py-4 rounded-xl group transition-all duration-200 shadow-md">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500 group-hover:scale-110 transition-all duration-300 border border-orange-500/20 group-hover:border-orange-500">
+                                    <span class="text-2xl">☢️</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-white font-extrabold text-lg group-hover:text-orange-300 transition-colors">إعادة ضبط المصنع</span>
+                                    <span class="block text-sm text-slate-400 group-hover:text-orange-100/80 transition-colors font-medium">حذف كل شيء والبدء من الصفر</span>
+                                </div>
+                            </div>
+                            <span class="text-slate-500 group-hover:text-orange-500 text-xl font-bold">⚠</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-700/50 flex justify-center">
+                    <button onclick="toggleSettingsModal(false)" class="bg-slate-700 hover:bg-slate-600 text-white px-12 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 text-lg border border-slate-600 hover:border-slate-500">
+                        إغلاق القائمة
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -391,64 +552,135 @@
     <div id="treasureScreen" class="hidden fixed inset-0 z-50">
         <div class="ocean-waves"></div>
         <div class="container mx-auto px-4 py-8 h-full flex items-center justify-center">
-            <div class="ship-container backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full border border-cyan-300/30 slide-in relative">
+            <div class="ship-container backdrop-blur-md rounded-3xl p-8 max-w-2xl w-full border border-cyan-300/30 slide-in relative overflow-y-auto max-h-[90vh] custom-scrollbar">
                 
-                <!-- زر إلغاء الإجراء (X) في الزاوية العلوية اليسرى -->
-                <div onclick="cancelAction()" class="close-button" title="إلغاء الإجراء (إعادة فتح الخزنة)">
+                <!-- زر إلغاء الإجراء (X) -->
+                <div onclick="cancelAction()" class="close-button" title="إلغاء الإجراء">
                     &times;
                 </div>
 
                 <div class="text-center">
-                    <div id="treasureIcon" class="text-8xl mb-6">🏴‍☠️</div>
-                    <h2 id="treasureTitle" class="text-3xl font-bold mb-6 text-amber-300">خزنة رقم 1</h2>
-                    <div id="treasureContent" class="text-xl mb-8 leading-relaxed">
-                        <!-- محتوى الخزنة سيظهر هنا -->
+                    <div id="treasureIcon" class="text-8xl mb-4 filter drop-shadow-xl animate-bounce-slow">🏴‍☠️</div>
+                    
+                    <!-- عرض الفريق الذي فتح الخزنة -->
+                    <div id="openerTeamDisplay" class="flex items-center justify-center gap-3 mb-4 bg-slate-900/60 w-fit mx-auto px-5 py-2 rounded-full border border-slate-600/50 shadow-lg backdrop-blur-sm transform hover:scale-105 transition-all duration-300 hidden">
+                         <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">بواسطة</span>
+                         <div class="h-4 w-[1px] bg-slate-600"></div>
+                         <img id="openerTeamImage" src="" class="w-6 h-6 rounded-full object-cover ring-2 ring-amber-500/50 shadow-sm">
+                         <span id="openerTeamName" class="text-amber-100 font-bold text-sm"></span>
                     </div>
-                    <div id="treasurePoints" class="text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed">
+
+                    <h2 id="treasureTitle" class="text-3xl font-bold mb-4 text-amber-300 drop-shadow-md">خزنة رقم 1</h2>
+                    
+                    <div class="mission-card mb-6">
+                        <div id="treasureContent" class="text-xl leading-relaxed text-slate-200 font-medium">
+                            <!-- محتوى الخزنة سيظهر هنا -->
+                        </div>
+                    </div>
+
+                    <div id="treasurePoints" class="text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed transition-all duration-300 transform hover:scale-105">
                         <!-- نقاط الخزنة ستظهر هنا -->
                     </div>
+
+                    <!-- اختيار فريق الخصم (شبكة) -->
                     <div id="teamSelector" class="hidden mb-6">
-                        <p class="text-xl mb-4 text-amber-300">اختر الطاقم الذي سيخسر النقاط:</p>
-                        <select id="penaltyTeamSelect" class="bg-red-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-red-400">
-                            <!-- سيتم ملؤه بواسطة JavaScript -->
-                        </select>
+                        <p class="text-xl mb-4 text-amber-300 font-bold flex items-center justify-center gap-2">
+                            <span>☠️</span> اختر الطاقم الضحية:
+                        </p>
+                        <!-- الشبكة التفاعلية -->
+                        <div id="penaltyTeamGrid" class="team-grid"></div>
+                        <!-- عنصر مخفي للحفاظ على التوافق مع الكود القديم -->
+                        <select id="penaltyTeamSelect" class="hidden"></select>
                     </div>
+
+                    <!-- إدخال النقاط المخصصة (عداد ذكي) -->
                     <div id="pointsInput" class="hidden mb-6">
-                        <p class="text-xl mb-4 text-amber-300">أدخل عدد النقاط:</p>
-                        <input type="number" id="customPointsInput" class="bg-cyan-800/50 text-white placeholder-cyan-200 px-6 py-3 rounded-xl text-center text-lg font-semibold border border-cyan-400" min="0" max="50" placeholder="النقاط">
+                        <p class="text-xl mb-4 text-amber-300 font-bold">حدد قيمة النقاط:</p>
+                        <div class="stepper-container">
+                            <button class="stepper-btn minus" onclick="adjustValue('customPointsInput', -1)">-</button>
+                            <input type="number" id="customPointsInput" class="stepper-display" value="0" readonly>
+                            <button class="stepper-btn plus" onclick="adjustValue('customPointsInput', 1)">+</button>
+                        </div>
                     </div>
-                    <div id="charitySelector" class="hidden mb-6">
-                        <div class="mb-4">
-                            <p class="text-xl mb-2 text-amber-300">الطاقم المانح:</p>
-                            <select id="donorTeamSelect" class="bg-cyan-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-cyan-400">
-                                <!-- سيتم ملؤه بواسطة JavaScript -->
-                            </select>
+
+                    <!-- الأعمال الخيرية (شبكات) -->
+                    <div id="charitySelector" class="hidden mb-6 space-y-6">
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-600">
+                            <p class="text-lg mb-3 text-cyan-300 font-bold flex items-center gap-2">
+                                <span>📤</span> الطاقم المانح:
+                            </p>
+                            <div id="donorTeamGrid" class="team-grid"></div>
+                            <select id="donorTeamSelect" class="hidden"></select>
                         </div>
-                        <div class="mb-4">
-                            <p class="text-xl mb-2 text-amber-300">الطاقم المستقبل:</p>
-                            <select id="receiverTeamSelect" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold text-lg border border-emerald-400">
-                                <!-- سيتم ملؤه بواسطة JavaScript -->
-                            </select>
+
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-600">
+                            <p class="text-lg mb-3 text-emerald-300 font-bold flex items-center gap-2">
+                                <span>📥</span> الطاقم المستقبل:
+                            </p>
+                            <div id="receiverTeamGrid" class="team-grid"></div>
+                            <select id="receiverTeamSelect" class="hidden"></select>
                         </div>
+
                         <div>
-                            <p class="text-xl mb-2 text-amber-300">عدد النقاط المنقولة:</p>
-                            <input type="number" id="charityPointsInput" class="bg-cyan-800/50 text-white placeholder-cyan-200 px-6 py-3 rounded-xl text-center text-lg font-semibold border border-cyan-400" min="0" placeholder="النقاط">
+                            <p class="text-lg mb-3 text-amber-300 font-bold">عدد النقاط المنقولة:</p>
+                            <div class="stepper-container">
+                                <button class="stepper-btn minus" onclick="adjustValue('charityPointsInput', -1)">-</button>
+                                <input type="number" id="charityPointsInput" class="stepper-display" value="0" readonly>
+                                <button class="stepper-btn plus" onclick="adjustValue('charityPointsInput', 1)">+</button>
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- واجهة الهجوم الجديدة (محسنة) -->
+                    <div id="attackInterface" class="hidden mb-6 p-1 bg-gradient-to-br from-red-900/40 to-slate-900/80 rounded-2xl border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                        <div class="p-5 rounded-xl bg-slate-900/60 backdrop-blur-sm">
+                            <div class="mb-6">
+                                <p class="text-xl mb-3 text-red-300 font-black flex items-center justify-center gap-2 uppercase tracking-wider">
+                                    <span>🎯</span> تحديد الهدف
+                                </p>
+                                <div id="attackTargetGrid" class="team-grid"></div>
+                                <select id="attackTargetSelect" class="hidden"></select>
+                            </div>
+                            
+                            <div class="border-t border-red-500/20 pt-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <p class="text-xl text-red-300 font-bold flex items-center gap-2">
+                                        <span>💥</span> قوة الضربة:
+                                    </p>
+                                    <span class="text-xs font-mono text-red-200 bg-red-950/80 px-3 py-1 rounded-full border border-red-500/50 shadow-inner">
+                                        MAX: <span id="attackMaxLabel" class="font-bold text-red-400">10</span>
+                                    </span>
+                                </div>
+                                
+                                <div class="stepper-container w-full max-w-full">
+                                    <button class="stepper-btn minus" onclick="adjustValue('attackDamageInput', -1)">-</button>
+                                    <input type="number" id="attackDamageInput" class="stepper-display" value="1" readonly>
+                                    <button class="stepper-btn plus" onclick="adjustValue('attackDamageInput', 1)">+</button>
+                                </div>
+                                
+                                <p id="attackCostLabel" class="text-sm text-yellow-400 mt-3 text-center font-bold bg-yellow-900/20 py-2 rounded-lg border border-yellow-500/20 flex items-center justify-center gap-2">
+                                    <!-- سيتم تعبئته -->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="pointsEffect" class="text-4xl font-bold mb-6 hidden">
                         <!-- تأثير النقاط سيظهر هنا -->
                     </div>
-                    <div id="actionButtons" class="flex gap-4 justify-center mb-6">
+
+                    <div id="actionButtons" class="flex flex-col sm:flex-row gap-4 justify-center mb-2">
                         <!-- زر التنفيذ -->
-                        <button onclick="executeAction()" class="bg-emerald-600 hover:bg-emerald-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-emerald-400">
-                            ⚓ تنفيذ
+                        <button onclick="executeAction()" class="btn-3d bg-gradient-to-b from-emerald-500 to-emerald-700 hover:from-emerald-400 hover:to-emerald-600 text-white px-8 py-4 rounded-xl font-bold text-xl border-b-4 border-emerald-900 active:border-b-0">
+                            ⚓ تنفيذ الأمر
                         </button>
-                        <!-- زر عدم التنفيذ الجديد -->
-                        <button onclick="skipAction()" class="bg-yellow-600 hover:bg-yellow-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-yellow-400">
-                            🚫 عدم تنفيذ
+                        <!-- زر التجاوز -->
+                        <button onclick="skipAction()" class="btn-3d bg-gradient-to-b from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-slate-200 px-6 py-4 rounded-xl font-bold text-lg border-b-4 border-slate-900 active:border-b-0">
+                            ⏭️ تجاوز
                         </button>
                     </div>
-                    <button id="backButton" onclick="closeTreasure(false)" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors pulse-glow hidden border border-cyan-400">
+
+                    <button id="backButton" onclick="closeTreasure(true)" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors pulse-glow hidden border border-cyan-400 mt-4">
                         العودة للخزائن 🚢
                     </button>
                 </div>
@@ -456,96 +688,277 @@
         </div>
     </div>
     
-    <!-- شاشة محرر الخزائن (بدون تغيير) -->
-    <div id="treasureEditor" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
-        <div class="ocean-waves"></div>
-        <div class="container mx-auto px-4 py-8 h-full flex items-center justify-center">
-            <div class="ship-container backdrop-blur-md rounded-3xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto border border-cyan-300/30 slide-in">
-                <div class="text-center mb-6">
-                    <h2 class="text-3xl font-bold text-amber-300 mb-4">✏️ محرر الخزائن ⚓</h2>
-                    <p class="text-cyan-200">يمكنك تعديل محتوى أي خزنة من الخزائن الـ 50</p>
+    <!-- شاشة محرر الخزائن الجديدة -->
+    <div id="treasureEditor" class="hidden fixed inset-0 z-50 bg-slate-900 transition-all duration-300">
+        <!-- خلفية زخرفية ثابتة تغطي الشاشة بالكامل -->
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 opacity-90 pointer-events-none"></div>
+        
+        <div class="container mx-auto px-4 py-4 h-full flex flex-col relative z-10">
+            <!-- الهيدر -->
+            <div class="flex justify-between items-center mb-6 bg-slate-800/50 p-4 rounded-2xl border border-slate-600">
+                <div class="flex items-center gap-4">
+                    <div class="bg-amber-500/20 p-3 rounded-xl border border-amber-500/50">
+                        <span class="text-3xl">✏️</span>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-amber-300">محرر الخزائن المتقدم</h2>
+                        <p class="text-slate-300 text-sm">خصص تجربة اللعب بالكامل</p>
+                    </div>
                 </div>
+                <button onclick="openSaveSlotsModal()" class="bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-200 px-6 py-2 rounded-xl transition-colors border border-indigo-500/50 font-bold ml-2">
+                    💾 النماذج المحفوظة
+                </button>
+                <button onclick="closeTreasureEditor()" class="bg-red-500/20 hover:bg-red-500/40 text-red-200 px-6 py-2 rounded-xl transition-colors border border-red-500/50 font-bold">
+                    خروج ✖
+                </button>
+            </div>
+
+            <!-- المحتوى الرئيسي -->
+            <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden pb-4">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- قائمة الخزائن -->
-                    <div class="bg-cyan-900/30 rounded-xl p-6 border border-cyan-400/30">
-                        <h3 class="text-xl font-bold text-amber-300 mb-4">📦 اختر خزنة للتعديل</h3>
-                        <div class="grid grid-cols-5 gap-2 mb-4 max-h-60 overflow-y-auto">
-                            <!-- سيتم إنشاء أزرار الخزائن هنا -->
-                        </div>
-                        <div class="text-center">
-                            <span class="text-sm text-cyan-300">الخزنة المحددة: </span>
-                            <span id="selectedBoxNumber" class="font-bold text-amber-300">لم يتم الاختيار</span>
+                <!-- القسم الأيمن: شبكة الخزائن (4 أعمدة) -->
+                <div class="lg:col-span-4 bg-slate-800/60 rounded-2xl border border-slate-700 p-4 flex flex-col h-full overflow-hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-cyan-300">🗺️ خريطة الخزائن</h3>
+                        <span class="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300">50 خزنة</span>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <div id="editorGrid" class="grid grid-cols-5 gap-2">
+                            <!-- سيتم توليد الشبكة هنا بواسطة JS -->
                         </div>
                     </div>
                     
-                    <!-- نموذج التعديل -->
-                    <div class="bg-cyan-900/30 rounded-xl p-6 border border-cyan-400/30">
-                        <h3 class="text-xl font-bold text-amber-300 mb-4">⚙️ تعديل الخزنة</h3>
-                        <div id="editForm" class="hidden space-y-4">
-                            <div>
-                                <label class="block text-cyan-200 mb-2">🎭 الأيقونة:</label>
-                                <input type="text" id="editIcon" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="🏴‍☠️">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-cyan-200 mb-2">📝 العنوان:</label>
-                                <input type="text" id="editTitle" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="عنوان الخزنة">
-                            </div>
-                            
-                            <div>
-                                <label class="block text-cyan-200 mb-2">📄 المحتوى:</label>
-                                <textarea id="editContent" rows="3" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="وصف ما يحدث في هذه الخزنة"></textarea>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-cyan-200 mb-2">🏷️ نوع الخزنة:</label>
-                                <select id="editType" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400">
-                                    <option value="bonus">🎉 مكافأة</option>
-                                    <option value="penalty">💔 خصم</option>
-                                    <option value="challenge">🎯 تحدي</option>
-                                    <option value="gift">🎁 هدية لمجموعة أخرى</option>
-                                    <option value="charity">💝 نقل نقاط</option>
-                                    <option value="neutral">⏸️ محايد</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-cyan-200 mb-2">💰 النقاط:</label>
-                                <select id="editPointsType" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400 mb-2">
-                                    <option value="fixed">عدد ثابت</option>
-                                    <option value="double">مضاعفة النقاط</option>
-                                    <option value="half">نصف النقاط</option>
-                                    <option value="input_bonus">إدخال نقاط للإضافة</option>
-                                    <option value="input_penalty">إدخال نقاط للخصم</option>
-                                    <option value="variable_penalty_self">خصم متغير على النفس</option>
-                                    <option value="variable_penalty_big_self">خصم متغير كبير على النفس</option>
-                                    <option value="charity">نقل نقاط</option>
-                                </select>
-                                <input type="number" id="editPointsValue" class="w-full bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" placeholder="عدد النقاط (للعدد الثابت فقط)">
-                            </div>
-                            
-                            <div class="flex gap-4">
-                                <button onclick="saveTreasureEdit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg font-semibold transition-colors border border-emerald-400">
-                                    💾 حفظ التعديل
-                                </button>
-                                <button onclick="resetToDefault()" class="flex-1 bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg font-semibold transition-colors border border-amber-400">
-                                    🔄 استعادة الأصلي
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div id="noSelection" class="text-center text-cyan-300">
-                            👆 اختر خزنة من القائمة أعلاه للبدء في التعديل
+                    <div class="mt-4 pt-4 border-t border-slate-700">
+                        <div class="flex gap-2 text-xs text-slate-400 justify-center">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-600"></span>أصلي</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span>معدل</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-cyan-400 border border-white"></span>محدد</span>
                         </div>
                     </div>
                 </div>
-                
-                <div class="text-center mt-8">
-                    <button onclick="closeTreasureEditor()" class="bg-cyan-600 hover:bg-cyan-700 px-8 py-3 rounded-xl font-semibold text-xl transition-colors border border-cyan-400">
-                        🚢 العودة للعبة
-                    </button>
+
+                <!-- القسم الأيسر: لوحة التحكم (8 أعمدة) -->
+                <div class="lg:col-span-8 bg-slate-800/60 rounded-2xl border border-slate-700 p-6 flex flex-col h-full overflow-y-auto relative">
+                    
+                    <!-- حالة عدم الاختيار -->
+                    <div id="noSelection" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 z-10 bg-slate-800/60 backdrop-blur-sm rounded-2xl">
+                        <span class="text-6xl mb-4 opacity-50">👆</span>
+                        <p class="text-xl">اختر خزنة من القائمة الجانبية للبدء</p>
+                    </div>
+
+                    <!-- نموذج التعديل -->
+                    <div id="editForm" class="hidden h-full flex flex-col">
+                        <!-- رأس النموذج -->
+                        <div class="flex justify-between items-start mb-6 border-b border-slate-700 pb-4">
+                            <div>
+                                <span class="text-sm text-cyan-400 font-bold tracking-wider">جاري تعديل الخزنة رقم</span>
+                                <h2 class="text-4xl font-black text-white mt-1" id="selectedBoxDisplay">#00</h2>
+                            </div>
+                            <button onclick="resetToDefault()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-2 rounded-lg transition-colors border border-slate-600 flex items-center gap-2">
+                                <span>🔄</span> استعادة الإعدادات الأصلية لهذه الخزنة
+                            </button>
+                        </div>
+
+                        <!-- اختيار نوع المحتوى (بطاقات) -->
+                        <div class="mb-8">
+                            <label class="block text-slate-300 mb-3 font-bold">ماذا يوجد داخل الخزنة؟</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="contentType" value="bonus" class="peer sr-only" onchange="updateFormVisibility()">
+                                    <div class="h-full p-4 bg-slate-700/50 border-2 border-transparent rounded-xl hover:bg-slate-700 peer-checked:border-emerald-500 peer-checked:bg-emerald-500/10 transition-all text-center group">
+                                        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">💰</div>
+                                        <div class="font-bold text-slate-200">نقاط إيجابية</div>
+                                    </div>
+                                </label>
+                                
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="contentType" value="penalty" class="peer sr-only" onchange="updateFormVisibility()">
+                                    <div class="h-full p-4 bg-slate-700/50 border-2 border-transparent rounded-xl hover:bg-slate-700 peer-checked:border-red-500 peer-checked:bg-red-500/10 transition-all text-center group">
+                                        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">💣</div>
+                                        <div class="font-bold text-slate-200">عقوبة / خصم</div>
+                                    </div>
+                                </label>
+
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="contentType" value="gift" class="peer sr-only" onchange="updateFormVisibility()">
+                                    <div class="h-full p-4 bg-slate-700/50 border-2 border-transparent rounded-xl hover:bg-slate-700 peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all text-center group">
+                                        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">🎁</div>
+                                        <div class="font-bold text-slate-200">هدية للغير</div>
+                                    </div>
+                                </label>
+
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="contentType" value="other" class="peer sr-only" onchange="updateFormVisibility()">
+                                    <div class="h-full p-4 bg-slate-700/50 border-2 border-transparent rounded-xl hover:bg-slate-700 peer-checked:border-purple-500 peer-checked:bg-purple-500/10 transition-all text-center group">
+                                        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">❓</div>
+                                        <div class="font-bold text-slate-200">أخرى / عشوائي</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- تفاصيل المحتوى -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <!-- اليمين: البيانات الأساسية -->
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block text-slate-400 text-xs mb-1">الأيقونة التعبيرية</label>
+                                    <div class="relative">
+                                        <button type="button" onclick="toggleEmojiPicker()" id="emojiPickerBtn" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-2xl h-11 flex items-center justify-between hover:border-amber-500 transition-all group">
+                                            <span id="selectedEmojiDisplay">🏴‍☠️</span>
+                                            <span class="text-[10px] text-slate-500 group-hover:text-amber-500">تغيير ▼</span>
+                                        </button>
+                                        <input type="hidden" id="editIcon">
+                                        
+                                        <!-- قائمة الأيقونات المنبثقة -->
+                                        <div id="emojiPickerDropdown" class="hidden absolute top-full right-0 mt-2 w-72 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto p-3 custom-scrollbar">
+                                            <div class="text-xs text-slate-400 mb-2 font-bold">اختر أيقونة:</div>
+                                            <div id="emojiGrid" class="grid grid-cols-6 gap-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-xs mb-1">العنوان الرئيسي</label>
+                                    <input type="text" id="editTitle" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all outline-none" placeholder="عنوان يظهر للاعبين">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-xs mb-1">آلية النقاط</label>
+                                    <select id="editPointsType" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all outline-none appearance-none">
+                                        <option value="fixed">🔢 عدد نقاط ثابت</option>
+                                        <option value="double">✖️2 مضاعفة النقاط</option>
+                                        <option value="half">➗2 نصف النقاط</option>
+                                        <option value="input_bonus">⌨️ إدخال يدوي (إضافة)</option>
+                                        <option value="input_penalty">⌨️ إدخال يدوي (خصم)</option>
+                                        <option value="attack">⚔️ هجوم على فريق (جديد)</option>
+                                        <option value="variable_penalty_self">🎲 خصم عشوائي (عليك)</option>
+                                        <option value="charity">🤝 نقل نقاط</option>
+                                    </select>
+                                    <!-- وصف الآلية -->
+                                    <div id="pointsTypeDescription" class="mt-2 p-2 rounded bg-slate-800/50 border border-slate-700 text-[10px] text-slate-300 leading-relaxed hidden">
+                                        <!-- الوصف سيظهر هنا -->
+                                    </div>
+                                </div>
+
+                                <!-- إعدادات الهجوم (تظهر فقط عند اختيار هجوم) -->
+                                <div id="attackSettingsContainer" class="hidden space-y-2 bg-red-900/20 p-2 rounded-lg border border-red-500/30">
+                                    <div class="text-[10px] text-red-300 font-bold mb-1">⚙️ إعدادات الهجوم:</div>
+                                    
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-slate-400 text-[10px] mb-1">أقصى ضرر</label>
+                                            <input type="number" id="attackMaxDamage" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="10" min="1">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-400 text-[10px] mb-1">تكلفة الهجوم</label>
+                                            <input type="number" id="attackCost" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="0" min="0">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-slate-400 text-[10px] mb-1">نوع الاستهداف</label>
+                                        <select id="attackType" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white">
+                                            <option value="targeted">🎯 محدد (بالاسم)</option>
+                                            <option value="blind">🫣 أعمى (بطاقات مقلوبة)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- إعدادات الخصم العشوائي (تظهر فقط عند اختيار خصم عشوائي) -->
+                                <div id="penaltySettingsContainer" class="hidden space-y-2 bg-red-900/20 p-2 rounded-lg border border-red-500/30">
+                                    <div class="text-[10px] text-red-300 font-bold mb-1">⚙️ إعدادات الخصم العشوائي:</div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-slate-400 text-[10px] mb-1">الحد الأدنى</label>
+                                            <input type="number" id="penaltyMin" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="1" min="1">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-400 text-[10px] mb-1">الحد الأقصى</label>
+                                            <input type="number" id="penaltyMax" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="10" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="pointsValueContainer">
+                                    <label class="block text-slate-400 text-xs mb-1">قيمة النقاط</label>
+                                    <div class="relative">
+                                        <input type="number" id="editPointsValue" oninput="updatePointsFeedback()" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white font-mono focus:ring-1 transition-all outline-none" placeholder="0">
+                                        <span id="pointsIconIndicator" class="absolute left-2 top-1.5 text-xs"></span>
+                                    </div>
+                                    
+                                    <!-- نص توضيحي ديناميكي -->
+                                    <div id="pointsFeedback" class="text-[10px] mt-1 font-bold min-h-[1.25rem] transition-colors flex items-center gap-1"></div>
+
+                                    <!-- أزرار سريعة -->
+                                    <div class="flex flex-wrap gap-1.5 mt-2">
+                                        <button onclick="setPointsValue(5)" class="flex-1 text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1 py-1 rounded transition-colors text-center">+5 مكافأة</button>
+                                        <button onclick="setPointsValue(10)" class="flex-1 text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1 py-1 rounded transition-colors text-center">+10 كنز</button>
+                                        <button onclick="setPointsValue(-5)" class="flex-1 text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-1 py-1 rounded transition-colors text-center">-5 غرامة</button>
+                                        <button onclick="setPointsValue(-10)" class="flex-1 text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-1 py-1 rounded transition-colors text-center">-10 فخ</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اليسار: الوصف والمعاينة -->
+                            <div class="space-y-2 flex flex-col">
+                                <div class="flex-1">
+                                    <label class="block text-slate-400 text-xs mb-1">نص الرسالة (المحتوى)</label>
+                                    <textarea id="editContent" class="w-full h-20 bg-slate-900 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all outline-none resize-none" placeholder="اكتب هنا ما سيظهر للاعبين بالتفصيل..."></textarea>
+                                </div>
+                                
+                                <!-- بطاقة المعاينة المصغرة -->
+                                <div class="bg-black/20 rounded-xl p-3 border border-white/5">
+                                    <span class="text-[10px] text-slate-500 block mb-1">معاينة حية للبطاقة:</span>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="text-2xl bg-slate-800 w-10 h-10 flex items-center justify-center rounded-full" id="previewIcon">❓</div>
+                                        <div>
+                                            <h4 class="font-bold text-amber-100 text-xs" id="previewTitle">العنوان هنا</h4>
+                                            <p class="text-[10px] text-slate-400 truncate w-40" id="previewContent">المحتوى سيظهر هنا...</p>
+                                        </div>
+                                    </div>
+                                    <!-- معاينة التأثير -->
+                                    <div id="previewEffect" class="text-center text-[10px] font-bold p-2 rounded border border-dashed hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- زر الحفظ العائم (تم إخفاؤه لاستبداله بمؤشر الحفظ التلقائي) -->
+                        <div class="mt-auto pt-4 border-t border-slate-700 flex justify-between items-center">
+                            <div id="autoSaveIndicator" class="text-emerald-400 text-sm font-bold flex items-center gap-2 opacity-0 transition-opacity duration-500">
+                                <span>☁️</span> تم الحفظ تلقائياً
+                            </div>
+                            <!-- زر حفظ يدوي (اختياري) لمن يفضل التأكد -->
+                            <button onclick="saveTreasureEdit()" class="text-slate-500 hover:text-slate-300 text-xs transition-colors">
+                                حفظ يدوي
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة نماذج الحفظ -->
+    <div id="saveSlotsModal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm transition-all duration-300 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-4xl p-8 shadow-2xl relative overflow-hidden">
+            <!-- خلفية زخرفية -->
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+            
+            <div class="flex justify-between items-center mb-8 relative z-10">
+                <h2 class="text-3xl font-bold text-indigo-300 flex items-center gap-3">
+                    <span>💾</span> نماذج الخزائن المحفوظة
+                </h2>
+                <button onclick="document.getElementById('saveSlotsModal').classList.add('hidden')" class="text-slate-400 hover:text-white transition-colors text-2xl">
+                    ✖
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10" id="slotsContainer">
+                <!-- سيتم تعبئة الفتحات هنا بواسطة JavaScript -->
+            </div>
+
+            <div class="mt-8 text-center text-slate-400 text-sm relative z-10">
+                <p>يمكنك حفظ حتى 3 نماذج مختلفة للخزائن واستعادتها في أي وقت.</p>
             </div>
         </div>
     </div>
@@ -553,33 +966,57 @@
     <script>
         // مفتاح الحفظ في localStorage
         const STORAGE_KEY = 'robbans_vault_state';
+        const SAVE_SLOTS_KEY = 'captainSafe_saveSlots';
         
         // ** مصفوفة صور الفرق الجديدة
-        const TEAM_IMAGE_URLS = [
+        let TEAM_IMAGE_URLS = [
             'images/zGXTtjr6-1.png', // Team 1
             'images/YCnYJWrX-2.png', // Team 2
             'images/t4SWLxqS-3.png', // Team 3
             'images/mgXC0HL8-4.png'  // Team 4
         ];
+        
         // --- إعدادات الحفظ السحابي ---
         const supabaseUrl = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let supabaseClient = null;
+        try {
+            if (typeof supabase !== 'undefined') {
+                supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            } else {
+                console.warn('Supabase client library not loaded. Falling back to local storage.');
+            }
+        } catch (e) {
+            console.error('Failed to initialize Supabase client:', e);
+        }
         
         const GAME_ID = 'captain-safe'; // معرف خاص لهذه اللعبة
         let currentUserId = null;
 
         async function initGameWithCloud() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!supabaseClient) {
+            // Supabase غير متوفر: استخدام الحفظ المحلي بصمت
+            initGame();
+            return;
+        }
+
+        try {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error) throw error;
+            
             if (session) {
                 currentUserId = session.user.id;
-                console.log("تم تسجيل الدخول، جاري جلب البيانات...");
                 await loadFromCloud();
             } else {
-                console.log("زائر: استخدام الحفظ المحلي");
-                initGame(); // استدعاء دالة البدء العادية
+                // زائر: استخدام الحفظ المحلي
+                initGame(); 
             }
+        } catch (err) {
+            console.error("خطأ في الاتصال بالسحابة:", err);
+            initGame(); // Fallback to local
         }
+    }
 
        async function loadFromCloud() {
             const { data, error } = await supabaseClient
@@ -590,7 +1027,6 @@
                 .single();
 
             if (data && data.save_data) {
-                console.log("تم تحميل البيانات من السحابة");
                 loadGameState(data.save_data);
                 
                 // --- هذا السطر ضروري جداً لكي لا تختفي البيانات عند فتح المحرر ---
@@ -609,19 +1045,22 @@
                     currentTeamEl.value = gameState.currentTeam;
                 }
             } else {
-                console.log("لا توجد بيانات سحابية، بدء لعبة جديدة.");
                 initGame(); 
             }
         }
 
         async function saveToCloud(dataToSave) {
-            if (!currentUserId) return;
-            await supabaseClient.from('game_saves').upsert({ 
-                user_id: currentUserId, 
-                game_name: GAME_ID, 
-                save_data: dataToSave,
-                updated_at: new Date()
-            }, { onConflict: 'user_id, game_name' });
+            if (!currentUserId || !supabaseClient) return;
+            try {
+                await supabaseClient.from('game_saves').upsert({ 
+                    user_id: currentUserId, 
+                    game_name: GAME_ID, 
+                    save_data: dataToSave,
+                    updated_at: new Date()
+                }, { onConflict: 'user_id, game_name' });
+            } catch (err) {
+                console.error('Error saving to cloud:', err);
+            }
         }
         // مصفوفة روابط صور الخزائن المرقمة (تم التحديث هنا)
         const TREASURE_IMAGE_URLS = [
@@ -775,7 +1214,8 @@
                     numTeams: gameState.numTeams,
                     openedBoxes: Array.from(gameState.openedBoxes), 
                     treasures: gameState.treasures,
-                    teamNames: TEAM_NAMES
+                    teamNames: TEAM_NAMES,
+                    teamImages: TEAM_IMAGE_URLS
                 };
                 
                 // 1. الحفظ المحلي
@@ -816,11 +1256,15 @@
                     if (loadedState.treasures && loadedState.treasures.length === initialTreasureData.length) {
                         gameState.treasures = loadedState.treasures;
                     } else {
-                        gameState.treasures = [...initialTreasureData];
+                        gameState.treasures = JSON.parse(JSON.stringify(initialTreasureData));
                     }
                     
                     if (loadedState.teamNames && loadedState.teamNames.length === 4) {
                         TEAM_NAMES = loadedState.teamNames;
+                    }
+
+                    if (loadedState.teamImages && loadedState.teamImages.length === 4) {
+                        TEAM_IMAGE_URLS = loadedState.teamImages;
                     }
                     
                     return true;
@@ -832,7 +1276,7 @@
         }
 
         // تهيئة اللعبة
-        function initGame(gameIndex) { // (تجاهل المعامل gameIndex إذا لم يكن مستخدماً)
+        function initGame() { 
             // نحاول التحميل من المحلي فقط إذا لم يتم استدعاء هذه الدالة بعد تحميل سحابي
             // (سنعرف ذلك من خلال التحقق مما إذا كانت البيانات قد ملئت بالفعل أم لا)
             
@@ -843,11 +1287,10 @@
             const isLoaded = loadGameState();
             
             if (!isLoaded && gameState.treasures.length === 0) { // إذا لم تكن هناك بيانات
-                gameState.treasures = [...initialTreasureData];
+                gameState.treasures = JSON.parse(JSON.stringify(initialTreasureData));
                 gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE];
                 gameState.numTeams = 3; 
             }
-            
             editorState.originalTreasures = JSON.parse(JSON.stringify(initialTreasureData)); 
 
             // تحديث واجهة المستخدم
@@ -864,6 +1307,7 @@
             // نسخ الإعدادات الحالية إلى المتغير المؤقت
             tempTeamConfig.numTeams = gameState.numTeams;
             tempTeamConfig.teamNames = [...TEAM_NAMES];
+            tempTeamConfig.teamImages = [...TEAM_IMAGE_URLS];
 
             // تعيين القيمة الحالية في المحدد
             document.getElementById('configNumTeamsSelect').value = gameState.numTeams;
@@ -901,21 +1345,46 @@
                 div.className = `flex items-center gap-2 transition-all duration-300 ${visibilityClass}`;
                 
                 // استخدام صورة الفريق بدلاً من الإيموجي في التسمية
-                const teamImage = TEAM_IMAGE_URLS[i];
+                const teamImage = tempTeamConfig.teamImages[i] || TEAM_IMAGE_URLS[i];
 
                 div.innerHTML = `
-                    <label class="block text-cyan-200 w-1/4 flex items-center gap-1">
-                        <img src="${teamImage}" alt="Team ${i+1} Icon" class="w-5 h-5">
-                    </label>
-                    <input type="text" 
-                        id="configTeamName${i}" 
-                        value="${tempTeamConfig.teamNames[i]}"
-                        oninput="tempTeamConfig.teamNames[${i}] = this.value"
-                        class="flex-1 bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400" 
-                        placeholder="اسم الطاقم ${i + 1}"
-                    >
+                    <div class="flex items-center gap-2 w-full bg-cyan-900/30 p-2 rounded-lg border border-cyan-500/30">
+                        <!-- Image Upload & Preview -->
+                        <div class="relative group w-12 h-12 flex-shrink-0">
+                             <img id="previewConfigImg${i}" src="${teamImage}" class="w-full h-full rounded-full object-cover border-2 border-slate-500 group-hover:border-amber-400 transition-colors">
+                             <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="document.getElementById('uploadConfigImg${i}').click()" title="تغيير الصورة">
+                                 📷
+                             </div>
+                             <input type="file" id="uploadConfigImg${i}" class="hidden" accept="image/*" onchange="handleTeamImageUpload(${i}, this, 'config')">
+                        </div>
+
+                        <input type="text" 
+                            id="configTeamName${i}" 
+                            value="${tempTeamConfig.teamNames[i]}"
+                            oninput="tempTeamConfig.teamNames[${i}] = this.value"
+                            class="flex-1 bg-cyan-800/50 text-white px-4 py-2 rounded-lg border border-cyan-400 focus:border-amber-400 focus:outline-none transition-colors" 
+                            placeholder="اسم الطاقم ${i + 1}"
+                        >
+                    </div>
                 `;
                 container.appendChild(div);
+            }
+        }
+
+        // دالة معالجة رفع الصور
+        function handleTeamImageUpload(index, input, context) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (context === 'config') {
+                        tempTeamConfig.teamImages[index] = e.target.result;
+                        document.getElementById(`previewConfigImg${index}`).src = e.target.result;
+                    } else if (context === 'manage') {
+                        currentManagingTeamImage = e.target.result;
+                        document.getElementById('manageTeamPreviewImg').src = e.target.result;
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
         
@@ -941,6 +1410,11 @@
 
             // 1. تحديث الأسماء بشكل دائم
             TEAM_NAMES = [...tempTeamConfig.teamNames];
+            
+            // تحديث الصور
+            if (tempTeamConfig.teamImages) {
+                TEAM_IMAGE_URLS = [...tempTeamConfig.teamImages];
+            }
             
             // 2. تحديث عدد الفرق
             if (newNumTeams !== oldNumTeams) {
@@ -994,65 +1468,336 @@
                     select.value = 0;
                 }
             });
+
+            // (جديد) تحديث شبكات الفرق التفاعلية
+            createTeamGrid('penaltyTeamGrid', 'penaltyTeamSelect');
+            createTeamGrid('donorTeamGrid', 'donorTeamSelect');
+            createTeamGrid('receiverTeamGrid', 'receiverTeamSelect');
         }
 
-        // تحديث لوحة النقاط (Scoreboard)
+        // (جديد) دالة لإنشاء شبكة فرق تفاعلية
+        function createTeamGrid(containerId, selectId, excludeIndex = -1) {
+            const container = document.getElementById(containerId);
+            const select = document.getElementById(selectId);
+            if (!container || !select) return;
+
+            container.innerHTML = '';
+            const teamNames = TEAM_NAMES.slice(0, gameState.numTeams);
+
+            teamNames.forEach((name, index) => {
+                if (index === excludeIndex) return;
+
+                const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-grid-item bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg p-2 cursor-pointer transition-all flex flex-col items-center gap-2 group relative overflow-hidden';
+                teamDiv.dataset.index = index;
+                
+                // تحديد الحالة الأولية
+                if (parseInt(select.value) === index) {
+                    teamDiv.classList.add('selected', 'ring-2', 'ring-amber-400', 'bg-slate-700');
+                }
+
+                const teamImage = TEAM_IMAGE_URLS[index] || 'https://placehold.co/100x100/334155/FFFFFF?text=' + (index + 1);
+                
+                teamDiv.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="${teamImage}" class="w-12 h-12 rounded-full object-cover border-2 border-slate-500 group-hover:border-amber-400 transition-colors shadow-md">
+                    <span class="text-xs font-bold text-slate-300 group-hover:text-white text-center z-10">${name}</span>
+                `;
+
+                teamDiv.onclick = () => {
+                    // تحديث القائمة المخفية
+                    select.value = index;
+                    updateGridSelection(containerId, selectId);
+                };
+
+                container.appendChild(teamDiv);
+            });
+        }
+
+        // (جديد) تحديث المظهر المرئي للشبكة بناءً على القائمة
+        function updateGridSelection(containerId, selectId) {
+            const container = document.getElementById(containerId);
+            const select = document.getElementById(selectId);
+            if (!container || !select) return;
+            
+            const selectedVal = parseInt(select.value);
+            
+            container.querySelectorAll('.team-grid-item').forEach(el => {
+                const itemIndex = parseInt(el.dataset.index);
+                const img = el.querySelector('img');
+                
+                if (itemIndex === selectedVal) {
+                    el.classList.remove('bg-slate-800');
+                    el.classList.add('selected', 'ring-2', 'ring-amber-400', 'bg-slate-700');
+                    if(img) {
+                        img.classList.remove('border-slate-500');
+                        img.classList.add('border-amber-400');
+                    }
+                } else {
+                    el.classList.remove('selected', 'ring-2', 'ring-amber-400', 'bg-slate-700');
+                    el.classList.add('bg-slate-800');
+                    if(img) {
+                        img.classList.remove('border-amber-400');
+                        img.classList.add('border-slate-500');
+                    }
+                }
+            });
+        }
+
+        // (جديد) دالة العداد الذكي
+        function adjustValue(inputId, delta) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            
+            let currentVal = parseInt(input.value) || 0;
+            let newVal = currentVal + delta;
+            
+            // التحقق من الحدود (اختياري، يمكن إضافة max/min كـ attributes للـ input)
+            const min = input.getAttribute('min') ? parseInt(input.getAttribute('min')) : 0;
+            const max = input.getAttribute('max') ? parseInt(input.getAttribute('max')) : Infinity;
+            
+            if (newVal < min) newVal = min;
+            if (newVal > max) newVal = max;
+            
+            input.value = newVal;
+            
+            // إضافة تأثير بصري بسيط
+            input.classList.add('scale-110', 'text-amber-400');
+            setTimeout(() => {
+                input.classList.remove('scale-110', 'text-amber-400');
+            }, 150);
+        }
+
+        // ** دالة لفتح/إغلاق نافذة غرفة التحكم
+        function toggleControlPanel(open) {
+            const modal = document.getElementById('controlPanelModal');
+            if (open) {
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('active'), 10);
+            } else {
+                modal.classList.remove('active');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        // تحديث لوحة النقاط (Scoreboard) - تصميم HUD الجديد
         function updateScoreboard() {
             const scoreboard = document.getElementById('scoreboard');
             scoreboard.innerHTML = '';
             
-            // تحديث تصميم الشبكة حسب عدد الفرق
-            scoreboard.className = 'grid gap-4 mt-6';
-            if (gameState.numTeams === 4) {
-                scoreboard.classList.add('grid-cols-2', 'md:grid-cols-4');
-            } else if (gameState.numTeams === 3) {
-                scoreboard.classList.add('grid-cols-1', 'sm:grid-cols-3');
-            } else if (gameState.numTeams === 2) {
-                scoreboard.classList.add('grid-cols-1', 'sm:grid-cols-2');
-            }
+            // إزالة فئات الشبكة القديمة واستخدام فليكس
+            scoreboard.className = 'flex-1 w-full md:w-auto order-3 md:order-2 flex flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 overflow-x-auto pb-1 md:pb-0 scrollbar-hide';
             
-            // التحقق من أن مصفوفة النقاط تتطابق مع عدد الفرق، وتصفير الزيادات
+            // التحقق من أن مصفوفة النقاط تتطابق مع عدد الفرق
             while (gameState.teams.length < 4) {
                 gameState.teams.push(INITIAL_SCORE); 
             }
             
             for (let i = 0; i < gameState.numTeams; i++) {
                 const teamDiv = document.createElement('div');
-                let colors = '';
-                if (i === 0) colors = 'from-blue-600/60 to-cyan-600/60 border-blue-400/30';
-                if (i === 1) colors = 'from-emerald-600/60 to-teal-600/60 border-emerald-400/30';
-                if (i === 2) colors = 'from-red-600/60 to-rose-600/60 border-red-400/30';
-                if (i === 3) colors = 'from-purple-600/60 to-indigo-600/60 border-purple-400/30';
+                const isCurrent = (i === gameState.currentTeam);
+                
+                let gradient = '';
+                // ألوان مميزة لكل فريق (تم عكس التدرج ليكون الغامق يمين والفاتح يسار)
+                if (i === 0) gradient = 'from-blue-600 to-cyan-600 bg-gradient-to-l';
+                if (i === 1) gradient = 'from-emerald-600 to-teal-600 bg-gradient-to-l';
+                if (i === 2) gradient = 'from-red-600 to-rose-600 bg-gradient-to-l';
+                if (i === 3) gradient = 'from-purple-600 to-indigo-600 bg-gradient-to-l';
+
+                // تصميم البطاقة: عريض، أفقي، شكل "درع" أو راية
+                teamDiv.className = `
+                    relative group transition-all duration-300 ease-out cursor-pointer
+                    ${isCurrent ? 'z-10 filter drop-shadow-[0_0_15px_rgba(251,191,36,0.8)] scale-105' : 'opacity-90 hover:opacity-100 hover:scale-105 filter drop-shadow-md'}
+                    ${gradient} 
+                    w-full md:w-64 flex-1 max-w-xs
+                    flex items-center gap-2 px-4 pt-3 pb-8
+                `;
+                
+                // تطبيق شكل الدرع (قصة من الأسفل)
+                teamDiv.style.clipPath = 'polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)';
 
                 const teamName = TEAM_NAMES[i];
-                const teamImage = TEAM_IMAGE_URLS[i]; // استخدام رابط الصورة
+                const teamImage = TEAM_IMAGE_URLS[i];
 
-                teamDiv.className = `bg-gradient-to-br ${colors} rounded-xl p-4 text-center border backdrop-blur-sm relative`;
                 teamDiv.innerHTML = `
-                    <h3 class="font-semibold mb-2 flex items-center justify-center gap-2" id="teamName${i}">
-                        <!-- استخدام الصورة بدلاً من الايموجي -->
-                        <img src="${teamImage}" alt="Team ${i+1} Icon" class="w-6 h-6"> 
-                        <span>${teamName}</span>
-                    </h3>
-                    <button onclick="openTeamConfigModal()" class="absolute top-2 left-2 text-cyan-200 hover:text-amber-300 transition-colors p-1 rounded-full bg-black/20">
-                        ✏️
+                    <!-- أيقونة التعديل (تفتح بطاقة الإدارة السريعة) -->
+                    <button onclick="openTeamManagementModal(${i})" class="absolute top-1 left-1 w-6 h-6 bg-white/20 hover:bg-white/40 rounded-full text-xs flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all z-20 backdrop-blur-sm" title="إدارة الفريق">
+                        ⚙️
                     </button>
-                    <div id="team${i}Score" class="text-2xl font-bold text-amber-300">${gameState.teams[i]}</div>
+
+                    <!-- اليمين: الصورة -->
+                    <div class="relative flex-shrink-0">
+                        <!-- الدائرة المتوهجة إذا كان هو الدور الحالي -->
+                        <div class="${isCurrent ? 'absolute inset-0 rounded-full bg-amber-400 blur-md opacity-75 animate-pulse' : 'hidden'}"></div>
+                        
+                        <img src="${teamImage}" class="relative w-12 h-12 object-contain drop-shadow-md bg-white/10 rounded-full p-1.5 ${isCurrent ? 'border-2 border-amber-300' : ''}">
+                        
+                        <!-- علامة النقطة الصغيرة (تمت إزالتها واستبدالها بالتوهج الكامل) -->
+                    </div>
+
+                    <!-- الوسط: الاسم (متوسط) -->
+                    <div class="flex-1 text-center min-w-0 px-1">
+                        <span class="text-xl md:text-2xl font-black text-white truncate block drop-shadow-md" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5)">${teamName}</span>
+                    </div>
+                    
+                    <!-- اليسار: النقاط -->
+                    <div class="bg-black/20 rounded-lg px-2 py-1 min-w-[50px] text-center border border-white/10 flex-shrink-0">
+                        <div id="team${i}Score" class="text-2xl font-black text-amber-300 leading-none tracking-wide drop-shadow-md">
+                            ${gameState.teams[i]}
+                        </div>
+                    </div>
+                    
+                    <!-- نص "الدور" في الأسفل (داخل منطقة القص) -->
+                    ${isCurrent ? `
+                        <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 mb-1">
+                            <span class="text-[10px] font-bold text-amber-100 opacity-90 tracking-widest uppercase">الدور</span>
+                        </div>
+                    ` : ''}
                 `;
+                
+                // جعل البطاقة قابلة للنقر لتحديد الفريق يدوياً
+                teamDiv.onclick = (e) => {
+                    // تجنب التفعيل عند ضغط زر التعديل
+                    if(e.target.closest('button')) return;
+                    
+                    gameState.currentTeam = i;
+                    saveGameState();
+                    updateScoreboard();
+                    document.getElementById('currentTeam').value = i;
+                };
+
                 scoreboard.appendChild(teamDiv);
             }
         }
         
-        // تغيير عدد الفرق (تم نقل المنطق إلى saveTeamConfig)
-        function changeNumTeams(num) {
-            // هذه الدالة أصبحت مهملة، نستخدم previewNumTeams و saveTeamConfig
+        // ** متغيرات لدالة إدارة الفريق السياقية **
+        let currentManagingTeamIndex = -1;
+        let currentManagingTeamImage = null;
+
+        // ** فتح نافذة إدارة الفريق **
+        function openTeamManagementModal(index) {
+            currentManagingTeamIndex = index;
+            const modal = document.getElementById('teamManagementModal');
+            
+            // تعبئة البيانات
+            document.getElementById('manageTeamName').value = TEAM_NAMES[index];
+            document.getElementById('manageTeamCurrentScore').textContent = gameState.teams[index];
+            document.getElementById('manageTeamIcon').textContent = (index === 0) ? '🔵' : (index === 1) ? '🟢' : (index === 2) ? '🔴' : '🟣';
+            
+            // تعبئة الصورة
+            currentManagingTeamImage = TEAM_IMAGE_URLS[index];
+            const imgPreview = document.getElementById('manageTeamPreviewImg');
+            if (imgPreview) {
+                imgPreview.src = currentManagingTeamImage || `https://placehold.co/100x100/334155/FFFFFF?text=${index + 1}`;
+            }
+
+            // تصفير حقل الإدخال اليدوي
+            document.getElementById('manageTeamScoreInput').value = '';
+            
+            // إظهار النافذة
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        // ** إغلاق نافذة إدارة الفريق **
+        function closeTeamManagementModal() {
+            const modal = document.getElementById('teamManagementModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            currentManagingTeamIndex = -1;
+        }
+
+        // ** تحديث سريع للنقاط (أزرار +/-) **
+        function quickUpdateScore(amount) {
+            if (currentManagingTeamIndex === -1) return;
+            
+            // تحديث النقاط في الذاكرة
+            let newScore = gameState.teams[currentManagingTeamIndex] + amount;
+            gameState.teams[currentManagingTeamIndex] = newScore;
+            
+            // تحديث العرض في النافذة فوراً
+            document.getElementById('manageTeamCurrentScore').textContent = newScore;
+            
+            // تحديث لوحة النتائج الخلفية أيضاً لرؤية التغيير
+            updateScoreboard();
+            
+            // حفظ فوري لضمان عدم ضياع التغيير إذا تم إغلاق النافذة بدون حفظ
+            saveGameState();
+        }
+
+        // ** تطبيق النقاط اليدوية **
+        function applyManualScore() {
+            const input = document.getElementById('manageTeamScoreInput');
+            const val = parseInt(input.value);
+            
+            if (!isNaN(val) && val !== 0) {
+                quickUpdateScore(val); // ستستدعي saveGameState تلقائياً
+                input.value = ''; // مسح الحقل بعد التطبيق
+            }
+        }
+
+        // ** تصفير نقاط الفريق الواحد **
+        function resetTeamScore() {
+            if (currentManagingTeamIndex === -1) return;
+            
+            Swal.fire({
+                title: 'تصفير نقاط هذا الفريق؟',
+                text: `هل أنت متأكد من إعادة نقاط "${TEAM_NAMES[currentManagingTeamIndex]}" إلى 50؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، صفرها',
+                cancelButtonText: 'تراجع'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    gameState.teams[currentManagingTeamIndex] = INITIAL_SCORE;
+                    document.getElementById('manageTeamCurrentScore').textContent = INITIAL_SCORE;
+                    updateScoreboard();
+                    saveGameState(); // حفظ فوري لأن هذا إجراء نهائي
+                    Swal.fire('تم التصفير', 'عادت نقاط الفريق إلى 50', 'success');
+                }
+            });
+        }
+
+        // ** حفظ التغييرات وإغلاق النافذة **
+        function saveTeamManagement() {
+            if (currentManagingTeamIndex === -1) return;
+            
+            // حفظ الاسم الجديد
+            const newName = document.getElementById('manageTeamName').value.trim();
+            if (newName) {
+                TEAM_NAMES[currentManagingTeamIndex] = newName;
+            }
+
+            // حفظ الصورة الجديدة
+            if (currentManagingTeamImage) {
+                TEAM_IMAGE_URLS[currentManagingTeamIndex] = currentManagingTeamImage;
+            }
+            
+            // (النقاط تم تحديثها بالفعل في مصفوفة gameState أثناء الضغط على الأزرار)
+            
+            // الحفظ السحابي وتحديث الواجهة
+            saveGameState();
+            updateScoreboard();
+            closeTeamManagementModal();
+            
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+                background: '#10B981',
+                color: '#fff'
+            });
+            Toast.fire({ icon: 'success', title: 'تم حفظ التعديلات' });
         }
 
         // فتح/إغلاق شاشة الإعدادات
         function toggleSettingsModal(open) {
             const modal = document.getElementById('settingsModal');
             if (open) {
-                // لا نحتاج لتعيين قيمة عدد الفرق هنا بعد الآن
                 modal.classList.remove('hidden');
                 setTimeout(() => modal.classList.add('active'), 10);
             } else {
@@ -1075,52 +1820,99 @@
         
         // تصفير النقاط (يتم الآن إعادتها إلى 50)
         function resetPoints() {
-            const isConfirmed = confirm('هل أنت متأكد من تصفير نقاط جميع الفرق؟ (ستبدأ الفرق من 50 نقطة)');
-            if (isConfirmed) {
-                for (let i = 0; i < gameState.teams.length; i++) {
-                    gameState.teams[i] = INITIAL_SCORE;
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم تصفير نقاط جميع الفرق لتبدأ من 50 نقطة!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، صفر النقاط!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    for (let i = 0; i < gameState.teams.length; i++) {
+                        gameState.teams[i] = INITIAL_SCORE;
+                    }
+                    updateScoreboard();
+                    showPointsAnimation(`تم تصفير النقاط، الكل يبدأ من ${INITIAL_SCORE} 🌊`, 'red');
+                    saveGameState();
+                    Swal.fire(
+                        'تم التصفير!',
+                        'عادت جميع الفرق لنقطة البداية.',
+                        'success'
+                    )
                 }
-                updateScoreboard();
-                showPointsAnimation(`تم تصفير النقاط، الكل يبدأ من ${INITIAL_SCORE} 🌊`, 'red');
-                saveGameState();
-            }
+            })
         }
 
         // إعادة فتح جميع الخزائن
         function reopenAllBoxes() {
-            const isConfirmed = confirm('هل أنت متأكد من إعادة فتح جميع الخزائن؟');
-            if (isConfirmed) {
-                gameState.openedBoxes.clear();
-                createTreasureGrid();
-                updateReopenBoxSelect();
-                showPointsAnimation('🗝️ تم إعادة فتح جميع الخزائن', 'blue');
-                saveGameState();
-            }
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم إعادة إغلاق جميع الخزائن المفتوحة!",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، أعد فتحها!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    gameState.openedBoxes.clear();
+                    createTreasureGrid();
+                    updateReopenBoxSelect();
+                    showPointsAnimation('🗝️ تم إعادة فتح جميع الخزائن', 'blue');
+                    saveGameState();
+                    Swal.fire(
+                        'تمت العملية!',
+                        'جميع الخزائن مغلقة الآن وجاهزة للعب.',
+                        'success'
+                    )
+                }
+            })
         }
 
         // إعادة تعيين الخزائن (بما في ذلك التعديلات)
         function resetBoxes() {
-            const isConfirmed = confirm('هل أنت متأكد من إعادة تعيين جميع الخزائن والنقاط؟ (ستفقد جميع التعديلات والحالة الحالية)');
-            if (isConfirmed) {
-                // إعادة تعيين الحالة إلى الافتراضي
-                gameState.openedBoxes.clear();
-                // ** التحديث: نقاط البداية 50
-                gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE]; 
-                gameState.currentTeam = 0;
-                gameState.numTeams = 3; // إعادة التعيين إلى 3
-                gameState.treasures = [...initialTreasureData]; // استعادة الخزائن الأصلية
-                TEAM_NAMES = ['الطاقم الأول', 'الطاقم الثاني', 'الطاقم الثالث', 'الطاقم الرابع']; // إعادة تعيين الأسماء (بدون إيموجي)
-                
-                document.getElementById('currentTeam').value = 0;
-                
-                updateTeamSelectors();
-                createTreasureGrid();
-                updateReopenBoxSelect();
-                updateScoreboard();
-                showPointsAnimation('⚓ تم إعادة تعيين كل شيء', 'yellow');
-                
-                localStorage.removeItem(STORAGE_KEY);
-            }
+            Swal.fire({
+                title: 'تحذير هام!',
+                text: "هذا الإجراء سيعيد اللعبة بالكامل لحالتها الأصلية (المصنع). ستفقد جميع النقاط والتعديلات!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، فرمت اللعبة!',
+                cancelButtonText: 'تراجع'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // إعادة تعيين الحالة إلى الافتراضي
+                    gameState.openedBoxes.clear();
+                    // ** التحديث: نقاط البداية 50
+                    gameState.teams = [INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE, INITIAL_SCORE]; 
+                    gameState.currentTeam = 0;
+                    gameState.numTeams = 3; // إعادة التعيين إلى 3
+                    gameState.treasures = JSON.parse(JSON.stringify(initialTreasureData)); // استعادة الخزائن الأصلية (نسخة عميقة)
+                    TEAM_NAMES = ['الطاقم الأول', 'الطاقم الثاني', 'الطاقم الثالث', 'الطاقم الرابع']; // إعادة تعيين الأسماء (بدون إيموجي)
+                    
+                    document.getElementById('currentTeam').value = 0;
+                    
+                    updateTeamSelectors();
+                    createTreasureGrid();
+                    updateReopenBoxSelect();
+                    updateScoreboard();
+                    showPointsAnimation('⚓ تم إعادة تعيين كل شيء', 'yellow');
+                    
+                    // حفظ الحالة الجديدة (الفارغة) في المحلي والسحابي
+                    saveGameState();
+                    
+                    Swal.fire(
+                        'تمت إعادة التعيين!',
+                        'عادت اللعبة لحالة المصنع.',
+                        'success'
+                    )
+                }
+            })
         }
         
         // إنشاء شبكة الخزائن
@@ -1177,6 +1969,18 @@
             document.getElementById('treasureTitle').textContent = `خزنة رقم ${boxNumber}`;
             document.getElementById('treasureContent').textContent = treasure.content;
             
+            // تحديث عرض الفريق الفاتح للخزنة
+            const openerDisplay = document.getElementById('openerTeamDisplay');
+            if (openerDisplay) {
+                const currentTeamIndex = gameState.currentTeam;
+                const teamName = TEAM_NAMES[currentTeamIndex];
+                const teamImage = TEAM_IMAGE_URLS[currentTeamIndex] || `https://placehold.co/100x100/334155/FFFFFF?text=${currentTeamIndex + 1}`;
+                
+                document.getElementById('openerTeamImage').src = teamImage;
+                document.getElementById('openerTeamName').textContent = teamName;
+                openerDisplay.classList.remove('hidden');
+            }
+            
             document.getElementById('teamSelector').classList.add('hidden');
             document.getElementById('pointsInput').classList.add('hidden');
             document.getElementById('charitySelector').classList.add('hidden');
@@ -1202,16 +2006,70 @@
                     pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
                 }
                 document.getElementById('pointsInput').classList.remove('hidden');
+            } else if (treasure.points === 'attack') {
+                pointsElement.textContent = '⚔️ هجوم على فريق منافس! ⚔️';
+                pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-500 text-red-300 bg-red-900/30';
+                
+                // إظهار واجهة الهجوم
+                const attackConfig = treasure.attackConfig || { maxDamage: 10, cost: 0, type: 'targeted' };
+                document.getElementById('attackInterface').classList.remove('hidden');
+                
+                // إعداد عناصر واجهة الهجوم
+                const attackTargetSelect = document.getElementById('attackTargetSelect');
+                attackTargetSelect.innerHTML = '<option value="">اختر الضحية...</option>';
+                
+                // ملء قائمة الأهداف (استبعاد الفريق الحالي)
+                TEAM_NAMES.forEach((name, index) => {
+                    if (index !== gameState.currentTeam) {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = name;
+                        attackTargetSelect.appendChild(option);
+                    }
+                });
+
+                // (جديد) إنشاء شبكة اختيار الهدف
+                createTeamGrid('attackTargetGrid', 'attackTargetSelect', gameState.currentTeam);
+
+
+                // إعداد حقل الضرر
+                const damageInput = document.getElementById('attackDamageInput');
+                damageInput.max = attackConfig.maxDamage;
+                damageInput.placeholder = `من 1 إلى ${attackConfig.maxDamage}`;
+                document.getElementById('attackMaxLabel').textContent = attackConfig.maxDamage;
+
+                // إظهار التكلفة إن وجدت
+                const costLabel = document.getElementById('attackCostLabel');
+                if (attackConfig.cost > 0) {
+                    costLabel.textContent = `(تكلفة الهجوم: ${attackConfig.cost} نقطة)`;
+                    costLabel.classList.remove('hidden');
+                } else {
+                    costLabel.classList.add('hidden');
+                }
+
             } else if (treasure.selectTeam && treasure.giveToOther) {
                 pointsElement.textContent = `🎁 إعطاء ${treasure.points} نقطة لمجموعة أخرى 🎁`;
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-green-400 text-green-300 bg-green-900/30';
                 document.getElementById('teamSelector').classList.remove('hidden');
                 document.getElementById('penaltyTeamSelect').value = (gameState.currentTeam + 1) % gameState.numTeams; 
+                updateGridSelection('penaltyTeamGrid', 'penaltyTeamSelect'); 
             } else if (treasure.inputPoints && (treasure.points === 'variable_penalty_self' || treasure.points === 'variable_penalty_big_self')) {
-                const maxPoints = treasure.points === 'variable_penalty_big_self' ? 20 : 10;
-                pointsElement.textContent = `💔 خصم من 1 إلى ${maxPoints} نقاط عليك 💔`;
+                let maxPoints = treasure.points === 'variable_penalty_big_self' ? 20 : 10;
+                let minPoints = 1;
+
+                if (treasure.points === 'variable_penalty_self' && treasure.penaltyConfig) {
+                    minPoints = treasure.penaltyConfig.min || 1;
+                    maxPoints = treasure.penaltyConfig.max || 10;
+                }
+
+                pointsElement.textContent = `💔 خصم من ${minPoints} إلى ${maxPoints} نقاط عليك 💔`;
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
-                document.getElementById('customPointsInput').max = maxPoints;
+                
+                const input = document.getElementById('customPointsInput');
+                input.max = maxPoints;
+                input.min = minPoints;
+                input.placeholder = `بين ${minPoints} و ${maxPoints}`;
+                
                 document.getElementById('pointsInput').classList.remove('hidden');
             } else if (treasure.selectTeam && treasure.inputPoints) {
                 pointsElement.textContent = '⚡ خصم نقاط متغيرة من مجموعة أخرى ⚡';
@@ -1219,6 +2077,7 @@
                 document.getElementById('teamSelector').classList.remove('hidden');
                 document.getElementById('pointsInput').classList.remove('hidden');
                 document.getElementById('penaltyTeamSelect').value = gameState.currentTeam;
+                updateGridSelection('penaltyTeamGrid', 'penaltyTeamSelect');
             } else if (treasure.selectTeam && treasure.points < 0) {
                 pointsElement.textContent = `💔 خصم ${Math.abs(treasure.points)} نقاط من مجموعة أخرى 💔`;
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
@@ -1249,8 +2108,8 @@
         // تطبيق تأثير النقاط
         function applyPointsEffect(points, targetTeam = null, customPoints = null) {
             const pointsElement = document.getElementById('pointsEffect');
-            const currentTeam = gameState.currentTeam;
-            const affectedTeam = targetTeam !== null ? targetTeam : currentTeam;
+            const currentTeam = parseInt(gameState.currentTeam);
+            const affectedTeam = targetTeam !== null ? parseInt(targetTeam) : currentTeam;
             const teamNames = TEAM_NAMES;
             
             if (points === 'double') {
@@ -1325,6 +2184,33 @@
             saveGameState();
         }
 
+        // تطبيق تأثير الهجوم
+        function applyAttackEffect(attackerTeam, victimTeam, damage, cost) {
+            const pointsElement = document.getElementById('pointsEffect');
+            const teamNames = TEAM_NAMES;
+            
+            // خصم الضرر من الضحية
+            gameState.teams[victimTeam] -= damage;
+            if (gameState.teams[victimTeam] < 0) gameState.teams[victimTeam] = 0;
+            
+            // خصم التكلفة من المهاجم (إن وجدت)
+            if (cost > 0) {
+                gameState.teams[attackerTeam] -= cost;
+                if (gameState.teams[attackerTeam] < 0) gameState.teams[attackerTeam] = 0;
+            }
+            
+            // رسالة الهجوم
+            let message = `⚔️ هجوم! ${teamNames[attackerTeam]} قصف ${teamNames[victimTeam]} بـ ${damage} نقطة!`;
+            if (cost > 0) message += ` (بتكلفة ${cost})`;
+            
+            pointsElement.textContent = message;
+            pointsElement.className = 'text-4xl font-bold mb-6 text-orange-500 points-animation';
+            pointsElement.classList.remove('hidden');
+            
+            updateScoreboard();
+            saveGameState();
+        }
+
         // تنفيذ الإجراء
         function executeAction() {
             if (gameState.currentTreasure) {
@@ -1342,6 +2228,22 @@
                         alert('يرجى إدخال بيانات صحيحة للصدقة: نقاط أكبر من صفر، ومجموعتان مختلفتان.');
                         return;
                     }
+                } else if (gameState.currentTreasure.points === 'attack') {
+                    const targetTeam = parseInt(document.getElementById('attackTargetSelect').value);
+                    const damage = parseInt(document.getElementById('attackDamageInput').value);
+                    const config = gameState.currentTreasure.attackConfig || { maxDamage: 10, cost: 0 };
+                    
+                    if (isNaN(targetTeam)) {
+                        alert('يرجى اختيار فريق للهجوم عليه!');
+                        return;
+                    }
+                    if (isNaN(damage) || damage < 1 || damage > config.maxDamage) {
+                        alert(`يرجى تحديد نقاط الضرر بين 1 و ${config.maxDamage}`);
+                        return;
+                    }
+
+                    // تطبيق الهجوم
+                    applyAttackEffect(gameState.currentTeam, targetTeam, damage, config.cost);
                 } else {
                     if (gameState.currentTreasure.selectTeam) {
                         targetTeam = parseInt(document.getElementById('penaltyTeamSelect').value);
@@ -1352,9 +2254,21 @@
                         if (customPoints < 0) { 
                             customPoints = 0;
                         }
-                        if ((gameState.currentTreasure.points === 'variable_penalty_self' || gameState.currentTreasure.points === 'variable_penalty_big_self') && customPoints <= 0) {
-                            alert('يرجى إدخال عدد صحيح موجب من النقاط للخصم.');
-                            return;
+                        
+                        // التحقق من صحة المدخلات للخصم العشوائي
+                        if (gameState.currentTreasure.points === 'variable_penalty_self' || gameState.currentTreasure.points === 'variable_penalty_big_self') {
+                            let minP = 1;
+                            let maxP = gameState.currentTreasure.points === 'variable_penalty_big_self' ? 20 : 10;
+                            
+                            if (gameState.currentTreasure.points === 'variable_penalty_self' && gameState.currentTreasure.penaltyConfig) {
+                                minP = gameState.currentTreasure.penaltyConfig.min || 1;
+                                maxP = gameState.currentTreasure.penaltyConfig.max || 10;
+                            }
+                            
+                            if (customPoints < minP || customPoints > maxP) {
+                                alert(`يرجى إدخال عدد نقاط بين ${minP} و ${maxP}.`);
+                                return;
+                            }
                         }
                     }
                     
@@ -1366,6 +2280,7 @@
                 document.getElementById('teamSelector').classList.add('hidden');
                 document.getElementById('pointsInput').classList.add('hidden');
                 document.getElementById('charitySelector').classList.add('hidden');
+                document.getElementById('attackInterface').classList.add('hidden');
                 document.getElementById('backButton').classList.remove('hidden');
             }
         }
@@ -1384,6 +2299,7 @@
             document.getElementById('teamSelector').classList.add('hidden');
             document.getElementById('pointsInput').classList.add('hidden');
             document.getElementById('charitySelector').classList.add('hidden');
+            document.getElementById('attackInterface').classList.add('hidden');
             document.getElementById('backButton').classList.remove('hidden');
         }
 
@@ -1416,6 +2332,7 @@
                 document.getElementById('currentTeam').value = gameState.currentTeam;
             }
             
+            updateScoreboard();
             saveGameState();
         }
 
@@ -1489,7 +2406,7 @@
             });
         }
         
-        // === وظائف محرر الخزائن ===
+        // === وظائف محرر الخزائن المطور ===
         
         // فتح محرر الخزائن
         function openTreasureEditor() {
@@ -1501,22 +2418,36 @@
         function closeTreasureEditor() {
             document.getElementById('treasureEditor').classList.add('hidden');
             editorState.selectedBox = null;
-            document.getElementById('selectedBoxNumber').textContent = 'لم يتم الاختيار';
+            document.getElementById('selectedBoxDisplay').textContent = '#00';
             document.getElementById('editForm').classList.add('hidden');
             document.getElementById('noSelection').classList.remove('hidden');
         }
 
-        // إنشاء شبكة الخزائن في المحرر
+        // إنشاء شبكة الخزائن في المحرر (نسخة محدثة)
         function createEditorBoxGrid() {
-            const container = document.querySelector('#treasureEditor .grid.grid-cols-5');
+            const container = document.getElementById('editorGrid');
             container.innerHTML = '';
             
             for (let i = 1; i <= 50; i++) {
+                const boxIndex = i - 1;
+                const isModified = JSON.stringify(gameState.treasures[boxIndex]) !== JSON.stringify(initialTreasureData[boxIndex]);
+                    const isSelected = editorState.selectedBox === i;
+
                 const button = document.createElement('button');
-                button.className = `bg-cyan-700 hover:bg-cyan-600 text-white font-bold py-2 px-3 rounded-lg transition-colors border border-cyan-500 ${
-                    editorState.selectedBox === i ? 'bg-amber-600 border-amber-400' : ''
-                }`;
-                button.textContent = i;
+                button.className = `
+                    relative h-10 w-full rounded-lg font-bold text-sm transition-all duration-200
+                    ${isSelected 
+                        ? 'bg-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.6)] scale-105 border-2 border-white z-10' 
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600'}
+                `;
+                
+                // مؤشر التعديل (نقطة برتقالية)
+                if (isModified) {
+                    button.innerHTML = `${i}<span class="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full"></span>`;
+                } else {
+                    button.textContent = i;
+                }
+
                 button.onclick = () => selectBoxForEdit(i);
                 container.appendChild(button);
             }
@@ -1525,8 +2456,9 @@
         // اختيار خزنة للتعديل
         function selectBoxForEdit(boxNumber) {
             editorState.selectedBox = boxNumber;
-            document.getElementById('selectedBoxNumber').textContent = `خزنة ${boxNumber}`;
+            document.getElementById('selectedBoxDisplay').textContent = `#${boxNumber.toString().padStart(2, '0')}`;
             
+            // تحديث الشبكة لتعكس الاختيار الجديد
             createEditorBoxGrid();
             
             loadTreasureData(boxNumber);
@@ -1539,58 +2471,239 @@
         function loadTreasureData(boxNumber) {
             const treasure = gameState.treasures[boxNumber - 1];
             
+            // تعبئة الحقول النصية
             document.getElementById('editIcon').value = treasure.icon || '';
+            document.getElementById('selectedEmojiDisplay').textContent = treasure.icon || '❓';
             document.getElementById('editTitle').value = treasure.title || '';
             document.getElementById('editContent').value = treasure.content || '';
-            document.getElementById('editType').value = treasure.type || 'bonus';
             
-            if (treasure.points === 'double') {
-                document.getElementById('editPointsType').value = 'double';
-            } else if (treasure.points === 'half') {
-                document.getElementById('editPointsType').value = 'half';
-            } else if (treasure.points === 'input_bonus') {
-                document.getElementById('editPointsType').value = 'input_bonus';
-            } else if (treasure.points === 'input_penalty') {
-                document.getElementById('editPointsType').value = 'input_penalty';
-            } else if (treasure.points === 'variable_penalty_self') {
-                document.getElementById('editPointsType').value = 'variable_penalty_self';
-            } else if (treasure.points === 'variable_penalty_big_self') {
-                document.getElementById('editPointsType').value = 'variable_penalty_big_self';
-            } else if (treasure.points === 'charity') {
-                document.getElementById('editPointsType').value = 'charity';
-            } else {
-                document.getElementById('editPointsType').value = 'fixed';
+            // تحديد نوع المحتوى (Radio Buttons)
+            const type = treasure.type || 'bonus';
+            const radio = document.querySelector(`input[name="contentType"][value="${type === 'neutral' ? 'other' : type}"]`);
+            if (radio) radio.checked = true;
+            else document.querySelector('input[name="contentType"][value="other"]').checked = true; // Default fallback
+
+            // تحديد نوع النقاط والقيمة
+            let pointsType = 'fixed';
+            if (treasure.points === 'double') pointsType = 'double';
+            else if (treasure.points === 'half') pointsType = 'half';
+            else if (treasure.points === 'input_bonus') pointsType = 'input_bonus';
+            else if (treasure.points === 'input_penalty') pointsType = 'input_penalty';
+            else if (treasure.points === 'variable_penalty_self') pointsType = 'variable_penalty_self';
+            else if (treasure.points === 'charity') pointsType = 'charity';
+            else if (treasure.points === 'attack') pointsType = 'attack';
+            
+            document.getElementById('editPointsType').value = pointsType;
+
+            // تحميل إعدادات الهجوم إذا وجدت
+            if (pointsType === 'attack' && treasure.attackConfig) {
+                document.getElementById('attackMaxDamage').value = treasure.attackConfig.maxDamage || 10;
+                document.getElementById('attackCost').value = treasure.attackConfig.cost || 0;
+                document.getElementById('attackType').value = treasure.attackConfig.type || 'targeted';
+            }
+
+            // تحميل إعدادات الخصم العشوائي إذا وجدت
+            if (pointsType === 'variable_penalty_self' && treasure.penaltyConfig) {
+                document.getElementById('penaltyMin').value = treasure.penaltyConfig.min || 1;
+                document.getElementById('penaltyMax').value = treasure.penaltyConfig.max || 10;
             }
             
-            // التعامل مع قيمة النقاط
-            if (typeof treasure.points === 'number' && document.getElementById('editPointsType').value === 'fixed') {
+            if (typeof treasure.points === 'number' && pointsType === 'fixed') {
                  document.getElementById('editPointsValue').value = treasure.points;
             } else {
                  document.getElementById('editPointsValue').value = '';
             }
+
+            updateFormVisibility(); // تحديث ظهور الحقول
+            updatePreviewCard();    // تحديث بطاقة المعاينة
+            updatePointsFeedback(); // تحديث تغذية النقاط الراجعة
         }
 
-        // حفظ تعديل الخزنة
-        function saveTreasureEdit() {
+        // تحديث ظهور الحقول بناءً على الاختيارات
+        function updateFormVisibility() {
+            const pointsType = document.getElementById('editPointsType').value;
+            const pointsContainer = document.getElementById('pointsValueContainer');
+            const attackSettings = document.getElementById('attackSettingsContainer');
+            const penaltySettings = document.getElementById('penaltySettingsContainer');
+            const descContainer = document.getElementById('pointsTypeDescription');
+            
+            // تحديث وصف الآلية
+            let description = '';
+            switch(pointsType) {
+                case 'fixed': description = 'تمنح أو تخصم عدداً محدداً من النقاط للفريق الذي يفتح الخزنة.'; break;
+                case 'double': description = 'تقوم بمضاعفة (×2) نقاط الفريق الحالي.'; break;
+                case 'half': description = 'تقوم بخصم نصف (÷2) نقاط الفريق الحالي.'; break;
+                case 'input_bonus': description = 'تطلب من الكابتن إدخال عدد نقاط معين يدوياً ليتم إضافته للفريق.'; break;
+                case 'input_penalty': description = 'تطلب من الكابتن إدخال عدد نقاط معين يدوياً ليتم خصمه من الفريق.'; break;
+                case 'attack': description = 'تسمح للفريق باختيار فريق آخر للهجوم عليه وخصم نقاط منه.'; break;
+                case 'variable_penalty_self': description = 'تقوم بخصم عدد عشوائي من النقاط (يحدده النظام) من الفريق الذي فتح الخزنة.'; break;
+                case 'charity': description = 'تسمح للفريق بنقل جزء من نقاطه إلى فريق آخر (صدقة) باختياره.'; break;
+            }
+            
+            if(descContainer) {
+                descContainer.textContent = description;
+                descContainer.classList.remove('hidden');
+            }
+
+            // إدارة ظهور حقل النقاط الثابتة
+            if (pointsType === 'fixed') {
+                pointsContainer.classList.remove('hidden');
+            } else {
+                pointsContainer.classList.add('hidden');
+            }
+
+            // إدارة ظهور إعدادات الهجوم
+            if (pointsType === 'attack') {
+                attackSettings.classList.remove('hidden');
+            } else {
+                attackSettings.classList.add('hidden');
+            }
+
+            // إدارة ظهور إعدادات الخصم العشوائي
+            if (pointsType === 'variable_penalty_self') {
+                penaltySettings.classList.remove('hidden');
+            } else {
+                penaltySettings.classList.add('hidden');
+            }
+
+            updatePreviewCard();
+            if(typeof updatePointsFeedback === 'function') updatePointsFeedback();
+        }
+
+        // إضافة مستمع حدث لتغيير نوع النقاط
+        const pointsTypeSelect = document.getElementById('editPointsType');
+        if(pointsTypeSelect) {
+            pointsTypeSelect.addEventListener('change', updateFormVisibility);
+        }
+
+        // تحديث بطاقة المعاينة الحية
+        function updatePreviewCard() {
+            const icon = document.getElementById('editIcon').value || '❓';
+            const title = document.getElementById('editTitle').value || 'عنوان الخزنة';
+            const content = document.getElementById('editContent').value || 'محتوى الخزنة...';
+            
+            document.getElementById('previewIcon').textContent = icon;
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewContent').textContent = content;
+
+            // تحديث معاينة التأثير
+            const pointsType = document.getElementById('editPointsType').value;
+            const pointsValue = parseInt(document.getElementById('editPointsValue').value || '0');
+            const previewEffect = document.getElementById('previewEffect');
+            
+            let effectText = '';
+            let effectClass = '';
+            
+            if (pointsType === 'fixed') {
+                if (pointsValue > 0) {
+                    effectText = `+${pointsValue} نقطة 🎉`;
+                    effectClass = 'border-green-400 text-green-300 bg-green-900/30';
+                } else if (pointsValue < 0) {
+                    effectText = `${pointsValue} نقطة 💔`;
+                    effectClass = 'border-red-400 text-red-300 bg-red-900/30';
+                } else {
+                    effectText = '⏸️ لا توجد نقاط ⏸️';
+                    effectClass = 'border-gray-400 text-gray-300 bg-gray-900/30';
+                }
+            } else if (pointsType === 'double') {
+                effectText = '🎉 مضاعفة النقاط الحالية! 🎉';
+                effectClass = 'border-purple-400 text-purple-300 bg-purple-900/30';
+            } else if (pointsType === 'half') {
+                effectText = '💔 خصم نصف النقاط الحالية 💔';
+                effectClass = 'border-red-400 text-red-300 bg-red-900/30';
+            } else if (pointsType === 'charity') {
+                effectText = '💝 نقل نقاط بين المجموعات 💝';
+                effectClass = 'border-blue-400 text-blue-300 bg-blue-900/30';
+            } else if (pointsType === 'attack') {
+                effectText = '⚔️ هجوم على فريق منافس! ⚔️';
+                effectClass = 'border-red-500 text-red-300 bg-red-900/30';
+            } else if (pointsType === 'input_bonus') {
+                effectText = '✨ أدخل عدد النقاط للإضافة ✨';
+                effectClass = 'border-green-400 text-green-300 bg-green-900/30';
+            } else if (pointsType === 'input_penalty') {
+                effectText = '💔 أدخل عدد النقاط للخصم 💔';
+                effectClass = 'border-red-400 text-red-300 bg-red-900/30';
+            } else if (pointsType === 'variable_penalty_self') {
+                const min = document.getElementById('penaltyMin').value || 1;
+                const max = document.getElementById('penaltyMax').value || 10;
+                effectText = `💔 خصم من ${min} إلى ${max} نقاط عليك 💔`;
+                effectClass = 'border-red-400 text-red-300 bg-red-900/30';
+            }
+
+            if (effectText) {
+                previewEffect.textContent = effectText;
+                previewEffect.className = `text-center text-[10px] font-bold p-2 rounded border-2 border-dashed mt-2 ${effectClass}`;
+                previewEffect.classList.remove('hidden');
+            } else {
+                previewEffect.classList.add('hidden');
+            }
+        }
+
+        // دالة Debounce لتأخير التنفيذ (للأداء)
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // دالة الحفظ التلقائي (Debounced Save)
+        // تقوم بالحفظ السحابي/المحلي بعد التوقف عن الكتابة لمدة ثانية ونصف
+        const debouncedSave = debounce(() => {
+            saveGameState();
+            createEditorBoxGrid(); // تحديث الشبكة (الأيقونات)
+            
+            // إظهار مؤشر حفظ صغير غير مزعج
+            const indicator = document.getElementById('autoSaveIndicator');
+            if (indicator) {
+                indicator.classList.remove('opacity-0');
+                setTimeout(() => indicator.classList.add('opacity-0'), 2000);
+            }
+        }, 1500);
+
+        // تحديث البيانات في الذاكرة (Memory) فوراً
+        function updateTreasureInMemory() {
             if (!editorState.selectedBox) return;
             
             const boxIndex = editorState.selectedBox - 1;
             const treasure = gameState.treasures[boxIndex];
             
+            // قراءة القيم وتحديث الكائن مباشرة
             treasure.icon = document.getElementById('editIcon').value || '🏴‍☠️';
             treasure.title = document.getElementById('editTitle').value || `خزنة رقم ${editorState.selectedBox}`;
             treasure.content = document.getElementById('editContent').value || 'محتوى الخزنة';
-            treasure.type = document.getElementById('editType').value;
+            
+            const selectedType = document.querySelector('input[name="contentType"]:checked')?.value || 'bonus';
+            treasure.type = selectedType === 'other' ? 'neutral' : selectedType;
             
             const pointsType = document.getElementById('editPointsType').value;
             const pointsValue = parseInt(document.getElementById('editPointsValue').value || '0');
             
             if (pointsType === 'fixed') {
                 treasure.points = pointsValue;
+            } else if (pointsType === 'attack') {
+                treasure.points = 'attack';
+                treasure.attackConfig = {
+                    maxDamage: parseInt(document.getElementById('attackMaxDamage').value) || 10,
+                    cost: parseInt(document.getElementById('attackCost').value) || 0,
+                    type: document.getElementById('attackType').value || 'targeted'
+                };
+            } else if (pointsType === 'variable_penalty_self') {
+                treasure.points = 'variable_penalty_self';
+                treasure.penaltyConfig = {
+                    min: parseInt(document.getElementById('penaltyMin').value) || 1,
+                    max: parseInt(document.getElementById('penaltyMax').value) || 10
+                };
             } else {
                 treasure.points = pointsType;
             }
             
+            // المنطق الإضافي
             treasure.selectTeam = false;
             treasure.inputPoints = false;
             treasure.giveToOther = false;
@@ -1600,41 +2713,519 @@
                 treasure.giveToOther = true;
             } else if (treasure.type === 'penalty' && typeof treasure.points === 'number' && treasure.points < 0) {
                 treasure.selectTeam = true;
-            } else if (pointsType === 'input_bonus' || pointsType === 'input_penalty' || 
-                      pointsType === 'variable_penalty_self' || pointsType === 'variable_penalty_big_self') {
+            } else if (pointsType.includes('input')) {
                 treasure.inputPoints = true;
+            } else if (pointsType === 'variable_penalty_self') {
+                treasure.inputPoints = true; 
             } else if (pointsType === 'charity') {
                 treasure.selectTeam = true;
                 treasure.inputPoints = true;
             }
-            
+        }
+
+        // دالة التعامل مع التغييرات (Auto-Save Handler)
+        function handleAutoSave() {
+            updatePreviewCard();      // 1. تحديث البطاقة فوراً (بصري)
+            updateTreasureInMemory(); // 2. تحديث البيانات في الذاكرة فوراً (منطق)
+            debouncedSave();          // 3. جدولة الحفظ الدائم (أداء)
+        }
+
+        // ربط أحداث الإدخال للحفظ التلقائي
+        ['editIcon', 'editTitle', 'editContent', 'editPointsType', 'editPointsValue', 'attackMaxDamage', 'attackCost', 'attackType', 'penaltyMin', 'penaltyMax'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                // استخدام input للتحديث الفوري أثناء الكتابة
+                el.addEventListener('input', handleAutoSave);
+                // استخدام change للتأكد من التحديث عند فقدان التركيز أو الاختيار
+                el.addEventListener('change', handleAutoSave);
+            }
+        });
+
+        // الاستماع لتغييرات نوع المحتوى (Radio Buttons)
+        document.querySelectorAll('input[name="contentType"]').forEach(radio => {
+            radio.addEventListener('change', handleAutoSave);
+        });
+
+        // حفظ تعديل الخزنة (لم يعد مطلوباً كزر، لكن نبقيه كدالة مساعدة إذا احتجنا لحفظ فوري)
+        function saveTreasureEdit() {
+            updateTreasureInMemory();
             saveGameState();
-            
-            showPointsAnimation(`💾 تم حفظ تعديل الخزنة ${editorState.selectedBox}`, 'green');
+            createEditorBoxGrid();
         }
 
         // استعادة الخزنة للحالة الأصلية
         function resetToDefault() {
             if (!editorState.selectedBox) return;
             
-            const boxIndex = editorState.selectedBox - 1;
-            const originalTreasure = initialTreasureData[boxIndex]; 
-            
-            if (originalTreasure) {
-                gameState.treasures[boxIndex] = JSON.parse(JSON.stringify(originalTreasure));
-                loadTreasureData(editorState.selectedBox);
-                
-                saveGameState(); 
-                
-                showPointsAnimation(`🔄 تم استعادة الخزنة ${editorState.selectedBox} للحالة الأصلية`, 'blue');
-            }
+            Swal.fire({
+                title: 'استعادة الأصلي؟',
+                text: "سيتم إلغاء جميع التعديلات على هذه الخزنة فقط",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، استعدها',
+                cancelButtonText: 'تراجع',
+                background: '#1e293b',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const boxIndex = editorState.selectedBox - 1;
+                    const originalTreasure = initialTreasureData[boxIndex]; 
+                    
+                    if (originalTreasure) {
+                        gameState.treasures[boxIndex] = JSON.parse(JSON.stringify(originalTreasure));
+                        loadTreasureData(editorState.selectedBox);
+                        saveGameState(); 
+                        createEditorBoxGrid();
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تمت الاستعادة',
+                            timer: 1000,
+                            showConfirmButton: false,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                    }
+                }
+            });
         }
 
         // تهيئة اللعبة عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
             // استدعاء الدالة الذكية بدلاً من initGame المباشرة
             initGameWithCloud();
+
+            // إضافة مستمع حدث لتحديث الفريق الحالي عند تغييره يدوياً
+            const currentTeamSelect = document.getElementById('currentTeam');
+            if (currentTeamSelect) {
+                currentTeamSelect.addEventListener('change', (e) => {
+                    gameState.currentTeam = parseInt(e.target.value);
+                    saveGameState();
+                });
+            }
         });
+
+        // ---------------------------------------------------------
+        // دوال إدارة نماذج الحفظ (Save Slots)
+        // ---------------------------------------------------------
+
+        function openSaveSlotsModal() {
+            renderSaveSlots();
+            document.getElementById('saveSlotsModal').classList.remove('hidden');
+        }
+
+        function renderSaveSlots() {
+            const container = document.getElementById('slotsContainer');
+            container.innerHTML = '';
+            
+            // جلب البيانات من التخزين المحلي
+            let slots = [];
+            try {
+                slots = JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || [null, null, null];
+            } catch (e) {
+                slots = [null, null, null];
+            }
+
+            // التأكد من وجود 3 فتحات
+            if (slots.length < 3) {
+                while(slots.length < 3) slots.push(null);
+            }
+
+            slots.forEach((slot, index) => {
+                const slotEl = document.createElement('div');
+                
+                if (!slot) {
+                    // فتحة فارغة
+                    slotEl.className = 'bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 min-h-[250px] group hover:border-indigo-500 hover:bg-slate-800 transition-all cursor-pointer';
+                    slotEl.innerHTML = `
+                        <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
+                            <span class="text-3xl text-slate-400 group-hover:text-indigo-400">+</span>
+                        </div>
+                        <h3 class="text-slate-400 font-bold text-lg">فتحة فارغة ${index + 1}</h3>
+                        <button onclick="saveToSlot(${index})" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-bold transition-colors">
+                            حفظ هنا
+                        </button>
+                    `;
+                } else {
+                    // فتحة مشغولة
+                    const date = new Date(slot.timestamp).toLocaleDateString('ar-SA');
+                    const time = new Date(slot.timestamp).toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+                    
+                    // إحصائيات سريعة
+                    const penalties = slot.treasures.filter(t => t.type === 'penalty').length;
+                    const gifts = slot.treasures.filter(t => t.type === 'gift').length;
+                    
+                    slotEl.className = 'bg-gradient-to-br from-slate-800 to-slate-900 border border-amber-500/30 rounded-2xl p-6 flex flex-col min-h-[250px] relative overflow-hidden group hover:border-amber-500 transition-all shadow-lg';
+                    slotEl.innerHTML = `
+                        <div class="absolute top-0 right-0 bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-bl-xl">
+                            ${index + 1}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="text-amber-300 font-bold text-xl mb-1 truncate" title="${slot.name}">${slot.name}</h3>
+                            <p class="text-slate-400 text-xs">${date} - ${time}</p>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <div class="flex gap-2 text-xs text-slate-300 mb-4 bg-slate-800 p-2 rounded-lg">
+                                <span title="عقوبات">💔 ${penalties}</span>
+                                <span title="هدايا">🎁 ${gifts}</span>
+                                <span title="أخرى">⚡ ${50 - penalties - gifts}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <button onclick="loadFromSlot(${index})" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2">
+                                <span>📂</span> تحميل
+                            </button>
+                            <button onclick="saveToSlot(${index})" class="bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg font-bold text-sm transition-colors border border-slate-600">
+                                <span>💾</span> استبدال
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                container.appendChild(slotEl);
+            });
+        }
+
+        function saveToSlot(index) {
+            // طلب اسم النموذج
+            Swal.fire({
+                title: 'حفظ النموذج',
+                input: 'text',
+                inputLabel: 'اختر اسماً لهذا النموذج',
+                inputValue: `نموذج ${index + 1} - ${new Date().toLocaleDateString('ar-SA')}`,
+                showCancelButton: true,
+                confirmButtonText: 'حفظ',
+                cancelButtonText: 'إلغاء',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#ef4444',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'الرجاء كتابة اسم!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const name = result.value;
+                    
+                    // تجهيز البيانات
+                    const saveData = {
+                        name: name,
+                        timestamp: new Date().toISOString(),
+                        treasures: gameState.treasures, // نحفظ حالة الخزائن الحالية
+                        teamImages: TEAM_IMAGE_URLS     // نحفظ الصور أيضاً
+                    };
+
+                    // جلب البيانات القديمة وتحديث الفتحة المحددة
+                    let slots = JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || [null, null, null];
+                    if (slots.length < 3) while(slots.length < 3) slots.push(null);
+                    
+                    slots[index] = saveData;
+                    
+                    localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(slots));
+                    
+                    renderSaveSlots();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الحفظ بنجاح!',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#1e293b',
+                        color: '#fff'
+                    });
+                }
+            });
+        }
+
+        function loadFromSlot(index) {
+            let slots = JSON.parse(localStorage.getItem(SAVE_SLOTS_KEY)) || [];
+            const slot = slots[index];
+            
+            if (!slot) return;
+
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم استبدال جميع الخزائن الحالية بمحتوى هذا النموذج!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، قم بالتحميل!',
+                cancelButtonText: 'إلغاء',
+                background: '#1e293b',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // تحميل البيانات
+                    if (slot.treasures) {
+                        gameState.treasures = JSON.parse(JSON.stringify(slot.treasures));
+                        // تحديث نسخة المحرر الاحتياطية أيضاً
+                        editorState.originalTreasures = JSON.parse(JSON.stringify(slot.treasures));
+                    }
+                    
+                    if (slot.teamImages) {
+                        TEAM_IMAGE_URLS = slot.teamImages;
+                        // نحتاج لتحديث الصور في واجهة الإعدادات إذا كانت مفتوحة أو سيتم فتحها
+                    }
+
+                    // تحديث الواجهة
+                    createTreasureGrid(); // شبكة اللعب
+                    createEditorBoxGrid(); // شبكة المحرر
+                    saveGameState(); // حفظ الحالة الجديدة في اللعبة الحالية
+
+                    document.getElementById('saveSlotsModal').classList.add('hidden');
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم تحميل النموذج!',
+                        text: `تم تفعيل نموذج "${slot.name}" بنجاح`,
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#1e293b',
+                        color: '#fff'
+                    });
+                }
+            });
+        }
+
+        // ** تحديث التغذية الراجعة للنقاط (Visual Feedback) **
+        function updatePointsFeedback() {
+            const input = document.getElementById('editPointsValue');
+            const feedback = document.getElementById('pointsFeedback');
+            const indicator = document.getElementById('pointsIconIndicator');
+            const value = parseInt(input.value);
+
+            // إزالة الألوان السابقة
+            input.classList.remove('border-emerald-500', 'border-red-500', 'focus:border-emerald-500', 'focus:border-red-500', 'text-emerald-400', 'text-red-400');
+            feedback.className = 'text-[10px] mt-1 font-bold min-h-[1.25rem] transition-colors flex items-center gap-1';
+            indicator.textContent = '';
+
+            if (isNaN(value) || value === 0 || input.value === '') {
+                feedback.textContent = '';
+                return;
+            }
+
+            if (value > 0) {
+                // حالة موجبة (مكافأة)
+                input.classList.add('border-emerald-500', 'text-emerald-400', 'focus:border-emerald-500');
+                feedback.innerHTML = `<span class="text-lg leading-none">✅</span> <span class="text-emerald-400">سيحصل الفريق على ${value} نقطة</span>`;
+                indicator.textContent = '➕';
+                indicator.className = 'absolute left-2 top-1.5 text-xs text-emerald-500 font-bold';
+            } else {
+                // حالة سالبة (خصم)
+                input.classList.add('border-red-500', 'text-red-400', 'focus:border-red-500');
+                feedback.innerHTML = `<span class="text-lg leading-none">⚠️</span> <span class="text-red-400">سيتم خصم ${Math.abs(value)} نقطة</span>`;
+                indicator.textContent = '➖';
+                indicator.className = 'absolute left-2 top-1.5 text-xs text-red-500 font-bold';
+            }
+        }
+
+        // ** تعيين قيمة النقاط بسرعة **
+        function setPointsValue(val) {
+            const input = document.getElementById('editPointsValue');
+            input.value = val;
+            
+            // تغيير نوع النقاط تلقائياً إلى "عدد نقاط ثابت" إذا لم يكن كذلك
+            const typeSelect = document.getElementById('editPointsType');
+            if(typeSelect.value !== 'fixed') {
+                typeSelect.value = 'fixed';
+            }
+            
+            updatePointsFeedback();
+        }
+
+        // ** قائمة الأيقونات التعبيرية **
+        const EMOJI_LIST = [
+            // قراصنة وكنوز
+            '🏴‍☠️', '💰', '💎', '🗺️', '🦜', '⚓', '💣', '⚔️', '🗝️', '📜', '🧭', '🛶', '🚢', '🏝️', '🌋',
+            // مكافآت واحتفال
+            '🎉', '🎁', '✨', '⭐', '🏆', '👑', '🏅', '🎯', '🎈', '🎆', '🤩', '🤑', '🤠', '😎', '🤝',
+            // عقوبات وتحديات
+            '⚡', '💔', '🚫', '🛑', '☠️', '👻', '🤡', '🤖', '👽', '👾', '🧟', '🧛', '🧙', '🦹', '👮',
+            '🤐', '🥶', '🥵', '🤢', '🤮', '🤧', '🤕', '🤒', '😷', '🤬', '👿', '😭', '😱', '😨',
+            // أدوات وأشياء
+            '🔨', '🪓', '🔧', '🔫', '🛡️', '🚬', '⚰️', '🔮', '🧿', '💈', '🛎️', '⌛', '⏰', '📸', '📹',
+            '📞', '📱', '💻', '💡', '🔦', '🕯️', '💵', '💳', '🧾', '📦', '📫', '✏️', '✒️', '📝', '📁',
+            // حيوانات وطبيعة
+            '🦁', '🐯', '🐻', '🦈', '🐙', '🦖', '🐉', '🐍', '🦂', '🕷️', '🕸️', '🌲', '🌵', '🌪️', '🔥',
+            '💧', '❄️', '🍌', '🍎', '🍔', '🍕', '🍗', '🍖', '🥚', '🥛', '☕', '🍵', '🍶', '🍷', '🍺'
+        ];
+
+        // ** تهيئة قائمة الأيقونات **
+        function initEmojiPicker() {
+            const grid = document.getElementById('emojiGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            EMOJI_LIST.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.textContent = emoji;
+                btn.className = 'text-2xl p-2 rounded hover:bg-slate-700 transition-colors focus:outline-none focus:bg-slate-600';
+                btn.type = 'button';
+                btn.onclick = () => selectEmoji(emoji);
+                grid.appendChild(btn);
+            });
+
+            // إغلاق القائمة عند النقر خارجها
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('emojiPickerDropdown');
+                const btn = document.getElementById('emojiPickerBtn');
+                if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // ** فتح/إغلاق قائمة الأيقونات **
+        function toggleEmojiPicker() {
+            const dropdown = document.getElementById('emojiPickerDropdown');
+            dropdown.classList.toggle('hidden');
+            
+            // تهيئة القائمة في المرة الأولى فقط إذا كانت فارغة
+            const grid = document.getElementById('emojiGrid');
+            if (grid && grid.children.length === 0) {
+                initEmojiPicker();
+            }
+        }
+
+        // ** اختيار أيقونة **
+        function selectEmoji(emoji) {
+            document.getElementById('editIcon').value = emoji;
+            document.getElementById('selectedEmojiDisplay').textContent = emoji;
+            document.getElementById('emojiPickerDropdown').classList.add('hidden');
+            updatePreviewCard(); // تحديث المعاينة فوراً
+        }
+
+        // تهيئة القائمة عند التحميل
+        document.addEventListener('DOMContentLoaded', initEmojiPicker);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9875307e15c69355',t:'MTc1OTI1MDcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <!-- نافذة غرفة التحكم (جديدة) -->
+    <div id="controlPanelModal" class="modal-container hidden">
+        <div class="modal-card bg-slate-900 border-slate-500">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-300">🎛️ غرفة التحكم</h2>
+                <p class="text-slate-400 text-sm">أدوات إدارة اللعبة اليدوية</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- اختيار الطاقم (تمت إزالته لأنه يمكن الاختيار من الشريط العلوي مباشرة) -->
+                <!-- 
+                <div>
+                    <label class="block text-slate-300 mb-2 text-sm">الدور الحالي:</label>
+                    <select id="currentTeam" class="w-full bg-slate-800 text-white px-4 py-2 rounded-lg border border-slate-600">
+                    </select>
+                </div>
+                -->
+                <input type="hidden" id="currentTeam"> <!-- نبقي عليه مخفياً لتجنب أخطاء الكود -->
+
+                <!-- إضافة/خصم نقاط -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <label class="block text-emerald-400 text-xs mb-1">إضافة نقاط</label>
+                        <div class="flex gap-1">
+                            <input type="number" id="addPointsInput" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-center" placeholder="0">
+                            <button onclick="addPoints()" class="bg-emerald-600 hover:bg-emerald-500 px-2 rounded text-lg">+</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <label class="block text-red-400 text-xs mb-1">خصم نقاط</label>
+                        <div class="flex gap-1">
+                            <input type="number" id="subtractPointsInput" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-center" placeholder="0">
+                            <button onclick="subtractPoints()" class="bg-red-600 hover:bg-red-500 px-2 rounded text-lg">-</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- إعادة فتح خزنة -->
+                <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                    <label class="block text-amber-400 text-xs mb-1">إعادة فتح خزنة مغلقة</label>
+                    <div class="flex gap-2">
+                        <select id="reopenBoxSelect" class="flex-1 bg-slate-900 text-white px-2 py-1 rounded border border-slate-600 text-sm">
+                            <option value="">اختر خزنة...</option>
+                        </select>
+                        <button onclick="reopenBox()" class="bg-amber-600 hover:bg-amber-500 px-3 rounded font-bold">🗝️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-700 flex justify-center">
+                <button onclick="toggleControlPanel(false)" class="bg-slate-600 hover:bg-slate-500 px-6 py-2 rounded-lg text-white font-semibold">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إدارة الفريق (سياقية) -->
+    <div id="teamManagementModal" class="modal-container hidden">
+        <div class="modal-card bg-slate-900 border-2 border-slate-500 max-w-sm">
+            <div class="text-center mb-4 relative">
+                <button onclick="closeTeamManagementModal()" class="absolute -top-2 -right-2 text-slate-400 hover:text-white text-xl">&times;</button>
+                <h2 class="text-xl font-bold text-amber-300 flex items-center justify-center gap-2">
+                    <span id="manageTeamIcon" class="text-2xl"></span>
+                    إدارة الفريق
+                </h2>
+            </div>
+
+            <div class="space-y-4">
+                <!-- صورة الفريق -->
+                <div class="flex justify-center mb-4">
+                    <div class="relative group w-24 h-24">
+                        <img id="manageTeamPreviewImg" src="" class="w-full h-full rounded-full object-contain border-4 border-slate-700 bg-slate-800 group-hover:border-amber-400 transition-colors shadow-xl">
+                        <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="document.getElementById('uploadManageImg').click()">
+                            <span class="text-white font-bold text-sm text-center leading-tight">تغيير<br>الصورة</span>
+                        </div>
+                        <input type="file" id="uploadManageImg" class="hidden" accept="image/*" onchange="handleTeamImageUpload(-1, this, 'manage')">
+                    </div>
+                </div>
+
+                <!-- تعديل الاسم -->
+                <div>
+                    <label class="block text-slate-400 text-xs mb-1">اسم الفريق</label>
+                    <input type="text" id="manageTeamName" class="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 focus:border-amber-400 focus:outline-none transition-colors text-center font-bold">
+                </div>
+
+                <!-- التحكم بالنقاط -->
+                <div>
+                    <label class="block text-slate-400 text-xs mb-1">تعديل النقاط (الحالية: <span id="manageTeamCurrentScore" class="text-amber-400 font-bold">0</span>)</label>
+                    
+                    <!-- أزرار سريعة -->
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <button onclick="quickUpdateScore(10)" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-600/50 rounded py-1 transition-all">+10</button>
+                        <button onclick="quickUpdateScore(50)" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-600/50 rounded py-1 transition-all">+50</button>
+                        <button onclick="quickUpdateScore(-10)" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 rounded py-1 transition-all">-10</button>
+                        <button onclick="quickUpdateScore(-50)" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 rounded py-1 transition-all">-50</button>
+                    </div>
+
+                    <!-- إدخال يدوي -->
+                    <div class="flex gap-2">
+                        <input type="number" id="manageTeamScoreInput" class="flex-1 bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-center" placeholder="إدخال يدوي (+/-)">
+                        <button onclick="applyManualScore()" class="bg-blue-600 hover:bg-blue-500 px-4 rounded text-white font-bold">تطبيق</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-700 my-4"></div>
+
+                <!-- أزرار إجراءات خطيرة -->
+                <button onclick="resetTeamScore()" class="w-full bg-slate-800 hover:bg-red-900/30 text-red-400 hover:text-red-200 border border-slate-700 hover:border-red-500/50 py-2 rounded transition-all text-sm flex items-center justify-center gap-2">
+                    <span>🔄</span> إعادة تعيين نقاط هذا الفريق فقط (50)
+                </button>
+
+                <!-- زر الحفظ -->
+                <button onclick="saveTeamManagement()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg font-bold shadow-lg shadow-emerald-900/20 transition-all mt-2">
+                    💾 حفظ التغييرات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
 </html>
