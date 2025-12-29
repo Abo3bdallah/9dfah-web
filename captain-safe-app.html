@@ -3078,6 +3078,10 @@
                     
                     localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(slots));
                     
+                    // --- هام: مزامنة التغييرات مع السحابة فوراً ---
+                    saveGameState();
+                    // ----------------------------------------------
+
                     renderSaveSlots();
                     
                     Swal.fire({
