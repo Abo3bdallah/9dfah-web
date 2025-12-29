@@ -382,8 +382,8 @@
         <!-- شريط كابتن السفينة (HUD) -->
         <div class="ship-container backdrop-blur-md rounded-2xl p-3 mb-8 border border-cyan-300/30 flex flex-col md:flex-row items-center justify-between gap-4 sticky top-4 z-40 shadow-2xl">
             
-            <!-- الجزء الأيمن: العنوان -->
-            <div class="flex items-center gap-3 order-1 md:order-1">
+            <!-- الجزء الأيمن: العنوان (أصبح الأيسر) -->
+            <div class="flex items-center gap-3 order-1 md:order-3">
                  <img src="images/rs4LLx24-image.png" alt="Boat Icon" class="w-12 h-12 transform -scale-x-100 drop-shadow-lg filter brightness-110">
                  <div class="hidden md:block text-right">
                      <h1 class="text-2xl font-bold text-amber-300" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">خزنة ربان</h1>
@@ -392,12 +392,12 @@
             </div>
 
             <!-- الجزء الأوسط: لوحة النقاط (شريط أفقي) -->
-            <div id="scoreboard" class="flex-1 w-full md:w-auto order-3 md:order-2 flex flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
+            <div id="scoreboard" class="flex-1 w-full md:w-auto order-2 md:order-2 flex flex-wrap md:flex-nowrap justify-center items-center gap-2 md:gap-4 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
                 <!-- سيتم ملؤها بواسطة JavaScript -->
             </div>
 
-            <!-- الجزء الأيسر: الأدوات -->
-            <div class="flex items-center gap-2 order-2 md:order-3">
+            <!-- الجزء الأيسر: الأدوات (أصبح الأيمن) -->
+            <div class="flex items-center gap-2 order-3 md:order-1">
                 <!-- زر غرفة التحكم (جديد) -->
                 <button onclick="toggleControlPanel(true)" class="bg-slate-700/80 hover:bg-slate-600 p-2.5 rounded-xl border border-slate-500 transition-all hover:scale-105 hover:shadow-lg group" title="غرفة التحكم">
                     <span class="text-xl group-hover:rotate-90 transition-transform duration-300">🎛️</span>
@@ -413,6 +413,17 @@
         <div class="grid grid-cols-5 md:grid-cols-10 gap-3" id="treasureGrid">
             <!-- سيتم إنشاء الخزائن بواسطة JavaScript -->
         </div>
+
+        <!-- الحقوق -->
+        <footer class="mt-6 mb-4 text-center relative z-10">
+            <div class="inline-block bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-full px-6 py-2 shadow-lg">
+                <p class="text-slate-400 text-sm font-medium flex items-center justify-center gap-2">
+                    <span>جميع الحقوق محفوظة ©</span>
+                    <span class="w-1 h-1 bg-slate-500 rounded-full"></span>
+                    <span class="text-amber-400 font-bold">منصة عبقر 2026</span>
+                </p>
+            </div>
+        </footer>
     </div>
     
     <!-- شاشة الإعدادات -->
