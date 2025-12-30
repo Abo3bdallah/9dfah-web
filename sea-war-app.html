@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حرب بحار الفتيان - تصميم جديد</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
@@ -4244,9 +4245,7 @@
                 this.setupAdminPanelListeners();
 
                 if (localStorage.getItem('battleshipSaveData')) {
-                    showConfirmationModal('لعبة محفوظة', 'تم العثور على لعبة محفوظة. هل تريد استئنافها؟', () => {
-                        this.loadGame(true);
-                    });
+                    this.loadGame(true);
                 }
             }
             
@@ -4269,6 +4268,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         كيف تلعب؟
                     </button>
+                    <button class="neumorphic-btn" onclick="openCloudModal()">${this.getIcon('settings')} الحفظ السحابي</button>
                     <button class="neumorphic-btn" onclick="openAdminPanel()">${this.getIcon('settings')} مركز التحكم</button>
                     <button id="scoreboardToggleBtn" class="neumorphic-btn" onclick="toggleScoreboard()">${this.getIcon('scoreboard')} عرض النقاط</button>
                     <button id="turnToggleBtn" class="neumorphic-btn" onclick="toggleTurnControl()">${this.getIcon('timer')} عرض الأدوار</button>
@@ -6512,7 +6512,204 @@
         document.getElementById('confirmBtnNo').onclick = closeConfirmationModal;
 
 
+        /* --- Cloud / Export Manager (Supabase & Manual) --- */
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+        
+        let supabase;
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.error('Supabase init failed:', e);
+        }
+
+        const CloudManager = {
+            exportSave: function() {
+                const data = localStorage.getItem('battleshipSaveData');
+                if (!data) return null;
+                return btoa(unescape(encodeURIComponent(data)));
+            },
+            importSave: function(encodedData) {
+                try {
+                    const jsonStr = decodeURIComponent(escape(atob(encodedData)));
+                    const data = JSON.parse(jsonStr);
+                    if (data && (data.gridWidth || data.teams)) {
+                        localStorage.setItem('battleshipSaveData', jsonStr);
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Import failed', e);
+                }
+                return false;
+            },
+            // Supabase Methods
+            async saveToSupabase() {
+                if (!supabase) return { success: false, message: 'مكتبة Supabase غير متوفرة' };
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return { success: false, message: 'يجب تسجيل الدخول أولاً لحفظ اللعبة سحابياً' };
+
+                const savedState = localStorage.getItem('battleshipSaveData');
+                if (!savedState) return { success: false, message: 'لا توجد لعبة محفوظة حالياً للحفظ' };
+
+                try {
+                    const gameState = JSON.parse(savedState);
+                    // Update user metadata
+                    const { error } = await supabase.auth.updateUser({
+                        data: { seaWarSave: gameState }
+                    });
+                    
+                    if (error) throw error;
+                    return { success: true, message: 'تم حفظ اللعبة في حسابك بنجاح!' };
+                } catch (err) {
+                    console.error('Cloud Save Error:', err);
+                    return { success: false, message: 'حدث خطأ: ' + err.message };
+                }
+            },
+            async loadFromSupabase() {
+                if (!supabase) return { success: false, message: 'مكتبة Supabase غير متوفرة' };
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return { success: false, message: 'يجب تسجيل الدخول لاستعادة اللعبة' };
+
+                const cloudSave = user.user_metadata?.seaWarSave;
+                if (!cloudSave) return { success: false, message: 'لا توجد لعبة محفوظة في حسابك' };
+
+                try {
+                    localStorage.setItem('battleshipSaveData', JSON.stringify(cloudSave));
+                    return { success: true, message: 'تم استعادة اللعبة من السحابة بنجاح!' };
+                } catch (e) {
+                    return { success: false, message: 'فشل معالجة البيانات السحابية' };
+                }
+            }
+        };
+
+        async function openCloudModal() {
+            document.getElementById('cloudModal').style.display = 'block';
+            
+            // UI Status Update
+            const statusEl = document.getElementById('cloudAuthStatus');
+            const supabaseControls = document.getElementById('supabaseControls');
+            const loginHint = document.getElementById('supabaseLoginHint');
+            
+            if (supabase) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    statusEl.innerHTML = `<span style="color:#2ecc71">● متصل: ${user.user_metadata?.full_name || user.email}</span>`;
+                    supabaseControls.style.display = 'block';
+                    if(loginHint) loginHint.style.display = 'none';
+                } else {
+                    statusEl.innerHTML = `<span style="color:#e74c3c">● غير متصل (سجل الدخول في الموقع الرئيسي)</span>`;
+                    supabaseControls.style.display = 'none';
+                    if(loginHint) loginHint.style.display = 'block';
+                }
+            } else {
+                statusEl.innerHTML = `<span style="color:#e74c3c">● خطأ في تهيئة الاتصال</span>`;
+                supabaseControls.style.display = 'none';
+            }
+        }
+
+        function closeCloudModal() {
+            document.getElementById('cloudModal').style.display = 'none';
+        }
+
+        async function handleCloudSave() {
+            showToast('جاري الحفظ في السحابة...', 'info');
+            const result = await CloudManager.saveToSupabase();
+            showToast(result.message, result.success ? 'success' : 'error');
+        }
+
+        async function handleCloudLoad() {
+            showToast('جاري الاستعادة من السحابة...', 'info');
+            const result = await CloudManager.loadFromSupabase();
+            if (result.success) {
+                showToast(result.message, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(result.message, 'error');
+            }
+        }
+
+        function copySaveCode() {
+            const code = CloudManager.exportSave();
+            if (!code) {
+                showToast('لا توجد لعبة محفوظة حالياً!', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('تم نسخ كود الحفظ بنجاح!', 'success');
+            }).catch(err => {
+                showToast('فشل النسخ، يرجى المحاولة يدوياً', 'error');
+                console.error(err);
+            });
+        }
+
+        function loadFromCode() {
+            const input = document.getElementById('cloudSaveInput');
+            const code = input.value.trim();
+            if (!code) {
+                showToast('يرجى لصق الكود أولاً', 'error');
+                return;
+            }
+            
+            if (CloudManager.importSave(code)) {
+                showToast('تم استعادة اللعبة بنجاح! جاري التحميل...', 'success');
+                setTimeout(() => {
+                    location.reload(); // Reload to apply changes cleanly
+                }, 1500);
+            } else {
+                showToast('كود الحفظ غير صالح', 'error');
+            }
+        }
     </script>
+    <!-- Cloud Save Modal -->
+    <div id="cloudModal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 500px;">
+            <h2>☁️ الحفظ السحابي</h2>
+            
+            <!-- Supabase Section -->
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(0, 242, 255, 0.2);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h3 style="margin:0; font-size:1.1rem; color: var(--primary-color);">حسابي (Supabase)</h3>
+                    <div id="cloudAuthStatus" style="font-size:0.85rem;">جاري التحقق...</div>
+                </div>
+                
+                <div id="supabaseControls" style="display:none;">
+                    <p style="font-size:0.9rem; color:#ccc; margin-bottom:15px;">يتم حفظ اللعبة مباشرة في بيانات حسابك.</p>
+                    <div style="display:flex; gap:10px;">
+                        <button class="neumorphic-btn" onclick="handleCloudSave()" style="flex:1; justify-content:center; background: rgba(39, 174, 96, 0.2); border-color: #2ecc71;">
+                            📤 رفع للسحابة
+                        </button>
+                        <button class="neumorphic-btn" onclick="handleCloudLoad()" style="flex:1; justify-content:center; background: rgba(52, 152, 219, 0.2); border-color: #3498db;">
+                            📥 استعادة من السحابة
+                        </button>
+                    </div>
+                </div>
+                <div id="supabaseLoginHint" style="display:none; text-align:center; padding:10px; color:#aaa;">
+                    يرجى تسجيل الدخول في الموقع الرئيسي لاستخدام هذه الميزة.
+                </div>
+            </div>
+
+            <!-- Manual Section -->
+            <div class="setting-group" style="opacity:0.8;">
+                <label class="setting-label">نقل يدوي (نسخ/لصق الكود)</label>
+                <button class="neumorphic-btn" onclick="copySaveCode()" style="width: 100%; justify-content: center; margin-bottom: 10px;">
+                    📋 نسخ كود اللعبة الحالي
+                </button>
+                <div style="display:flex; gap:5px;">
+                    <input id="cloudSaveInput" class="glass-panel" style="flex:1; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px; border-radius:8px;" placeholder="الصق الكود هنا...">
+                    <button class="neumorphic-btn" onclick="loadFromCode()" style="padding: 5px 15px;">
+                        تحميل
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: center;">
+                <button class="neumorphic-btn" onclick="closeCloudModal()">إغلاق</button>
+            </div>
+        </div>
+    </div>
     <!-- Copyright notice moved to here, before closing body tag -->
     <p class="copyright-notice">حقوق الطبع والنشر © احمد الذبياني</p>
 </body>
