@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حرب بحار الفتيان - تصميم جديد</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
@@ -105,19 +104,139 @@
         }
 
         .admin-controls {
-            background: var(--surface-color);
-            backdrop-filter: blur(12px);
-            border: var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            border-radius: var(--border-radius);
-            padding: 25px;
-            margin-bottom: 25px;
-            text-align: center;
+            background: rgba(16, 32, 48, 0.85); /* Darker casing for "device" look */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border-radius: 12px; /* Tighter radius for "block" feel */
+            padding: 4px;
+            margin: 0 auto 20px auto;
+            width: fit-content; /* Reset to fit content for cohesive look */
+            max-width: 98%; 
+            display: flex; /* Changed from inline-flex to flex to allow margin:auto to center it */
+            justify-content: center;
+            gap: 2px; /* Tiny gap between segments */
+            align-items: stretch;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            min-height: 54px;
+        }
+
+        .admin-controls.collapsed {
+            width: 54px; /* Collapse to square/circle */
+            padding: 4px;
+            border-radius: 12px; /* Match expanded shape */
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .controls-content {
+            display: flex;
+            align-items: stretch; /* Full height buttons */
+            gap: 1px; /* Divider line gap */
+            padding: 0;
+            opacity: 1;
+            max-width: 800px;
+            transition: all 0.4s ease;
+            flex: 1;
+            min-width: 0;
+            overflow-x: auto;
+            background: rgba(0, 0, 0, 0.2); /* Darker inner track */
+            border-radius: 8px; /* Inner radius */
+            margin-left: 2px;
+        }
+
+        .admin-controls .neumorphic-btn {
+            width: auto;
+            height: 46px; /* Match container inner height */
+            padding: 0 20px;
+            border-radius: 0; /* Square edges for connection */
             display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            background: transparent; /* Transparent to show track */
+            border: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.05); /* Subtle separator */
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-shadow: none;
+            box-shadow: none;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            position: relative;
         }
+
+        .admin-controls .neumorphic-btn:first-child {
+            border-left: none;
+        }
+
+        .admin-controls .neumorphic-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: none; /* No movement, just light up */
+            box-shadow: inset 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        .admin-controls .neumorphic-btn:active {
+            background: rgba(0, 242, 255, 0.15);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Active indicator line */
+        .admin-controls .neumorphic-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #00f2ff;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .admin-controls .neumorphic-btn:hover::after {
+            opacity: 0.5;
+        }
+
+        .toggle-controls-btn {
+            width: 46px;
+            height: 46px;
+            flex-shrink: 0;
+            border-radius: 8px; /* Match inner radius */
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-controls-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-controls.collapsed .toggle-controls-btn {
+            background: transparent;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .toggle-icon {
+             transition: transform 0.5s ease;
+        }
+        
+        .admin-controls.collapsed .toggle-icon {
+            transform: rotate(180deg);
+        }
+
         
         .icon-btn {
             background: var(--surface-color);
@@ -253,6 +372,81 @@
         .ability-btn.used:hover .front, .ability-btn.used:active .front { transform: translateY(-2px); }
         .ability-btn.used:hover .shadow, .ability-btn.used:active .shadow { transform: translateY(1px); }
 
+        .cloud-slots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        .cloud-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column; /* Changed to column for card layout */
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .cloud-slot:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(0, 242, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .slot-info {
+            width: 100%;
+        }
+        .slot-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .slot-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .slot-status-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
+        .slot-status-badge.active {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        .slot-details-box {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.4;
+            border-left: 3px solid transparent;
+        }
+        .slot-details-box.has-data {
+            border-left-color: var(--secondary-color);
+        }
+        .slot-actions-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+        }
+        .small-btn {
+            padding: 5px 12px;
+            font-size: 0.85rem;
+        }
+
+        
         /* Neumorphic Button Style */
         .neumorphic-btn {
             color: #ecf0f1;
@@ -1146,25 +1340,25 @@
             background-color: transparent;
         }
 
-        .ship-part.single-ship, .cell.ship.single-ship { background-image: url('images/hG9FCk67-image.png'); }
+        .ship-part.single-ship, .cell.ship.single-ship { background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); }
         
-        .ship-part.ship-2-part-1, .cell.ship.ship-2-part-1 { background-image: url('images/Y0Sgj3M9-3.png'); }
-        .ship-part.ship-2-part-2, .cell.ship.ship-2-part-2 { background-image: url('images/gj0RrDm9-4.png'); }
+        .ship-part.ship-2-part-1, .cell.ship.ship-2-part-1 { background-image: url('https://i.postimg.cc/Y0Sgj3M9/3.png'); }
+        .ship-part.ship-2-part-2, .cell.ship.ship-2-part-2 { background-image: url('https://i.postimg.cc/gj0RrDm9/4.png'); }
         
-        .ship-part.ship-3-part-1, .cell.ship.ship-3-part-1 { background-image: url('images/8cZTK7zj-4.png'); }
-        .ship-part.ship-3-part-2, .cell.ship.ship-3-part-2 { background-image: url('images/Y0dtnvCm-3.png'); }
-        .ship-part.ship-3-part-3, .cell.ship.ship-3-part-3 { background-image: url('images/90Lc8DQw-2.png'); }
+        .ship-part.ship-3-part-1, .cell.ship.ship-3-part-1 { background-image: url('https://i.postimg.cc/8cZTK7zj/4.png'); }
+        .ship-part.ship-3-part-2, .cell.ship.ship-3-part-2 { background-image: url('https://i.postimg.cc/Y0dtnvCm/3.png'); }
+        .ship-part.ship-3-part-3, .cell.ship.ship-3-part-3 { background-image: url('https://i.postimg.cc/90Lc8DQw/2.png'); }
 
-        .ship-part.ship-4-part-1, .cell.ship.ship-4-part-1 { background-image: url('images/T1nWhY4K-14.png'); }
-        .ship-part.ship-4-part-2, .cell.ship.ship-4-part-2 { background-image: url('images/0j7Jr2Bb-13.png'); }
-        .ship-part.ship-4-part-3, .cell.ship.ship-4-part-3 { background-image: url('images/Xq9yX7zX-12.png'); }
-        .ship-part.ship-4-part-4, .cell.ship.ship-4-part-4 { background-image: url('images/Kz6MZgJ8-11.png'); }
+        .ship-part.ship-4-part-1, .cell.ship.ship-4-part-1 { background-image: url('https://i.postimg.cc/T1nWhY4K/14.png'); }
+        .ship-part.ship-4-part-2, .cell.ship.ship-4-part-2 { background-image: url('https://i.postimg.cc/0j7Jr2Bb/13.png'); }
+        .ship-part.ship-4-part-3, .cell.ship.ship-4-part-3 { background-image: url('https://i.postimg.cc/Xq9yX7zX/12.png'); }
+        .ship-part.ship-4-part-4, .cell.ship.ship-4-part-4 { background-image: url('https://i.postimg.cc/Kz6MZgJ8/11.png'); }
         
-        .ship-part.ship-5-part-1, .cell.ship.ship-5-part-1 { background-image: url('images/B6SJG7BP-6.png'); }
-        .ship-part.ship-5-part-2, .cell.ship.ship-5-part-2 { background-image: url('images/LXx24kx9-7.png'); }
-        .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('images/sXTsfPT2-8.png'); }
-        .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('images/j5Mtq6ML-9.png'); }
-        .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('images/G2Xd3PXB-10.png'); }
+        .ship-part.ship-5-part-1, .cell.ship.ship-5-part-1 { background-image: url('https://i.postimg.cc/B6SJG7BP/6.png'); }
+        .ship-part.ship-5-part-2, .cell.ship.ship-5-part-2 { background-image: url('https://i.postimg.cc/LXx24kx9/7.png'); }
+        .ship-part.ship-5-part-3, .cell.ship.ship-5-part-3 { background-image: url('https://i.postimg.cc/sXTsfPT2/8.png'); }
+        .ship-part.ship-5-part-4, .cell.ship.ship-5-part-4 { background-image: url('https://i.postimg.cc/j5Mtq6ML/9.png'); }
+        .ship-part.ship-5-part-5, .cell.ship.ship-5-part-5 { background-image: url('https://i.postimg.cc/G2Xd3PXB/10.png'); }
 
         .mine-image {
             width: 100%;
@@ -1218,6 +1412,28 @@
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 242, 255, 0.1);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
+        }
+
+        /* Show scrollbar for modal content */
+        .modal-content::-webkit-scrollbar {
+            display: block;
+            width: 8px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 255, 0.3);
+            border-radius: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 242, 255, 0.5);
+        }
+        /* For Firefox */
+        .modal-content {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 242, 255, 0.3) rgba(0, 0, 0, 0.2);
         }
         .modal-header {
             display: flex;
@@ -1847,6 +2063,7 @@
             font-size: 1.2rem;
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 10px;
+            white-space: normal;
         }
 
         .sidebar-btn {
@@ -1861,13 +2078,17 @@
             width: 100%;
             display: flex;
             align-items: center;
+            justify-content: flex-start;
             gap: 10px;
+            border-bottom: none;
+            border-radius: 0;
         }
 
         .sidebar-btn:hover, .sidebar-btn.active {
             background: rgba(0, 242, 255, 0.1);
             color: var(--primary-color);
             border-right: 3px solid var(--primary-color);
+            border-bottom: none;
         }
 
         .control-main {
@@ -2694,16 +2915,29 @@
             <div class="game-status" id="gameStatus">مرحلة وضع السفن - المجموعة الأولى</div>
         </div>
 
-        <div class="admin-controls">
-            <!-- Control Center Button -->
-            <button class="neumorphic-btn" onclick="openAdminPanel()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                الإعدادات
-            </button>
-            <!-- How to Play Button -->
-            <button class="neumorphic-btn" onclick="openHowToPlayModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                كيف تلعب؟
+        <div class="admin-controls" id="adminControlsBar">
+            <div class="controls-content">
+                <!-- Cloud Save Button -->
+                <button class="neumorphic-btn" onclick="cloudManager.openSaveManager()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span>إدارة الحفظ</span>
+                </button>
+                <!-- Control Center Button -->
+                <button class="neumorphic-btn" onclick="openAdminPanel()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>الإعدادات</span>
+                </button>
+                <!-- How to Play Button -->
+                <button class="neumorphic-btn" onclick="openHowToPlayModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>طريقة اللعب</span>
+                </button>
+            </div>
+            <button class="toggle-controls-btn" onclick="toggleAdminPanel()" title="تبديل القائمة">
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="13 17 18 12 13 7"></polyline>
+                    <polyline points="6 17 11 12 6 7"></polyline>
+                </svg>
             </button>
         </div>
 
@@ -2767,6 +3001,7 @@
                 </div>
                 <div class="turn-tools-group">
                     <button class="neumorphic-btn" id="toggleHistoryBtn" onclick="game.toggleHistory()" style="padding: 6px 12px; font-size: 0.8rem;">📋 السجل</button>
+                    <button class="neumorphic-btn" onclick="game.undoMove()" style="padding: 6px 12px; font-size: 0.8rem;">↩️ تراجع</button>
                 </div>
             </div>
 
@@ -2875,9 +3110,6 @@
                             <div class="control-grid">
                                 <button class="btn" onclick="game.resetGame(true)">🚀 لعبة جديدة</button>
                                 <button class="btn" onclick="game.resetPlacements()">🔄 إعادة التوزيع</button>
-                                <button class="btn" onclick="game.saveGame()">💾 حفظ اللعبة</button>
-                                <button class="btn" onclick="game.loadGame()">📂 استرجاع</button>
-                                <button class="btn" onclick="game.undoMove()">↩️ تراجع</button>
                                 <button class="btn" onclick="game.endGameConfirm()">🏁 إنهاء اللعبة</button>
                                 <button id="settingsSoundBtn" class="btn" onclick="soundManager.toggleMute()">🔊 كتم/تشغيل الصوت</button>
                             </div>
@@ -2937,6 +3169,108 @@
             <div class="control-footer">
                 <button class="btn btn-no" onclick="closeControlCenter()">إلغاء</button>
                 <button class="btn btn-yes" onclick="applyControlSettings()">✅ حفظ وتطبيق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloud Save Manager Modal -->
+    <div id="cloudSaveModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(0, 242, 255, 0.2);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 0;">
+                <h2 class="modal-title" style="display: flex; align-items: center; gap: 10px;">
+                     إدارة الحفظ ☁️
+                </h2>
+                <span class="close-modal" onclick="cloudManager.closeSaveManager()" style="font-size: 2rem;">&times;</span>
+            </div>
+            <div class="cloud-slots-container">
+                <!-- Auto Save Slot -->
+                <div class="cloud-slot auto-save-slot">
+                    <div class="slot-info">
+                        <span class="slot-title">💾 الحفظ التلقائي</span>
+                        <span class="slot-details" id="slot-auto-details">جاري التحقق...</span>
+                    </div>
+                    <div class="slot-actions">
+                        <button class="neumorphic-btn" onclick="cloudManager.loadGame('auto')">
+                            📥 استرجاع
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Manual Slot 1 -->
+                <div class="cloud-slot" id="slot-card-1">
+                    <div class="slot-info">
+                        <div class="slot-header-row">
+                            <span class="slot-title">📁 فتحة 1</span>
+                            <span class="slot-status-badge" id="slot-1-status">--</span>
+                        </div>
+                        <div class="slot-details-box" id="slot-1-details">جاري التحقق...</div>
+                    </div>
+                    <div class="slot-actions-row">
+                        <button class="neumorphic-btn success" onclick="cloudManager.handleSaveClick('1')">
+                            💾 حفظ
+                        </button>
+                        <button class="neumorphic-btn" id="slot-1-load-btn" onclick="cloudManager.loadGame('1')">
+                            📥 استرجاع
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Manual Slot 2 -->
+                <div class="cloud-slot" id="slot-card-2">
+                    <div class="slot-info">
+                        <div class="slot-header-row">
+                            <span class="slot-title">📁 فتحة 2</span>
+                            <span class="slot-status-badge" id="slot-2-status">--</span>
+                        </div>
+                        <div class="slot-details-box" id="slot-2-details">جاري التحقق...</div>
+                    </div>
+                    <div class="slot-actions-row">
+                        <button class="neumorphic-btn success" onclick="cloudManager.handleSaveClick('2')">
+                            💾 حفظ
+                        </button>
+                        <button class="neumorphic-btn" id="slot-2-load-btn" onclick="cloudManager.loadGame('2')">
+                            📥 استرجاع
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Slot 3 -->
+                <div class="cloud-slot" id="slot-card-3">
+                    <div class="slot-info">
+                        <div class="slot-header-row">
+                            <span class="slot-title">📁 فتحة 3</span>
+                            <span class="slot-status-badge" id="slot-3-status">--</span>
+                        </div>
+                        <div class="slot-details-box" id="slot-3-details">جاري التحقق...</div>
+                    </div>
+                    <div class="slot-actions-row">
+                        <button class="neumorphic-btn success" onclick="cloudManager.handleSaveClick('3')">
+                            💾 حفظ
+                        </button>
+                        <button class="neumorphic-btn" id="slot-3-load-btn" onclick="cloudManager.loadGame('3')">
+                            📥 استرجاع
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Name Input Modal -->
+    <div id="saveNameModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">💾 حفظ اللعبة</h2>
+                <span class="close-modal" onclick="document.getElementById('saveNameModal').style.display='none'">&times;</span>
+            </div>
+            <div style="margin: 20px 0;">
+                <label style="display:block; margin-bottom: 10px; color: #cbd5e1;">أدخل اسماً للحفظ (اختياري):</label>
+                <input type="text" id="saveNameInput" class="form-input" placeholder="مثال: قبل المعركة النهائية..." maxlength="30" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white;">
+                <input type="hidden" id="targetSaveSlot">
+            </div>
+            <div class="confirm-actions">
+                <button class="btn btn-yes" onclick="cloudManager.confirmSave()">✅ حفظ</button>
+                <button class="btn btn-no" onclick="document.getElementById('saveNameModal').style.display='none'">❌ إلغاء</button>
             </div>
         </div>
     </div>
@@ -4244,14 +4578,17 @@
                 this.toggleHistory(true); 
                 this.setupAdminPanelListeners();
 
-                if (localStorage.getItem('battleshipSaveData')) {
-                    this.loadGame(true);
-                }
+                // Auto-load latest cloud save if available
+                setTimeout(() => {
+                    if (window.cloudManager) {
+                        window.cloudManager.loadLatestSave();
+                    }
+                }, 1000);
             }
             
             applyTrapStyles() {
-                const sharkImg1 = "images/Pr2b8HzN-15.png";
-                const sharkImg2 = "images/Pr2b8Hz5-14.png";
+                const sharkImg1 = "https://i.postimg.cc/Pr2b8HzN/15.png";
+                const sharkImg2 = "https://i.postimg.cc/Pr2b8Hz5/14.png";
                 const styleEl = document.getElementById('dynamic-styles');
                 if(styleEl) {
                     styleEl.innerHTML = `
@@ -4268,8 +4605,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         كيف تلعب؟
                     </button>
-                    <button class="neumorphic-btn" onclick="openCloudModal()">${this.getIcon('settings')} الحفظ السحابي</button>
                     <button class="neumorphic-btn" onclick="openAdminPanel()">${this.getIcon('settings')} مركز التحكم</button>
+                    <button class="neumorphic-btn" onclick="cloudManager.openSaveManager()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        إدارة الحفظ 
+                    </button>
                     <button id="scoreboardToggleBtn" class="neumorphic-btn" onclick="toggleScoreboard()">${this.getIcon('scoreboard')} عرض النقاط</button>
                     <button id="turnToggleBtn" class="neumorphic-btn" onclick="toggleTurnControl()">${this.getIcon('timer')} عرض الأدوار</button>
                     <button id="soundBtn" class="neumorphic-btn" onclick="soundManager.toggleMute()">${this.getIcon('soundOn')} كتم الصوت</button>
@@ -4579,7 +4919,7 @@
                     if (item.type === 'mine') {
                         const part = document.createElement('div');
                         part.className = 'ship-part';
-                        part.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
+                        part.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                         el.appendChild(part);
                     } else {
                         for (let i = 0; i < item.size; i++) {
@@ -4681,10 +5021,10 @@
                 const container = document.querySelector('.legend');
                 container.innerHTML = `
                     <div class="legend-item"><div class="legend-color" style="background: rgba(0, 100, 170, 0.4); border: 1px solid rgba(0, 191, 255, 0.25);"></div><span>ماء</span></div>
-                    <div class="legend-item"><div class="legend-color" style="background-image: url('images/hG9FCk67-image.png'); background-size: cover;"></div><span>سفينة</span></div>
+                    <div class="legend-item"><div class="legend-color" style="background-image: url('https://i.postimg.cc/hG9FCk67/image.png'); background-size: cover;"></div><span>سفينة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--hit-color);"></div><span>إصابة</span></div>
                     <div class="legend-item"><div class="legend-color" style="background: var(--miss-color);"></div><span>خطأ</span></div>
-                    <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="images/alfkh.webp" alt="لغم"><span>لغم</span></div>
+                    <div class="legend-item"><img class="mine-image" style="width: 20px; height: 20px;" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم"><span>لغم</span></div>
                 `;
             }
 
@@ -5105,6 +5445,7 @@
                 this.updateAllGridsForBattle();
                 turnManager.updateCurrentPlayer();
                 turnManager.addToHistory('بدأت المعركة!');
+                this.autoSave();
             }
 
             createExplosion(cell, isHit, isMine = false, isShark = false) {
@@ -5158,6 +5499,12 @@
 
                     document.body.appendChild(particle);
                     setTimeout(() => particle.remove(), isMine || isShark ? 1200 : 700);
+                }
+            }
+
+            autoSave() {
+                if (typeof cloudManager !== 'undefined') {
+                    cloudManager.saveGame(this, 'auto');
                 }
             }
 
@@ -5275,6 +5622,7 @@
                             if (!this.gameOver) turnManager.nextTurn();
                             setTimeout(() => this.isAttackAllowed = true, 500);
                         }
+                        this.autoSave();
                         turnManager.updateCurrentPlayer();
                         return;
                     }
@@ -5335,6 +5683,7 @@
                             if (!this.gameOver) turnManager.nextTurn();
                             setTimeout(() => this.isAttackAllowed = true, 500);
                         }
+                        this.autoSave();
                         turnManager.updateCurrentPlayer();
                         return;
                     }
@@ -5435,6 +5784,7 @@
                             if (!this.gameOver) turnManager.nextTurn();
                             setTimeout(() => this.isAttackAllowed = true, 500);
                         }
+                        this.autoSave();
                         turnManager.updateCurrentPlayer();
                     }, 100);
 
@@ -5564,6 +5914,7 @@
                         if (!this.gameOver) turnManager.nextTurn();
                     }
                     turnManager.updateCurrentPlayer();
+                    this.autoSave();
 
                 }, 3000);
             }
@@ -5609,6 +5960,11 @@
                 }
 
                 this.updateUI();
+                
+                // Save game state to cloud on turn change (Auto Save)
+                if (typeof cloudManager !== 'undefined') {
+                    cloudManager.saveGame(this, 'auto');
+                }
             }
 
             previousTurn() {
@@ -5636,6 +5992,7 @@
                     this.shotsMadeThisTurn = 0; // Reset shot count
                     this.updateUI();
                     turnManager.updateCurrentPlayer();
+                    this.autoSave();
                 }
             }
 
@@ -5743,7 +6100,7 @@
                             } else if (mine) {
                                 isPieceHere = true;
                                 cell.classList.add('mine');
-                                cell.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
+                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                             } else if (isShark) {
                                 isPieceHere = true;
                                 cell.classList.add('shark');
@@ -5770,7 +6127,7 @@
                                 applyImage(ship, cell, index);
                             } else if (team.hits[index] === 4) {
                                 cell.classList.add('mine');
-                                cell.innerHTML = '<img class="mine-image" src="images/alfkh.webp" alt="لغم">';
+                                cell.innerHTML = '<img class="mine-image" src="https://i.postimg.cc/mrJ93PqK/alfkh.webp" alt="لغم">';
                             }
                         }
 
@@ -5835,7 +6192,10 @@
                  this.moveHistory.push(JSON.parse(JSON.stringify({
                     teams: this.teams,
                     currentTurn: this.currentTurn,
-                    teamToSkip: this.teamToSkip
+                    teamToSkip: this.teamToSkip,
+                    shotsMadeThisTurn: this.shotsMadeThisTurn,
+                    isDoubleShotActive: this.isDoubleShotActive,
+                    isRadarActive: this.isRadarActive
                 })));
             }
             
@@ -5850,10 +6210,28 @@
                     this.teams = lastState.teams;
                     this.currentTurn = lastState.currentTurn;
                     this.teamToSkip = lastState.teamToSkip;
+                    
+                    // Restore game state
+                    this.shotsMadeThisTurn = lastState.shotsMadeThisTurn !== undefined ? lastState.shotsMadeThisTurn : 0;
+                    this.isDoubleShotActive = lastState.isDoubleShotActive || false;
+                    this.isRadarActive = lastState.isRadarActive || false;
 
                     this.updateAllGridsForBattle();
                     this.updateScoreboard();
                     this.updateUI();
+                    
+                    // Restore active button states
+                    const currentTeam = this.teams[this.currentTurn];
+                    const doubleShotBtn = document.getElementById(`doubleShotBtn${currentTeam.id}`);
+                    const radarBtn = document.getElementById(`radarBtn${currentTeam.id}`);
+                    
+                    if (doubleShotBtn) {
+                        doubleShotBtn.classList.toggle('active', this.isDoubleShotActive);
+                    }
+                    if (radarBtn) {
+                        radarBtn.classList.toggle('active', this.isRadarActive);
+                    }
+
                     turnManager.updateCurrentPlayer();
                     showToast('تم التراجع عن الخطوة الأخيرة.', 'success');
                 });
@@ -5890,6 +6268,7 @@
                     document.getElementById('startBattle').style.display = 'none';
 
                     showToast('عدنا إلى مرحلة التوزيع.', 'info');
+                    this.autoSave();
                 });
             }
 
@@ -6002,8 +6381,17 @@
                 this.initializeGrids();
                 
                 if (this.placementPhase) {
+                    document.getElementById('shipsDock').style.display = 'block';
+                    document.getElementById('randomPlacement').style.display = 'inline-block';
+                    document.getElementById('clearGrid').style.display = 'inline-block';
+                    document.getElementById('confirmPlacement').style.display = 'inline-block';
+                    document.getElementById('startBattle').style.display = 'none';
+                    document.getElementById('turnControlPanel').style.display = 'none';
+                    document.body.classList.remove('battle-phase');
+                    this.turnControlVisible = false;
                     this.renderDockItems(); 
-                } else {
+                    this.checkPlacementComplete();
+                } else if (this.battlePhase) {
                      document.getElementById('shipsDock').style.display = 'none';
                      document.getElementById('randomPlacement').style.display = 'none';
                      document.getElementById('clearGrid').style.display = 'none';
@@ -6012,6 +6400,16 @@
                      document.getElementById('turnControlPanel').style.display = 'block';
                      document.body.classList.add('battle-phase');
                      this.turnControlVisible = true;
+                } else {
+                     // Intermediate State: Placement Done, Battle Not Started
+                     document.getElementById('shipsDock').style.display = 'none';
+                     document.getElementById('randomPlacement').style.display = 'none';
+                     document.getElementById('clearGrid').style.display = 'none';
+                     document.getElementById('confirmPlacement').style.display = 'none';
+                     document.getElementById('startBattle').style.display = 'inline-block';
+                     document.getElementById('turnControlPanel').style.display = 'none';
+                     document.body.classList.remove('battle-phase');
+                     this.turnControlVisible = false;
                 }
 
                 this.updateAllGridsForBattle();
@@ -6463,9 +6861,497 @@
             } catch (e) {}
         }
         
+        // === Cloud Manager Class ===
+        class CloudManager {
+            constructor() {
+                this.supabaseUrl = 'https://yrhjqzbmycjrmmjmpltq.supabase.co';
+                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyaGpxemJteWNqcm1tam1wbHRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTEzNjAsImV4cCI6MjA3ODI2NzM2MH0.nB3S9nVL7xUrFoNCIKDnaDGnVza1dc77J68KLelxEOs';
+                this.client = null;
+                this.isEnabled = false;
+                this.init();
+            }
+
+            init() {
+                // Try to load Supabase if not present
+                if (typeof supabase === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                    script.onload = () => {
+                        this.initClient();
+                    };
+                    script.onerror = () => {
+                        console.warn('Failed to load Supabase script');
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    this.initClient();
+                }
+            }
+
+            initClient() {
+                try {
+                    if (typeof supabase !== 'undefined') {
+                        this.client = supabase.createClient(this.supabaseUrl, this.supabaseKey);
+                        this.isEnabled = true;
+                        console.log('Supabase client initialized');
+                    }
+                } catch (e) {
+                    console.error('Supabase init failed:', e);
+                }
+            }
+
+            openSaveManager() {
+                const modal = document.getElementById('cloudSaveModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    if (!this.client && !this.isEnabled) {
+                         this.init(); 
+                         // Show connecting status
+                         const uiSlots = ['auto', '1', '2', '3'];
+                         uiSlots.forEach(slot => {
+                            const el = document.getElementById(`slot-${slot}-details`);
+                            if (el) el.innerHTML = '⏳ جاري الاتصال بالخدمة السحابية...';
+                         });
+                         // Retry refresh after a delay
+                         setTimeout(() => this.refreshSlotsUI(), 1500);
+                    } else {
+                        this.refreshSlotsUI();
+                    }
+                } else {
+                    showToast('خطأ: نافذة الحفظ غير موجودة', 'error');
+                }
+            }
+
+            closeSaveManager() {
+                const modal = document.getElementById('cloudSaveModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            async refreshSlotsUI() {
+                const uiSlots = ['auto', '1', '2', '3'];
+                
+                // Initialize UI
+                uiSlots.forEach(slot => {
+                    if(slot !== 'auto') {
+                        const statusEl = document.getElementById(`slot-${slot}-status`);
+                        if(statusEl) statusEl.innerHTML = '...';
+                        const loadBtn = document.getElementById(`slot-${slot}-load-btn`);
+                        if(loadBtn) loadBtn.disabled = true;
+                    }
+                    const el = document.getElementById(`slot-${slot}-details`);
+                    if (el) el.innerHTML = '<span class="loading-spinner"></span> جاري التحقق...';
+                });
+
+                // 1. Load Local Data First
+                const localData = {};
+                uiSlots.forEach(slot => {
+                    const dbId = slot === 'auto' ? 'sea_war_auto' : `sea_war_slot${slot}`;
+                    try {
+                        const raw = localStorage.getItem(dbId);
+                        if (raw) {
+                            localData[dbId] = JSON.parse(raw);
+                        }
+                    } catch(e) { console.error('Local read error', e); }
+                });
+
+                // 2. Load Cloud Data (if enabled)
+                let cloudData = {};
+                if (this.isEnabled && this.client) {
+                    try {
+                        const dbIds = uiSlots.map(s => s === 'auto' ? 'sea_war_auto' : `sea_war_slot${s}`);
+                        const { data, error } = await this.client
+                            .from('sea_war_saves')
+                            .select('id, updated_at, state')
+                            .in('id', dbIds);
+
+                        if (!error && data) {
+                            data.forEach(row => {
+                                cloudData[row.id] = {
+                                    state: row.state,
+                                    updated_at: row.updated_at
+                                };
+                            });
+                        }
+                    } catch (e) {
+                        console.error('Cloud refresh error:', e);
+                    }
+                }
+
+                // 3. Merge and Display (Prefer Cloud if newer, else Local)
+                uiSlots.forEach(slot => {
+                    const el = document.getElementById(`slot-${slot}-details`);
+                    if (!el) return;
+                    
+                    const statusEl = document.getElementById(`slot-${slot}-status`);
+                    const loadBtn = document.getElementById(`slot-${slot}-load-btn`);
+                    const cardEl = document.getElementById(`slot-card-${slot}`);
+
+                    const dbId = slot === 'auto' ? 'sea_war_auto' : `sea_war_slot${slot}`;
+                    
+                    const local = localData[dbId];
+                    const cloud = cloudData[dbId];
+
+                    let best = null;
+                    let source = '';
+
+                    if (local && cloud) {
+                        const localTime = new Date(local.timestamp || 0).getTime();
+                        const cloudTime = new Date(cloud.updated_at || 0).getTime();
+                        if (cloudTime > localTime) {
+                            best = cloud;
+                            source = '☁️ سحابي';
+                        } else {
+                            best = local;
+                            source = '💻 محلي';
+                        }
+                    } else if (cloud) {
+                        best = cloud;
+                        source = '☁️ سحابي';
+                    } else if (local) {
+                        best = local;
+                        source = '💻 محلي';
+                    }
+
+                    if (best && (best.state || best.teams)) { // Handle structure diffs
+                        const state = best.state || best; // Cloud has .state wrapper, Local is direct
+                        const dateStr = best.updated_at || best.timestamp || Date.now();
+                        const date = new Date(dateStr).toLocaleString('ar-SA');
+                        const turn = state.currentTurn || 1;
+                        const phase = this.getPhaseLabel(state);
+                        const saveName = state.saveName || 'بدون عنوان';
+                        
+                        el.innerHTML = `
+                            <div style="margin-bottom:4px; font-weight:bold; color:white;">${saveName}</div>
+                            <div style="font-size:0.8em; color:#94a3b8;">📅 ${date}</div>
+                            <div style="font-size:0.8em; color:#94a3b8;">🔄 الدور: ${turn} | ${phase}</div>
+                            <div style="font-size:0.8em; margin-top:4px; color:${source.includes('سحابي') ? '#4ade80' : '#60a5fa'}">${source}</div>
+                        `;
+                        
+                        if(statusEl) {
+                            statusEl.innerText = 'مستخدم';
+                            statusEl.classList.add('active');
+                        }
+                        if(el) el.classList.add('has-data');
+                        if(loadBtn) loadBtn.disabled = false;
+
+                    } else {
+                        el.innerHTML = '<span style="color: #64748b;">-- فارغ --</span>';
+                        if(statusEl) {
+                            statusEl.innerText = 'فارغ';
+                            statusEl.classList.remove('active');
+                        }
+                        if(el) el.classList.remove('has-data');
+                        if(loadBtn) loadBtn.disabled = true;
+                    }
+                });
+            }
+
+            handleSaveClick(slotId) {
+                const statusEl = document.getElementById(`slot-${slotId}-status`);
+                const isUsed = statusEl && statusEl.classList.contains('active');
+                
+                if(isUsed) {
+                    showConfirmationModal('تأكيد الحفظ', 'هذه الفتحة تحتوي على بيانات محفوظة. هل تريد استبدالها؟', () => {
+                        this.openSaveNameModal(slotId);
+                    });
+                } else {
+                    this.openSaveNameModal(slotId);
+                }
+            }
+
+            openSaveNameModal(slotId) {
+                const modal = document.getElementById('saveNameModal');
+                const input = document.getElementById('saveNameInput');
+                const targetInput = document.getElementById('targetSaveSlot');
+                
+                if(modal && input && targetInput) {
+                    input.value = ''; // Clear previous input
+                    
+                    // Suggest a default name based on current game state
+                    if(window.game) {
+                        const phase = window.game.battlePhase ? 'معركة' : 'توزيع';
+                        const date = new Date().toLocaleDateString('ar-SA');
+                        input.placeholder = `لعبة ${phase} - ${date}`;
+                    }
+                    
+                    targetInput.value = slotId;
+                    modal.style.display = 'block';
+                    input.focus();
+                }
+            }
+
+            confirmSave() {
+                const modal = document.getElementById('saveNameModal');
+                const input = document.getElementById('saveNameInput');
+                const targetInput = document.getElementById('targetSaveSlot');
+                
+                if(input && targetInput && window.game) {
+                    const name = input.value.trim() || input.placeholder;
+                    const slotId = targetInput.value;
+                    
+                    this.saveGame(window.game, slotId, name);
+                    
+                    if(modal) modal.style.display = 'none';
+                }
+            }
+
+            getPhaseLabel(state) {
+                if (state.gameOver) return 'انتهت اللعبة';
+                if (state.placementPhase) return 'مرحلة التوزيع';
+                if (state.battlePhase) return 'مرحلة المعركة';
+                return 'جاهز للمعركة';
+            }
+
+            async saveGame(gameInstance, slotId, customName = null) {
+                const isAuto = slotId === 'auto';
+                if (!isAuto) showToast('جاري الحفظ...', 'info');
+
+                let saveName = customName || '';
+                // Fallback for auto-save or missing name
+                if (!saveName && !isAuto) {
+                     saveName = `لعبة محفوظة ${new Date().toLocaleTimeString('ar-SA')}`;
+                }
+
+                // Capture FULL game state (matching BattleshipGame.saveGame structure)
+                const stateObj = {
+                    // Core Game Data
+                    gridWidth: gameInstance.gridWidth,
+                    gridHeight: gameInstance.gridHeight,
+                    teams: gameInstance.teams,
+                    numTeams: gameInstance.numTeams,
+                    shipTypes: gameInstance.shipTypes,
+                    scoring: gameInstance.scoring,
+                    currentTeam: gameInstance.currentTeam,
+                    placementPhase: gameInstance.placementPhase,
+                    battlePhase: gameInstance.battlePhase,
+                    currentTurn: gameInstance.currentTurn,
+                    gameOver: gameInstance.gameOver,
+                    moveHistory: gameInstance.moveHistory,
+                    teamToSkip: gameInstance.teamToSkip,
+                    dockItemTypes: gameInstance.dockItemTypes,
+                    shipCountsLocked: gameInstance.shipCountsLocked,
+                    shotsPerTurn: gameInstance.shotsPerTurn,
+                    
+                    // Extra Metadata for Cloud/UI
+                    saveName: saveName, 
+                    timestamp: Date.now(),
+                    turnHistory: window.turnManager ? window.turnManager.turnHistory : []
+                };
+
+                // 1. Save Locally IMMEDIATELY (Key: sea_war_slotX)
+                const dbId = slotId === 'auto' ? 'sea_war_auto' : `sea_war_slot${slotId}`;
+                try {
+                    localStorage.setItem(dbId, JSON.stringify(stateObj));
+                    if (!isAuto) {
+                         showToast('تم الحفظ محلياً بنجاح', 'success');
+                         this.refreshSlotsUI(); // Update UI immediately
+                    }
+                } catch (e) {
+                    console.error('Local save failed', e);
+                    if (!isAuto) showToast('فشل الحفظ المحلي', 'error');
+                }
+
+                // 2. Sync to Cloud in Background (if enabled)
+                if (this.isEnabled && this.client) {
+                    // Do not await if auto-save to keep game smooth
+                    const savePromise = this.client
+                        .from('sea_war_saves')
+                        .upsert({ 
+                            id: dbId, 
+                            game_type: 'sea-war',
+                            state: stateObj, 
+                            updated_at: new Date().toISOString() 
+                        })
+                        .then(({ error }) => {
+                            if (error) throw error;
+                            console.log(`Cloud sync successful to ${slotId}`);
+                            if (!isAuto) {
+                                showToast('تمت المزامنة سحابياً', 'success');
+                                this.refreshSlotsUI();
+                            }
+                        })
+                        .catch(e => {
+                            console.error('Cloud sync error:', e);
+                            if (!isAuto) showToast('فشل الرفع للسحابة (بياناتك محفوظة محلياً)', 'warning');
+                        });
+                }
+            }
+
+            async loadGame(slotId) {
+                const dbId = slotId === 'auto' ? 'sea_war_auto' : `sea_war_slot${slotId}`;
+                let loadedLocal = false;
+
+                // 1. Try Local Load IMMEDIATELY
+                try {
+                    const raw = localStorage.getItem(dbId);
+                    if (raw) {
+                        const localState = JSON.parse(raw);
+                        if (localState) {
+                            console.log(`Loading ${slotId} from local storage...`);
+                            this.applyState(localState);
+                            showToast('تم تحميل اللعبة (محلي)', 'success');
+                            this.closeSaveManager();
+                            loadedLocal = true;
+                        }
+                    }
+                } catch(e) { console.error('Local load error:', e); }
+
+                // 2. Check Cloud for Newer Version (Background)
+                if (this.isEnabled && this.client) {
+                    // Only show "Searching" if we didn't load locally
+                    if (!loadedLocal) showToast('جاري البحث في السحابة...', 'info');
+
+                    try {
+                        const { data, error } = await this.client
+                            .from('sea_war_saves')
+                            .select('state, updated_at')
+                            .eq('id', dbId)
+                            .single();
+                            
+                        if (data && data.state) {
+                            const cloudTime = new Date(data.updated_at).getTime();
+                            // If we already loaded local, check if cloud is NEWER
+                            if (loadedLocal) {
+                                const raw = localStorage.getItem(dbId);
+                                const localState = raw ? JSON.parse(raw) : null;
+                                const localTime = localState ? (localState.timestamp || 0) : 0;
+                                
+                                if (cloudTime > localTime + 1000) { // 1 second buffer
+                                    // Found newer cloud save. Prompt user or auto-update?
+                                    // User said "Local is primary". 
+                                    // But if they played on another device, Cloud is newer.
+                                    // Let's ask or just toast.
+                                    // For now, let's update automatically if significantly newer, 
+                                    // but usually local is freshest on same device.
+                                    console.log('Cloud is newer than local, updating...');
+                                    showToast('تم العثور على نسخة سحابية أحدث، جاري التحديث...', 'info');
+                                    this.applyState(data.state);
+                                    
+                                    // Also update local to match
+                                    localStorage.setItem(dbId, JSON.stringify({
+                                        ...data.state,
+                                        timestamp: cloudTime // Sync timestamp
+                                    }));
+                                }
+                            } else {
+                                // No local save, but found cloud save
+                                this.applyState(data.state);
+                                showToast('تم تحميل اللعبة (سحابي)', 'success');
+                                this.closeSaveManager();
+                                
+                                // Save to local for next time
+                                localStorage.setItem(dbId, JSON.stringify({
+                                    ...data.state,
+                                    timestamp: cloudTime
+                                }));
+                            }
+                        } else if (!loadedLocal) {
+                            showToast('لا توجد بيانات محفوظة في هذه الفتحة', 'warning');
+                        }
+                    } catch(e) { 
+                        console.error('Cloud load error', e); 
+                        if (!loadedLocal) showToast('فشل التحميل من السحابة', 'error');
+                    }
+                } else if (!loadedLocal) {
+                    showToast('لا توجد بيانات محلية محفوظة', 'warning');
+                }
+            }
+            
+            async loadLatestSave() {
+                // Auto-load logic: Prioritize Local Auto Save for speed
+                const dbId = 'sea_war_auto';
+                let loadedLocal = false;
+
+                try {
+                    const raw = localStorage.getItem(dbId);
+                    if (raw) {
+                        const localAuto = JSON.parse(raw);
+                        if (localAuto) {
+                            console.log('Fast-loading local auto save...');
+                            this.applyState(localAuto);
+                            showToast('تم استعادة الجلسة السابقة (محلي)', 'info');
+                            loadedLocal = true;
+                        }
+                    }
+                } catch(e) {}
+
+                // Then check cloud asynchronously
+                if (this.isEnabled && this.client) {
+                    try {
+                        const { data, error } = await this.client
+                            .from('sea_war_saves')
+                            .select('id, updated_at, state')
+                            .eq('id', dbId)
+                            .single();
+
+                        if (data && data.state) {
+                            const cloudTime = new Date(data.updated_at).getTime();
+                            
+                            if (loadedLocal) {
+                                const raw = localStorage.getItem(dbId);
+                                const localState = raw ? JSON.parse(raw) : null;
+                                const localTime = localState ? (localState.timestamp || 0) : 0;
+                                
+                                // Only update if cloud is SIGNIFICANTLY newer (e.g. > 5 seconds)
+                                // This prevents jitter if clocks are slightly off
+                                if (cloudTime > localTime + 5000) {
+                                    console.log('Found newer cloud save, updating...');
+                                    showToast('تم العثور على نسخة سحابية أحدث، جاري التحديث...', 'info');
+                                    this.applyState(data.state);
+                                    
+                                    // Sync local
+                                    localStorage.setItem(dbId, JSON.stringify({
+                                        ...data.state,
+                                        timestamp: cloudTime
+                                    }));
+                                }
+                            } else {
+                                // No local, but cloud exists
+                                console.log('Loading cloud auto save...');
+                                this.applyState(data.state);
+                                showToast('تم استعادة الجلسة السابقة (سحابي)', 'info');
+                                
+                                // Sync local
+                                localStorage.setItem(dbId, JSON.stringify({
+                                    ...data.state,
+                                    timestamp: cloudTime
+                                }));
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Auto-load cloud check error:', e);
+                    }
+                }
+            }
+
+            applyState(state) {
+                if (!game) return;
+                try {
+                    // Reuse the robust internal game loader
+                    // This ensures all UI, grids, and logic are restored correctly
+                    if (typeof game._performLoad === 'function') {
+                        game._performLoad(state);
+                    } else {
+                        console.error('game._performLoad is not a function');
+                    }
+                } catch (e) {
+                    console.error('Error applying state:', e);
+                    showToast('حدث خطأ أثناء تطبيق البيانات', 'error');
+                }
+            }
+        }
+
+        
         const soundManager = new SoundManager();
         const turnManager = new TurnManager();
+        window.turnManager = turnManager;
+        const cloudManager = new CloudManager();
+        // Expose cloudManager to window for inline HTML handlers
+        window.cloudManager = cloudManager;
         const game = new BattleshipGame();
+        window.game = game;
         applyStoredSettingsToGlobals();
         applyPanelsOrderFromStorage();
 
@@ -6498,6 +7384,11 @@
 
 
 
+        function toggleAdminPanel() {
+            const adminControls = document.getElementById('adminControlsBar');
+            adminControls.classList.toggle('collapsed');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
              // This line was causing the error, it's removed.
         });
@@ -6512,98 +7403,7 @@
         document.getElementById('confirmBtnNo').onclick = closeConfirmationModal;
 
 
-        /* --- Cloud / Export Manager --- */
-        const CloudManager = {
-            exportSave: function() {
-                const data = localStorage.getItem('battleshipSaveData');
-                if (!data) return null;
-                // Encode to Base64 to make it easy to copy/paste
-                return btoa(unescape(encodeURIComponent(data)));
-            },
-            importSave: function(encodedData) {
-                try {
-                    const jsonStr = decodeURIComponent(escape(atob(encodedData)));
-                    const data = JSON.parse(jsonStr);
-                    // Basic validation
-                    if (data && (data.gridWidth || data.teams)) {
-                        localStorage.setItem('battleshipSaveData', jsonStr);
-                        return true;
-                    }
-                } catch (e) {
-                    console.error('Import failed', e);
-                }
-                return false;
-            }
-        };
-
-        function openCloudModal() {
-            document.getElementById('cloudModal').style.display = 'block';
-        }
-
-        function closeCloudModal() {
-            document.getElementById('cloudModal').style.display = 'none';
-        }
-
-        function copySaveCode() {
-            const code = CloudManager.exportSave();
-            if (!code) {
-                showToast('لا توجد لعبة محفوظة حالياً!', 'error');
-                return;
-            }
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('تم نسخ كود الحفظ بنجاح!', 'success');
-            }).catch(err => {
-                showToast('فشل النسخ، يرجى المحاولة يدوياً', 'error');
-                console.error(err);
-            });
-        }
-
-        function loadFromCode() {
-            const input = document.getElementById('cloudSaveInput');
-            const code = input.value.trim();
-            if (!code) {
-                showToast('يرجى لصق الكود أولاً', 'error');
-                return;
-            }
-            
-            if (CloudManager.importSave(code)) {
-                showToast('تم استعادة اللعبة بنجاح! جاري التحميل...', 'success');
-                setTimeout(() => {
-                    location.reload(); // Reload to apply changes cleanly
-                }, 1500);
-            } else {
-                showToast('كود الحفظ غير صالح', 'error');
-            }
-        }
     </script>
-    <!-- Cloud Save Modal -->
-    <div id="cloudModal" class="modal">
-        <div class="modal-content glass-panel" style="max-width: 500px;">
-            <h2>☁️ الحفظ السحابي / النقل</h2>
-            <p style="margin-bottom: 20px; color: #ccc;">يمكنك نسخ كود اللعبة لنقلها لجهاز آخر أو حفظها كملف نصي.</p>
-            
-            <div class="setting-group">
-                <label class="setting-label">تصدير اللعبة الحالية (نسخ)</label>
-                <button class="neumorphic-btn" onclick="copySaveCode()" style="width: 100%; justify-content: center;">
-                    📋 نسخ كود الحفظ
-                </button>
-            </div>
-
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
-
-            <div class="setting-group">
-                <label class="setting-label">استيراد لعبة (لصق)</label>
-                <textarea id="cloudSaveInput" class="glass-panel" style="width: 100%; height: 100px; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; box-sizing: border-box;" placeholder="الصق كود الحفظ هنا..."></textarea>
-                <button class="neumorphic-btn" onclick="loadFromCode()" style="width: 100%; justify-content: center; margin-top: 10px;">
-                    📥 تحميل اللعبة من الكود
-                </button>
-            </div>
-
-            <div style="margin-top: 25px; text-align: center;">
-                <button class="neumorphic-btn" onclick="closeCloudModal()">إغلاق</button>
-            </div>
-        </div>
-    </div>
     <!-- Copyright notice moved to here, before closing body tag -->
     <p class="copyright-notice">حقوق الطبع والنشر © احمد الذبياني</p>
 </body>
