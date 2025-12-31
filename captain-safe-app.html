@@ -265,6 +265,11 @@
             background: rgba(255, 0, 0, 0.8);
         }
 
+        /* Ensure SweetAlert is always on top */
+        .swal2-container {
+            z-index: 10000 !important;
+        }
+
         /* --- New UI Styles --- */
         
         /* Mission Card Style */
@@ -969,6 +974,14 @@
                                             <label class="block text-slate-400 text-[10px] mb-1">الحد الأقصى</label>
                                             <input type="number" id="penaltyMax" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="10" min="1">
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- إعدادات النسبة المئوية (تظهر عند اختيار مضاعفة أو قسمة) -->
+                                <div id="percentageSettingsContainer" class="hidden space-y-2 bg-blue-900/20 p-2 rounded-lg border border-blue-500/30">
+                                    <div class="text-[10px] text-blue-300 font-bold mb-1" id="percentageLabel">⚙️ النسبة المئوية:</div>
+                                    <div>
+                                        <input type="number" id="editPercentage" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-xs text-white" value="50" min="1" max="100">
                                     </div>
                                 </div>
 
@@ -2193,10 +2206,22 @@
             }
         }
 
+        // متغير لتفادي الفتح الخاطئ السريع (Cooldown)
+        let isCooldownActive = false;
+
         // فتح الخزنة
         function openTreasure(boxNumber) {
+            // التحقق من حالة التبريد (Cooldown)
+            if (isCooldownActive) return;
+
             if (gameState.openedBoxes.has(boxNumber)) {
-                alert('هذه الخزنة مفتوحة بالفعل!');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'انتباه',
+                    text: 'هذه الخزنة مفتوحة بالفعل!',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
                 return;
             }
 
@@ -2230,11 +2255,15 @@
             const pointsElement = document.getElementById('treasurePoints');
             
             if (treasure.points === 'double') {
-                pointsElement.textContent = '🎉 مضاعفة النقاط الحالية! 🎉';
+                const pct = treasure.percentage || 100;
+                pointsElement.textContent = `🎉 مضاعفة النقاط الحالية (${pct}%)! 🎉`;
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-purple-400 text-purple-300 bg-purple-900/30';
+                
             } else if (treasure.points === 'half') {
-                pointsElement.textContent = '💔 خصم نصف النقاط الحالية 💔';
+                const pct = treasure.percentage || 50;
+                pointsElement.textContent = `💔 خصم نسبة من النقاط الحالية (${pct}%) 💔`;
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-red-400 text-red-300 bg-red-900/30';
+                
             } else if (treasure.points === 'charity') {
                 pointsElement.textContent = '💝 نقل نقاط بين المجموعات 💝';
                 pointsElement.className = 'text-3xl font-bold mb-6 p-4 rounded-xl border-2 border-dashed border-blue-400 text-blue-300 bg-blue-900/30';
@@ -2355,12 +2384,30 @@
             const teamNames = TEAM_NAMES;
             
             if (points === 'double') {
-                gameState.teams[currentTeam] *= 2;
-                pointsElement.textContent = '🎉 مضاعفة النقاط! 🎉';
+                // استخدام customPoints كنسبة مئوية إذا تم إدخالها، وإلا استخدام القيمة المحفوظة أو الافتراضي 100
+                let pct = 100;
+                if (customPoints !== null && !isNaN(customPoints)) {
+                    pct = customPoints;
+                } else if (gameState.currentTreasure.percentage !== undefined) {
+                    pct = gameState.currentTreasure.percentage;
+                }
+                
+                const increase = Math.floor(gameState.teams[currentTeam] * (pct / 100));
+                gameState.teams[currentTeam] += increase;
+                pointsElement.textContent = `🎉 زيادة بنسبة ${pct}%! 🎉`;
                 pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
             } else if (points === 'half') {
-                gameState.teams[currentTeam] = Math.floor(gameState.teams[currentTeam] / 2);
-                pointsElement.textContent = '💔 خصم نصف النقاط! 💔';
+                // استخدام customPoints كنسبة مئوية إذا تم إدخالها، وإلا استخدام القيمة المحفوظة أو الافتراضي 50
+                let pct = 50;
+                if (customPoints !== null && !isNaN(customPoints)) {
+                    pct = customPoints;
+                } else if (gameState.currentTreasure.percentage !== undefined) {
+                    pct = gameState.currentTreasure.percentage;
+                }
+
+                const decrease = Math.floor(gameState.teams[currentTeam] * (pct / 100));
+                gameState.teams[currentTeam] -= decrease;
+                pointsElement.textContent = `💔 خصم بنسبة ${pct}%! 💔`;
                 pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
             } else if (points === 'input_bonus' && customPoints) {
                 gameState.teams[currentTeam] += customPoints;
@@ -2467,7 +2514,13 @@
                     if (charityPoints > 0 && donorTeam !== receiverTeam) {
                         applyCharityEffect(donorTeam, receiverTeam, charityPoints);
                     } else {
-                        alert('يرجى إدخال بيانات صحيحة للصدقة: نقاط أكبر من صفر، ومجموعتان مختلفتان.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: 'يرجى إدخال بيانات صحيحة للصدقة: نقاط أكبر من صفر، ومجموعتان مختلفتان.',
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
                         return;
                     }
                 } else if (gameState.currentTreasure.points === 'attack') {
@@ -2476,11 +2529,23 @@
                     const config = gameState.currentTreasure.attackConfig || { maxDamage: 10, cost: 0 };
                     
                     if (isNaN(targetTeam)) {
-                        alert('يرجى اختيار فريق للهجوم عليه!');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'انتباه',
+                            text: 'يرجى اختيار فريق للهجوم عليه!',
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
                         return;
                     }
                     if (isNaN(damage) || damage < 1 || damage > config.maxDamage) {
-                        alert(`يرجى تحديد نقاط الضرر بين 1 و ${config.maxDamage}`);
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'انتباه',
+                            text: `يرجى تحديد نقاط الضرر بين 1 و ${config.maxDamage}`,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
                         return;
                     }
 
@@ -2491,10 +2556,22 @@
                         targetTeam = parseInt(document.getElementById('penaltyTeamSelect').value);
                     }
                     
+                    // التحقق الصارم من المدخلات للأنواع التي تتطلب إدخال نقاط
                     if (gameState.currentTreasure.inputPoints) {
-                        customPoints = parseInt(document.getElementById('customPointsInput').value || '0');
-                        if (customPoints < 0) { 
-                            customPoints = 0;
+                        const inputElement = document.getElementById('customPointsInput');
+                        const inputVal = inputElement.value;
+                        customPoints = parseInt(inputVal);
+                        
+                        // التحقق من أن القيمة موجودة ورقم صحيح وموجب
+                        if (!inputVal || inputVal.trim() === '' || isNaN(customPoints) || customPoints <= 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'تنبيه',
+                                text: 'يرجى إدخال قيمة صحيحة للنقاط (أكبر من صفر)!',
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                            return;
                         }
                         
                         // التحقق من صحة المدخلات للخصم العشوائي
@@ -2508,7 +2585,13 @@
                             }
                             
                             if (customPoints < minP || customPoints > maxP) {
-                                alert(`يرجى إدخال عدد نقاط بين ${minP} و ${maxP}.`);
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'تنبيه',
+                                    text: `يرجى إدخال عدد نقاط بين ${minP} و ${maxP}.`,
+                                    background: '#1e293b',
+                                    color: '#fff'
+                                });
                                 return;
                             }
                         }
@@ -2562,6 +2645,12 @@
 
         // إغلاق شاشة الخزنة (Close Treasure)
         function closeTreasure(shouldGoToNextTeam = true) {
+            // تفعيل الكولداون (نصف ثانية) لمنع الفتح الخاطئ
+            isCooldownActive = true;
+            setTimeout(() => {
+                isCooldownActive = false;
+            }, 500);
+
             document.getElementById('treasureScreen').classList.add('hidden');
             document.getElementById('mainScreen').classList.remove('hidden');
             document.getElementById('pointsEffect').classList.add('hidden');
@@ -2592,7 +2681,13 @@
                 pointsInput.value = '';
                 saveGameState();
             } else {
-                alert('يرجى إدخال عدد صحيح موجب من النقاط');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'يرجى إدخال عدد صحيح موجب من النقاط',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
             }
         }
 
@@ -2611,7 +2706,13 @@
                 pointsInput.value = '';
                 saveGameState();
             } else {
-                alert('يرجى إدخال عدد صحيح موجب من النقاط');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'يرجى إدخال عدد صحيح موجب من النقاط',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
             }
         }
 
@@ -2629,9 +2730,21 @@
                 showPointsAnimation(`🗝️ تم إعادة فتح الخزنة ${boxNumber}`, 'blue');
                 saveGameState();
             } else if (boxNumber) {
-                alert('هذه الخزنة غير مفتوحة أصلاً!');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'انتباه',
+                    text: 'هذه الخزنة غير مفتوحة أصلاً!',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
             } else {
-                alert('يرجى اختيار خزنة لإعادة فتحها');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'معلومة',
+                    text: 'يرجى اختيار خزنة لإعادة فتحها',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
             }
         }
 
@@ -2767,14 +2880,15 @@
             const pointsContainer = document.getElementById('pointsValueContainer');
             const attackSettings = document.getElementById('attackSettingsContainer');
             const penaltySettings = document.getElementById('penaltySettingsContainer');
+            const percentageSettings = document.getElementById('percentageSettingsContainer');
             const descContainer = document.getElementById('pointsTypeDescription');
             
             // تحديث وصف الآلية
             let description = '';
             switch(pointsType) {
                 case 'fixed': description = 'تمنح أو تخصم عدداً محدداً من النقاط للفريق الذي يفتح الخزنة.'; break;
-                case 'double': description = 'تقوم بمضاعفة (×2) نقاط الفريق الحالي.'; break;
-                case 'half': description = 'تقوم بخصم نصف (÷2) نقاط الفريق الحالي.'; break;
+                case 'double': description = 'تقوم بزيادة نقاط الفريق الحالي بنسبة مئوية (الافتراضي 50%).'; break;
+                case 'half': description = 'تقوم بخصم نسبة مئوية من نقاط الفريق الحالي (الافتراضي 50%).'; break;
                 case 'input_bonus': description = 'تطلب من الكابتن إدخال عدد نقاط معين يدوياً ليتم إضافته للفريق.'; break;
                 case 'input_penalty': description = 'تطلب من الكابتن إدخال عدد نقاط معين يدوياً ليتم خصمه من الفريق.'; break;
                 case 'attack': description = 'تسمح للفريق باختيار فريق آخر للهجوم عليه وخصم نقاط منه.'; break;
@@ -2792,6 +2906,14 @@
                 pointsContainer.classList.remove('hidden');
             } else {
                 pointsContainer.classList.add('hidden');
+            }
+
+            // إدارة ظهور إعدادات النسبة المئوية
+            if (pointsType === 'double' || pointsType === 'half') {
+                percentageSettings.classList.remove('hidden');
+                document.getElementById('percentageLabel').textContent = pointsType === 'double' ? '⚙️ نسبة الزيادة (%):' : '⚙️ نسبة الخصم (%):';
+            } else {
+                percentageSettings.classList.add('hidden');
             }
 
             // إدارة ظهور إعدادات الهجوم
@@ -2831,6 +2953,7 @@
             // تحديث معاينة التأثير
             const pointsType = document.getElementById('editPointsType').value;
             const pointsValue = parseInt(document.getElementById('editPointsValue').value || '0');
+            const pct = parseInt(document.getElementById('editPercentage').value) || 50;
             const previewEffect = document.getElementById('previewEffect');
             
             let effectText = '';
@@ -2848,10 +2971,10 @@
                     effectClass = 'border-gray-400 text-gray-300 bg-gray-900/30';
                 }
             } else if (pointsType === 'double') {
-                effectText = '🎉 مضاعفة النقاط الحالية! 🎉';
+                effectText = `🎉 زيادة بنسبة ${pct}%! 🎉`;
                 effectClass = 'border-purple-400 text-purple-300 bg-purple-900/30';
             } else if (pointsType === 'half') {
-                effectText = '💔 خصم نصف النقاط الحالية 💔';
+                effectText = `💔 خصم بنسبة ${pct}%! 💔`;
                 effectClass = 'border-red-400 text-red-300 bg-red-900/30';
             } else if (pointsType === 'charity') {
                 effectText = '💝 نقل نقاط بين المجموعات 💝';
@@ -2926,6 +3049,13 @@
             const pointsType = document.getElementById('editPointsType').value;
             const pointsValue = parseInt(document.getElementById('editPointsValue').value || '0');
             
+            // حفظ نسبة النقاط
+            if (pointsType === 'double' || pointsType === 'half') {
+                treasure.percentage = parseInt(document.getElementById('editPercentage').value) || 50;
+            } else {
+                delete treasure.percentage; // تنظيف إذا لم يكن مطلوباً
+            }
+            
             if (pointsType === 'fixed') {
                 treasure.points = pointsValue;
             } else if (pointsType === 'attack') {
@@ -2973,7 +3103,7 @@
         }
 
         // ربط أحداث الإدخال للحفظ التلقائي
-        ['editIcon', 'editTitle', 'editContent', 'editPointsType', 'editPointsValue', 'attackMaxDamage', 'attackCost', 'attackType', 'penaltyMin', 'penaltyMax'].forEach(id => {
+        ['editIcon', 'editTitle', 'editContent', 'editPointsType', 'editPointsValue', 'editPercentage', 'attackMaxDamage', 'attackCost', 'attackType', 'penaltyMin', 'penaltyMax'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 // استخدام input للتحديث الفوري أثناء الكتابة
