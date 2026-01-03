@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <script>
@@ -8,9 +8,55 @@
             window.location.replace("https://www.tryabqar.com" + window.location.pathname);
         }
     </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موقع صدفة</title>
+    
+    <title>منصة عبقر | مسابقات تفاعلية وألعاب اجتماعية للمجموعات</title>
+    
+    <meta name="description" content="منصة عبقر هي وجهتك الأولى للمسابقات التفاعلية والألعاب الجماعية. نقدم أدوات للمقدمين، ألعاب ذكاء، ومسابقات ترفيهية وتعليمية تناسب الجوال والشاشات الكبيرة. جربها الآن!">
+    
+    <meta name="keywords" content="مسابقات, ألعاب تفاعلية, منصة عبقر, مسابقات ثقافية, ألعاب جماعية, أدوات المقدم, Kahoot بديل, مسابقات باوربوينت, فعاليات, ترفيه">
+    
+    <meta name="author" content="أحمد بن إبراهيم الذبياني">
+    <meta name="copyright" content="منصة عبقر الرقمية">
+    
+    <meta name="robots" content="index, follow">
+    
+    <link rel="canonical" href="https://www.tryabqar.com/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.tryabqar.com/">
+    <meta property="og:title" content="منصة عبقر | اصنع المتعة في فعالياتك">
+    <meta property="og:description" content="مجموعة مميزة من المسابقات والألعاب التفاعلية (حرب البحار، من سيربح المليون، خزنة ربان) جاهزة للاستخدام فوراً.">
+    <meta property="og:image" content="https://www.tryabqar.com/images/og-image.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.tryabqar.com/">
+    <meta name="twitter:title" content="منصة عبقر | مسابقات وألعاب تفاعلية">
+    <meta name="twitter:description" content="منصة متكاملة للمسابقات والألعاب الجماعية. اجعل فعاليتك لا تُنسى.">
+    <meta name="twitter:image" content="https://www.tryabqar.com/images/og-image.jpg">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "منصة عبقر",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "SAR"
+      },
+      "description": "منصة توفر مجموعة من الألعاب والمسابقات التفاعلية لإدارة الفعاليات والأنشطة الاجتماعية.",
+      "author": {
+          "@type": "Person",
+          "name": "أحمد بن إبراهيم الذبياني"
+      }
+    }
+    </script>
     
     <!-- 1. إضافة أيقونة الموقع (Favicon) - نرد -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E🎲%3C/text%3E%3C/svg%3E">
@@ -74,6 +120,15 @@
         /* تطبيق الخط المخصص على كامل الصفحة */
         body {
             font-family: 'Tajawal', sans-serif;
+            font-weight: 400; /* وزن خفيف للنصوص */
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* تحسين التباين في العناوين */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 800; /* وزن عريض جداً للعناوين */
+            letter-spacing: -0.025em; /* تباعد أحرف أضيق قليلاً للمظهر العصري */
         }
 
         /* إخفاء شريط التمرير (Scrollbar) */
@@ -83,6 +138,7 @@
         html {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
+            overscroll-behavior-y: none;
         }
         
         /* 4. إعداد الصفحات للانتقال الناعم (Fade Transition) */
@@ -147,25 +203,16 @@
         .animated-gradient-background::after {
             content: "";
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                #bfdbfe,
-                #bbf7d0,
-                #fecaca,
-                #bfdbfe
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                #caf3ff,
+                #ffe1cc
             );
-            transform: translate(-50%, -50%);
-            animation: rotate 8s linear infinite;
-            filter: blur(80px);
-            opacity: 0.6;
             z-index: -1;
-            
-            /* === هذا هو الحل === */
-            /* يسمح للضغطات بالمرور عبر الخلفية والوصول للأزرار */
             pointer-events: none; 
         }
 
@@ -177,25 +224,13 @@
         
         .dark .animated-gradient-background::before,
         .dark .animated-gradient-background::after {
-             /* (تعديل) ألوان داكنة وغنية */
-             background: conic-gradient(
-                from 0deg,
-                rgba(37, 99, 235, 0.5),   /* blue-600 */
-                rgba(22, 163, 74, 0.5),  /* green-600 */
-                rgba(220, 38, 38, 0.5),  /* red-600 */
-                rgba(37, 99, 235, 0.5)
+             background: linear-gradient(
+                to bottom,
+                #172554,
+                #020617
             );
-            /* (تعديل) شفافية أقل لتكون الألوان أوضح في الظلام */
-            opacity: 0.3; 
-            filter: blur(120px);
-        }
-
-        /* الطبقة الثانية للدوران العكسي */
-        .animated-gradient-background::after {
-            width: 180%;
-            height: 180%;
-            animation: rotate-reverse 10s linear infinite;
-            opacity: 0.4;
+            opacity: 1;
+            filter: none;
         }
         
         /* (جديد) إصلاح لـ z-index للأزرار العائمة لتكون فوق الخلفية */
@@ -235,7 +270,7 @@
         #sidebar-menu, .transform, .transition-transform {
             transition-property: transform, background-color, border-color, color;
         }
-/* رفع البطاقات والأزرار فوق الخلفية */
+/* رفع البطاقات والأزرار فوق الخلفية وتطبيق تأثير الزجاج */
     .app-card, 
     #btn-tools, 
     #btn-competitions, 
@@ -243,6 +278,73 @@
         position: relative; /* ضروري لعمل الـ z-index */
         z-index: 10;        /* رقم أعلى من الخلفية */
         cursor: pointer;
+        
+        /* تأثير الزجاج (Glassmorphism) - عودة للأبيض للوضوح */
+        background: rgba(255, 255, 255, 0.85); /* أبيض شبه شفاف */
+        backdrop-filter: blur(12px); /* تمويه الخلفية */
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6); /* حدود مضيئة */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* ظل ناعم */
+        
+        /* التفاعل والحركة */
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    background-color 0.3s ease;
+    }
+
+    /* (جديد) تخصيص ألوان البطاقات حسب الطلب (الوضع الفاتح) مع حدود بنفسجية فخمة */
+    #btn-competitions {
+        background: #F0FDF4 !important; /* نعناعي فاتح */
+        border: 1px solid rgba(76, 29, 149, 0.4) !important; /* بنفسجي غامق أرق وأكثر شفافية */
+    }
+    
+    #btn-tools {
+        background: #F0F6FF !important; /* أزرق فاتح */
+        border: 1px solid rgba(76, 29, 149, 0.4) !important; /* بنفسجي غامق أرق وأكثر شفافية */
+    }
+    
+    #btn-games {
+        background: #FFF5F5 !important; /* وردي فاتح */
+        border: 1px solid rgba(76, 29, 149, 0.4) !important; /* بنفسجي غامق أرق وأكثر شفافية */
+    }
+
+    /* تأثير الوضع الليلي للبطاقات */
+    .dark .app-card, 
+    .dark #btn-tools, 
+    .dark #btn-competitions, 
+    .dark #btn-games {
+        background: rgba(30, 41, 59, 0.85) !important; /* slate-800 with high opacity - إعادة توحيد اللون في الوضع الداكن */
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    /* تأثير التحويم (Hover) - تكبير وإضاءة */
+    .app-card:hover, 
+    #btn-tools:hover, 
+    #btn-competitions:hover, 
+    #btn-games:hover {
+        transform: translateY(-5px) scale(1.02); /* رفع وتكبير طفيف */
+        border-color: rgba(76, 29, 149, 0.8) !important; /* تزداد سماكة/وضوح اللون عند التحويم فقط */
+        box-shadow: 0 20px 25px -5px rgba(76, 29, 149, 0.2), 0 10px 10px -5px rgba(76, 29, 149, 0.1); /* ظل بنفسجي خفيف */
+    }
+    
+    .dark .app-card:hover, 
+    .dark #btn-tools:hover, 
+    .dark #btn-competitions:hover, 
+    .dark #btn-games:hover {
+        background: rgba(39, 39, 42, 0.8);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* (جديد) زر تسجيل الدخول النابض لجذب الانتباه */
+    @keyframes pulse-blue {
+        0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+    
+    #btn-sidebar-login {
+        animation: pulse-blue 2s infinite;
     }
 
     /* (جديد) إخفاء زر الخروج من التطبيقات وإظهاره عند التحويم */
@@ -284,11 +386,18 @@
     .btn-close-iframe::after {
         content: '';
         position: absolute;
-        top: -40px;   /* توسيع المساحة للأعلى */
-        left: -40px;  /* توسيع المساحة لليسار */
-        right: -40px; /* توسيع المساحة لليمين */
-        bottom: -40px;/* توسيع المساحة للأسفل */
+        top: -10px;   /* تم تقليل المساحة لتصبح معقولة */
+        left: -10px;  /* تم تقليل المساحة */
+        right: -10px; /* تم تقليل المساحة */
+        bottom: -10px;/* تم تقليل المساحة */
         z-index: -1;
+    }
+
+    /* (Mobile UX) منع الانتقال والوميض على الجوال */
+    @media (max-width: 768px) {
+        .page {
+            transition: none !important;
+        }
     }
 
     </style>
@@ -299,10 +408,16 @@
              animated-gradient-background">
 
     <!-- شاشة التحميل (Loading Screen) لمنع الوميض -->
-    <div id="app-loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: #f4f4f5; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease-out;">
-        <div style="font-size: 4rem; animation: spin 3s infinite linear;">🎲</div>
+    <div id="app-loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: #f4f4f5; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease-out;">
+        <div style="font-size: 4rem; animation: spin-pulse 3s infinite ease-in-out;">🎲</div>
         <p style="margin-top: 1rem; font-family: 'Tajawal', sans-serif; font-size: 1.2rem; color: #52525b;">جاري التحميل...</p>
-        <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+        <style>
+            @keyframes spin-pulse { 
+                0% { transform: rotate(0deg) scale(1); } 
+                50% { transform: rotate(180deg) scale(1.2); } 
+                100% { transform: rotate(360deg) scale(1); } 
+            }
+        </style>
         <script>
             // ضبط لون الخلفية فوراً حسب الوضع الليلي
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -319,7 +434,7 @@
             if (loader) {
                 setTimeout(() => {
                     loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 500);
+                    setTimeout(() => loader.remove(), 800);
                 }, 500); // تأخير نصف ثانية لضمان استقرار التنسيقات
             }
         });
@@ -362,7 +477,7 @@
             
             <!-- 1. حالة تسجيل الخروج (أو الضيف) -->
             <div id="sidebar-logged-out" class="hidden">
-                <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في صدفة. سجّل دخولك للوصول إلى ميزاتك.</p>
+                <p class="text-zinc-600 dark:text-zinc-400 mb-4">أهلاً بك في منصة عبقر. سجّل دخولك للوصول إلى ميزاتك.</p>
                 <div class="flex flex-col gap-3">
                     <button id="btn-sidebar-login" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition active:scale-95 text-sm font-medium">تسجيل الدخول</button>
                     <button id="btn-sidebar-signup" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition active:scale-95 text-sm font-medium">إنشاء حساب</button>
@@ -436,6 +551,11 @@
         <img id="theme-toggle-light-icon" src="images/icon-sun.png" alt="شمس" class="h-6 w-6 object-contain">
     </button>
 
+    <!-- (جديد) شعار بروفايل المصغر (أعلى اليسار) -->
+    <div class="fixed top-6 left-6 z-50">
+        <img src="images/PROF1.png" alt="شعار بروفايل" class="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg hover:scale-110 transition-transform duration-300 cursor-pointer">
+    </div>
+
     <!-- (جديد) زر ملئ الشاشة (أسفل اليسار) -->
     <button id="fullscreen-toggle" class="fixed bottom-6 left-6 z-50 p-3 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 shadow-lg transition-transform duration-100 active:scale-95 hidden">
         <!-- أيقونة التكبير -->
@@ -462,17 +582,19 @@
                     dark:bg-zinc-800">
             <!-- رأس الشاشة -->
             <header class="bg-gradient-to-r from-blue-600 to-green-500 text-white p-6 text-center">
-                <h2 class="text-2xl font-bold">سياسة الاستخدام والخصوصية لموقع "صدفة"</h2>
+                <h2 class="text-2xl font-bold">سياسة الاستخدام والخصوصية لـ "منصة عبقر"</h2>
             </header>
             
             <!-- (جديد) محتوى السياسة (قابل للتمرير) -->
             <main class="p-6 md:p-8 max-h-[60vh] overflow-y-auto">
                 
                 <!-- (تحديث) تم استبدال المحتوى بالكامل -->
-                <p>مرحبًا بك في موقع <strong>"صدفة"</strong>  المملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
-                                    يُعد دخولك إلى الموقع، أو إنشاء حساب، أو استخدام أي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام الواردة أدناه.<br>
-                                    خصوصيتك تهمنا، لذا يُرجى قراءة هذه السياسة بعناية لفهم كيفية جمع واستخدام وحماية بياناتك.<br>
-                                    إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
+                <p>
+                    مرحبًا بك في <strong>"منصة عبقر"</strong> المملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
+                    يُعد دخولك إلى الموقع، أو إنشاء حساب، أو استخدام أي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام الواردة أدناه.<br>
+                    خصوصيتك تهمنا، لذا يُرجى قراءة هذه السياسة بعناية لفهم كيفية جمع واستخدام وحماية بياناتك.<br>
+                    إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.
+                </p>
 
                                     <h2 class="text-xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-3 mt-6 dark:text-blue-400">1. البيانات التي نجمعها</h2>
 
@@ -518,8 +640,8 @@
                                     </ul>
 
                                     <h2 class="text-xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-3 mt-6 dark:text-blue-400">5. الملكية الفكرية (الاستخدام المحظور)</h2>
-                                    <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
-                                    <p>يُحظر تمامًا:</p>
+                <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في "منصة عبقر" وتطبيقاتها (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
+                <p>يُحظر تمامًا:</p>
                                     <ul class="list-disc pr-6 space-y-2 mb-4">
                                         <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
                                         <li>تحليل أو تفكيك أو إجراء هندسة عكسية لأي جزء من برمجيات الموقع.</li>
@@ -921,7 +1043,7 @@
                                     11-30-2025
                                 </td>
                                 <td class="px-4 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal">
-                                    إطلاق النسخة الثانية من تطبيق "صدفة" (شاملة الإصلاحات)، وتحسين قوائم الموقع الداخلية لتتناسب مع التطبيقات.
+                                    إطلاق النسخة الثانية من منصة "عبقر" (شاملة الإصلاحات)، وتحسين قوائم الموقع الداخلية لتتناسب مع التطبيقات.
                                 </td>
                             </tr>
 
@@ -961,77 +1083,59 @@
     <!--     الصفحة الرئيسية       -->
     <!-- (style="display: none;" سيتم تعديله بواسطة JS) -->
     <!-- ======================= -->
-    <div id="page-welcome" class="page container mx-auto p-6 md:p-12 min-h-screen flex-grow">
+    <div id="page-welcome" class="page container mx-auto p-4 md:p-6 min-h-screen flex-grow flex flex-col">
 
         <!-- القسم العلوي المرن (للتوسيط) -->
-        <div class="flex-grow flex flex-col justify-center items-center py-12">
+        <div class="flex-grow flex flex-col justify-center items-center py-2">
             
             <!-- (جديد) بوكس العنوان المصمم -->
-            <div class="w-full max-w-3xl mb-12 shadow-xl rounded-2xl overflow-hidden">
-                <!-- صورة الوضع الفاتح -->
-                <img src="images/logo-light.webp" alt="عنوان موقع صدفة" class="w-full dark:hidden">
-                <!-- صورة الوضع الداكن -->
-                <img src="images/logo-dark.webp" alt="عنوان موقع صدفة" class="w-full hidden dark:block">
+            <div class="w-full max-w-5xl mb-6 mx-auto px-2">
+                <!-- Light Mode Logo -->
+                <img src="images/PROF5.png" alt="عنوان منصة عبقر" class="w-full h-auto object-contain hover:scale-105 transition-transform duration-500 drop-shadow-lg dark:hidden">
+                <!-- Dark Mode Logo -->
+                <img src="images/PROF5D.png" alt="عنوان منصة عبقر" class="w-full h-auto object-contain hover:scale-105 transition-transform duration-500 drop-shadow-lg hidden dark:block">
             </div>
 
-            <!-- اختيارات الأقسام (أصبحت Divs مع ID) -->
-            <!-- (تعديل) تم تغيير الخلفيات إلى نمط زجاجي -->
-            <main class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+            <!-- اختيارات الأقسام (تصميم الشبكة الذكية - Bento Grid) -->
+            <main class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 w-full max-w-5xl mx-auto px-2">
                 
-                <!-- اختيار 1: أدوات المقدم -->
-                <div id="btn-tools" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
-                                      border-2 border-transparent hover:border-blue-500 
-                                      hover:scale-105 hover:shadow-xl active:scale-95
-                                      overflow-hidden"
-                     style="background-image: url('images/bg-light.webp');">
-                    <!-- نسخة داكنة -->
-                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('images/bg-dark.webp');"></div>
-                    <!-- طبقة زجاجية -->
-                    <div class="relative p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full flex flex-col items-center justify-center">
-                        <img src="images/icon-presenter.webp" alt="أدوات المقدم" class="w-16 h-16 mx-auto mb-4 object-contain">
-                        <h2 class="text-2xl font-bold text-blue-600 mb-2 dark:text-blue-400">أدوات المقدم</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">أدوات مساعدة لتقديم البرامج والمسابقات.</p>
+                <!-- 1. منصة التنافس (العنصر الرئيسي - كبير) -->
+                <div id="btn-competitions" class="app-card md:col-span-2 md:row-span-2 rounded-2xl overflow-hidden flex flex-col items-center justify-center p-6 text-center group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <img src="images/icon-competition.webp" alt="منصة التنافس" class="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 object-contain transform group-hover:scale-110 transition-transform duration-500">
+                    <h2 class="text-2xl md:text-3xl font-black text-green-600 mb-2 dark:text-green-400">منصة التنافس</h2>
+                    <p class="text-base text-zinc-600 dark:text-zinc-300 max-w-md mx-auto leading-relaxed">
+                        قوالب جاهزة ومسابقات تفاعلية جماعية. اصنع التحدي وأشعل روح المنافسة.
+                    </p>
+                    <div class="mt-4 px-6 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 text-sm font-bold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                        ابدأ المنافسة 🏆
                     </div>
                 </div>
 
-                <!-- اختيار 2: منصة التنافس -->
-                <div id="btn-competitions" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
-                                            border-2 border-transparent hover:border-green-500 
-                                            hover:scale-105 hover:shadow-xl active:scale-95
-                                            overflow-hidden"
-                     style="background-image: url('images/bg-light.webp');">
-                    <!-- نسخة داكنة -->
-                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('images/bg-dark.webp');"></div>
-                    <!-- طبقة زجاجية -->
-                    <div class="relative p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full flex flex-col items-center justify-center">
-                        <img src="images/icon-competition.webp" alt="منصة التنافس" class="w-16 h-16 mx-auto mb-4 object-contain">
-                        <h2 class="text-2xl font-bold text-green-600 mb-2 dark:text-green-400">منصة التنافس</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">مسابقات جاهزة وقوالب للمنافسات الجماعية.</p>
-                    </div>
+                <!-- 2. أدوات المقدم (مربع جانبي) -->
+                <div id="btn-tools" class="app-card md:col-span-1 md:row-span-1 rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4 text-center group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <img src="images/icon-presenter.webp" alt="أدوات المقدم" class="w-12 h-12 mx-auto mb-2 object-contain transform group-hover:rotate-12 transition-transform duration-300">
+                    <h2 class="text-lg font-bold text-blue-600 mb-1 dark:text-blue-400">أدوات المقدم</h2>
+                    <p class="text-xs text-zinc-600 dark:text-zinc-400">أدوات احترافية لإدارة المسابقات والفعاليات.</p>
                 </div>
-                <!-- اختيار 3: ألعاب اجتماعية -->
-                <div id="btn-games" class="relative bg-cover bg-center rounded-xl shadow-lg transform transition-all duration-300 cursor-pointer text-center 
-                                      border-2 border-transparent hover:border-red-500 
-                                      hover:scale-105 hover:shadow-xl active:scale-95
-                                      overflow-hidden"
-                     style="background-image: url('images/bg-light.webp');">
-                    <!-- نسخة داكنة -->
-                    <div class="absolute inset-0 bg-cover bg-center hidden dark:block" style="background-image: url('images/bg-dark.webp');"></div>
-                    <!-- طبقة زجاجية -->
-                    <div class="relative p-8 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm h-full flex flex-col items-center justify-center">
-                        <img src="images/icon-social.webp" alt="ألعاب اجتماعية" class="w-16 h-16 mx-auto mb-4 object-contain">
-                        <h2 class="text-2xl font-bold text-red-600 mb-2 dark:text-red-400">ألعاب اجتماعية</h2>
-                        <p class="text-zinc-600 dark:text-zinc-400">ألعاب مخصصة للجوالات للتجمعات والأصدقاء.</p>
-                    </div>
+
+                <!-- 3. ألعاب اجتماعية (مربع جانبي) -->
+                <div id="btn-games" class="app-card md:col-span-1 md:row-span-1 rounded-2xl overflow-hidden flex flex-col items-center justify-center p-4 text-center group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-700/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <img src="images/icon-social.webp" alt="ألعاب اجتماعية" class="w-12 h-12 mx-auto mb-2 object-contain transform group-hover:-rotate-12 transition-transform duration-300">
+                    <h2 class="text-lg font-bold text-red-700 mb-1 dark:text-red-400">ألعاب اجتماعية</h2>
+                    <p class="text-xs text-zinc-600 dark:text-zinc-400">مجموعة مميزة من الألعاب التفاعلية.</p>
                 </div>
+
             </main>
         </div>
 
         <!-- تذييل الصفحة - تم التغيير إلى zinc -->
-        <footer class="text-center text-zinc-600 mt-24 pt-6 border-t border-zinc-200 
+        <footer class="text-center text-zinc-600 mt-4 pt-2 border-t border-zinc-200 
                        dark:text-zinc-400 dark:border-zinc-700">
             <p class="text-sm">
-                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                جميع الحقوق محفوظة &copy; 2026 منصة عبقر الرقمية
                 <span class="mx-2">|</span>
                 <!-- هذا الزر سيفتح صفحة السياسة المدمجة -->
                 <a href="#" class="btn-policy hover:text-blue-500 transition-all duration-100 active:scale-95 dark:hover:text-blue-400">سياسة الاستخدام والخصوصية</a>
@@ -1048,7 +1152,7 @@
         <!-- رأس الصفحة - تم تخفيف اللون -->
         <header class="flex justify-between items-center mb-12">
             <h2 class="text-3xl font-bold border-r-4 border-blue-500 pr-4">أدوات المقدم</h2>
-            <button class="btn-back bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+            <button class="btn-back ml-24 bg-blue-100 text-blue-600 font-bold py-2 px-6 rounded-lg hover:bg-blue-200 transition-all duration-100 active:scale-95 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
                 العودة للرئيسية
             </button>
         </header>
@@ -1058,7 +1162,7 @@
             <!-- (جديد) بطاقة 1: صدفة (أصبحت زراً داخلياً) -->
             <div data-appid="tool-sodfa" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/app-sodfa.webp" alt="صورة غلاف تطبيق صدفة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
+                    <img src="images/app-sodfa.webp" alt="صورة غلاف تطبيق صدفة" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صدفة';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1073,7 +1177,7 @@
             <!-- (جديد) بطاقة 2: صناديق الأسئلة (أصبحت زراً داخلياً) -->
             <div data-appid="tool-questions" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/app-questions.webp" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
+                    <img src="images/app-questions.webp" alt="صورة تطبيق صناديق الأسئلة" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=صناديق+الأسئلة';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1088,7 +1192,7 @@
             <!-- (جديد) بطاقة 3: حروف رحال (أصبحت زراً داخلياً) -->
             <div data-appid="tool-letters" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/app-letters.webp" alt="صورة تطبيق حروف رحال" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
+                    <img src="images/app-letters.webp" alt="صورة تطبيق حروف رحال" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=حروف+رحال';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1103,7 +1207,7 @@
             <!-- بطاقة 4: ريموت (أصبحت زراً داخلياً) -->
             <div data-appid="tool-remote" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/app-remote.webp" alt="صورة تطبيق ريموت" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
+                    <img src="images/app-remote.webp" alt="صورة تطبيق ريموت" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=ريموت';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1120,7 +1224,7 @@
             <div class="app-card block bg-white rounded-lg shadow-lg overflow-hidden dark:bg-zinc-800 opacity-60 cursor-not-allowed">
                 <div class="relative">
                     <!-- استخدام صورة Placeholder رمادية -->
-                    <img src="https://placehold.co/600x400/e5e7eb/a1a1aa?text=+" alt="تطبيق قادم" class="w-full h-48 object-cover">
+                    <img src="https://placehold.co/600x400/e5e7eb/a1a1aa?text=+" alt="تطبيق قادم" class="w-full h-auto">
                 </div>
                 <div class="p-6 app-card-body">
                     <!-- استخدام لون أزرق باهت ليناسب القسم -->
@@ -1151,7 +1255,7 @@
         <!-- رأس الصفحة - تم تخفيف اللون -->
         <header class="flex justify-between items-center mb-12">
             <h2 class="text-3xl font-bold border-r-4 border-green-500 pr-4">منصة التنافس</h2>
-            <button class="btn-back bg-green-100 text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-green-200 transition-all duration-100 active:scale-95 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800">
+            <button class="btn-back ml-24 bg-green-100 text-green-600 font-bold py-2 px-6 rounded-lg hover:bg-green-200 transition-all duration-100 active:scale-95 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800">
                 العودة للرئيسية
             </button>
         </header>
@@ -1161,7 +1265,7 @@
             <!-- (جديد) بطاقة 1: خزنة ربان (أصبحت زراً داخلياً) -->
             <div data-appid="game-captain" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-rubban.webp" alt="صورة مسابقة خزنة ربان" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-rubban.webp" alt="صورة مسابقة خزنة ربان" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1176,7 +1280,7 @@
             <!-- (جديد) بطاقة 2: حرب البحار (أصبحت زراً داخلياً) -->
             <div data-appid="game-seawar" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-seawar.webp" alt="صورة مسابقة حرب البحار" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-seawar.webp" alt="صورة مسابقة حرب البحار" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1191,7 +1295,7 @@
             <!-- (جديد) بطاقة 3: الترتيب العاشر (أصبحت زراً داخلياً) -->
             <div data-appid="game-topten" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-topten.webp" alt="صورة مسابقة الترتيب العاشر" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-topten.webp" alt="صورة مسابقة الترتيب العاشر" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1206,7 +1310,7 @@
             <!-- (جديد) بطاقة 4: فكر تربح (أصبحت زراً داخلياً) -->
             <div data-appid="game-thinkwin" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-thinkwin.webp" alt="صورة لعبة فكر تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-thinkwin.jpg" alt="صورة لعبة فكر تربح" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -1226,13 +1330,13 @@
              <!-- تم تغيير data-appid من "mileon-app" إلى "game-mileon" ليتطابق مع الجافاسكربت -->
             <div data-appid="page-game-mileon" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
     <div class="relative">
-        <img src="images/game-million.webp" alt="صورة مسابقة من سيربح المليون" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+        <img src="images/game-million.webp" alt="صورة مسابقة من سيربح المليون" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
         <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
         </button>
     </div>
     <div class="p-6 app-card-body">
-        <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">5. من سيربح المليون</h3>
+        <h3 class="text-2xl font-bold mb-2 text-violet-600 dark:text-violet-400">5. من سيربح المليون</h3>
         <p class="text-zinc-600 mb-4 dark:text-zinc-400">بطريقة جديدة ومبتكرة وبنظام الفرق والمجموعات</p>
         <span class="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200">للشاشات فقط</span>
     </div>
@@ -1258,8 +1362,8 @@
     <div id="page-games" class="page container mx-auto p-6 md:p-12 min-h-screen">
         <!-- رأس الصفحة - تم تخفيف اللون -->
         <header class="flex justify-between items-center mb-12">
-            <h2 class="text-3xl font-bold border-r-4 border-red-500 pr-4">ألعاب اجتماعية</h2>
-            <button class="btn-back bg-red-100 text-red-600 font-bold py-2 px-6 rounded-lg hover:bg-red-200 transition-all duration-100 active:scale-95 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+            <h2 class="text-3xl font-bold border-r-4 border-pink-500 pr-4">ألعاب اجتماعية</h2>
+            <button class="btn-back ml-24 bg-pink-100 text-pink-600 font-bold py-2 px-6 rounded-lg hover:bg-pink-200 transition-all duration-100 active:scale-95 dark:bg-pink-900 dark:text-pink-200 dark:hover:bg-pink-800">
                 العودة للرئيسية
             </button>
         </header>
@@ -1269,14 +1373,14 @@
             <!-- (جديد) بطاقة 1: مين الملقوف (أصبحت زراً داخلياً) -->
             <div data-appid="game-malkoof" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-malkoof.webp" alt="صورة لعبة مين الملقوف" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-malkoof.webp" alt="صورة لعبة مين الملقوف" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                     </button>
                 </div>
                 <div class="p-6 app-card-body">
-                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">1. مين الملقوف</h3>
+                    <h3 class="text-2xl font-bold mb-2 text-pink-600 dark:text-pink-400">1. مين الملقوف</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة لتحديد كلمة يعلمها الجميع عدى "الملقوف" الذي يحاول توقعها.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
@@ -1284,14 +1388,14 @@
             <!-- (جديد) بطاقة 2: مافيا (أصبحت زراً داخلياً) -->
             <div data-appid="game-mafia" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-mafia.webp" alt="صورة لعبة مافيا" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-mafia.webp" alt="صورة لعبة مافيا" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                     </button>
                 </div>
                 <div class="p-6 app-card-body">
-                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">2. مافيا</h3>
+                    <h3 class="text-2xl font-bold mb-2 text-pink-600 dark:text-pink-400">2. مافيا</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة مافيا المعروفة بطريقة سهلة وبسيطة وواجهة جميلة لا تحتاج للورق.</p>
                     <span class="inline-block bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات فقط</span>
                 </div>
@@ -1300,14 +1404,14 @@
             <!-- === (جديد) بطاقة "قريباً" لقسم الألعاب === -->
              <div data-appid="page-4to-won" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
                 <div class="relative">
-                    <img src="images/game-connect4.webp" alt="صورة لعبة اربع تربح" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <img src="images/game-connect4.webp" alt="صورة لعبة اربع تربح" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
                     <!-- (جديد) زر المفضلة -->
                     <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                     </button>
                 </div>
                 <div class="p-6 app-card-body">
-                    <h3 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">3. اربع تربح</h3>
+                    <h3 class="text-2xl font-bold mb-2 text-pink-600 dark:text-pink-400">3. اربع تربح</h3>
                     <p class="text-zinc-600 mb-4 dark:text-zinc-400">اربع تربح لعبة تعتمد على الاستراتيجية والحنكة ،العب ضد لاعب او ضد الكمبيوتر.</p>
                     <span class="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200">للجوالات والكمبيوتر</span>
                 </div>
@@ -1334,14 +1438,18 @@
     <!-- صفحة أداة ريموت (المدمجة) -->
     <div id="page-tool-remote" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center 
+                       fixed top-11 left-11 z-[9999] 
+                       w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="remote-iframe" src="about:blank"></iframe>
         </main>
@@ -1350,14 +1458,18 @@
     <!-- (جديد) صفحة أداة صدفة -->
     <div id="page-tool-sodfa" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center 
+                       fixed top-11 left-11 z-[9999] 
+                       w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="sodfa-iframe" src="about:blank"></iframe>
         </main>
@@ -1366,14 +1478,16 @@
     <!-- (جديد) صفحة أداة صناديق الأسئلة -->
     <div id="page-tool-questions" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="questions-iframe" src="about:blank"></iframe>
         </main>
@@ -1382,14 +1496,16 @@
     <!-- (جديد) صفحة أداة حروف رحال -->
     <div id="page-tool-letters" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="letters-iframe" src="about:blank"></iframe>
         </main>
@@ -1398,14 +1514,16 @@
     <!-- (جديد) صفحة لعبة خزنة ربان -->
     <div id="page-game-captain" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="captain-iframe" src="about:blank"></iframe>
         </main>
@@ -1414,14 +1532,16 @@
     <!-- (جديد) صفحة لعبة حرب البحار -->
     <div id="page-game-seawar" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="seawar-iframe" src="about:blank"></iframe>
         </main>
@@ -1430,14 +1550,16 @@
     <!-- (جديد) صفحة لعبة الترتيب العاشر -->
     <div id="page-game-topten" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="topten-iframe" src="about:blank"></iframe>
         </main>
@@ -1446,14 +1568,16 @@
     <!-- (جديد) صفحة لعبة فكر تربح -->
     <div id="page-game-thinkwin" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="thinkwin-iframe" src="about:blank"></iframe>
         </main>
@@ -1465,14 +1589,16 @@
      <!-- (جديد) صفحة لعبة من سيربح المليون -->
      <!-- تم تغيير id الـ iframe من "thinkwin-iframe" إلى "mileon-iframe" ليتطابق مع الجافاسكربت -->
     <div id="page-game-mileon" class="page min-h-screen page-iframe-container">
-    <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                   fixed top-6 left-6 z-50 
-                   w-10 h-10 bg-black/30 text-white rounded-full 
-                   hover:bg-black/50 transition-all active:scale-90">
+    <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
     </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
     <main>
         <iframe id="mileon-iframe" src="about:blank"></iframe>
     </main>
@@ -1481,14 +1607,16 @@
     <!-- (جديد) صفحة لعبة مين الملقوف -->
     <div id="page-game-malkoof" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="malkoof-iframe" src="about:blank"></iframe>
         </main>
@@ -1497,14 +1625,16 @@
     <!-- (جديد) صفحة لعبة مافيا -->
     <div id="page-game-mafia" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="mafia-iframe" src="about:blank"></iframe>
         </main>
@@ -1513,14 +1643,16 @@
     <!-- (جديد) صفحة لعبة اربع تربح -->
     <div id="page-4to-won" class="page min-h-screen page-iframe-container">
         <!-- (إصلاح) زر الخروج العائم (مخفي على الجوال) -->
-        <button class="btn-close-iframe hidden md:flex items-center justify-center 
-                       fixed top-6 left-6 z-50 
-                       w-10 h-10 bg-black/30 text-white rounded-full 
-                       hover:bg-black/50 transition-all active:scale-90">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+        <!-- Logo for Iframe Page -->
+        <div class="fixed top-6 right-6 z-[9999] w-24 opacity-80 pointer-events-none select-none">
+             <img src="images/PROF5.png" alt="Logo" class="w-full h-auto object-contain dark:hidden">
+             <img src="images/PROF5D.png" alt="Logo" class="w-full h-auto object-contain hidden dark:block">
+        </div>
         <main>
             <iframe id="page-4to-won-iframe" src="about:blank"></iframe>
         </main>
@@ -1544,73 +1676,75 @@
                      dark:bg-zinc-800">
             
             <!-- (تحديث) تم استبدال المحتوى بالكامل -->
-            <p class="text-lg leading-relaxed mb-6">مرحبًا بك في موقع <strong>"صدفة"</strong>  المملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
-                                يُعد دخولك إلى الموقع، أو إنشاء حساب، أو استخدام أي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام الواردة أدناه.<br>
-                                خصوصيتك تهمنا، لذا يُرجى قراءة هذه السياسة بعناية لفهم كيفية جمع واستخدام وحماية بياناتك.<br>
-                                إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.</p>
+            <p class="text-lg leading-relaxed mb-6">
+                مرحبًا بك في <strong>"منصة عبقر"</strong> المملوك لـ <strong>أحمد بن إبراهيم الذبياني</strong>.<br>
+                يُعد دخولك إلى الموقع، أو إنشاء حساب، أو استخدام أي من خدماته موافقة صريحة منك على الالتزام الكامل بجميع الشروط والأحكام الواردة أدناه.<br>
+                خصوصيتك تهمنا، لذا يُرجى قراءة هذه السياسة بعناية لفهم كيفية جمع واستخدام وحماية بياناتك.<br>
+                إذا لم تكن موافقًا على هذه الشروط، يُرجى التوقف فورًا عن استخدام الموقع وجميع خدماته.
+            </p>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">1. البيانات التي نجمعها</h2>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">1. البيانات التي نجمعها</h2>
 
-                                <p class="font-bold text-lg mb-2"><strong>أ. البيانات التي تقدمها طوعًا (بيانات الحساب):</strong></p>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>عند إنشاء حساب، نطلب منك: البريد الإلكتروني، اسم المستخدم، وكلمة المرور.</li>
-                                    <li>يتم تخزين كلمة المرور بشكل مشفر وآمن، ولا يمكننا الاطلاع عليها ولكن انصحك أنا أحمد بشكل شخصي ان تسخدم كلمة مرور جديدة لا علاقة لها بالتي تستخدمها في ايميلك الشخصي.</li>
-                                    <li>يتم استخدام البريد الإلكتروني لغرض المصادقة وتأكيد الهوية فقط (مثل إعادة تعيين كلمة المرور).</li>
-                                </ul>
+            <p class="font-bold text-lg mb-2"><strong>أ. البيانات التي تقدمها طوعًا (بيانات الحساب):</strong></p>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>عند إنشاء حساب، نطلب منك: البريد الإلكتروني، اسم المستخدم، وكلمة المرور.</li>
+                <li>يتم تخزين كلمة المرور بشكل مشفر وآمن، ولا يمكننا الاطلاع عليها ولكن انصحك أنا أحمد بشكل شخصي ان تسخدم كلمة مرور جديدة لا علاقة لها بالتي تستخدمها في ايميلك الشخصي.</li>
+                <li>يتم استخدام البريد الإلكتروني لغرض المصادقة وتأكيد الهوية فقط (مثل إعادة تعيين كلمة المرور).</li>
+            </ul>
 
-                                <p class="font-bold text-lg mb-2"><strong>ب. البيانات التي تنشئها أثناء الاستخدام (بيانات التخصيص):</strong></p>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>تخزين التفضيلات المرتبطة بحسابك، مثل قائمة "المفضلة".</li>
-                                    <li>تمكين الوصول إلى اختياراتك المحفوظة من أي جهاز عند تسجيل الدخول.</li>
-                                </ul>
+            <p class="font-bold text-lg mb-2"><strong>ب. البيانات التي تنشئها أثناء الاستخدام (بيانات التخصيص):</strong></p>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>تخزين التفضيلات المرتبطة بحسابك، مثل قائمة "المفضلة".</li>
+                <li>تمكين الوصول إلى اختياراتك المحفوظة من أي جهاز عند تسجيل الدخول.</li>
+            </ul>
 
-                                <p class="font-bold text-lg mb-2"><strong>ج. بيانات الاستخدام التي نجمعها تلقائيًا (بيانات التحليلات):</strong></p>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>نستخدم خدمات تحليلية مثل Google Analytics لجمع معلومات مجهولة المصدر حول تفاعلك مع الموقع.</li>
-                                    <li>تشمل: الصفحات التي تزورها في موقعنا، والوقت الذي تقضيه، ونوع المتصفح، بهدف تحسين الأداء وتجربة المستخدم.</li>
-                                    <li>هذه البيانات لا ترتبط بهويتك الشخصية.</li>
-                                </ul>
+            <p class="font-bold text-lg mb-2"><strong>ج. بيانات الاستخدام التي نجمعها تلقائيًا (بيانات التحليلات):</strong></p>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>نستخدم خدمات تحليلية مثل Google Analytics لجمع معلومات مجهولة المصدر حول تفاعلك مع الموقع.</li>
+                <li>تشمل: الصفحات التي تزورها في موقعنا، والوقت الذي تقضيه، ونوع المتصفح، بهدف تحسين الأداء وتجربة المستخدم.</li>
+                <li>هذه البيانات لا ترتبط بهويتك الشخصية.</li>
+            </ul>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">2. كيفية استخدام بياناتك</h2>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>تشغيل الخدمة: تسجيل الدخول، الحفاظ على الجلسة آمنة، وحفظ الإعدادات.</li>
-                                    <li>تحسين الخدمة: تحليل بيانات الاستخدام المجهولة المصدر لتطوير ميزات جديدة وإصلاح الأخطاء.</li>
-                                    <li>التواصل معك: إرسال إشعارات ضرورية متعلقة بالحساب (مثل تأكيد الحساب أو تغيير كلمة المرور).</li>
-                                </ul>
-                                <p>نحن لا نبيع أو نؤجر أو نشارك بياناتك الشخصية مع أي جهة خارجية لأغراض تسويقية.</p>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">2. كيفية استخدام بياناتك</h2>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>تشغيل الخدمة: تسجيل الدخول، الحفاظ على الجلسة آمنة، وحفظ الإعدادات.</li>
+                <li>تحسين الخدمة: تحليل بيانات الاستخدام المجهولة المصدر لتطوير ميزات جديدة وإصلاح الأخطاء.</li>
+                <li>التواصل معك: إرسال إشعارات ضرورية متعلقة بالحساب (مثل تأكيد الحساب أو تغيير كلمة المرور).</li>
+            </ul>
+            <p>نحن لا نبيع أو نؤجر أو نشارك بياناتك الشخصية مع أي جهة خارجية لأغراض تسويقية.</p>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">3. ملفات تعريف الارتباط (Cookies)</h2>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>ملفات تعريف ارتباط أساسية: ضرورية لعمل الموقع، للحفاظ على حالة تسجيل دخولك عبر خدمة Supabase.</li>
-                                    <li>ملفات تعريف ارتباط للتحليلات: تستخدمها خدمة Google Analytics لجمع بيانات الاستخدام المجهولة المصدر.</li>
-                                </ul>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">3. ملفات تعريف الارتباط (Cookies)</h2>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>ملفات تعريف ارتباط أساسية: ضرورية لعمل الموقع، للحفاظ على حالة تسجيل دخولك عبر خدمة Supabase.</li>
+                <li>ملفات تعريف ارتباط للتحليلات: تستخدمها خدمة Google Analytics لجمع بيانات الاستخدام المجهولة المصدر.</li>
+            </ul>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">4. حقوقك وسياسة حذف البيانات</h2>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>يمكنك تعديل اسم المستخدم في أي وقت من "الإعدادات".</li>
-                                    <li>يمكنك حذف حسابك نهائيًا في أي وقت من "الإعدادات".</li>
-                                    <li>عند حذف الحساب، سيتم حذف جميع بياناتك الشخصية وبيانات التخصيص بشكل دائم ولا يمكن التراجع عن ذلك.</li>
-                                </ul>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">4. حقوقك وسياسة حذف البيانات</h2>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>يمكنك تعديل اسم المستخدم في أي وقت من "الإعدادات".</li>
+                <li>يمكنك حذف حسابك نهائيًا في أي وقت من "الإعدادات".</li>
+                <li>عند حذف الحساب، سيتم حذف جميع بياناتك الشخصية وبيانات التخصيص بشكل دائم ولا يمكن التراجع عن ذلك.</li>
+            </ul>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">5. الملكية الفكرية (الاستخدام المحظور)</h2>
-                                <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في موقع "صدفة" وتطبيقاته (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
-                                <p>يُحظر تمامًا:</p>
-                                <ul class="list-disc pr-6 space-y-2 mb-4">
-                                    <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
-                                    <li>تحليل أو تفكيك أو إجراء هندسة عكسية لأي جزء من برمجيات الموقع.</li>
-                                    <li>استغلال الخدمات لأغراض تجارية أو لإنشاء منتج منافس.</li>
-                                    <li>إزالة أو إخفاء أي إشعارات متعلقة بحقوق النشر أو العلامات التجارية.</li>
-                                </ul>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">5. الملكية الفكرية (الاستخدام المحظور)</h2>
+            <p>جميع المحتويات، الأكواد المصدرية، التصاميم، الرسومات، الشعارات، والنصوص، وواجهات المستخدم، والأفكار المضمنة في "منصة عبقر" وتطبيقاتها (بما في ذلك على سبيل المثال لا الحصر: "صدفة"، "صناديق الأسئلة"، "حروف رحال"، "ريموت"، "خزنة ربان"، "حرب البحار"، "الترتيب العاشر"، "فكر تربح"، "مين الملقوف"، "مافيا")  هي ملكية فكرية حصرية لـ <strong>أحمد بن إبراهيم الذبياني</strong> ومحميّة بموجب قوانين حقوق النشر والعلامات التجارية.</p>
+            <p>يُحظر تمامًا:</p>
+            <ul class="list-disc pr-6 space-y-2 mb-4">
+                <li>نسخ أو تعديل أو توزيع أو بيع أو تأجير أو إعادة نشر أي جزء من الأكواد أو المحتوى.</li>
+                <li>تحليل أو تفكيك أو إجراء هندسة عكسية لأي جزء من برمجيات الموقع.</li>
+                <li>استغلال الخدمات لأغراض تجارية أو لإنشاء منتج منافس.</li>
+                <li>إزالة أو إخفاء أي إشعارات متعلقة بحقوق النشر أو العلامات التجارية.</li>
+            </ul>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">6. ترخيص الاستخدام</h2>
-                                <p>يُمنح المستخدم (المسجل أو الضيف) ترخيصًا محدودًا، شخصيًا، غير حصري، غير قابل للتحويل، وقابلًا للإلغاء لاستخدام الخدمات لأغراض شخصية وغير تجارية فقط، وفقًا لشروط هذه الاتفاقية.</p>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">6. ترخيص الاستخدام</h2>
+            <p>يُمنح المستخدم (المسجل أو الضيف) ترخيصًا محدودًا، شخصيًا، غير حصري، غير قابل للتحويل، وقابلًا للإلغاء لاستخدام الخدمات لأغراض شخصية وغير تجارية فقط، وفقًا لشروط هذه الاتفاقية.</p>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">7. تعديل الشروط</h2>
-                                <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">7. تعديل الشروط</h2>
+            <p>يحتفظ المالك بالحق في تعديل أو تحديث هذه الشروط في أي وقت. سيتم نشر النسخة المحدثة على الموقع، ويُعتبر استمرارك في استخدام الخدمات بعد التحديث قبولًا صريحًا منك بالشروط المعدلة.</p>
 
-                                <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">8. التواصل</h2>
-                                <p>للاستفسارات حول هذه السياسة، يُرجى التواصل عبر البريد الإلكتروني:<br>
-                                <a href="mailto:contact@tryabqar.com" class="text-blue-600 hover:underline dark:text-blue-400">contact@tryabqar.com</a></p>
+            <h2 class="text-2xl font-bold text-blue-600 border-r-4 border-blue-500 pr-3 mb-4 mt-8 dark:text-blue-400">8. التواصل</h2>
+            <p>للاستفسارات حول هذه السياسة، يُرجى التواصل عبر البريد الإلكتروني:<br>
+            <a href="mailto:contact@tryabqar.com" class="text-blue-600 hover:underline dark:text-blue-400">contact@tryabqar.com</a></p>
             
         </main>
 
@@ -1618,7 +1752,7 @@
         <footer class="text-center text-zinc-600 mt-16 pt-6 border-t border-zinc-200 
                        dark:text-zinc-400 dark:border-zinc-700">
             <p class="text-sm">
-                جميع الحقوق محفوظة &copy; 2025 احمد ابراهيم الذبياني
+                جميع الحقوق محفوظة &copy; 2026 منصة عبقر الرقمية
             </p>
         </footer>
     </div>
@@ -2060,7 +2194,6 @@
                     gtag('event', 'page_view', {
                         page_path: `/${pageId}`,
                         page_title: pageId, 
-                        // (إصلاح) تم حذف السطر المكرر
                     });
                 }
                 
@@ -2074,14 +2207,11 @@
                 if (!pageToShow || pageToShow === currentPage) return;
 
                 // إخفاء/إظهار الواجهة الرئيسية
-                // (تعديل) التحقق من وجود المستخدم أو الضيف قبل إظهار الأزرار
                 const isUserOrGuest = currentUser || sessionStorage.getItem('isGuest') === 'true';
                 if (pageConfig.iframe) {
-                    // إخفاء الأزرار عند دخول التطبيقات
                     btnOpenSidebar.classList.add('hidden');
                     themeToggle.classList.add('hidden');
                     
-                    // (تعديل) زر ملئ الشاشة يظهر ويختفي تلقائياً (مثل زر الإغلاق)
                     if (typeof fullscreenToggle !== 'undefined') {
                         fullscreenToggle.classList.remove('hidden');
                         fullscreenToggle.style.display = '';
@@ -2094,82 +2224,94 @@
                         }, 5000);
                     }
                     
-                    // ضمان الإخفاء (للحالات المستعصية)
                     btnOpenSidebar.style.display = 'none';
                     themeToggle.style.display = 'none';
                 } else if (isUserOrGuest) {
-                    // إظهار الأزرار في الصفحات الرئيسية
                     btnOpenSidebar.classList.remove('hidden');
                     themeToggle.classList.remove('hidden');
                     
                     if (typeof fullscreenToggle !== 'undefined') {
                         fullscreenToggle.classList.remove('hidden');
                         fullscreenToggle.style.display = '';
-                        // تعطيل خاصية الاختفاء التلقائي في القوائم الرئيسية
                         fullscreenToggle.classList.remove('fade-out-enabled');
                         fullscreenToggle.classList.remove('fade-out');
                         if (fullscreenToggle.hideTimeout) clearTimeout(fullscreenToggle.hideTimeout);
                     }
                     
-                    // استعادة العرض
                     btnOpenSidebar.style.display = '';
                     themeToggle.style.display = '';
                 }
 
+                // كشف الجوال (Mobile Detection)
+                const isMobile = window.innerWidth <= 768;
+
                 // إخفاء الصفحة الحالية
                 if (currentPage) {
-                    currentPage.style.opacity = '0';
-                    const currentPageConfig = Object.values(pageMap).find(p => p && p.element === currentPage);
-                    if (currentPageConfig && currentPageConfig.iframe) {
+                    const oldPage = currentPage;
+                    oldPage.style.opacity = '0';
+                    const oldPageConfig = Object.values(pageMap).find(p => p && p.element === oldPage);
+                    
+                    if (oldPageConfig && oldPageConfig.iframe) {
+                        const clearDelay = isMobile ? 100 : 300;
                         setTimeout(() => {
-                            // (إصلاح) التأكد من وجود iframe قبل تغيير src
-                            if (currentPageConfig.iframe) {
-                                currentPageConfig.iframe.src = 'about:blank'; 
+                            if (oldPageConfig.iframe) {
+                                oldPageConfig.iframe.src = 'about:blank'; 
                             }
-                        }, 300); 
+                        }, clearDelay);
                     }
+                    
+                    if (!isMobile) {
+                        setTimeout(() => {
+                             oldPage.style.display = 'none';
+                        }, 300);
+                    }
+                    // (Mobile) Hide logic moved to requestAnimationFrame for sync
                 }
 
-                // إظهار الصفحة الجديدة
-                setTimeout(() => {
-                    if (currentPage) {
-                        currentPage.style.display = 'none'; 
-                    }
+                // دالة لإظهار الصفحة الجديدة
+                const showNewPage = () => {
                     pageToShow.style.display = 'flex'; 
+                    void pageToShow.offsetWidth;
+                    pageToShow.style.opacity = '1';
 
-                    // (جديد) منطق إخفاء زر الخروج تلقائياً بعد 5 ثواني
                     const closeBtn = pageToShow.querySelector('.btn-close-iframe');
                     if (closeBtn) {
                         closeBtn.classList.remove('fade-out');
-                        // مسح أي مؤقت سابق إذا وجد (لتجنب التداخل)
                         if (closeBtn.hideTimeout) clearTimeout(closeBtn.hideTimeout);
-                        
                         closeBtn.hideTimeout = setTimeout(() => {
                             closeBtn.classList.add('fade-out');
-                        }, 5000);
+                        }, 3000);
                     }
 
                     if (pageConfig.iframe && pageConfig.iframe.src === 'about:blank') {
                         pageConfig.iframe.src = pageConfig.src;
                     }
-
-                    void pageToShow.offsetWidth; 
-                    pageToShow.style.opacity = '1';
+                    
                     currentPage = pageToShow;
-
-                }, currentPage ? 300 : 0); 
-                
-                window.scrollTo(0, 0);
-
-                // تحديث التاريخ
-                if (updateHistory) {
-                    try {
-                        if (window.location.hash !== `#${pageId}`) {
-                            history.pushState({ page: pageId }, '', `#${pageId}`);
+                    if (updateHistory) {
+                        try {
+                            if (window.location.hash !== `#${pageId}`) {
+                                history.pushState({ page: pageId }, '', `#${pageId}`);
+                            }
+                        } catch (e) {
+                            console.warn("History API (pushState) not available.", e);
                         }
-                    } catch (e) {
-                        console.warn("History API (pushState) not available.", e);
                     }
+                };
+
+                // تنفيذ الانتقال
+                if (isMobile) {
+                    requestAnimationFrame(() => {
+                        // (Mobile UX) إخفاء الصفحة القديمة في نفس اللحظة لمنع الوميض
+                        if (currentPage && currentPage !== pageToShow) {
+                            currentPage.style.display = 'none';
+                        }
+                        showNewPage();
+                    });
+                } else {
+                    setTimeout(() => {
+                        showNewPage();
+                    }, 300);
                 }
             }
 
@@ -3095,7 +3237,18 @@
 
         });
     </script>
+
+    <!-- (جديد) سكربتات إدارة المحتوى والأدمن -->
+    <script src="admin_manager.js"></script>
+    <script src="dynamic_content.js"></script>
 </body>
 
 </html>
+
+
+
+
+
+
+
 

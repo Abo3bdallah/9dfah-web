@@ -2384,26 +2384,16 @@
             const teamNames = TEAM_NAMES;
             
             if (points === 'double') {
-                // استخدام customPoints كنسبة مئوية إذا تم إدخالها، وإلا استخدام القيمة المحفوظة أو الافتراضي 100
-                let pct = 100;
-                if (customPoints !== null && !isNaN(customPoints)) {
-                    pct = customPoints;
-                } else if (gameState.currentTreasure.percentage !== undefined) {
-                    pct = gameState.currentTreasure.percentage;
-                }
+                // استخدام النسبة المحفوظة أو الافتراضي 100 (تم إلغاء الإدخال اليدوي أثناء اللعب)
+                const pct = gameState.currentTreasure.percentage !== undefined ? gameState.currentTreasure.percentage : 100;
                 
                 const increase = Math.floor(gameState.teams[currentTeam] * (pct / 100));
                 gameState.teams[currentTeam] += increase;
                 pointsElement.textContent = `🎉 زيادة بنسبة ${pct}%! 🎉`;
                 pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
             } else if (points === 'half') {
-                // استخدام customPoints كنسبة مئوية إذا تم إدخالها، وإلا استخدام القيمة المحفوظة أو الافتراضي 50
-                let pct = 50;
-                if (customPoints !== null && !isNaN(customPoints)) {
-                    pct = customPoints;
-                } else if (gameState.currentTreasure.percentage !== undefined) {
-                    pct = gameState.currentTreasure.percentage;
-                }
+                // استخدام النسبة المحفوظة أو الافتراضي 50 (تم إلغاء الإدخال اليدوي أثناء اللعب)
+                const pct = gameState.currentTreasure.percentage !== undefined ? gameState.currentTreasure.percentage : 50;
 
                 const decrease = Math.floor(gameState.teams[currentTeam] * (pct / 100));
                 gameState.teams[currentTeam] -= decrease;
@@ -2554,6 +2544,18 @@
                 } else {
                     if (gameState.currentTreasure.selectTeam) {
                         targetTeam = parseInt(document.getElementById('penaltyTeamSelect').value);
+                        
+                        // التحقق من اختيار فريق
+                        if (isNaN(targetTeam)) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'تنبيه',
+                                text: 'يرجى اختيار فريق لتطبيق الإجراء عليه!',
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                            return;
+                        }
                     }
                     
                     // التحقق الصارم من المدخلات للأنواع التي تتطلب إدخال نقاط
