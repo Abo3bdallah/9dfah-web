@@ -216,14 +216,26 @@ function setupAdminEventListeners() {
         };
     });
 
-    // أزرار الإضافة (سنكتفي بالـ Prompt للتبسيط حالياً)
+    // أزرار الإضافة
     document.getElementById('btn-add-ad').onclick = async () => {
         const title = prompt('عنوان الإعلان:');
         const imageUrl = prompt('رابط الصورة:');
         const linkUrl = prompt('رابط التوجيه (اختياري):');
+        const frequencyInput = prompt('تكرار الظهور:\nاكتب "always" للظهور الدائم\nأو "once" للظهور مرة واحدة فقط', 'once');
         
+        // التحقق من القيمة المدخلة أو استخدام الافتراضي
+        let frequency = 'once';
+        if (frequencyInput && frequencyInput.toLowerCase().includes('always')) {
+            frequency = 'always';
+        }
+
         if (title && imageUrl) {
-            const { error } = await supabase.from('ads').insert([{ title, image_url: imageUrl, link_url: linkUrl }]);
+            const { error } = await supabase.from('ads').insert([{ 
+                title, 
+                image_url: imageUrl, 
+                link_url: linkUrl,
+                frequency: frequency
+            }]);
             if (!error) loadAdsData(); else alert('خطأ: ' + error.message);
         }
     };
@@ -264,7 +276,10 @@ async function loadAdsData() {
         tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
         tr.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm"><img src="${ad.image_url}" class="h-10 w-10 rounded object-cover"></td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">${ad.title || '-'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
+                ${ad.title || '-'}<br>
+                <span class="text-xs text-gray-500">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</span>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                     ${ad.is_active ? 'نشط' : 'غير نشط'}
@@ -297,7 +312,8 @@ async function loadTagsData() {
                 <span class="${tag.color} text-white px-2 py-1 rounded text-xs">${tag.color}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button onclick="deleteTag('${tag.id}')" class="text-red-600 hover:text-red-900">حذف</button>
+                <button onclick="deleteTag('${tag.id}')" class="text-red-600 hover:text-red-900 ml-2">حذف</button>
+                <button onclick="editTag('${tag.id}', '${tag.name}', '${tag.color}')" class="text-blue-600 hover:text-blue-900">تعديل</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -374,5 +390,15 @@ window.deleteTag = async (id) => {
     if (confirm('هل أنت متأكد؟ سيتم إزالته من جميع التطبيقات المرتبطة.')) {
         await supabase.from('tags').delete().eq('id', id);
         loadTagsData();
+    }
+};
+
+window.editTag = async (id, oldName, oldColor) => {
+    const name = prompt('اسم التصنيف الجديد:', oldName);
+    const color = prompt('لون التصنيف الجديد (Tailwind):', oldColor);
+    
+    if (name && color) {
+        const { error } = await supabase.from('tags').update({ name, color }).eq('id', id);
+        if (!error) loadTagsData(); else alert('خطأ: ' + error.message);
     }
 };

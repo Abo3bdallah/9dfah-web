@@ -48,11 +48,25 @@ async function fetchAndDisplayAds() {
             };
         }
         
-        // إظهار المودال (إذا لم يره المستخدم من قبل في هذه الجلسة - اختياري)
-        // حالياً سنظهره دائماً إذا وجد إعلان نشط كما هو في التصميم الأصلي
-        // ولكن يفضل التحقق من sessionStorage لتجنب الإزعاج
-        const hasSeenAd = sessionStorage.getItem('seen_ad_' + ad.id);
-        if (!hasSeenAd) {
+        // منطق التكرار (Frequency)
+        // إذا كان always: يظهر دائماً (لا نتحقق من التخزين)
+        // إذا كان once: نتحقق من localStorage (ليظهر مرة واحدة فقط في الحياة)
+        
+        let shouldShow = false;
+
+        if (ad.frequency === 'always') {
+            shouldShow = true;
+        } else {
+            // الافتراضي هو once
+            const hasSeenAd = localStorage.getItem('seen_ad_' + ad.id);
+            if (!hasSeenAd) {
+                shouldShow = true;
+                // نسجل المشاهدة في LocalStorage (دائم) بدلاً من SessionStorage
+                localStorage.setItem('seen_ad_' + ad.id, 'true');
+            }
+        }
+
+        if (shouldShow) {
              // نحاكي دالة showAnnouncement الموجودة في الملف الأصلي
              // أو نظهره مباشرة
              if (modal) {
@@ -65,9 +79,6 @@ async function fetchAndDisplayAds() {
                          box.classList.add('scale-100', 'opacity-100');
                      }
                  }, 10);
-                 
-                 // تسجيل المشاهدة
-                 sessionStorage.setItem('seen_ad_' + ad.id, 'true');
              }
         }
     }
