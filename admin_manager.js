@@ -114,7 +114,10 @@ function injectAdminUI() {
                         <div id="content-tags" class="admin-content hidden">
                              <div class="flex justify-between mb-4">
                                 <h4 class="text-md font-semibold dark:text-white">قائمة التصنيفات</h4>
-                                <button id="btn-add-tag" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة تصنيف</button>
+                                <div>
+                                    <button id="btn-add-default-tags" class="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 text-sm ml-2">استعادة الافتراضية</button>
+                                    <button id="btn-add-tag" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة تصنيف</button>
+                                </div>
                             </div>
                              <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -313,10 +316,41 @@ function setupAdminEventListeners() {
             { label: 'لون التصنيف', name: 'color', type: 'color', value: '#3b82f6' }
         ], async (data) => {
             if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
-            const { error } = await supabase.from('tags').insert([{ name: data.name, color: data.color }]);
+            // نستخدم select للتأكد من نجاح العملية والحصول على البيانات
+            const { data: newTag, error } = await supabase.from('tags').insert([{ name: data.name, color: data.color }]).select();
             if (error) throw error;
+            console.log('Tag added successfully:', newTag);
             loadTagsData();
         });
+    };
+
+    // استعادة التصنيفات الافتراضية
+    document.getElementById('btn-add-default-tags').onclick = async () => {
+        const btn = document.getElementById('btn-add-default-tags');
+        btn.disabled = true;
+        btn.textContent = 'جاري الإضافة...';
+        
+        const defaultTags = [
+            { name: 'الجوالات فقط', color: '#10b981' }, // أخضر
+            { name: 'الشاشات فقط', color: '#3b82f6' }  // أزرق
+        ];
+
+        try {
+            for (const tag of defaultTags) {
+                // نتحقق أولاً إذا كان موجوداً بالاسم
+                const { data: existing } = await supabase.from('tags').select('id').eq('name', tag.name).maybeSingle();
+                if (!existing) {
+                    await supabase.from('tags').insert([tag]);
+                }
+            }
+            loadTagsData();
+            alert('تمت استعادة التصنيفات الافتراضية بنجاح.');
+        } catch (err) {
+            alert('حدث خطأ: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'استعادة الافتراضية';
+        }
     };
 
     // تغيير التطبيق في تبويب ربط التصنيفات
@@ -368,14 +402,20 @@ async function loadTagsData() {
     const tbody = document.getElementById('tags-table-body');
     tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">جاري التحميل...</td></tr>';
 
-    const { data: tags, error } = await supabase.from('tags').select('*').order('created_at', { ascending: false });
+    try {
+        const { data: tags, error } = await supabase.from('tags').select('*').order('created_at', { ascending: false });
 
-    if (error) return;
+        if (error) throw error;
 
-    tbody.innerHTML = '';
-    tags.forEach(tag => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
+        if (!tags || tags.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500">لا توجد تصنيفات حالياً. يمكنك إضافة تصنيفات جديدة أو استعادة الافتراضية.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        tags.forEach(tag => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
 
         let colorDisplay = '';
         if (tag.color && tag.color.startsWith('#')) {
@@ -397,6 +437,10 @@ async function loadTagsData() {
         `;
         tbody.appendChild(tr);
     });
+    } catch (err) {
+        console.error('Error loading tags:', err);
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center text-red-500 py-4">حدث خطأ في تحميل التصنيفات: ${err.message}</td></tr>`;
+    }
 }
 
 async function loadAppTagsData() {
