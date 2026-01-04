@@ -310,7 +310,7 @@ function setupAdminEventListeners() {
     document.getElementById('btn-add-tag').onclick = () => {
         showFormModal('إضافة تصنيف جديد', [
             { label: 'اسم التصنيف', name: 'name', type: 'text' },
-            { label: 'لون التصنيف (مثال: bg-red-500)', name: 'color', type: 'text', value: 'bg-blue-500' }
+            { label: 'لون التصنيف', name: 'color', type: 'color', value: '#3b82f6' }
         ], async (data) => {
             if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
             const { error } = await supabase.from('tags').insert([{ name: data.name, color: data.color }]);
@@ -407,11 +407,19 @@ async function loadAppTagsData() {
         const isChecked = associatedTagIds.has(tag.id) ? 'checked' : '';
         const div = document.createElement('div');
         div.className = 'flex items-center space-x-2 space-x-reverse bg-zinc-50 dark:bg-zinc-800 p-2 rounded border border-zinc-200 dark:border-zinc-700';
+        
+        let colorSpan = '';
+        if (tag.color && tag.color.startsWith('#')) {
+             colorSpan = `<span class="w-4 h-4 inline-block rounded-full mr-1 border border-gray-300" style="background-color: ${tag.color};"></span>`;
+        } else {
+             colorSpan = `<span class="${tag.color} w-3 h-3 inline-block rounded-full mr-1"></span>`;
+        }
+
         div.innerHTML = `
             <input type="checkbox" id="tag-${tag.id}" value="${tag.id}" class="app-tag-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" ${isChecked}>
-            <label for="tag-${tag.id}" class="text-sm font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer select-none flex-1">
+            <label for="tag-${tag.id}" class="text-sm font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer select-none flex-1 flex items-center">
                 ${tag.name} 
-                <span class="${tag.color} w-3 h-3 inline-block rounded-full mr-1"></span>
+                ${colorSpan}
             </label>
         `;
         container.appendChild(div);
@@ -486,9 +494,14 @@ window.deleteTag = (id) => {
 };
 
 window.editTag = (id, oldName, oldColor) => {
+    // إذا كان اللون القديم كلاس Tailwind، نعرض لون افتراضي أو نحاول تحويله يدوياً
+    // هنا سنستخدم الأسود كافتراضي إذا لم يكن hex
+    const isHex = oldColor && oldColor.startsWith('#');
+    const defaultColor = isHex ? oldColor : '#000000';
+
     showFormModal('تعديل التصنيف', [
         { label: 'اسم التصنيف', name: 'name', value: oldName },
-        { label: 'لون التصنيف (Tailwind)', name: 'color', value: oldColor }
+        { label: 'لون التصنيف', name: 'color', type: 'color', value: defaultColor }
     ], async (data) => {
         if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
         const { error } = await supabase.from('tags').update({ name: data.name, color: data.color }).eq('id', id);
@@ -532,7 +545,13 @@ window.showFormModal = (title, fields, onSubmit) => {
         } else {
             input = document.createElement('input');
             input.type = field.type || 'text';
-            input.className = 'block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2';
+            
+            if (input.type === 'color') {
+                input.className = 'block w-full h-10 rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white p-1 cursor-pointer';
+            } else {
+                input.className = 'block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2';
+            }
+
             if (field.value) input.value = field.value;
             if (field.placeholder) input.placeholder = field.placeholder;
         }
