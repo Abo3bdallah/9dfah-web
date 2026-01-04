@@ -56,7 +56,7 @@ function injectAdminUI() {
 
     // المودال (النافذة المنبثقة)
     const modalHTML = `
-    <div id="admin-modal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div id="admin-modal" class="pointer-events-auto fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <!-- الخلفية المعتمة -->
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" id="admin-overlay"></div>
 
@@ -174,7 +174,7 @@ function injectAdminUI() {
 
     // === مودال النماذج (Forms) ===
     const formModalHTML = `
-    <div id="admin-form-modal" class="fixed inset-0 z-[110] hidden" role="dialog">
+    <div id="admin-form-modal" class="pointer-events-auto fixed inset-0 z-[110] hidden" role="dialog">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4 text-center">
@@ -376,10 +376,19 @@ async function loadTagsData() {
     tags.forEach(tag => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
+
+        let colorDisplay = '';
+        if (tag.color && tag.color.startsWith('#')) {
+            // إضافة border و shadow لضمان ظهور اللون حتى لو كان فاتحاً
+            colorDisplay = `<span class="text-white px-2 py-1 rounded text-xs border border-gray-400 shadow-sm" style="background-color: ${tag.color}; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${tag.color}</span>`;
+        } else {
+            colorDisplay = `<span class="${tag.color} text-white px-2 py-1 rounded text-xs">${tag.color}</span>`;
+        }
+
         tr.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">${tag.name}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500">
-                <span class="${tag.color} text-white px-2 py-1 rounded text-xs">${tag.color}</span>
+                ${colorDisplay}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button onclick="deleteTag('${tag.id}')" class="text-red-600 hover:text-red-900 ml-2">حذف</button>
