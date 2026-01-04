@@ -400,53 +400,73 @@ async function loadTagsData() {
 }
 
 async function loadAppTagsData() {
-    const appId = document.getElementById('select-app-for-tags').value;
+    console.log('loadAppTagsData triggered');
+    const appIdEl = document.getElementById('select-app-for-tags');
     const selectionArea = document.getElementById('app-tags-selection-area');
     const container = document.getElementById('checkboxes-tags-container');
+
+    if (!appIdEl || !selectionArea || !container) {
+        console.error('Critical elements missing in loadAppTagsData');
+        return;
+    }
+
+    const appId = appIdEl.value;
 
     if (!appId) {
         selectionArea.classList.add('hidden');
         return;
     }
 
+    // إجبار العنصر على الظهور
     selectionArea.classList.remove('hidden');
-    container.innerHTML = 'جاري التحميل...';
-
-    // جلب كل التاقات
-    const { data: allTags } = await supabase.from('tags').select('*');
-    // جلب التاقات المرتبطة بهذا التطبيق
-    const { data: appTags } = await supabase.from('app_tags').select('tag_id').eq('app_id', appId);
+    selectionArea.style.display = 'block'; 
     
-    const associatedTagIds = new Set(appTags?.map(item => item.tag_id));
+    container.innerHTML = '<p class="text-sm text-gray-500 p-2">جاري تحميل البيانات...</p>';
 
-    container.innerHTML = '';
+    try {
+        // جلب كل التاقات
+        const { data: allTags, error: tagsError } = await supabase.from('tags').select('*');
+        if (tagsError) throw tagsError;
 
-    if (!allTags || allTags.length === 0) {
-        container.innerHTML = '<p class="text-sm text-gray-500">لا توجد تصنيفات مضافة بعد.</p>';
-        return;
-    }
-
-    allTags.forEach(tag => {
-        const isChecked = associatedTagIds.has(tag.id) ? 'checked' : '';
-        const div = document.createElement('div');
-        div.className = 'flex items-center space-x-2 space-x-reverse bg-zinc-50 dark:bg-zinc-800 p-2 rounded border border-zinc-200 dark:border-zinc-700';
+        // جلب التاقات المرتبطة بهذا التطبيق
+        const { data: appTags, error: appTagsError } = await supabase.from('app_tags').select('tag_id').eq('app_id', appId);
+        if (appTagsError) throw appTagsError;
         
-        let colorSpan = '';
-        if (tag.color && tag.color.startsWith('#')) {
-             colorSpan = `<span class="w-4 h-4 inline-block rounded-full mr-1 border border-gray-300 shadow-sm" style="background-color: ${tag.color};"></span>`;
-        } else {
-             colorSpan = `<span class="${tag.color} w-3 h-3 inline-block rounded-full mr-1"></span>`;
+        const associatedTagIds = new Set(appTags?.map(item => item.tag_id));
+
+        container.innerHTML = '';
+
+        if (!allTags || allTags.length === 0) {
+            container.innerHTML = '<p class="text-sm text-gray-500 p-2">لا توجد تصنيفات مضافة بعد. انتقل لتبويب "التصنيفات" لإضافة تصنيفات جديدة.</p>';
+            return;
         }
 
-        div.innerHTML = `
-            <input type="checkbox" id="tag-${tag.id}" value="${tag.id}" class="app-tag-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" ${isChecked}>
-            <label for="tag-${tag.id}" class="text-sm font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer select-none flex-1 flex items-center">
-                ${tag.name} 
-                ${colorSpan}
-            </label>
-        `;
-        container.appendChild(div);
-    });
+        allTags.forEach(tag => {
+            const isChecked = associatedTagIds.has(tag.id) ? 'checked' : '';
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2 space-x-reverse bg-zinc-50 dark:bg-zinc-800 p-2 rounded border border-zinc-200 dark:border-zinc-700';
+            
+            let colorSpan = '';
+            if (tag.color && tag.color.startsWith('#')) {
+                 colorSpan = `<span class="w-4 h-4 inline-block rounded-full mr-1 border border-gray-300 shadow-sm" style="background-color: ${tag.color};"></span>`;
+            } else {
+                 colorSpan = `<span class="${tag.color} w-3 h-3 inline-block rounded-full mr-1"></span>`;
+            }
+
+            div.innerHTML = `
+                <input type="checkbox" id="tag-${tag.id}" value="${tag.id}" class="app-tag-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" ${isChecked}>
+                <label for="tag-${tag.id}" class="text-sm font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer select-none flex-1 flex items-center">
+                    ${tag.name} 
+                    ${colorSpan}
+                </label>
+            `;
+            container.appendChild(div);
+        });
+    } catch (err) {
+        console.error('Error in loadAppTagsData:', err);
+        container.innerHTML = `<p class="text-sm text-red-500 p-2">حدث خطأ: ${err.message}</p>`;
+        alert('حدث خطأ أثناء تحميل البيانات: ' + err.message);
+    }
 }
 
 async function saveAppTags() {
