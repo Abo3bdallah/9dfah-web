@@ -118,18 +118,44 @@ async function fetchAndDisplayAppTags() {
         if (card) {
             const body = card.querySelector('.app-card-body');
             if (body) {
-                // إضافة التصنيفات الجديدة بجانب القديمة (بدون حذف القديم)
-                tagsByApp[appId].forEach(tag => {
-                    // التحقق من عدم وجود التاق مسبقاً لتجنب التكرار عند إعادة التشغيل
-                    // لكن بما أننا لا نحذف، سنفترض أن هذا الكود يعمل مرة واحدة عند التحميل
-                    const span = document.createElement('span');
-                    // استخدام كلاسات Tailwind المخزنة أو الافتراضية
-                    // ملاحظة: يجب أن تكون الألوان آمنة (safelist) في Tailwind وإلا قد لا تظهر إذا لم تكن مستخدمة مسبقاً
-                    // سنستخدم style للون الخلفية والنص كاحتياط إذا كان اللون مخصصاً، أو نعتمد على الكلاس
-                    span.className = `inline-block ${tag.color} text-white text-sm font-medium px-3 py-1 rounded-full ml-1 mb-1`;
-                    span.textContent = tag.name;
-                    body.appendChild(span);
-                });
+                // بناء HTML للتصنيفات باستخدام منطق المستخدم المحسن
+                const tagsHTML = tagsByApp[appId].map(tag => {
+                    // 1. التحقق هل اللون كود (Hex) أم كلاس (Tailwind)
+                    const isHexColor = tag.color && tag.color.startsWith('#');
+                    
+                    // 2. إذا كان كود، نضعه في style، وإلا نضعه في class
+                    const styleAttr = isHexColor ? `background-color: ${tag.color};` : '';
+                    const colorClass = isHexColor ? '' : tag.color; // إذا كان hex لا نضع كلاس لون
+
+                    // 3. تحسين: جعل النص أسود إذا كانت الخلفية فاتحة
+                    let textColorClass = 'text-white';
+                    if (isHexColor) {
+                        // حساب السطوع لتقرر هل النص يكون أبيض أم أسود
+                        const hex = tag.color.replace('#', '');
+                        // التعامل مع أكواد الألوان المختصرة (3 أرقام)
+                        const fullHex = hex.length === 3 ? hex.split('').map(x => x + x).join('') : hex;
+                        
+                        const r = parseInt(fullHex.substr(0, 2), 16);
+                        const g = parseInt(fullHex.substr(2, 2), 16);
+                        const b = parseInt(fullHex.substr(4, 2), 16);
+                        
+                        // معادلة السطوع القياسية
+                        const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                        
+                        // إذا السطوع عالي (لون فاتح) اجعل النص أسود
+                        if (brightness > 155) textColorClass = 'text-gray-800';
+                    }
+
+                    return `
+                        <span class="${colorClass} ${textColorClass} inline-block px-2 py-1 rounded-md text-xs font-bold shadow-sm border border-black/5 ml-1 mb-1" 
+                              style="${styleAttr}">
+                            ${tag.name}
+                        </span>
+                    `;
+                }).join('');
+                
+                // إضافة التصنيفات إلى جسم البطاقة
+                body.insertAdjacentHTML('beforeend', tagsHTML);
             }
         }
     });
