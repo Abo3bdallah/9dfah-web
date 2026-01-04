@@ -198,7 +198,7 @@ function injectAdminUI() {
         </div>
     </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', formModalHTML.trim());
+
 
     // === مودال التأكيد (Confirm) ===
     const confirmModalHTML = `
