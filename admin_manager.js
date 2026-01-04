@@ -287,6 +287,7 @@ async function loadAdsData() {
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button onclick="toggleAdStatus('${ad.id}', ${!ad.is_active})" class="text-indigo-600 hover:text-indigo-900 ml-2">${ad.is_active ? 'تعطيل' : 'تفعيل'}</button>
+                <button onclick="editAd('${ad.id}', '${ad.title || ''}', '${ad.image_url}', '${ad.frequency || 'once'}')" class="text-blue-600 hover:text-blue-900 ml-2">تعديل</button>
                 <button onclick="deleteAd('${ad.id}')" class="text-red-600 hover:text-red-900">حذف</button>
             </td>
         `;
@@ -383,6 +384,26 @@ window.deleteAd = async (id) => {
     if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
         await supabase.from('ads').delete().eq('id', id);
         loadAdsData();
+    }
+};
+
+window.editAd = async (id, oldTitle, oldImage, oldFrequency) => {
+    const title = prompt('عنوان الإعلان الجديد:', oldTitle);
+    const imageUrl = prompt('رابط الصورة الجديد:', oldImage);
+    const frequencyInput = prompt('تكرار الظهور الجديد (always/once):', oldFrequency);
+    
+    let frequency = 'once';
+    if (frequencyInput && frequencyInput.toLowerCase().includes('always')) {
+        frequency = 'always';
+    }
+
+    if (title && imageUrl) {
+        const { error } = await supabase.from('ads').update({ 
+            title, 
+            image_url: imageUrl,
+            frequency: frequency
+        }).eq('id', id);
+        if (!error) loadAdsData(); else alert('خطأ: ' + error.message);
     }
 };
 

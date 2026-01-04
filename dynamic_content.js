@@ -118,12 +118,10 @@ async function fetchAndDisplayAppTags() {
         if (card) {
             const body = card.querySelector('.app-card-body');
             if (body) {
-                // 1. إزالة التصنيفات القديمة (Static Spans)
-                const existingSpans = body.querySelectorAll('span');
-                existingSpans.forEach(span => span.remove());
-
-                // 2. إضافة التصنيفات الجديدة
+                // إضافة التصنيفات الجديدة بجانب القديمة (بدون حذف القديم)
                 tagsByApp[appId].forEach(tag => {
+                    // التحقق من عدم وجود التاق مسبقاً لتجنب التكرار عند إعادة التشغيل
+                    // لكن بما أننا لا نحذف، سنفترض أن هذا الكود يعمل مرة واحدة عند التحميل
                     const span = document.createElement('span');
                     // استخدام كلاسات Tailwind المخزنة أو الافتراضية
                     // ملاحظة: يجب أن تكون الألوان آمنة (safelist) في Tailwind وإلا قد لا تظهر إذا لم تكن مستخدمة مسبقاً
