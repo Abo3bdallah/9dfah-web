@@ -43,17 +43,16 @@ async function initAdminPanel() {
 
 function injectAdminUI() {
     // زر فتح اللوحة العائم
-    const adminBtn = document.createElement('button');
-    adminBtn.id = 'btn-open-admin';
-    adminBtn.className = 'fixed bottom-24 left-6 z-50 p-3 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-700 transition-transform hover:scale-110';
-    adminBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
+    const adminBtnHTML = `
+        <button id="btn-open-admin" class="pointer-events-auto fixed bottom-24 left-6 z-50 p-3 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-700 transition-transform hover:scale-110" title="لوحة تحكم المدير">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+        </button>
     `;
-    adminBtn.title = "لوحة تحكم المدير";
-    document.body.appendChild(adminBtn);
+    // (تم الحذف للإضافة في الحاوية النهائية)
+    // document.body.insertAdjacentHTML('beforeend', adminBtnHTML);
 
     // المودال (النافذة المنبثقة)
     const modalHTML = `
@@ -98,10 +97,10 @@ function injectAdminUI() {
                                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                                     <thead class="bg-zinc-50 dark:bg-zinc-800">
                                         <tr>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">الصورة</th>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">العنوان</th>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">الحالة</th>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">إجراءات</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الصورة</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">العنوان</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody id="ads-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -113,30 +112,32 @@ function injectAdminUI() {
 
                         <!-- محتوى تبويب التصنيفات -->
                         <div id="content-tags" class="admin-content hidden">
-                            <div class="flex justify-between mb-4">
+                             <div class="flex justify-between mb-4">
                                 <h4 class="text-md font-semibold dark:text-white">قائمة التصنيفات</h4>
                                 <button id="btn-add-tag" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة تصنيف</button>
                             </div>
-                            <div class="overflow-x-auto">
+                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                                     <thead class="bg-zinc-50 dark:bg-zinc-800">
                                         <tr>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">الاسم</th>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">اللون (Tailwind)</th>
-                                            <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">إجراءات</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الاسم</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">اللون (Tailwind)</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tags-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <!-- سيتم تعبئته بالجافاسكربت -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
                          <!-- محتوى تبويب ربط التصنيفات -->
-                         <div id="content-app-tags" class="admin-content hidden">
+                        <div id="content-app-tags" class="admin-content hidden">
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">اختر التطبيق</label>
-                                <select id="select-app-for-tags" class="mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2">
+                                <label for="select-app-for-tags" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">اختر التطبيق</label>
+                                <select id="select-app-for-tags" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-zinc-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
+                                    <option value="">اختر تطبيقاً...</option>
                                     <option value="game-thinkwin">فكر تربح</option>
                                     <option value="game-mileon">من سيربح المليون</option>
                                     <option value="game-seawar">حرب البحار</option>
@@ -151,10 +152,12 @@ function injectAdminUI() {
                                     <option value="tool-letters">حروف</option>
                                 </select>
                             </div>
-                            <div id="app-tags-container" class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                                <!-- سيتم عرض التصنيفات كـ Checkboxes هنا -->
-                            </div>
-                            <div class="mt-4 text-right">
+                            
+                            <div id="app-tags-selection-area" class="hidden">
+                                <h4 class="text-md font-semibold mb-2 dark:text-white">حدد التصنيفات لهذا التطبيق:</h4>
+                                <div id="checkboxes-tags-container" class="space-y-2 mb-4">
+                                    <!-- سيتم تعبئته -->
+                                </div>
                                 <button id="btn-save-app-tags" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">حفظ التغييرات</button>
                             </div>
                         </div>
@@ -166,10 +169,75 @@ function injectAdminUI() {
     </div>
     `;
 
-    // إضافة المودال للصفحة
-    const modalContainer = document.createElement('div');
-    modalContainer.innerHTML = modalHTML;
-    document.body.appendChild(modalContainer);
+    // حقن النوافذ المنبثقة مباشرة في الـ body لتجنب مشاكل التصميم (بدون wrapper div)
+    document.body.insertAdjacentHTML('beforeend', modalHTML.trim());
+
+    // === مودال النماذج (Forms) ===
+    const formModalHTML = `
+    <div id="admin-form-modal" class="fixed inset-0 z-[110] hidden" role="dialog">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-lg border border-zinc-200 dark:border-zinc-700">
+                    <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 sm:px-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700">
+                        <h3 class="text-lg font-bold leading-6 text-zinc-900 dark:text-zinc-100" id="form-modal-title">عنوان النافذة</h3>
+                        <button onclick="closeFormModal()" class="text-zinc-400 hover:text-zinc-500 focus:outline-none">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    <div class="px-4 py-4 sm:p-6 space-y-4" id="form-modal-body"></div>
+                    <div class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-zinc-200 dark:border-zinc-700">
+                        <button type="button" id="btn-form-save" class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">حفظ</button>
+                        <button type="button" onclick="closeFormModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', formModalHTML.trim());
+
+    // === مودال التأكيد (Confirm) ===
+    const confirmModalHTML = `
+    <div id="admin-confirm-modal" class="pointer-events-auto fixed inset-0 z-[120] hidden" role="dialog">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-md border border-zinc-200 dark:border-zinc-700">
+                    <div class="bg-white dark:bg-zinc-900 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start sm:flex-row-reverse">
+                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:mr-3">
+                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:ml-4 sm:mr-0 sm:mt-0 sm:text-right flex-1">
+                                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100" id="confirm-modal-title">تأكيد الحذف</h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400" id="confirm-modal-message">هل أنت متأكد من القيام بهذا الإجراء؟</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <button type="button" id="btn-confirm-yes" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">نعم، متأكد</button>
+                        <button type="button" onclick="closeConfirmModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    // إنشاء حاوية معزولة للعناصر لمنع أي تأثير على تخطيط الصفحة
+    const adminContainer = document.createElement('div');
+    adminContainer.id = 'admin-ui-container';
+    Object.assign(adminContainer.style, {
+        position: 'fixed', top: '0', left: '0', width: '0', height: '0',
+        overflow: 'visible', zIndex: '9999', pointerEvents: 'none'
+    });
+    
+    adminContainer.innerHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
+    document.body.appendChild(adminContainer);
 }
 
 function setupAdminEventListeners() {
@@ -217,37 +285,38 @@ function setupAdminEventListeners() {
     });
 
     // أزرار الإضافة
-    document.getElementById('btn-add-ad').onclick = async () => {
-        const title = prompt('عنوان الإعلان:');
-        const imageUrl = prompt('رابط الصورة:');
-        const linkUrl = prompt('رابط التوجيه (اختياري):');
-        const frequencyInput = prompt('تكرار الظهور:\nاكتب "always" للظهور الدائم\nأو "once" للظهور مرة واحدة فقط', 'once');
-        
-        // التحقق من القيمة المدخلة أو استخدام الافتراضي
-        let frequency = 'once';
-        if (frequencyInput && frequencyInput.toLowerCase().includes('always')) {
-            frequency = 'always';
-        }
-
-        if (title && imageUrl) {
+    document.getElementById('btn-add-ad').onclick = () => {
+        showFormModal('إضافة إعلان جديد', [
+            { label: 'عنوان الإعلان', name: 'title', type: 'text' },
+            { label: 'رابط الصورة', name: 'imageUrl', type: 'text' },
+            { label: 'رابط التوجيه (اختياري)', name: 'linkUrl', type: 'text' },
+            { label: 'تكرار الظهور', name: 'frequency', type: 'select', value: 'once', options: [
+                { value: 'once', text: 'مرة واحدة (Once)' },
+                { value: 'always', text: 'دائماً (Always)' }
+            ]}
+        ], async (data) => {
+            if (!data.title || !data.imageUrl) throw new Error('العنوان والصورة مطلوبان');
             const { error } = await supabase.from('ads').insert([{ 
-                title, 
-                image_url: imageUrl, 
-                link_url: linkUrl,
-                frequency: frequency
+                title: data.title, 
+                image_url: data.imageUrl, 
+                link_url: data.linkUrl,
+                frequency: data.frequency
             }]);
-            if (!error) loadAdsData(); else alert('خطأ: ' + error.message);
-        }
+            if (error) throw error;
+            loadAdsData();
+        });
     };
 
-    document.getElementById('btn-add-tag').onclick = async () => {
-        const name = prompt('اسم التصنيف:');
-        const color = prompt('لون التصنيف (مثال: bg-red-500):', 'bg-blue-500');
-        
-        if (name && color) {
-            const { error } = await supabase.from('tags').insert([{ name, color }]);
-            if (!error) loadTagsData(); else alert('خطأ: ' + error.message);
-        }
+    document.getElementById('btn-add-tag').onclick = () => {
+        showFormModal('إضافة تصنيف جديد', [
+            { label: 'اسم التصنيف', name: 'name', type: 'text' },
+            { label: 'لون التصنيف (مثال: bg-red-500)', name: 'color', type: 'text', value: 'bg-blue-500' }
+        ], async (data) => {
+            if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
+            const { error } = await supabase.from('tags').insert([{ name: data.name, color: data.color }]);
+            if (error) throw error;
+            loadTagsData();
+        });
     };
 
     // تغيير التطبيق في تبويب ربط التصنيفات
@@ -380,46 +449,152 @@ window.toggleAdStatus = async (id, newStatus) => {
     loadAdsData();
 };
 
-window.deleteAd = async (id) => {
-    if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
-        await supabase.from('ads').delete().eq('id', id);
+window.deleteAd = (id) => {
+    showConfirmModal('حذف الإعلان', 'هل أنت متأكد من حذف هذا الإعلان نهائياً؟', async () => {
+        const { error } = await supabase.from('ads').delete().eq('id', id);
+        if (error) throw error;
         loadAdsData();
-    }
+    });
 };
 
-window.editAd = async (id, oldTitle, oldImage, oldFrequency) => {
-    const title = prompt('عنوان الإعلان الجديد:', oldTitle);
-    const imageUrl = prompt('رابط الصورة الجديد:', oldImage);
-    const frequencyInput = prompt('تكرار الظهور الجديد (always/once):', oldFrequency);
-    
-    let frequency = 'once';
-    if (frequencyInput && frequencyInput.toLowerCase().includes('always')) {
-        frequency = 'always';
-    }
-
-    if (title && imageUrl) {
+window.editAd = (id, oldTitle, oldImage, oldFrequency) => {
+    showFormModal('تعديل الإعلان', [
+        { label: 'عنوان الإعلان', name: 'title', value: oldTitle },
+        { label: 'رابط الصورة', name: 'imageUrl', value: oldImage },
+        { label: 'تكرار الظهور', name: 'frequency', type: 'select', value: oldFrequency, options: [
+            { value: 'once', text: 'مرة واحدة (Once)' },
+            { value: 'always', text: 'دائماً (Always)' }
+        ]}
+    ], async (data) => {
+        if (!data.title || !data.imageUrl) throw new Error('العنوان والصورة مطلوبان');
         const { error } = await supabase.from('ads').update({ 
-            title, 
-            image_url: imageUrl,
-            frequency: frequency
+            title: data.title, 
+            image_url: data.imageUrl,
+            frequency: data.frequency
         }).eq('id', id);
-        if (!error) loadAdsData(); else alert('خطأ: ' + error.message);
-    }
+        if (error) throw error;
+        loadAdsData();
+    });
 };
 
-window.deleteTag = async (id) => {
-    if (confirm('هل أنت متأكد؟ سيتم إزالته من جميع التطبيقات المرتبطة.')) {
-        await supabase.from('tags').delete().eq('id', id);
+window.deleteTag = (id) => {
+    showConfirmModal('حذف التصنيف', 'هل أنت متأكد؟ سيتم إزالته من جميع التطبيقات المرتبطة.', async () => {
+        const { error } = await supabase.from('tags').delete().eq('id', id);
+        if (error) throw error;
         loadTagsData();
-    }
+    });
 };
 
-window.editTag = async (id, oldName, oldColor) => {
-    const name = prompt('اسم التصنيف الجديد:', oldName);
-    const color = prompt('لون التصنيف الجديد (Tailwind):', oldColor);
+window.editTag = (id, oldName, oldColor) => {
+    showFormModal('تعديل التصنيف', [
+        { label: 'اسم التصنيف', name: 'name', value: oldName },
+        { label: 'لون التصنيف (Tailwind)', name: 'color', value: oldColor }
+    ], async (data) => {
+        if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
+        const { error } = await supabase.from('tags').update({ name: data.name, color: data.color }).eq('id', id);
+        if (error) throw error;
+        loadTagsData();
+    });
+};
+
+// === دوال إدارة النوافذ المنبثقة (Modals) ===
+
+window.closeFormModal = () => {
+    document.getElementById('admin-form-modal').classList.add('hidden');
+    document.getElementById('form-modal-body').innerHTML = '';
+};
+
+window.showFormModal = (title, fields, onSubmit) => {
+    document.getElementById('form-modal-title').textContent = title;
+    const body = document.getElementById('form-modal-body');
+    body.innerHTML = '';
+
+    fields.forEach(field => {
+        const div = document.createElement('div');
+        div.className = 'text-right';
+        
+        const label = document.createElement('label');
+        label.className = 'block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1';
+        label.textContent = field.label;
+        div.appendChild(label);
+
+        let input;
+        if (field.type === 'select') {
+            input = document.createElement('select');
+            input.className = 'block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2';
+            field.options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.text;
+                if (opt.value === field.value) option.selected = true;
+                input.appendChild(option);
+            });
+        } else {
+            input = document.createElement('input');
+            input.type = field.type || 'text';
+            input.className = 'block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2';
+            if (field.value) input.value = field.value;
+            if (field.placeholder) input.placeholder = field.placeholder;
+        }
+        input.name = field.name;
+        input.id = `field-${field.name}`;
+        
+        div.appendChild(input);
+        body.appendChild(div);
+    });
+
+    const saveBtn = document.getElementById('btn-form-save');
+    const newBtn = saveBtn.cloneNode(true);
+    saveBtn.parentNode.replaceChild(newBtn, saveBtn);
     
-    if (name && color) {
-        const { error } = await supabase.from('tags').update({ name, color }).eq('id', id);
-        if (!error) loadTagsData(); else alert('خطأ: ' + error.message);
-    }
+    newBtn.onclick = async () => {
+        const formData = {};
+        fields.forEach(field => {
+            formData[field.name] = document.getElementById(`field-${field.name}`).value;
+        });
+        
+        newBtn.disabled = true;
+        newBtn.textContent = 'جاري الحفظ...';
+        
+        try {
+            await onSubmit(formData);
+            window.closeFormModal();
+        } catch (err) {
+            alert('حدث خطأ: ' + err.message);
+        } finally {
+            newBtn.disabled = false;
+            newBtn.textContent = 'حفظ';
+        }
+    };
+
+    document.getElementById('admin-form-modal').classList.remove('hidden');
+};
+
+window.closeConfirmModal = () => {
+    document.getElementById('admin-confirm-modal').classList.add('hidden');
+};
+
+window.showConfirmModal = (title, message, onYes) => {
+    document.getElementById('confirm-modal-title').textContent = title;
+    document.getElementById('confirm-modal-message').textContent = message;
+    
+    const yesBtn = document.getElementById('btn-confirm-yes');
+    const newBtn = yesBtn.cloneNode(true);
+    yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+    
+    newBtn.onclick = async () => {
+        newBtn.disabled = true;
+        newBtn.textContent = 'جاري التنفيذ...';
+        try {
+            await onYes();
+            window.closeConfirmModal();
+        } catch (err) {
+            alert('خطأ: ' + err.message);
+        } finally {
+            newBtn.disabled = false;
+            newBtn.textContent = 'نعم، متأكد';
+        }
+    };
+
+    document.getElementById('admin-confirm-modal').classList.remove('hidden');
 };
