@@ -401,7 +401,15 @@ async function loadTagsData() {
 
 async function loadAppTagsData() {
     const appId = document.getElementById('select-app-for-tags').value;
-    const container = document.getElementById('app-tags-container');
+    const selectionArea = document.getElementById('app-tags-selection-area');
+    const container = document.getElementById('checkboxes-tags-container');
+
+    if (!appId) {
+        selectionArea.classList.add('hidden');
+        return;
+    }
+
+    selectionArea.classList.remove('hidden');
     container.innerHTML = 'جاري التحميل...';
 
     // جلب كل التاقات
@@ -412,6 +420,12 @@ async function loadAppTagsData() {
     const associatedTagIds = new Set(appTags?.map(item => item.tag_id));
 
     container.innerHTML = '';
+
+    if (!allTags || allTags.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-500">لا توجد تصنيفات مضافة بعد.</p>';
+        return;
+    }
+
     allTags.forEach(tag => {
         const isChecked = associatedTagIds.has(tag.id) ? 'checked' : '';
         const div = document.createElement('div');
@@ -419,7 +433,7 @@ async function loadAppTagsData() {
         
         let colorSpan = '';
         if (tag.color && tag.color.startsWith('#')) {
-             colorSpan = `<span class="w-4 h-4 inline-block rounded-full mr-1 border border-gray-300" style="background-color: ${tag.color};"></span>`;
+             colorSpan = `<span class="w-4 h-4 inline-block rounded-full mr-1 border border-gray-300 shadow-sm" style="background-color: ${tag.color};"></span>`;
         } else {
              colorSpan = `<span class="${tag.color} w-3 h-3 inline-block rounded-full mr-1"></span>`;
         }
@@ -441,22 +455,39 @@ async function saveAppTags() {
     const selectedTagIds = Array.from(checkboxes).map(cb => cb.value);
     const btn = document.getElementById('btn-save-app-tags');
 
+    if (!appId) return;
+
     btn.textContent = 'جاري الحفظ...';
     btn.disabled = true;
 
-    // 1. حذف العلاقات القديمة
-    await supabase.from('app_tags').delete().eq('app_id', appId);
+    try {
+        // 1. حذف العلاقات القديمة
+        const { error: deleteError } = await supabase.from('app_tags').delete().eq('app_id', appId);
+        if (deleteError) throw deleteError;
 
-    // 2. إضافة العلاقات الجديدة
-    if (selectedTagIds.length > 0) {
-        const insertData = selectedTagIds.map(tagId => ({ app_id: appId, tag_id: tagId }));
-        await supabase.from('app_tags').insert(insertData);
+        // 2. إضافة العلاقات الجديدة
+        if (selectedTagIds.length > 0) {
+            const insertData = selectedTagIds.map(tagId => ({ app_id: appId, tag_id: tagId }));
+            const { error: insertError } = await supabase.from('app_tags').insert(insertData);
+            if (insertError) throw insertError;
+        }
+
+        btn.textContent = 'تم الحفظ بنجاح!';
+        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    } catch (err) {
+        console.error('Error saving app tags:', err);
+        btn.textContent = 'حدث خطأ!';
+        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        btn.classList.add('bg-red-600', 'hover:bg-red-700');
+        alert('حدث خطأ أثناء حفظ التصنيفات: ' + err.message);
     }
 
-    btn.textContent = 'تم الحفظ بنجاح!';
     setTimeout(() => {
         btn.textContent = 'حفظ التغييرات';
         btn.disabled = false;
+        btn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'bg-red-600', 'hover:bg-red-700');
+        btn.classList.add('bg-green-600', 'hover:bg-green-700');
     }, 2000);
 }
 
