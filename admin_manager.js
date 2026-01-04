@@ -315,7 +315,14 @@ function setupAdminEventListeners() {
             { label: 'اسم التصنيف', name: 'name', type: 'text' },
             { label: 'لون التصنيف', name: 'color', type: 'color', value: '#3b82f6' }
         ], async (data) => {
+            console.log('Adding tag with data:', data);
             if (!data.name || !data.color) throw new Error('الاسم واللون مطلوبان');
+            
+            // التأكد من أن اللون بصيغة صحيحة (Hex)
+            if (data.color.startsWith('#') && data.color.length !== 7) {
+                console.warn('Invalid hex color length:', data.color);
+            }
+
             // نستخدم select للتأكد من نجاح العملية والحصول على البيانات
             const { data: newTag, error } = await supabase.from('tags').insert([{ name: data.name, color: data.color }]).select();
             if (error) throw error;
