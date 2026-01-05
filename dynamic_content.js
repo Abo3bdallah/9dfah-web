@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function initDynamicContent() {
     if (typeof supabase === 'undefined') return;
 
-    // 1. جلب وعرض الإعلانات النشطة
-    await fetchAndDisplayAds();
-
-    // 2. جلب وعرض تصنيفات التطبيقات
+    // (تعديل) تم إزالة الاستدعاء التلقائي للإعلانات لتظهر فقط عند الدخول للقائمة الرئيسية
+    // await fetchAndDisplayAds(); 
+    
     await fetchAndDisplayAppTags();
+    await fetchAndDisplayUpdatesList();
 }
 
 /**
@@ -88,7 +88,6 @@ async function fetchAndDisplayAds() {
  * جلب التصنيفات لكل تطبيق وتحديث البطاقات
  */
 async function fetchAndDisplayAppTags() {
-    // جلب جميع التطبيقات التي لها تصنيفات
     const { data: appTags, error } = await supabase
         .from('app_tags')
         .select(`
@@ -101,7 +100,6 @@ async function fetchAndDisplayAppTags() {
 
     if (error || !appTags) return;
 
-    // تجميع التصنيفات حسب التطبيق
     const tagsByApp = {};
     appTags.forEach(item => {
         if (!tagsByApp[item.app_id]) {
@@ -112,7 +110,6 @@ async function fetchAndDisplayAppTags() {
         }
     });
 
-    // تحديث الواجهة
     Object.keys(tagsByApp).forEach(appId => {
         const card = document.querySelector(`.app-card[data-appid="${appId}"]`);
         if (card) {
@@ -158,5 +155,46 @@ async function fetchAndDisplayAppTags() {
                 body.insertAdjacentHTML('beforeend', tagsHTML);
             }
         }
+    });
+}
+
+async function fetchAndDisplayUpdatesList() {
+    const tbody = document.getElementById('updates-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-sm text-zinc-500 dark:text-zinc-300">جاري تحميل التحديثات...</td></tr>';
+
+    const { data: updates, error } = await supabase
+        .from('updates')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-4 text-sm text-red-600 dark:text-red-400">${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!updates || updates.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-sm text-zinc-500 dark:text-zinc-300">لا توجد تحديثات مسجلة حالياً.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    updates.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                ${item.version || index + 1}
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
+                ${item.date_text || ''}
+            </td>
+            <td class="px-4 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal">
+                ${item.description || ''}
+            </td>
+        `;
+        tbody.appendChild(tr);
     });
 }

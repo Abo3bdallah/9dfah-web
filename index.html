@@ -2586,7 +2586,8 @@
                 fullscreenToggle.classList.remove('hidden'); // (جديد)
                 showPage('welcome', false);
                 // === (جديد) التحقق من الإعلان هنا أيضاً للضيف ===
-                setTimeout(checkAndShowAnnouncement, 500); // تأخير بسيط
+                // setTimeout(checkAndShowAnnouncement, 500); // (تم التعطيل لاستخدام النظام الديناميكي)
+                if (typeof fetchAndDisplayAds === 'function') fetchAndDisplayAds();
                 // === (نهاية الإضافة) ===
                 try {
                     history.replaceState({ page: 'welcome' }, '', `#welcome`);
@@ -3193,7 +3194,8 @@
                 btnOpenSidebar.classList.remove('hidden');
                 themeToggle.classList.remove('hidden');
                 showPage('welcome', false);
-                setTimeout(checkAndShowAnnouncement, 500);
+                // setTimeout(checkAndShowAnnouncement, 500);
+                if (typeof fetchAndDisplayAds === 'function') fetchAndDisplayAds();
                 try { history.replaceState({ page: 'welcome' }, '', `#welcome`); } catch(e) {}
             }
 
@@ -3206,6 +3208,8 @@
 </body>
 
 </html>
+
+
 
 
 

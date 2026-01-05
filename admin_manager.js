@@ -8,6 +8,16 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // ننتظر قليلاً حتى يتم تهيئة Supabase في الملف الرئيسي
     setTimeout(initAdminPanel, 1000);
+
+    // (جديد) الاستماع لتغيرات حالة المصادقة (تسجيل الدخول/الخروج)
+    if (typeof supabase !== 'undefined') {
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                console.log('User signed in, re-initializing admin panel...');
+                initAdminPanel();
+            }
+        });
+    }
 });
 
 async function initAdminPanel() {
@@ -42,6 +52,11 @@ async function initAdminPanel() {
 }
 
 function injectAdminUI() {
+    // (جديد) منع التكرار: إذا كانت الواجهة موجودة مسبقاً، لا تفعل شيئاً
+    if (document.getElementById('btn-open-admin') || document.getElementById('admin-modal')) {
+        return;
+    }
+
     // زر فتح اللوحة العائم
     const adminBtnHTML = `
         <button id="btn-open-admin" class="pointer-events-auto fixed bottom-24 left-6 z-50 p-3 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-700 transition-transform hover:scale-110" title="لوحة تحكم المدير">
@@ -84,6 +99,7 @@ function injectAdminUI() {
                                 <button id="tab-ads" class="admin-tab border-indigo-500 text-indigo-600 dark:text-indigo-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">الإعلانات</button>
                                 <button id="tab-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">التصنيفات</button>
                                 <button id="tab-app-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">ربط التصنيفات</button>
+                                <button id="tab-updates" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">مزايا وتحديثات</button>
                             </nav>
                         </div>
 
@@ -162,6 +178,28 @@ function injectAdminUI() {
                                     <!-- سيتم تعبئته -->
                                 </div>
                                 <button id="btn-save-app-tags" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">حفظ التغييرات</button>
+                            </div>
+                        </div>
+
+                        <div id="content-updates" class="admin-content hidden">
+                            <div class="flex justify-between mb-4">
+                                <h4 class="text-md font-semibold dark:text-white">قائمة المزايا والتحديثات</h4>
+                                <button id="btn-add-update" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة سطر جديد</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الإصدار</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">التاريخ</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الوصف</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
+                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="updates-admin-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -263,7 +301,8 @@ function setupAdminEventListeners() {
     const tabs = {
         'tab-ads': 'content-ads',
         'tab-tags': 'content-tags',
-        'tab-app-tags': 'content-app-tags'
+        'tab-app-tags': 'content-app-tags',
+        'tab-updates': 'content-updates'
     };
 
     Object.keys(tabs).forEach(tabId => {
@@ -280,14 +319,13 @@ function setupAdminEventListeners() {
             document.querySelectorAll('.admin-content').forEach(c => c.classList.add('hidden'));
             document.getElementById(tabs[tabId]).classList.remove('hidden');
 
-            // تحميل البيانات الخاصة بالتبويب
             if (tabId === 'tab-ads') loadAdsData();
             if (tabId === 'tab-tags') loadTagsData();
             if (tabId === 'tab-app-tags') loadAppTagsData();
+            if (tabId === 'tab-updates') loadUpdatesAdminData();
         };
     });
 
-    // أزرار الإضافة
     document.getElementById('btn-add-ad').onclick = () => {
         showFormModal('إضافة إعلان جديد', [
             { label: 'عنوان الإعلان', name: 'title', type: 'text' },
@@ -330,6 +368,27 @@ function setupAdminEventListeners() {
             loadTagsData();
         });
     };
+
+    const btnAddUpdate = document.getElementById('btn-add-update');
+    if (btnAddUpdate) {
+        btnAddUpdate.onclick = () => {
+            showFormModal('إضافة سطر مزايا/تحديث جديد', [
+                { label: 'رقم الإصدار', name: 'version', type: 'text', placeholder: 'مثال: 1.0' },
+                { label: 'التاريخ', name: 'date_text', type: 'text', placeholder: 'مثال: 11-11-2025' },
+                { label: 'الوصف', name: 'description', type: 'textarea', placeholder: 'وصف مختصر للتحديث أو الميزة' }
+            ], async (data) => {
+                if (!data.version || !data.date_text || !data.description) throw new Error('جميع الحقول مطلوبة');
+                const { error } = await supabase.from('updates').insert([{
+                    version: data.version,
+                    date_text: data.date_text,
+                    description: data.description,
+                    is_active: true
+                }]);
+                if (error) throw error;
+                await loadUpdatesAdminData();
+            });
+        };
+    }
 
     // استعادة التصنيفات الافتراضية
     document.getElementById('btn-add-default-tags').onclick = async () => {
@@ -450,6 +509,65 @@ async function loadTagsData() {
     }
 }
 
+async function loadUpdatesAdminData() {
+    const tbody = document.getElementById('updates-admin-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-sm">جاري التحميل...</td></tr>';
+
+    const { data: updates, error } = await supabase
+        .from('updates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-sm text-red-600 dark:text-red-400">${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!updates || updates.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-sm text-zinc-500 dark:text-zinc-300">لا توجد عناصر في قائمة المزايا والتحديثات حالياً.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    updates.forEach((item) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
+        tr.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">${item.version || ''}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">${item.date_text || ''}</td>
+            <td class="px-6 py-4 text-sm text-zinc-700 dark:text-zinc-300 whitespace-normal max-w-xs">${item.description || ''}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                    ${item.is_active ? 'نشط' : 'مخفي'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="btn-toggle-update text-indigo-600 hover:text-indigo-900 ml-2">${item.is_active ? 'إخفاء' : 'إظهار'}</button>
+                <button class="btn-edit-update text-blue-600 hover:text-blue-900 ml-2">تعديل</button>
+                <button class="btn-delete-update text-red-600 hover:text-red-900">حذف</button>
+            </td>
+        `;
+        const toggleBtn = tr.querySelector('.btn-toggle-update');
+        const editBtn = tr.querySelector('.btn-edit-update');
+        const deleteBtn = tr.querySelector('.btn-delete-update');
+
+        if (toggleBtn) {
+            toggleBtn.onclick = () => toggleUpdateStatus(item.id, !item.is_active);
+        }
+        if (editBtn) {
+            editBtn.onclick = () => editUpdate(item.id, item.version || '', item.date_text || '', item.description || '');
+        }
+        if (deleteBtn) {
+            deleteBtn.onclick = () => deleteUpdate(item.id);
+        }
+
+        tbody.appendChild(tr);
+    });
+}
+
 async function loadAppTagsData() {
     console.log('loadAppTagsData triggered');
     const appIdEl = document.getElementById('select-app-for-tags');
@@ -568,6 +686,11 @@ window.toggleAdStatus = async (id, newStatus) => {
     loadAdsData();
 };
 
+window.toggleUpdateStatus = async (id, newStatus) => {
+    await supabase.from('updates').update({ is_active: newStatus }).eq('id', id);
+    await loadUpdatesAdminData();
+};
+
 window.deleteAd = (id) => {
     showConfirmModal('حذف الإعلان', 'هل أنت متأكد من حذف هذا الإعلان نهائياً؟', async () => {
         const { error } = await supabase.from('ads').delete().eq('id', id);
@@ -621,6 +744,31 @@ window.editTag = (id, oldName, oldColor) => {
     });
 };
 
+window.deleteUpdate = (id) => {
+    showConfirmModal('حذف السطر', 'هل أنت متأكد من حذف هذا السطر من قائمة المزايا والتحديثات؟', async () => {
+        const { error } = await supabase.from('updates').delete().eq('id', id);
+        if (error) throw error;
+        await loadUpdatesAdminData();
+    });
+};
+
+window.editUpdate = (id, oldVersion, oldDateText, oldDescription) => {
+    showFormModal('تعديل سطر مزايا/تحديث', [
+        { label: 'رقم الإصدار', name: 'version', type: 'text', value: oldVersion },
+        { label: 'التاريخ', name: 'date_text', type: 'text', value: oldDateText },
+        { label: 'الوصف', name: 'description', type: 'textarea', value: oldDescription }
+    ], async (data) => {
+        if (!data.version || !data.date_text || !data.description) throw new Error('جميع الحقول مطلوبة');
+        const { error } = await supabase.from('updates').update({
+            version: data.version,
+            date_text: data.date_text,
+            description: data.description
+        }).eq('id', id);
+        if (error) throw error;
+        await loadUpdatesAdminData();
+    });
+};
+
 // === دوال إدارة النوافذ المنبثقة (Modals) ===
 
 window.closeFormModal = () => {
@@ -653,6 +801,10 @@ window.showFormModal = (title, fields, onSubmit) => {
                 if (opt.value === field.value) option.selected = true;
                 input.appendChild(option);
             });
+        } else if (field.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.className = 'block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white sm:text-sm p-2';
+            if (field.value) input.value = field.value;
         } else {
             input = document.createElement('input');
             input.type = field.type || 'text';
