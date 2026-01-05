@@ -2924,16 +2924,28 @@
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
-                        options: { data: { 'username': username, 'favorites': [] } } // (جديد) إضافة مفضلة فارغة
+                        options: { data: { 'username': username, 'favorites': [] } }
                     });
+
+                    // 1. فحص الأخطاء الصريحة (مثل كلمة مرور ضعيفة)
                     if (error) {
-                        if (error.message.includes("User already registered")) {
-                             showAuthError('هذا البريد الإلكتروني مسجل بالفعل.');
+                        const msg = error.message.toLowerCase();
+                        if (msg.includes("already registered") || msg.includes("user already exists")) {
+                             showAuthError('عذراً، هذا البريد الإلكتروني مسجل لدينا مسبقاً. حاول تسجيل الدخول.');
                         } else {
-                             showAuthError(error.message);
+                             showAuthError('حدث خطأ: ' + error.message);
                         }
-                    } else {
+                    }
+                    // 2. فحص "النجاح الوهمي" (عندما تكون الحماية مفعلة)
+                    else if (data?.user && data?.user?.identities && data?.user?.identities.length === 0) {
+                        // إذا كانت identities فارغة، فهذا يعني أن الإيميل موجود ولكن النظام يخفي ذلك
+                        showAuthError('عذراً، هذا البريد الإلكتروني مسجل لدينا مسبقاً. حاول تسجيل الدخول.');
+                    }
+                    // 3. النجاح الحقيقي
+                    else {
                         showAuthSuccess('نجح! يرجى مراجعة بريدك الإلكتروني لتأكيد الحساب. (تحقق من صندوق الرسائل غير المرغوبة)');
+                        // تفريغ الحقول
+                        authForm.reset();
                     }
                 }
             });
