@@ -882,14 +882,14 @@
             // فهارس (index) المراحل الآمنة
             const safePoints = [4, 9, 14]; 
             // نقطة بداية الدور التالي بعد الوصول للمنطقة الآمنة
-            const safePointStartLevels = { 4: 5, 9: 10, 14: 15 }; // (index 4 -> start at 5), (index 9 -> start at 10)
+            const safePointStartLevels = { 4: 5, 9: 10, 14: 15 };
+            const TURN_PENALTY_MS = 30000;
+            const CURRENT_STATE_KEY = 'millionaireCurrentGameState';
             
-            // (جديد) عقوبة الجولة بالمللي ثانية
-            const TURN_PENALTY_MS = 30000; // 30 ثانية
-
-            // --- متغيرات حالة اللعبة ---
             let teams = [];
-            let assignedQuestionBanks = []; // (تعديل) بنوك متعددة
+            let assignedQuestionBanks = [];
+            let assignedBankOrder = [];
+            let selectedRoundIndexForGame = null;
             let currentTeamIndex = 0;
             let currentRound = 1;
             
@@ -942,15 +942,11 @@
             const roundSelectionContainer = document.getElementById('round-selection-container');
             const closeRoundModalButton = document.getElementById('close-round-modal-button');
 
-            // --- دوال اللعبة الأساسية ---
-
-            // (تعديل) تغيير اسم الدالة
             function initializeGame(selectedRoundIndex) {
-                // حفظ الجولة المختارة
                 localStorage.setItem('millionaireLastRound', selectedRoundIndex);
+                selectedRoundIndexForGame = selectedRoundIndex;
                 
                 teams = [
-                    // (جديد) إضافة نقاط العقوبة
                     { name: document.getElementById('team-1-name-input').value || "الفريق 1", totalTime: 0, questionsAnswered: 0, currentQuestionIndex: 0, lockedScore: 0, hasFinished: false, turnsTaken: 0, penaltyScore: 0, lifelines: { fiftyFifty: true, freeze: true, skip: true } },
                     { name: document.getElementById('team-2-name-input').value || "الفريق 2", totalTime: 0, questionsAnswered: 0, currentQuestionIndex: 0, lockedScore: 0, hasFinished: false, turnsTaken: 0, penaltyScore: 0, lifelines: { fiftyFifty: true, freeze: true, skip: true } },
                     { name: document.getElementById('team-3-name-input').value || "الفريق 3", totalTime: 0, questionsAnswered: 0, currentQuestionIndex: 0, lockedScore: 0, hasFinished: false, turnsTaken: 0, penaltyScore: 0, lifelines: { fiftyFifty: true, freeze: true, skip: true } }
@@ -958,9 +954,10 @@
                 
                 setupLifelineButtons(); 
                 
-                // (تعديل) توزيع البنوك الثلاثة عشوائياً على الفرق الثلاثة
                 const setOfBanks = GAME_SETS[selectedRoundIndex];
-                assignedQuestionBanks = [...setOfBanks].sort(() => Math.random() - 0.5);
+                const bankIndices = [0, 1, 2].sort(() => Math.random() - 0.5);
+                assignedBankOrder = bankIndices;
+                assignedQuestionBanks = bankIndices.map(i => setOfBanks[i]);
                 
                 currentTeamIndex = 0;
                 currentRound = 1;
@@ -1245,8 +1242,8 @@
             }
 
 
-            // (تعديل) دالة إنهاء اللعبة (لإضافة زر الكشف)
-            function endGame(forced = false) { // (تعديل) إضافة بارامتر
+            function endGame(forced = false) {
+                clearCurrentGameState();
                 gameScreen.classList.add('hidden');
                 endScreen.classList.remove('hidden');
                 pauseButton.classList.add('hidden'); 
@@ -1542,11 +1539,10 @@
                             text: "نعم، اخرج", 
                             action: () => { 
                                 hideModal(); 
-                                // إخفاء شاشة اللعبة وإظهار شاشة البداية
+                                clearCurrentGameState();
                                 gameScreen.classList.add('hidden');
                                 pauseButton.classList.add('hidden');
                                 startScreen.classList.remove('hidden');
-                                // (مهم) إيقاف أي مؤقتات جارية
                                 stopTimer();
                                 clearTimeout(freezeTimerTimeout);
                                 clearInterval(freezeCountdownInterval);
@@ -1888,7 +1884,6 @@
                 }
             };
 
-            // --- (جديد) منطق سجل التاريخ ---
             const historyModal = document.getElementById('history-modal');
             const showHistoryButton = document.getElementById('show-history-button');
             const closeHistoryButton = document.getElementById('close-history-button');
@@ -1996,17 +1991,159 @@
             // ربط الأحداث
             showHistoryButton.onclick = showHistory;
             closeHistoryButton.onclick = () => historyModal.classList.add('hidden');
-            clearHistoryButton.onclick = clearHistory;
-            historyModal.onclick = (e) => {
-                if (e.target === historyModal) historyModal.classList.add('hidden');
-            };
-
-            // عند بدء لعبة جديدة، نجدد مفتاح الجلسة
+                    clearHistoryButton.onclick = clearHistory;
+                    historyModal.onclick = (e) => {
+                        if (e.target === historyModal) historyModal.classList.add('hidden');
+                    };
+            
             const originalInitializeGame = initializeGame;
             initializeGame = function(selectedRoundIndex) {
                 sessionStorage.setItem('currentGameSessionKey', Date.now().toString());
                 originalInitializeGame(selectedRoundIndex);
             };
+            
+            function buildCurrentState() {
+                if (gameScreen.classList.contains('hidden')) return null;
+                if (!teams || teams.length !== 3) return null;
+                if (selectedRoundIndexForGame === null) return null;
+                return {
+                    roundIndex: selectedRoundIndexForGame,
+                    teams: teams.map(t => ({
+                        name: t.name,
+                        totalTime: t.totalTime,
+                        questionsAnswered: t.questionsAnswered,
+                        currentQuestionIndex: t.currentQuestionIndex,
+                        lockedScore: t.lockedScore,
+                        hasFinished: t.hasFinished,
+                        turnsTaken: t.turnsTaken,
+                        penaltyScore: t.penaltyScore,
+                        lifelines: {
+                            fiftyFifty: t.lifelines.fiftyFifty,
+                            freeze: t.lifelines.freeze,
+                            skip: t.lifelines.skip
+                        }
+                    })),
+                    assignedBankOrder,
+                    currentTeamIndex,
+                    currentRound,
+                    currentTurnTimer,
+                    gameInProgress,
+                    teamsFinished,
+                    showCorrectAnswerOnError
+                };
+            }
+            
+            function saveCurrentGameState() {
+                const state = buildCurrentState();
+                if (!state) {
+                    localStorage.removeItem(CURRENT_STATE_KEY);
+                    return;
+                }
+                try {
+                    localStorage.setItem(CURRENT_STATE_KEY, JSON.stringify(state));
+                } catch (e) {}
+            }
+            
+            function clearCurrentGameState() {
+                try {
+                    localStorage.removeItem(CURRENT_STATE_KEY);
+                } catch (e) {}
+            }
+            
+            function restoreGameFromState() {
+                try {
+                    const raw = localStorage.getItem(CURRENT_STATE_KEY);
+                    if (!raw) return;
+                    const state = JSON.parse(raw);
+                    if (!state || typeof state !== 'object') return;
+                    if (state.teamsFinished === 3) {
+                        clearCurrentGameState();
+                        return;
+                    }
+                    const roundIndex = state.roundIndex;
+                    if (typeof roundIndex !== 'number' || roundIndex < 0 || roundIndex >= GAME_SETS.length) {
+                        clearCurrentGameState();
+                        return;
+                    }
+                    const setOfBanks = GAME_SETS[roundIndex];
+                    let bankOrder = Array.isArray(state.assignedBankOrder) ? state.assignedBankOrder.slice() : [0, 1, 2];
+                    if (bankOrder.length !== 3) bankOrder = [0, 1, 2];
+                    assignedBankOrder = bankOrder;
+                    assignedQuestionBanks = bankOrder.map(i => setOfBanks[i]);
+                    selectedRoundIndexForGame = roundIndex;
+                    if (!Array.isArray(state.teams) || state.teams.length !== 3) {
+                        clearCurrentGameState();
+                        return;
+                    }
+                    teams = state.teams.map((t, idx) => ({
+                        name: t && t.name ? t.name : `الفريق ${idx + 1}`,
+                        totalTime: t && typeof t.totalTime === 'number' ? t.totalTime : 0,
+                        questionsAnswered: t && typeof t.questionsAnswered === 'number' ? t.questionsAnswered : 0,
+                        currentQuestionIndex: t && typeof t.currentQuestionIndex === 'number' ? t.currentQuestionIndex : 0,
+                        lockedScore: t && typeof t.lockedScore === 'number' ? t.lockedScore : 0,
+                        hasFinished: !!(t && t.hasFinished),
+                        turnsTaken: t && typeof t.turnsTaken === 'number' ? t.turnsTaken : 0,
+                        penaltyScore: t && typeof t.penaltyScore === 'number' ? t.penaltyScore : 0,
+                        lifelines: {
+                            fiftyFifty: t && t.lifelines && typeof t.lifelines.fiftyFifty === 'boolean' ? t.lifelines.fiftyFifty : true,
+                            freeze: t && t.lifelines && typeof t.lifelines.freeze === 'boolean' ? t.lifelines.freeze : true,
+                            skip: t && t.lifelines && typeof t.lifelines.skip === 'boolean' ? t.lifelines.skip : true
+                        }
+                    }));
+                    currentTeamIndex = typeof state.currentTeamIndex === 'number' ? state.currentTeamIndex : 0;
+                    if (currentTeamIndex < 0 || currentTeamIndex > 2) currentTeamIndex = 0;
+                    currentRound = typeof state.currentRound === 'number' ? state.currentRound : 1;
+                    currentTurnTimer = typeof state.currentTurnTimer === 'number' ? state.currentTurnTimer : 0;
+                    gameInProgress = !!state.gameInProgress;
+                    teamsFinished = typeof state.teamsFinished === 'number' ? state.teamsFinished : 0;
+                    showCorrectAnswerOnError = !!state.showCorrectAnswerOnError;
+                    isTimerFrozen = false;
+                    isLifelineFreezeActive = false;
+                    freezeOverlay.classList.add('hidden');
+                    freezeOverlay.classList.remove('visible');
+                    startScreen.classList.add('hidden');
+                    endScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                    pauseButton.classList.remove('hidden');
+                    buildPrizeLadder();
+                    teams.forEach((team, index) => {
+                        document.getElementById(`team-${index}-name`).textContent = team.name;
+                        updateTeamPanel(index);
+                    });
+                    document.querySelectorAll('.team-panel').forEach((panel, index) => {
+                        panel.classList.toggle('current-team', index === currentTeamIndex);
+                    });
+                    loadQuestion();
+                    timerCircleText.textContent = (currentTurnTimer / 1000).toFixed(1);
+                    const totalDuration = 15000;
+                    const cycleTime = currentTurnTimer % totalDuration;
+                    const progress = cycleTime / totalDuration;
+                    const offset = timerPathLength - (progress * timerPathLength);
+                    timerCirclePath.style.strokeDashoffset = offset;
+                    if (gameInProgress) {
+                        if (gameTimerInterval) {
+                            clearInterval(gameTimerInterval);
+                            gameTimerInterval = null;
+                        }
+                        gameTimerInterval = setInterval(() => {
+                            if (!isTimerFrozen && !isLifelineFreezeActive) {
+                                currentTurnTimer += 100;
+                                timerCircleText.textContent = (currentTurnTimer / 1000).toFixed(1);
+                                const ct = currentTurnTimer % totalDuration;
+                                const pr = ct / totalDuration;
+                                const off = timerPathLength - (pr * timerPathLength);
+                                timerCirclePath.style.strokeDashoffset = off;
+                            }
+                        }, 100);
+                    }
+                    updateAllLifelineUI();
+                } catch (e) {
+                    clearCurrentGameState();
+                }
+            }
+            
+            restoreGameFromState();
+            window.addEventListener('beforeunload', saveCurrentGameState);
 
 
             document.addEventListener('keydown', (e) => {
