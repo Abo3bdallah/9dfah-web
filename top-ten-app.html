@@ -480,6 +480,59 @@
                 circumference: 0 // (جديد) محيط الدائرة
             };
 
+            function saveGameState() {
+                const state = {
+                    sessionState,
+                    roundState,
+                    currentGameData,
+                    ui: {
+                        isMainGameVisible: !mainGameContainer.classList.contains('hidden')
+                    }
+                };
+                try {
+                    localStorage.setItem('topTenGameState', JSON.stringify(state));
+                } catch (e) {
+                    console.error('Failed to save top-ten game state', e);
+                }
+            }
+
+            function loadGameState() {
+                try {
+                    const saved = localStorage.getItem('topTenGameState');
+                    if (!saved) return;
+                    const state = JSON.parse(saved);
+                    if (!state || !state.sessionState) return;
+
+                    sessionState = state.sessionState;
+                    roundState = state.roundState || roundState;
+                    currentGameData = state.currentGameData || {};
+
+                    updateScoresDisplay();
+                    updateTeamNamesDisplay();
+
+                    const isMainVisible = state.ui && state.ui.isMainGameVisible && roundState.currentGameIndex !== -1 && currentGameData.answers;
+                    if (isMainVisible) {
+                        gameSelectionModal.classList.add('hidden');
+                        mainGameContainer.classList.remove('hidden');
+                        document.body.style.overflow = 'auto';
+
+                        questionText.textContent = currentGameData.question || '';
+                        updateAnswersListDisplay();
+                        updateTurnDisplay();
+
+                        answerInput.disabled = !!roundState.gameOver;
+                        submitButton.disabled = !!roundState.gameOver;
+                        revealAllButton.disabled = !!roundState.gameOver;
+                    } else {
+                        mainGameContainer.classList.add('hidden');
+                        gameSelectionModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    }
+                } catch (e) {
+                    console.error('Failed to load top-ten game state', e);
+                }
+            }
+
             // --- 3. عناصر الواجهة (DOM Elements) ---
             const gameSelectionModal = document.getElementById('game-selection-modal');
             const gameSelectionList = document.getElementById('game-selection-list');
@@ -592,6 +645,8 @@
                 answerInput.focus();
                 
                 resetTimer(); // (جديد) إعادة المؤقت مع بدء الجولة
+
+                saveGameState();
 
                 document.body.style.overflow = 'auto';
             }
@@ -727,12 +782,16 @@
                 }
                 answerInput.value = ''; 
                 answerInput.focus();
+
+                saveGameState();
             }
 
             function switchTurn() {
                 roundState.currentTurn = (roundState.currentTurn % 3) + 1;
                 updateTurnDisplay();
                 resetTimer(); // (جديد) إعادة المؤقت عند تبديل الدور
+
+                saveGameState();
             }
 
             function showMessage(msg, type = 'info') {
@@ -796,6 +855,8 @@
                 
                 winnerAnnouncementModal.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
+
+                saveGameState();
             }
 
             function revealAllAnswers() {
@@ -924,6 +985,7 @@
                 updateTeamNamesDisplay();
                 updateScoresDisplay();
                 closeSettingsModal();
+                saveGameState();
             }
 
             function resetAllScores() {
@@ -933,6 +995,7 @@
                 teamScoreInputs[1].value = 0;
                 teamScoreInputs[2].value = 0;
                 teamScoreInputs[3].value = 0;
+                saveGameState();
             }
 
             // --- 5. ربط الأحداث (Event Listeners) ---
@@ -961,6 +1024,7 @@
                     gameSelectionModal.classList.remove('hidden');
                     document.body.style.overflow = 'hidden';
                     pauseTimer(); // إيقاف المؤقت عند تغيير الجولة
+                    saveGameState();
                 });
             }
             
@@ -987,6 +1051,9 @@
             createGameSelectionScreen();
             updateTeamNamesDisplay(); // عرض الأسماء الافتراضية
             resetTimer(); // تهيئة شاشة المؤقت عند التحميل
+
+            loadGameState();
+            window.addEventListener('beforeunload', saveGameState);
 
         }); // --- نهاية مستمع DOMContentLoaded ---
     </script>

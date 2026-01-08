@@ -1017,9 +1017,11 @@
             updateScoreBoard();
             renderTurnSelector();
             showNotification(`بدأت اللعبة! الدور الآن على ${teams[currentPlayerIndex].name}.`, true, 'toast'); 
+            saveGameState();
         }
 
         function restartGame() {
+            localStorage.removeItem('thinkWinGameState');
             gameStarted = false;
             teams = []; 
             teamColors = []; 
@@ -1055,6 +1057,12 @@
                 number.textContent = i + 1;
                 circle.appendChild(number);
 
+                const cellData = boardData[i];
+                if (cellData && cellData.owner !== null && teams[cellData.owner]) {
+                    const player = teams[cellData.owner];
+                    circle.classList.add(colorMap[player.color], 'taken');
+                }
+
                 circle.addEventListener('click', () => handleCircleClick(circle, i));
                 board.appendChild(circle);
             }
@@ -1077,6 +1085,7 @@
                 if (checkForWin(index)) {
                     endGame(player);
                 }
+                saveGameState();
                 return;
             }
 
@@ -1106,6 +1115,7 @@
                     isRemoveColorMode = false;
                     removeColorBtn.className = btnClasses.removeInactive;
                 }
+                saveGameState();
                 return;
             }
 
@@ -1159,11 +1169,12 @@
                 } else {
                     nextTurn();
                 }
-            } else {
-                showNotification("إجابة خاطئة!", false, 'modal'); 
-                currentCircleData.disabledOptions.push(selectedOption);
-                nextTurn();
-            }
+                } else {
+                    showNotification("إجابة خاطئة!", false, 'modal'); 
+                    currentCircleData.disabledOptions.push(selectedOption);
+                    nextTurn();
+                }
+                saveGameState();
         }
         
         function nextTurn() {
@@ -1290,6 +1301,7 @@
                     currentPlayerIndex = index;
                     updateGameInfo();
                     renderTurnSelector(); 
+                    saveGameState();
                 });
                 buttonContainer.appendChild(btn);
             });
@@ -1356,7 +1368,56 @@
             return array;
         }
 
-        // (جديد: وظيفة لملء نافذة الشرح بالمحتوى المنسق)
+        function saveGameState() {
+            if (!gameStarted) {
+                localStorage.removeItem('thinkWinGameState');
+                return;
+            }
+            const state = {
+                gameStarted,
+                teams,
+                teamColors,
+                currentPlayerIndex,
+                boardData,
+                questionBank
+            };
+            try {
+                localStorage.setItem('thinkWinGameState', JSON.stringify(state));
+            } catch (e) {
+                console.error('Failed to save think-win game state', e);
+            }
+        }
+
+        function loadSavedGameState() {
+            try {
+                const saved = localStorage.getItem('thinkWinGameState');
+                if (!saved) return;
+                const state = JSON.parse(saved);
+                if (!state || !state.gameStarted) return;
+
+                gameStarted = state.gameStarted;
+                teams = state.teams || [];
+                teamColors = state.teamColors || teams.map(t => t.color);
+                currentPlayerIndex = state.currentPlayerIndex || 0;
+                boardData = state.boardData || [];
+                questionBank = state.questionBank || [];
+                isRemoveColorMode = false;
+                isColoringMode = false;
+                currentCircleData = null;
+                currentCircleElement = null;
+
+                setupScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+
+                createBoard();
+                updateScoreBoard();
+                updateGameInfo();
+                renderTurnSelector();
+            } catch (e) {
+                console.error('Failed to load think-win game state', e);
+            }
+        }
+
         function populateHowToPlayModal() {
             howToPlayBody.innerHTML = `
                 <p>الهدف بسيط: أن تكون أول فريق ينجح في تلوين <strong>خمسة دوائر</strong> بلونه في صف واحد (أفقي، عمودي، أو قطري).</p>
@@ -1397,7 +1458,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             renderTeamSetup(parseInt(teamCountSelect.value));
-            populateHowToPlayModal(); // (جديد: ملء النافذة عند تحميل الصفحة)
+            populateHowToPlayModal();
+            loadSavedGameState();
+            window.addEventListener('beforeunload', saveGameState);
         });
 
     </script>
