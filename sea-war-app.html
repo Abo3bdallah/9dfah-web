@@ -4542,7 +4542,7 @@
                 } catch (e) {}
             }
 
-            init() {
+            init(skipCloudAutoLoad = false) {
                 this.currentTeam = 0;
                 this.placementPhase = true;
                 this.battlePhase = false;
@@ -4578,12 +4578,13 @@
                 this.toggleHistory(true); 
                 this.setupAdminPanelListeners();
 
-                // Auto-load latest cloud save if available
-                setTimeout(() => {
-                    if (window.cloudManager) {
-                        window.cloudManager.loadLatestSave();
-                    }
-                }, 1000);
+                if (!skipCloudAutoLoad) {
+                    setTimeout(() => {
+                        if (window.cloudManager) {
+                            window.cloudManager.loadLatestSave();
+                        }
+                    }, 1000);
+                }
             }
             
             applyTrapStyles() {
@@ -6443,7 +6444,7 @@
 
             _performReset() {
                 localStorage.removeItem('battleshipSaveData');
-                this.init();
+                this.init(true);
                 turnManager.reset();
                 closeGameOverModal();
                 document.getElementById('shipsDock').style.display = 'block';
