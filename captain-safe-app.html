@@ -2022,6 +2022,7 @@
             // الحفظ السحابي وتحديث الواجهة
             saveGameState();
             updateScoreboard();
+            updateTeamSelectors(); // تحديث القوائم والشبكات بالأسماء والصور الجديدة
             closeTeamManagementModal();
             
             const Toast = Swal.mixin({
@@ -2383,65 +2384,80 @@
             const affectedTeam = targetTeam !== null ? parseInt(targetTeam) : currentTeam;
             const teamNames = TEAM_NAMES;
             
+            // متغيرات لتحديد اللون والرسالة
+            let message = '';
+            let colorClass = '';
+            let isPositive = false;
+
             if (points === 'double') {
-                // استخدام النسبة المحفوظة أو الافتراضي 100 (تم إلغاء الإدخال اليدوي أثناء اللعب)
                 const pct = gameState.currentTreasure.percentage !== undefined ? gameState.currentTreasure.percentage : 100;
-                
                 const increase = Math.floor(gameState.teams[currentTeam] * (pct / 100));
                 gameState.teams[currentTeam] += increase;
-                pointsElement.textContent = `🎉 زيادة بنسبة ${pct}%! 🎉`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+                message = `🎉 زيادة بنسبة ${pct}%! 🎉`;
+                colorClass = 'text-green-400';
             } else if (points === 'half') {
-                // استخدام النسبة المحفوظة أو الافتراضي 50 (تم إلغاء الإدخال اليدوي أثناء اللعب)
                 const pct = gameState.currentTreasure.percentage !== undefined ? gameState.currentTreasure.percentage : 50;
-
                 const decrease = Math.floor(gameState.teams[currentTeam] * (pct / 100));
                 gameState.teams[currentTeam] -= decrease;
-                pointsElement.textContent = `💔 خصم بنسبة ${pct}%! 💔`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
-            } else if (points === 'input_bonus' && customPoints) {
+                message = `💔 خصم بنسبة ${pct}%! 💔`;
+                colorClass = 'text-red-400';
+            } else if (points === 'input_bonus' && customPoints !== null) {
+                // (تعديل) التعامل مع الأرقام السالبة (خصم) والموجبة (زيادة)
                 gameState.teams[currentTeam] += customPoints;
-                pointsElement.textContent = `+${customPoints} 🎉`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
-            } else if (points === 'input_penalty' && customPoints) {
+                
+                // منع الرصيد السالب
+                if (gameState.teams[currentTeam] < 0) gameState.teams[currentTeam] = 0;
+
+                if (customPoints >= 0) {
+                    message = `+${customPoints} 🎉`;
+                    colorClass = 'text-green-400';
+                } else {
+                    message = `${customPoints} 💔`; // الرقم سالب أصلاً
+                    colorClass = 'text-red-400';
+                }
+            } else if (points === 'input_penalty' && customPoints !== null) {
+                // customPoints هنا دائماً موجب (تم أخذ القيمة المطلقة في executeAction)
                 gameState.teams[currentTeam] -= customPoints;
                 if (gameState.teams[currentTeam] < 0) gameState.teams[currentTeam] = 0;
-                pointsElement.textContent = `-${customPoints} 💔`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+                message = `-${customPoints} 💔`;
+                colorClass = 'text-red-400';
             } else if ((points === 'variable_penalty_self' || points === 'variable_penalty_big_self') && customPoints) {
                 gameState.teams[currentTeam] -= customPoints;
                 if (gameState.teams[currentTeam] < 0) gameState.teams[currentTeam] = 0;
-                pointsElement.textContent = `-${customPoints} نقطة عليك 💔`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+                message = `-${customPoints} نقطة عليك 💔`;
+                colorClass = 'text-red-400';
             } else if ((points === 'variable_penalty' || points === 'variable_penalty_big') && customPoints && targetTeam !== null) {
                 gameState.teams[affectedTeam] -= customPoints;
                 if (gameState.teams[affectedTeam] < 0) gameState.teams[affectedTeam] = 0;
-                pointsElement.textContent = `-${customPoints} نقطة من ${teamNames[affectedTeam]} 💔`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+                message = `-${customPoints} نقطة من ${teamNames[affectedTeam]} 💔`;
+                colorClass = 'text-red-400';
             } else if (points > 0 && targetTeam !== null && gameState.currentTreasure.giveToOther) {
                 gameState.teams[affectedTeam] += points;
-                pointsElement.textContent = `+${points} نقطة لـ ${teamNames[affectedTeam]} 🎁`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+                message = `+${points} نقطة لـ ${teamNames[affectedTeam]} 🎁`;
+                colorClass = 'text-green-400';
             } else if (points > 0) {
                 gameState.teams[currentTeam] += points;
-                pointsElement.textContent = `+${points} 🎉`;
-                pointsElement.className = 'text-4xl font-bold mb-6 text-green-400 points-animation';
+                message = `+${points} 🎉`;
+                colorClass = 'text-green-400';
             } else if (points < 0) {
                 gameState.teams[affectedTeam] += points;
                 if (gameState.teams[affectedTeam] < 0) gameState.teams[affectedTeam] = 0;
                 
                 if (targetTeam !== null) {
-                    pointsElement.textContent = `${points} نقطة من ${teamNames[affectedTeam]} 💔`;
+                    message = `${points} نقطة من ${teamNames[affectedTeam]} 💔`;
                 } else {
-                    pointsElement.textContent = `${points} 💔`;
+                    message = `${points} 💔`;
                 }
-                pointsElement.className = 'text-4xl font-bold mb-6 text-red-400 points-animation';
+                colorClass = 'text-red-400';
             } else if (points === 0) {
-                pointsElement.textContent = '⏸️ لا تغيير في النقاط ⏸️';
-                pointsElement.className = 'text-4xl font-bold mb-6 text-gray-400 points-animation';
+                message = '⏸️ لا تغيير في النقاط ⏸️';
+                colorClass = 'text-gray-400';
             }
             
+            pointsElement.textContent = message;
+            pointsElement.className = `text-4xl font-bold mb-6 ${colorClass} points-animation`;
             pointsElement.classList.remove('hidden');
+            
             updateScoreboard();
             saveGameState();
         }
@@ -2564,20 +2580,37 @@
                         const inputVal = inputElement.value;
                         customPoints = parseInt(inputVal);
                         
-                        // التحقق من أن القيمة موجودة ورقم صحيح وموجب
-                        if (!inputVal || inputVal.trim() === '' || isNaN(customPoints) || customPoints <= 0) {
+                        // (تعديل) السماح بالأرقام السالبة للإدخال اليدوي، ومنع الصفر فقط
+                        if (!inputVal || inputVal.trim() === '' || isNaN(customPoints) || customPoints === 0) {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'تنبيه',
-                                text: 'يرجى إدخال قيمة صحيحة للنقاط (أكبر من صفر)!',
+                                text: 'يرجى إدخال قيمة صحيحة للنقاط (لا يمكن أن تكون صفر)!',
                                 background: '#1e293b',
                                 color: '#fff'
                             });
                             return;
                         }
+
+                        // (تعديل) في حالة "الخصم اليدوي"، نأخذ القيمة المطلقة دائماً ليتم الخصم بشكل صحيح
+                        if (gameState.currentTreasure.points === 'input_penalty') {
+                             customPoints = Math.abs(customPoints);
+                        }
                         
-                        // التحقق من صحة المدخلات للخصم العشوائي
+                        // التحقق من صحة المدخلات للخصم العشوائي (هنا نبقي الشرط موجباً لأنه نطاق محدد)
                         if (gameState.currentTreasure.points === 'variable_penalty_self' || gameState.currentTreasure.points === 'variable_penalty_big_self') {
+                            // للأنواع المتغيرة، يجب أن تكون القيمة موجبة وضمن النطاق
+                             if (customPoints <= 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'تنبيه',
+                                    text: 'يرجى إدخال قيمة موجبة لهذه العملية.',
+                                    background: '#1e293b',
+                                    color: '#fff'
+                                });
+                                return;
+                             }
+
                             let minP = 1;
                             let maxP = gameState.currentTreasure.points === 'variable_penalty_big_self' ? 20 : 10;
                             
@@ -2672,21 +2705,31 @@
         // إضافة نقاط يدوياً
         function addPoints() {
             const pointsInput = document.getElementById('addPointsInput');
-            const points = parseInt(pointsInput.value || '0');
-            if (points > 0) {
+            const val = parseInt(pointsInput.value || '0');
+            
+            if (val !== 0) {
                 const teamIndex = parseInt(document.getElementById('currentTeam').value);
-                gameState.teams[teamIndex] += points;
+                gameState.teams[teamIndex] += val;
+                
+                // منع النقاط من أن تصبح سالبة إذا كانت العملية طرحاً
+                if (gameState.teams[teamIndex] < 0) gameState.teams[teamIndex] = 0;
+                
                 updateScoreboard();
                 
-                showPointsAnimation(`+${points}`, 'green');
+                // تحديد اللون والرسالة حسب الإشارة
+                if (val > 0) {
+                    showPointsAnimation(`+${val}`, 'green');
+                } else {
+                    showPointsAnimation(`${val}`, 'red');
+                }
                 
                 pointsInput.value = '';
                 saveGameState();
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'خطأ',
-                    text: 'يرجى إدخال عدد صحيح موجب من النقاط',
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: 'يرجى إدخال قيمة صحيحة (لا تساوي صفر)',
                     background: '#1e293b',
                     color: '#fff'
                 });
@@ -2696,22 +2739,26 @@
         // خصم نقاط يدوياً
         function subtractPoints() {
             const pointsInput = document.getElementById('subtractPointsInput');
-            const points = parseInt(pointsInput.value || '0');
-            if (points > 0) {
+            let val = parseInt(pointsInput.value || '0');
+            
+            if (val !== 0) {
+                // (تعديل) التعامل مع الخصم كقيمة مطلقة دائماً
+                val = Math.abs(val);
+                
                 const teamIndex = parseInt(document.getElementById('currentTeam').value);
-                gameState.teams[teamIndex] -= points;
+                gameState.teams[teamIndex] -= val;
                 if (gameState.teams[teamIndex] < 0) gameState.teams[teamIndex] = 0;
                 updateScoreboard();
                 
-                showPointsAnimation(`-${points}`, 'red');
+                showPointsAnimation(`-${val}`, 'red');
                 
                 pointsInput.value = '';
                 saveGameState();
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'خطأ',
-                    text: 'يرجى إدخال عدد صحيح موجب من النقاط',
+                    icon: 'warning',
+                    title: 'تنبيه',
+                    text: 'يرجى إدخال قيمة صحيحة (لا تساوي صفر)',
                     background: '#1e293b',
                     color: '#fff'
                 });
@@ -3586,9 +3633,14 @@
                     <label class="block text-slate-400 text-xs mb-1">تعديل النقاط (الحالية: <span id="manageTeamCurrentScore" class="text-amber-400 font-bold">0</span>)</label>
                     
                     <!-- أزرار سريعة -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <!-- صف الزيادة -->
+                        <button onclick="quickUpdateScore(1)" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-600/50 rounded py-1 transition-all">+1</button>
                         <button onclick="quickUpdateScore(10)" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-600/50 rounded py-1 transition-all">+10</button>
                         <button onclick="quickUpdateScore(50)" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-600/50 rounded py-1 transition-all">+50</button>
+                        
+                        <!-- صف الخصم -->
+                        <button onclick="quickUpdateScore(-1)" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 rounded py-1 transition-all">-1</button>
                         <button onclick="quickUpdateScore(-10)" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 rounded py-1 transition-all">-10</button>
                         <button onclick="quickUpdateScore(-50)" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-600/50 rounded py-1 transition-all">-50</button>
                     </div>
