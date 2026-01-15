@@ -20,43 +20,87 @@ async function initDynamicContent() {
 }
 
 /**
- * جلب الإعلان الثابت (AD.webp) وعرضه
- * تم تحويل النظام من ديناميكي (Supabase) إلى ثابت بناءً على طلب المستخدم
+ * جلب الإعلانات النشطة وعرضها
  */
 async function fetchAndDisplayAds() {
     const modal = document.getElementById('announcement-modal');
     const imgElement = document.getElementById('announcement-image');
     
-    if (imgElement && modal) {
-        // استخدام صورة ثابتة من مجلد الصور
-        // إضافة طابع زمني لمنع التخزين المؤقت وتمكين التحديث الفوري عند تغيير الملف
-        const timestamp = new Date().getTime();
-        const imagePath = `images/AD.webp?v=${timestamp}`;
-        
-        // التحقق من تحميل الصورة بنجاح قبل عرض المودال
-        const tempImg = new Image();
-        tempImg.onload = function() {
-            imgElement.src = imagePath;
+    // التحقق من وجود العناصر
+    if (!modal || !imgElement) return;
+
+    if (typeof supabase === 'undefined') {
+        console.warn('Supabase not initialized');
+        return;
+    }
+
+    try {
+        const { data: ads, error } = await supabase
+            .from('ads')
+            .select('*')
+            .eq('is_active', true);
+
+        if (error) {
+            console.error('Error fetching ads:', error);
+            return;
+        }
+
+        if (ads && ads.length > 0) {
+            // اختيار إعلان عشوائي أو بناءً على المنطق المطلوب
+            const randomAd = ads[Math.floor(Math.random() * ads.length)];
             
-            // عرض المودال دائماً (يمكن تعديله لاحقاً ليكون مرة واحدة بالجلسة)
-            modal.style.display = 'flex';
+            // التحقق من التكرار (localStorage)
+            const hasSeen = localStorage.getItem(`ad_seen_${randomAd.id}`);
             
-            // إضافة الأنيميشن
-            setTimeout(() => {
-                const box = document.getElementById('announcement-modal-box');
-                if(box) {
-                    box.classList.remove('scale-95', 'opacity-0');
-                    box.classList.add('scale-100', 'opacity-100');
+            // إذا كان الإعلان "مرة واحدة" وقد شوهد سابقاً، لا نعرضه
+            if (randomAd.frequency === 'once' && hasSeen) {
+                console.log('Ad seen before (once frequency):', randomAd.id);
+                return; 
+            }
+
+            // عرض الإعلان
+            const imageToLoad = new Image();
+            imageToLoad.onload = function() {
+                imgElement.src = randomAd.image_url;
+                
+                // رابط التوجيه عند النقر
+                if (randomAd.link_url) {
+                    imgElement.style.cursor = 'pointer';
+                    imgElement.onclick = () => {
+                        window.open(randomAd.link_url, '_blank');
+                    };
+                } else {
+                    imgElement.style.cursor = 'default';
+                    imgElement.onclick = null;
                 }
-            }, 10);
-        };
-        
-        tempImg.onerror = function() {
-            console.log('No static ad found (AD.webp)');
-            modal.style.display = 'none';
-        };
-        
-        tempImg.src = imagePath;
+
+                modal.style.display = 'flex';
+                
+                // تسجيل المشاهدة إذا كان "مرة واحدة"
+                if (randomAd.frequency === 'once') {
+                    localStorage.setItem(`ad_seen_${randomAd.id}`, 'true');
+                }
+
+                // Animation
+                setTimeout(() => {
+                    const box = document.getElementById('announcement-modal-box');
+                    if(box) {
+                        box.classList.remove('scale-95', 'opacity-0');
+                        box.classList.add('scale-100', 'opacity-100');
+                    }
+                }, 10);
+            };
+            imageToLoad.onerror = function() {
+                console.error('Failed to load ad image:', randomAd.image_url);
+            };
+            imageToLoad.src = randomAd.image_url;
+
+        } else {
+            console.log('No active ads found.');
+        }
+
+    } catch (err) {
+        console.error('Unexpected error in fetchAndDisplayAds:', err);
     }
 }
 
