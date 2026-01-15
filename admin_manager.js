@@ -448,23 +448,61 @@ async function loadAdsData() {
     ads.forEach(ad => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
-        tr.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm"><img src="${ad.image_url}" class="h-10 w-10 rounded object-cover"></td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
-                ${ad.title || '-'}<br>
-                <span class="text-xs text-gray-500">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                    ${ad.is_active ? 'نشط' : 'غير نشط'}
-                </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button onclick="toggleAdStatus('${ad.id}', ${!ad.is_active})" class="text-indigo-600 hover:text-indigo-900 ml-2">${ad.is_active ? 'تعطيل' : 'تفعيل'}</button>
-                <button onclick="editAd('${ad.id}', '${ad.title || ''}', '${ad.image_url}', '${ad.frequency || 'once'}')" class="text-blue-600 hover:text-blue-900 ml-2">تعديل</button>
-                <button onclick="deleteAd('${ad.id}')" class="text-red-600 hover:text-red-900">حذف</button>
-            </td>
+
+        // Image Cell
+        const tdImg = document.createElement('td');
+        tdImg.className = 'px-6 py-4 whitespace-nowrap text-sm';
+        const img = document.createElement('img');
+        img.src = ad.image_url;
+        img.className = 'h-10 w-10 rounded object-cover';
+        img.onerror = function() { this.src = 'https://placehold.co/100?text=Error'; };
+        tdImg.appendChild(img);
+
+        // Title Cell
+        const tdTitle = document.createElement('td');
+        tdTitle.className = 'px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100';
+        tdTitle.innerHTML = `
+            <div class="font-bold">${ad.title || '-'}</div>
+            <div class="text-xs text-gray-500">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</div>
+            ${ad.link_url ? `<div class="text-xs text-indigo-500 truncate max-w-[200px]" dir="ltr" title="${ad.link_url}">${ad.link_url}</div>` : ''}
         `;
+
+        // Status Cell
+        const tdStatus = document.createElement('td');
+        tdStatus.className = 'px-6 py-4 whitespace-nowrap text-sm';
+        const statusSpan = document.createElement('span');
+        statusSpan.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+        statusSpan.textContent = ad.is_active ? 'نشط' : 'غير نشط';
+        tdStatus.appendChild(statusSpan);
+
+        // Actions Cell
+        const tdActions = document.createElement('td');
+        tdActions.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+
+        const btnToggle = document.createElement('button');
+        btnToggle.className = 'text-indigo-600 hover:text-indigo-900 ml-2';
+        btnToggle.textContent = ad.is_active ? 'تعطيل' : 'تفعيل';
+        btnToggle.onclick = () => toggleAdStatus(ad.id, !ad.is_active);
+
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'text-blue-600 hover:text-blue-900 ml-2';
+        btnEdit.textContent = 'تعديل';
+        btnEdit.onclick = () => editAd(ad);
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'text-red-600 hover:text-red-900';
+        btnDelete.textContent = 'حذف';
+        btnDelete.onclick = () => deleteAd(ad.id);
+
+        tdActions.appendChild(btnToggle);
+        tdActions.appendChild(btnEdit);
+        tdActions.appendChild(btnDelete);
+
+        tr.appendChild(tdImg);
+        tr.appendChild(tdTitle);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdActions);
+
         tbody.appendChild(tr);
     });
 }
