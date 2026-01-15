@@ -341,7 +341,8 @@ function setupAdminEventListeners() {
                 title: data.title, 
                 image_url: data.imageUrl, 
                 link_url: data.linkUrl,
-                frequency: data.frequency
+                frequency: data.frequency,
+                is_active: true
             }]);
             if (error) throw error;
             loadAdsData();
