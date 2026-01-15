@@ -52,11 +52,17 @@ async function initAdminPanel() {
 }
 
 function injectAdminUI() {
+    // إزالة المودال القديم إذا وجد لضمان تحديث الهيكلية (هذا يحل مشكلة اختفاء المحتوى)
+    const existingModal = document.getElementById('admin-modal');
+    if (existingModal) {
+        existingModal.remove();
+        console.log('Forced refresh of admin modal UI');
+    }
+
     // تنظيف: إزالة الحاوية القديمة إذا وجدت لمنع التعارض
     const oldContainer = document.getElementById('admin-ui-container');
     if (oldContainer) {
         oldContainer.remove();
-        console.log('Removed old admin container');
     }
 
     // 1. زر فتح اللوحة العائم
@@ -73,6 +79,7 @@ function injectAdminUI() {
     }
 
     // 2. المودال (النافذة المنبثقة)
+    // بما أننا قمنا بحذف المودال القديم في الأعلى، فلا داعي للتحقق هنا، ولكن سنتركه للأمان
     if (!document.getElementById('admin-modal')) {
         const modalHTML = `
         <div id="admin-modal" class="fixed inset-0 z-[10000] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
