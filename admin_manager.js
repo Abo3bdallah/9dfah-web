@@ -52,232 +52,232 @@ async function initAdminPanel() {
 }
 
 function injectAdminUI() {
-    // (جديد) منع التكرار: إذا كانت الواجهة موجودة مسبقاً، لا تفعل شيئاً
-    if (document.getElementById('btn-open-admin') || document.getElementById('admin-modal')) {
-        return;
+    // تنظيف: إزالة الحاوية القديمة إذا وجدت لمنع التعارض
+    const oldContainer = document.getElementById('admin-ui-container');
+    if (oldContainer) {
+        oldContainer.remove();
+        console.log('Removed old admin container');
     }
 
-    // زر فتح اللوحة العائم
-    const adminBtnHTML = `
-        <button id="btn-open-admin" class="pointer-events-auto fixed bottom-24 left-6 z-50 p-3 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-700 transition-transform hover:scale-110" title="لوحة تحكم المدير">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-        </button>
-    `;
-    // (تم الحذف للإضافة في الحاوية النهائية)
-    // document.body.insertAdjacentHTML('beforeend', adminBtnHTML);
+    // 1. زر فتح اللوحة العائم
+    if (!document.getElementById('btn-open-admin')) {
+        const adminBtnHTML = `
+            <button id="btn-open-admin" class="fixed bottom-24 left-6 z-[9999] p-3 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-700 transition-transform hover:scale-110" title="لوحة تحكم المدير">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        `;
+        document.body.insertAdjacentHTML('beforeend', adminBtnHTML);
+    }
 
-    // المودال (النافذة المنبثقة)
-    const modalHTML = `
-    <div id="admin-modal" class="pointer-events-auto fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- الخلفية المعتمة -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" id="admin-overlay"></div>
+    // 2. المودال (النافذة المنبثقة)
+    if (!document.getElementById('admin-modal')) {
+        const modalHTML = `
+        <div id="admin-modal" class="fixed inset-0 z-[10000] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <!-- الخلفية المعتمة -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" id="admin-overlay"></div>
 
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                
-                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl border border-zinc-200 dark:border-zinc-700">
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     
-                    <!-- الهيدر -->
-                    <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 sm:px-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700">
-                        <h3 class="text-lg font-bold leading-6 text-zinc-900 dark:text-zinc-100" id="modal-title">لوحة التحكم</h3>
-                        <button id="btn-close-admin" class="text-zinc-400 hover:text-zinc-500 focus:outline-none">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- المحتوى -->
-                    <div class="px-4 py-4 sm:p-6">
+                    <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl border border-zinc-200 dark:border-zinc-700">
                         
-                        <!-- التبويبات -->
-                        <div class="border-b border-zinc-200 dark:border-zinc-700 mb-4">
-                            <nav class="-mb-px flex space-x-8 space-x-reverse" aria-label="Tabs">
-                                <button id="tab-ads" class="admin-tab border-indigo-500 text-indigo-600 dark:text-indigo-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">الإعلانات</button>
-                                <button id="tab-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">التصنيفات</button>
-                                <button id="tab-app-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">ربط التصنيفات</button>
-                                <button id="tab-updates" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">مزايا وتحديثات</button>
-                            </nav>
+                        <!-- الهيدر -->
+                        <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 sm:px-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700">
+                            <h3 class="text-lg font-bold leading-6 text-zinc-900 dark:text-zinc-100" id="modal-title">لوحة التحكم</h3>
+                            <button id="btn-close-admin" class="text-zinc-400 hover:text-zinc-500 focus:outline-none">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
                         </div>
 
-                        <!-- محتوى تبويب الإعلانات -->
-                        <div id="content-ads" class="admin-content block">
-                            <div class="flex justify-between mb-4">
-                                <h4 class="text-md font-semibold dark:text-white">قائمة الإعلانات</h4>
-                                <button id="btn-add-ad" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة إعلان</button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الصورة</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">العنوان</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ads-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        <!-- سيتم تعبئة البيانات هنا بالجافاسكربت -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- محتوى تبويب التصنيفات -->
-                        <div id="content-tags" class="admin-content hidden">
-                             <div class="flex justify-between mb-4">
-                                <h4 class="text-md font-semibold dark:text-white">قائمة التصنيفات</h4>
-                                <div>
-                                    <button id="btn-add-default-tags" class="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 text-sm ml-2">استعادة الافتراضية</button>
-                                    <button id="btn-add-tag" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة تصنيف</button>
-                                </div>
-                            </div>
-                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الاسم</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">اللون (Tailwind)</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tags-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        <!-- سيتم تعبئته بالجافاسكربت -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                         <!-- محتوى تبويب ربط التصنيفات -->
-                        <div id="content-app-tags" class="admin-content hidden">
-                            <div class="mb-4">
-                                <label for="select-app-for-tags" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">اختر التطبيق</label>
-                                <select id="select-app-for-tags" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-zinc-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
-                                    <option value="">اختر تطبيقاً...</option>
-                                    <option value="game-thinkwin">فكر تربح</option>
-                                    <option value="game-mileon">من سيربح المليون</option>
-                                    <option value="game-seawar">حرب البحار</option>
-                                    <option value="game-captain">خزنة ربان</option>
-                                    <option value="game-malkoof">الملقوف</option>
-                                    <option value="game-mafia">مافيا</option>
-                                    <option value="4to-won">أربعة تربح</option>
-                                    <option value="game-topten">توب تن</option>
-                                    <option value="tool-remote">جهاز التحكم</option>
-                                    <option value="tool-sodfa">صدفة</option>
-                                    <option value="tool-questions">بنك الأسئلة</option>
-                                    <option value="tool-letters">حروف</option>
-                                </select>
-                            </div>
+                        <!-- المحتوى -->
+                        <div class="px-4 py-4 sm:p-6">
                             
-                            <div id="app-tags-selection-area" class="hidden">
-                                <h4 class="text-md font-semibold mb-2 dark:text-white">حدد التصنيفات لهذا التطبيق:</h4>
-                                <div id="checkboxes-tags-container" class="space-y-2 mb-4">
-                                    <!-- سيتم تعبئته -->
+                            <!-- التبويبات -->
+                            <div class="border-b border-zinc-200 dark:border-zinc-700 mb-4">
+                                <nav class="-mb-px flex space-x-8 space-x-reverse" aria-label="Tabs">
+                                    <button id="tab-ads" class="admin-tab border-indigo-500 text-indigo-600 dark:text-indigo-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">الإعلانات</button>
+                                    <button id="tab-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">التصنيفات</button>
+                                    <button id="tab-app-tags" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">ربط التصنيفات</button>
+                                    <button id="tab-updates" class="admin-tab border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">مزايا وتحديثات</button>
+                                </nav>
+                            </div>
+
+                            <!-- محتوى تبويب الإعلانات -->
+                            <div id="content-ads" class="admin-content block">
+                                <div class="flex justify-between mb-4">
+                                    <h4 class="text-md font-semibold dark:text-white">قائمة الإعلانات</h4>
+                                    <button id="btn-add-ad" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة إعلان</button>
                                 </div>
-                                <button id="btn-save-app-tags" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">حفظ التغييرات</button>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الصورة</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">العنوان</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ads-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            <!-- سيتم تعبئة البيانات هنا بالجافاسكربت -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <div id="content-updates" class="admin-content hidden">
-                            <div class="flex justify-between mb-4">
-                                <h4 class="text-md font-semibold dark:text-white">قائمة المزايا والتحديثات</h4>
-                                <button id="btn-add-update" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة سطر جديد</button>
+                            <!-- محتوى تبويب التصنيفات -->
+                            <div id="content-tags" class="admin-content hidden">
+                                 <div class="flex justify-between mb-4">
+                                    <h4 class="text-md font-semibold dark:text-white">قائمة التصنيفات</h4>
+                                    <div>
+                                        <button id="btn-add-default-tags" class="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 text-sm ml-2">استعادة الافتراضية</button>
+                                        <button id="btn-add-tag" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة تصنيف</button>
+                                    </div>
+                                </div>
+                                 <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الاسم</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">اللون (Tailwind)</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tags-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                            <!-- سيتم تعبئته بالجافاسكربت -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الإصدار</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">التاريخ</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الوصف</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
-                                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="updates-admin-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
 
+                             <!-- محتوى تبويب ربط التصنيفات -->
+                            <div id="content-app-tags" class="admin-content hidden">
+                                <div class="mb-4">
+                                    <label for="select-app-for-tags" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">اختر التطبيق</label>
+                                    <select id="select-app-for-tags" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-zinc-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
+                                        <option value="">اختر تطبيقاً...</option>
+                                        <option value="game-thinkwin">فكر تربح</option>
+                                        <option value="game-mileon">من سيربح المليون</option>
+                                        <option value="game-seawar">حرب البحار</option>
+                                        <option value="game-captain">خزنة ربان</option>
+                                        <option value="game-malkoof">الملقوف</option>
+                                        <option value="game-mafia">مافيا</option>
+                                        <option value="4to-won">أربعة تربح</option>
+                                        <option value="game-topten">توب تن</option>
+                                        <option value="tool-remote">جهاز التحكم</option>
+                                        <option value="tool-sodfa">صدفة</option>
+                                        <option value="tool-questions">بنك الأسئلة</option>
+                                        <option value="tool-letters">حروف</option>
+                                        <option value="game-hrof">حروف عبقر</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="app-tags-selection-area" class="hidden">
+                                    <h4 class="text-md font-semibold mb-2 dark:text-white">حدد التصنيفات لهذا التطبيق:</h4>
+                                    <div id="checkboxes-tags-container" class="space-y-2 mb-4">
+                                        <!-- سيتم تعبئته -->
+                                    </div>
+                                    <button id="btn-save-app-tags" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">حفظ التغييرات</button>
+                                </div>
+                            </div>
+
+                            <div id="content-updates" class="admin-content hidden">
+                                <div class="flex justify-between mb-4">
+                                    <h4 class="text-md font-semibold dark:text-white">قائمة المزايا والتحديثات</h4>
+                                    <button id="btn-add-update" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة سطر جديد</button>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الإصدار</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">التاريخ</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الوصف</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
+                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="updates-admin-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    `;
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
 
     // === مودال النماذج (Forms) ===
-    const formModalHTML = `
-    <div id="admin-form-modal" class="pointer-events-auto fixed inset-0 z-[110] hidden" role="dialog">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-lg border border-zinc-200 dark:border-zinc-700">
-                    <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 sm:px-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700">
-                        <h3 class="text-lg font-bold leading-6 text-zinc-900 dark:text-zinc-100" id="form-modal-title">عنوان النافذة</h3>
-                        <button onclick="closeFormModal()" class="text-zinc-400 hover:text-zinc-500 focus:outline-none">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                    </div>
-                    <div class="px-4 py-4 sm:p-6 space-y-4" id="form-modal-body"></div>
-                    <div class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-zinc-200 dark:border-zinc-700">
-                        <button type="button" id="btn-form-save" class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">حفظ</button>
-                        <button type="button" onclick="closeFormModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+    if (!document.getElementById('admin-form-modal')) {
+        const formModalHTML = `
+        <div id="admin-form-modal" class="fixed inset-0 z-[11000] hidden" role="dialog">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                    <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-lg border border-zinc-200 dark:border-zinc-700">
+                        <div class="bg-zinc-100 dark:bg-zinc-800 px-4 py-3 sm:px-6 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700">
+                            <h3 class="text-lg font-bold leading-6 text-zinc-900 dark:text-zinc-100" id="form-modal-title">عنوان النافذة</h3>
+                            <button onclick="closeFormModal()" class="text-zinc-400 hover:text-zinc-500 focus:outline-none">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <div class="px-4 py-4 sm:p-6 space-y-4" id="form-modal-body"></div>
+                        <div class="bg-zinc-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 border-t border-zinc-200 dark:border-zinc-700">
+                            <button type="button" id="btn-form-save" class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">حفظ</button>
+                            <button type="button" onclick="closeFormModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    `;
-
+        `;
+        document.body.insertAdjacentHTML('beforeend', formModalHTML);
+    }
 
     // === مودال التأكيد (Confirm) ===
-    const confirmModalHTML = `
-    <div id="admin-confirm-modal" class="pointer-events-auto fixed inset-0 z-[120] hidden" role="dialog">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-center justify-center p-4 text-center">
-                <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-md border border-zinc-200 dark:border-zinc-700">
-                    <div class="bg-white dark:bg-zinc-900 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start sm:flex-row-reverse">
-                            <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:mr-3">
-                                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                            </div>
-                            <div class="mt-3 text-center sm:ml-4 sm:mr-0 sm:mt-0 sm:text-right flex-1">
-                                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100" id="confirm-modal-title">تأكيد الحذف</h3>
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-500 dark:text-gray-400" id="confirm-modal-message">هل أنت متأكد من القيام بهذا الإجراء؟</p>
+    if (!document.getElementById('admin-confirm-modal')) {
+        const confirmModalHTML = `
+        <div id="admin-confirm-modal" class="fixed inset-0 z-[12000] hidden" role="dialog">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity"></div>
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                    <div class="relative transform overflow-hidden rounded-lg bg-white dark:bg-zinc-900 text-right shadow-xl transition-all sm:w-full sm:max-w-md border border-zinc-200 dark:border-zinc-700">
+                        <div class="bg-white dark:bg-zinc-900 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start sm:flex-row-reverse">
+                                <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:mr-3">
+                                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                    </svg>
+                                </div>
+                                <div class="mt-3 text-center sm:ml-4 sm:mr-0 sm:mt-0 sm:text-right flex-1">
+                                    <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100" id="confirm-modal-title">تأكيد الحذف</h3>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400" id="confirm-modal-message">هل أنت متأكد من القيام بهذا الإجراء؟</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <button type="button" id="btn-confirm-yes" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">نعم، متأكد</button>
-                        <button type="button" onclick="closeConfirmModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+                        <div class="bg-gray-50 dark:bg-zinc-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                            <button type="button" id="btn-confirm-yes" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">نعم، متأكد</button>
+                            <button type="button" onclick="closeConfirmModal()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-zinc-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-600 sm:mt-0 sm:w-auto">إلغاء</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    `;
-
-    // إنشاء حاوية معزولة للعناصر لمنع أي تأثير على تخطيط الصفحة
-    const adminContainer = document.createElement('div');
-    adminContainer.id = 'admin-ui-container';
-    // استخدام inset: 0 للتأكد من تغطية الشاشة بالكامل دون التأثير على التفاعل (pointer-events: none)
-    Object.assign(adminContainer.style, {
-        position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-        zIndex: '9999', pointerEvents: 'none'
-    });
-    
-    adminContainer.innerHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
-    document.body.appendChild(adminContainer);
+        `;
+        document.body.insertAdjacentHTML('beforeend', confirmModalHTML);
+    }
 }
 
 function setupAdminEventListeners() {
@@ -704,10 +704,11 @@ window.deleteAd = (id) => {
     });
 };
 
-window.editAd = (id, oldTitle, oldImage, oldFrequency) => {
+window.editAd = (id, oldTitle, oldImage, oldLink, oldFrequency) => {
     showFormModal('تعديل الإعلان', [
         { label: 'عنوان الإعلان', name: 'title', value: oldTitle },
         { label: 'رابط الصورة', name: 'imageUrl', value: oldImage },
+        { label: 'رابط التوجيه (اختياري)', name: 'linkUrl', value: oldLink },
         { label: 'تكرار الظهور', name: 'frequency', type: 'select', value: oldFrequency, options: [
             { value: 'once', text: 'مرة واحدة (Once)' },
             { value: 'always', text: 'دائماً (Always)' }
@@ -717,6 +718,7 @@ window.editAd = (id, oldTitle, oldImage, oldFrequency) => {
         const { error } = await supabase.from('ads').update({ 
             title: data.title, 
             image_url: data.imageUrl,
+            link_url: data.linkUrl,
             frequency: data.frequency
         }).eq('id', id);
         if (error) throw error;
