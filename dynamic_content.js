@@ -23,7 +23,8 @@ async function initDynamicContent() {
  * جلب الإعلان النشط وعرضه في النافذة المنبثقة
  */
 async function fetchAndDisplayAds() {
-    // جلب أحدث إعلان نشط
+    // تم تعطيل جلب الإعلانات من قاعدة البيانات بناءً على طلب المستخدم واستبدالها بملف ثابت
+    /*
     const { data: ads, error } = await supabase
         .from('ads')
         .select('*')
@@ -34,53 +35,51 @@ async function fetchAndDisplayAds() {
     if (error || !ads || ads.length === 0) return;
 
     const ad = ads[0];
+    */
+
+    // استخدام إعلان ثابت من ملف الصور
+    // نضيف طابع زمني (timestamp) لتجنب تخزين المتصفح للصورة القديمة عند تغيير الملف
+    const ad = {
+        image_url: 'images/AD.webp?t=' + new Date().getTime(),
+        link_url: '', 
+        frequency: 'always', 
+        id: 'static-ad'
+    };
+
     const modal = document.getElementById('announcement-modal');
     const imgElement = document.getElementById('announcement-image');
     
     if (imgElement) {
-        imgElement.src = ad.image_url;
-        
-        // إذا كان هناك رابط، نجعل الصورة قابلة للنقر
-        if (ad.link_url) {
-            imgElement.style.cursor = 'pointer';
-            imgElement.onclick = () => {
-                window.open(ad.link_url, '_blank');
-            };
-        }
-        
-        // منطق التكرار (Frequency)
-        // إذا كان always: يظهر دائماً (لا نتحقق من التخزين)
-        // إذا كان once: نتحقق من localStorage (ليظهر مرة واحدة فقط في الحياة)
-        
-        let shouldShow = false;
-
-        if (ad.frequency === 'always') {
-            shouldShow = true;
-        } else {
-            // الافتراضي هو once
-            const hasSeenAd = localStorage.getItem('seen_ad_' + ad.id);
-            if (!hasSeenAd) {
-                shouldShow = true;
-                // نسجل المشاهدة في LocalStorage (دائم) بدلاً من SessionStorage
-                localStorage.setItem('seen_ad_' + ad.id, 'true');
+        // التحقق من وجود الصورة قبل عرضها (لتجنب ظهور نافذة فارغة)
+        const tempImg = new Image();
+        tempImg.src = ad.image_url;
+        tempImg.onload = () => {
+            imgElement.src = ad.image_url;
+            
+            // إذا كان هناك رابط، نجعل الصورة قابلة للنقر
+            if (ad.link_url) {
+                imgElement.style.cursor = 'pointer';
+                imgElement.onclick = () => {
+                    window.open(ad.link_url, '_blank');
+                };
             }
-        }
-
-        if (shouldShow) {
-             // نحاكي دالة showAnnouncement الموجودة في الملف الأصلي
-             // أو نظهره مباشرة
-             if (modal) {
-                 modal.style.display = 'flex';
-                 // إضافة الأنيميشن
-                 setTimeout(() => {
-                     const box = document.getElementById('announcement-modal-box');
-                     if(box) {
-                         box.classList.remove('scale-95', 'opacity-0');
-                         box.classList.add('scale-100', 'opacity-100');
-                     }
-                 }, 10);
-             }
-        }
+            
+            // عرض المودال
+            if (modal) {
+                modal.style.display = 'flex';
+                // إضافة الأنيميشن
+                setTimeout(() => {
+                    const box = document.getElementById('announcement-modal-box');
+                    if(box) {
+                        box.classList.remove('scale-95', 'opacity-0');
+                        box.classList.add('scale-100', 'opacity-100');
+                    }
+                }, 10);
+            }
+        };
+        tempImg.onerror = () => {
+            console.log('No static ad image found (images/AD.webp).');
+        };
     }
 }
 
