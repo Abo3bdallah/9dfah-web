@@ -210,9 +210,6 @@ function injectAdminUI() {
     </div>
     `;
 
-    // حقن النوافذ المنبثقة مباشرة في الـ body لتجنب مشاكل التصميم (بدون wrapper div)
-    document.body.insertAdjacentHTML('beforeend', modalHTML.trim());
-
     // === مودال النماذج (Forms) ===
     const formModalHTML = `
     <div id="admin-form-modal" class="pointer-events-auto fixed inset-0 z-[110] hidden" role="dialog">
@@ -269,16 +266,10 @@ function injectAdminUI() {
         </div>
     </div>
     `;
-    // إنشاء حاوية معزولة للعناصر لمنع أي تأثير على تخطيط الصفحة
-    const adminContainer = document.createElement('div');
-    adminContainer.id = 'admin-ui-container';
-    Object.assign(adminContainer.style, {
-        position: 'fixed', top: '0', left: '0', width: '0', height: '0',
-        overflow: 'visible', zIndex: '9999', pointerEvents: 'none'
-    });
-    
-    adminContainer.innerHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
-    document.body.appendChild(adminContainer);
+
+    // حقن زر الأدمن وكل النوافذ في الـ body مباشرةً
+    const fullAdminHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
+    document.body.insertAdjacentHTML('beforeend', fullAdminHTML.trim());
 }
 
 function setupAdminEventListeners() {
@@ -437,6 +428,11 @@ async function loadAdsData() {
 
     if (error) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 py-4">${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!ads || ads.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">لا توجد إعلانات حالياً. اضغط على زر "إضافة إعلان" لإضافة إعلان جديد.</td></tr>';
         return;
     }
 
