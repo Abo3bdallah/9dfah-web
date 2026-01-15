@@ -20,67 +20,43 @@ async function initDynamicContent() {
 }
 
 /**
- * جلب الإعلان النشط وعرضه في النافذة المنبثقة
+ * جلب الإعلان الثابت (AD.webp) وعرضه
+ * تم تحويل النظام من ديناميكي (Supabase) إلى ثابت بناءً على طلب المستخدم
  */
 async function fetchAndDisplayAds() {
-    // جلب أحدث إعلان نشط
-    const { data: ads, error } = await supabase
-        .from('ads')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-    if (error || !ads || ads.length === 0) return;
-
-    const ad = ads[0];
-
     const modal = document.getElementById('announcement-modal');
     const imgElement = document.getElementById('announcement-image');
     
-    if (imgElement) {
-        imgElement.src = ad.image_url;
+    if (imgElement && modal) {
+        // استخدام صورة ثابتة من مجلد الصور
+        // إضافة طابع زمني لمنع التخزين المؤقت وتمكين التحديث الفوري عند تغيير الملف
+        const timestamp = new Date().getTime();
+        const imagePath = `images/AD.webp?v=${timestamp}`;
         
-        // إذا كان هناك رابط، نجعل الصورة قابلة للنقر
-        if (ad.link_url) {
-            imgElement.style.cursor = 'pointer';
-            imgElement.onclick = () => {
-                window.open(ad.link_url, '_blank');
-            };
-        }
+        // التحقق من تحميل الصورة بنجاح قبل عرض المودال
+        const tempImg = new Image();
+        tempImg.onload = function() {
+            imgElement.src = imagePath;
+            
+            // عرض المودال دائماً (يمكن تعديله لاحقاً ليكون مرة واحدة بالجلسة)
+            modal.style.display = 'flex';
+            
+            // إضافة الأنيميشن
+            setTimeout(() => {
+                const box = document.getElementById('announcement-modal-box');
+                if(box) {
+                    box.classList.remove('scale-95', 'opacity-0');
+                    box.classList.add('scale-100', 'opacity-100');
+                }
+            }, 10);
+        };
         
-        // منطق التكرار (Frequency)
-        // إذا كان always: يظهر دائماً (لا نتحقق من التخزين)
-        // إذا كان once: نتحقق من localStorage (ليظهر مرة واحدة فقط في الحياة)
+        tempImg.onerror = function() {
+            console.log('No static ad found (AD.webp)');
+            modal.style.display = 'none';
+        };
         
-        let shouldShow = false;
-
-        if (ad.frequency === 'always') {
-            shouldShow = true;
-        } else {
-            // الافتراضي هو once
-            const hasSeenAd = localStorage.getItem('seen_ad_' + ad.id);
-            if (!hasSeenAd) {
-                shouldShow = true;
-                // نسجل المشاهدة في LocalStorage (دائم) بدلاً من SessionStorage
-                localStorage.setItem('seen_ad_' + ad.id, 'true');
-            }
-        }
-
-        if (shouldShow) {
-             // عرض المودال
-             if (modal) {
-                 modal.style.display = 'flex';
-                 // إضافة الأنيميشن
-                 setTimeout(() => {
-                     const box = document.getElementById('announcement-modal-box');
-                     if(box) {
-                         box.classList.remove('scale-95', 'opacity-0');
-                         box.classList.add('scale-100', 'opacity-100');
-                     }
-                 }, 10);
-             }
-        }
+        tempImg.src = imagePath;
     }
 }
 

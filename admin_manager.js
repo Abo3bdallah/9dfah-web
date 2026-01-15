@@ -114,26 +114,21 @@ function injectAdminUI() {
                                 </nav>
                             </div>
 
-                            <!-- محتوى تبويب الإعلانات -->
+                            <!-- محتوى تبويب الإعلانات (ثابت) -->
                             <div id="content-ads" class="admin-content block">
-                                <div class="flex justify-between mb-4">
-                                    <h4 class="text-md font-semibold dark:text-white">قائمة الإعلانات</h4>
-                                    <button id="btn-add-ad" class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm">إضافة إعلان</button>
-                                </div>
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        <thead class="bg-zinc-50 dark:bg-zinc-800">
-                                            <tr>
-                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الصورة</th>
-                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">العنوان</th>
-                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">الحالة</th>
-                                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">إجراءات</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="ads-table-body" class="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-700">
-                                            <!-- سيتم تعبئة البيانات هنا بالجافاسكربت -->
-                                        </tbody>
-                                    </table>
+                                <div class="mb-4">
+                                    <h4 class="text-md font-semibold dark:text-white mb-2">الإعلان الثابت (Static Ad)</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        يتم عرض الصورة الموجودة في المسار <code dir="ltr" class="bg-gray-100 px-1 rounded">images/AD.webp</code>. لتغيير الإعلان، استبدل الملف في مجلد الصور.
+                                    </p>
+                                    
+                                    <div class="bg-zinc-50 dark:bg-zinc-800 p-4 rounded-lg border border-zinc-200 dark:border-zinc-700 flex flex-col items-center">
+                                        <div class="mb-2 font-medium text-sm text-zinc-700 dark:text-zinc-300">المعاينة الحالية:</div>
+                                        <img id="admin-static-ad-preview" src="" class="max-w-full h-auto max-h-64 rounded shadow-md border border-gray-200 bg-white" alt="Static Ad Preview" onerror="this.src='https://placehold.co/400x200?text=No+Ad+Found'">
+                                        <button onclick="loadAdsData()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition shadow-sm">
+                                            تحديث المعاينة
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -332,28 +327,7 @@ function setupAdminEventListeners() {
         };
     });
 
-    document.getElementById('btn-add-ad').onclick = () => {
-        showFormModal('إضافة إعلان جديد', [
-            { label: 'عنوان الإعلان', name: 'title', type: 'text' },
-            { label: 'رابط الصورة', name: 'imageUrl', type: 'text' },
-            { label: 'رابط التوجيه (اختياري)', name: 'linkUrl', type: 'text' },
-            { label: 'تكرار الظهور', name: 'frequency', type: 'select', value: 'once', options: [
-                { value: 'once', text: 'مرة واحدة (Once)' },
-                { value: 'always', text: 'دائماً (Always)' }
-            ]}
-        ], async (data) => {
-            if (!data.title || !data.imageUrl) throw new Error('العنوان والصورة مطلوبان');
-            const { error } = await supabase.from('ads').insert([{ 
-                title: data.title, 
-                image_url: data.imageUrl, 
-                link_url: data.linkUrl,
-                frequency: data.frequency,
-                is_active: true
-            }]);
-            if (error) throw error;
-            loadAdsData();
-        });
-    };
+
 
     document.getElementById('btn-add-tag').onclick = () => {
         showFormModal('إضافة تصنيف جديد', [
@@ -436,90 +410,13 @@ function setupAdminEventListeners() {
 // === دوال تحميل البيانات ===
 
 async function loadAdsData() {
-    const tbody = document.getElementById('ads-table-body');
-    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">جاري التحميل...</td></tr>';
-
-    const { data: ads, error } = await supabase.from('ads').select('*').order('created_at', { ascending: false });
-
-    if (error) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-red-500 py-4">${error.message}</td></tr>`;
-        return;
+    // تحديث معاينة الإعلان الثابت
+    const previewImg = document.getElementById('admin-static-ad-preview');
+    if (previewImg) {
+        const timestamp = new Date().getTime();
+        previewImg.src = `images/AD.webp?v=${timestamp}`;
+        console.log('Static ad preview refreshed');
     }
-
-    if (!ads || ads.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">لا توجد إعلانات حالياً. اضغط على زر "إضافة إعلان" لإضافة إعلان جديد.</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = '';
-    ads.forEach(ad => {
-        try {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors';
-
-            // Image Cell
-            const tdImg = document.createElement('td');
-            tdImg.className = 'px-6 py-4 whitespace-nowrap text-sm';
-            const img = document.createElement('img');
-            img.src = ad.image_url;
-            img.className = 'h-10 w-10 rounded object-cover border border-gray-200 dark:border-gray-700';
-            img.onerror = function() { this.src = 'https://placehold.co/100?text=Error'; };
-            tdImg.appendChild(img);
-
-            // Title Cell
-            const tdTitle = document.createElement('td');
-            tdTitle.className = 'px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100';
-            tdTitle.innerHTML = `
-                <div class="font-bold text-base">${ad.title || '-'}</div>
-                <div class="text-xs text-gray-500 mt-1">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</div>
-                ${ad.link_url ? `<div class="text-xs text-indigo-500 mt-1 truncate max-w-[200px]" dir="ltr" title="${ad.link_url}">${ad.link_url}</div>` : ''}
-            `;
-
-            // Status Cell
-            const tdStatus = document.createElement('td');
-            tdStatus.className = 'px-6 py-4 whitespace-nowrap text-sm';
-            const statusSpan = document.createElement('span');
-            statusSpan.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-            statusSpan.textContent = ad.is_active ? 'نشط' : 'غير نشط';
-            tdStatus.appendChild(statusSpan);
-
-            // Actions Cell
-            const tdActions = document.createElement('td');
-            tdActions.className = 'px-6 py-4 whitespace-nowrap text-left text-sm font-medium'; // Changed text-right to text-left for better button alignment in RTL context if needed, or keep text-right but ensure layout
-
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'flex items-center justify-end space-x-2 space-x-reverse';
-
-            const btnToggle = document.createElement('button');
-            btnToggle.className = 'text-indigo-600 hover:text-indigo-900 font-bold px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20';
-            btnToggle.textContent = ad.is_active ? 'تعطيل' : 'تفعيل';
-            btnToggle.onclick = () => window.toggleAdStatus(ad.id, !ad.is_active);
-
-            const btnEdit = document.createElement('button');
-            btnEdit.className = 'text-blue-600 hover:text-blue-900 font-bold px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20';
-            btnEdit.textContent = 'تعديل';
-            btnEdit.onclick = () => window.editAd(ad);
-
-            const btnDelete = document.createElement('button');
-            btnDelete.className = 'text-red-600 hover:text-red-900 font-bold px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20';
-            btnDelete.textContent = 'حذف';
-            btnDelete.onclick = () => window.deleteAd(ad.id);
-
-            actionsDiv.appendChild(btnToggle);
-            actionsDiv.appendChild(btnEdit);
-            actionsDiv.appendChild(btnDelete);
-            tdActions.appendChild(actionsDiv);
-
-            tr.appendChild(tdImg);
-            tr.appendChild(tdTitle);
-            tr.appendChild(tdStatus);
-            tr.appendChild(tdActions);
-
-            tbody.appendChild(tr);
-        } catch (err) {
-            console.error('Error rendering ad row:', err, ad);
-        }
-    });
 }
 
 async function loadTagsData() {
