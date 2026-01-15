@@ -446,64 +446,72 @@ async function loadAdsData() {
 
     tbody.innerHTML = '';
     ads.forEach(ad => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800';
+        try {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors';
 
-        // Image Cell
-        const tdImg = document.createElement('td');
-        tdImg.className = 'px-6 py-4 whitespace-nowrap text-sm';
-        const img = document.createElement('img');
-        img.src = ad.image_url;
-        img.className = 'h-10 w-10 rounded object-cover';
-        img.onerror = function() { this.src = 'https://placehold.co/100?text=Error'; };
-        tdImg.appendChild(img);
+            // Image Cell
+            const tdImg = document.createElement('td');
+            tdImg.className = 'px-6 py-4 whitespace-nowrap text-sm';
+            const img = document.createElement('img');
+            img.src = ad.image_url;
+            img.className = 'h-10 w-10 rounded object-cover border border-gray-200 dark:border-gray-700';
+            img.onerror = function() { this.src = 'https://placehold.co/100?text=Error'; };
+            tdImg.appendChild(img);
 
-        // Title Cell
-        const tdTitle = document.createElement('td');
-        tdTitle.className = 'px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100';
-        tdTitle.innerHTML = `
-            <div class="font-bold">${ad.title || '-'}</div>
-            <div class="text-xs text-gray-500">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</div>
-            ${ad.link_url ? `<div class="text-xs text-indigo-500 truncate max-w-[200px]" dir="ltr" title="${ad.link_url}">${ad.link_url}</div>` : ''}
-        `;
+            // Title Cell
+            const tdTitle = document.createElement('td');
+            tdTitle.className = 'px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100';
+            tdTitle.innerHTML = `
+                <div class="font-bold text-base">${ad.title || '-'}</div>
+                <div class="text-xs text-gray-500 mt-1">التكرار: ${ad.frequency === 'always' ? 'دائماً' : 'مرة واحدة'}</div>
+                ${ad.link_url ? `<div class="text-xs text-indigo-500 mt-1 truncate max-w-[200px]" dir="ltr" title="${ad.link_url}">${ad.link_url}</div>` : ''}
+            `;
 
-        // Status Cell
-        const tdStatus = document.createElement('td');
-        tdStatus.className = 'px-6 py-4 whitespace-nowrap text-sm';
-        const statusSpan = document.createElement('span');
-        statusSpan.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-        statusSpan.textContent = ad.is_active ? 'نشط' : 'غير نشط';
-        tdStatus.appendChild(statusSpan);
+            // Status Cell
+            const tdStatus = document.createElement('td');
+            tdStatus.className = 'px-6 py-4 whitespace-nowrap text-sm';
+            const statusSpan = document.createElement('span');
+            statusSpan.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ad.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            statusSpan.textContent = ad.is_active ? 'نشط' : 'غير نشط';
+            tdStatus.appendChild(statusSpan);
 
-        // Actions Cell
-        const tdActions = document.createElement('td');
-        tdActions.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+            // Actions Cell
+            const tdActions = document.createElement('td');
+            tdActions.className = 'px-6 py-4 whitespace-nowrap text-left text-sm font-medium'; // Changed text-right to text-left for better button alignment in RTL context if needed, or keep text-right but ensure layout
 
-        const btnToggle = document.createElement('button');
-        btnToggle.className = 'text-indigo-600 hover:text-indigo-900 ml-2';
-        btnToggle.textContent = ad.is_active ? 'تعطيل' : 'تفعيل';
-        btnToggle.onclick = () => toggleAdStatus(ad.id, !ad.is_active);
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'flex items-center justify-end space-x-2 space-x-reverse';
 
-        const btnEdit = document.createElement('button');
-        btnEdit.className = 'text-blue-600 hover:text-blue-900 ml-2';
-        btnEdit.textContent = 'تعديل';
-        btnEdit.onclick = () => editAd(ad);
+            const btnToggle = document.createElement('button');
+            btnToggle.className = 'text-indigo-600 hover:text-indigo-900 font-bold px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20';
+            btnToggle.textContent = ad.is_active ? 'تعطيل' : 'تفعيل';
+            btnToggle.onclick = () => window.toggleAdStatus(ad.id, !ad.is_active);
 
-        const btnDelete = document.createElement('button');
-        btnDelete.className = 'text-red-600 hover:text-red-900';
-        btnDelete.textContent = 'حذف';
-        btnDelete.onclick = () => deleteAd(ad.id);
+            const btnEdit = document.createElement('button');
+            btnEdit.className = 'text-blue-600 hover:text-blue-900 font-bold px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20';
+            btnEdit.textContent = 'تعديل';
+            btnEdit.onclick = () => window.editAd(ad);
 
-        tdActions.appendChild(btnToggle);
-        tdActions.appendChild(btnEdit);
-        tdActions.appendChild(btnDelete);
+            const btnDelete = document.createElement('button');
+            btnDelete.className = 'text-red-600 hover:text-red-900 font-bold px-2 py-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20';
+            btnDelete.textContent = 'حذف';
+            btnDelete.onclick = () => window.deleteAd(ad.id);
 
-        tr.appendChild(tdImg);
-        tr.appendChild(tdTitle);
-        tr.appendChild(tdStatus);
-        tr.appendChild(tdActions);
+            actionsDiv.appendChild(btnToggle);
+            actionsDiv.appendChild(btnEdit);
+            actionsDiv.appendChild(btnDelete);
+            tdActions.appendChild(actionsDiv);
 
-        tbody.appendChild(tr);
+            tr.appendChild(tdImg);
+            tr.appendChild(tdTitle);
+            tr.appendChild(tdStatus);
+            tr.appendChild(tdActions);
+
+            tbody.appendChild(tr);
+        } catch (err) {
+            console.error('Error rendering ad row:', err, ad);
+        }
     });
 }
 
