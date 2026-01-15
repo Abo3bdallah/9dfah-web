@@ -267,9 +267,17 @@ function injectAdminUI() {
     </div>
     `;
 
-    // حقن زر الأدمن وكل النوافذ في الـ body مباشرةً
-    const fullAdminHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
-    document.body.insertAdjacentHTML('beforeend', fullAdminHTML.trim());
+    // إنشاء حاوية معزولة للعناصر لمنع أي تأثير على تخطيط الصفحة
+    const adminContainer = document.createElement('div');
+    adminContainer.id = 'admin-ui-container';
+    // استخدام inset: 0 للتأكد من تغطية الشاشة بالكامل دون التأثير على التفاعل (pointer-events: none)
+    Object.assign(adminContainer.style, {
+        position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+        zIndex: '9999', pointerEvents: 'none'
+    });
+    
+    adminContainer.innerHTML = adminBtnHTML + modalHTML + formModalHTML + confirmModalHTML;
+    document.body.appendChild(adminContainer);
 }
 
 function setupAdminEventListeners() {
