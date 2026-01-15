@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الحروف - لوحة العرض</title>
+    <style>
+        /* تنسيق الصفحة العامة */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F5F5DC;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        /* --- شريط الأدوات السفلي (Bottom Bar) --- */
+        .bottom-bar {
+            position: fixed;
+            bottom: 30px; 
+            /* إضافة خصائص التوسط الدقيق */
+            left: 50%;
+            transform: translateX(50%); /* لأن الصفحة RTL */
+            transform: translateX(-50%); 
+            
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 50px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px; 
+            z-index: 100;
+            transition: transform 0.3s;
+            flex-wrap: wrap; 
+            justify-content: center;
+            width: max-content; 
+            max-width: 90%; 
+        }
+
+        .bar-btn {
+            background-color: transparent;
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            color: #2c3e50;
+            cursor: pointer;
+            border-radius: 20px;
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bar-btn:hover {
+            background-color: #f0f2f5;
+            color: #2980b9;
+        }
+
+        /* --- خلية النحل --- */
+        .honeycomb {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            transform: scale(0.65); 
+            transform-origin: center center; 
+            margin-bottom: 50px; 
+            transition: transform 0.2s ease-out; 
+        }
+
+        .hex-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .hex-row.overlap {
+            margin-bottom: -55px; 
+        }
+
+        /* ترتيب الطبقات */
+        .z-7 { z-index: 7; }
+        .z-6 { z-index: 6; }
+        .z-5 { z-index: 5; }
+        .z-4 { z-index: 4; }
+        .z-3 { z-index: 3; }
+        .z-2 { z-index: 2; }
+        .z-1 { z-index: 1; }
+
+        /* أنيميشن بسيط لحالة "جاري السؤال" */
+        @keyframes subtle-pulse {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
+            100% { filter: brightness(1); }
+        }
+
+        /* --- تصميم الشكل السداسي --- */
+        .hexagon {
+            width: 200px;
+            height: 220px;
+            position: relative; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2c3e50; 
+            font-weight: 800; 
+            font-size: 3rem; 
+            cursor: pointer;
+            user-select: none;
+            margin: 0 -1px; 
+            z-index: 1; 
+            filter: drop-shadow(0 4px 3px rgba(0,0,0,0.15)); 
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .hexagon:not(.frame):hover {
+            z-index: 10;
+            transform: scale(1.02); 
+        }
+
+        .hexagon::before, .hexagon::after {
+            content: "";
+            position: absolute;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .hexagon:not(.frame)::before {
+            inset: 0; 
+            background-color: transparent; 
+            z-index: -2; 
+        }
+
+        .hexagon:not(.frame)::after {
+            inset: 0; 
+            background-color: #ffffff; 
+            z-index: -1; 
+            transition: background-color 0.3s;
+        }
+
+        /* --- حالات الألوان --- */
+        .hexagon:not(.frame).state-selected {
+            color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4); /* زيادة الظل قليلاً للوضوح على الأصفر */
+            animation: subtle-pulse 2s infinite ease-in-out;
+        }
+        
+        /* تم تغيير اللون هنا ليصبح أصفر غامق دائماً */
+        .hexagon:not(.frame).state-selected::after { background-color: #f39c12; } 
+
+        .hexagon:not(.frame).state-red {
+            color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .hexagon:not(.frame).state-red::after { background-color: #c0392b; }
+        
+        .hexagon:not(.frame).state-green {
+            color: white; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .hexagon:not(.frame).state-green::after { background-color: #27ae60; }
+
+        /* --- الإطار --- */
+        .hexagon.frame { cursor: default; }
+        .hexagon.frame::before { inset: 0; z-index: -1; background-color: #ecf0f1; }
+        .hexagon.frame.red::before { background-color: #d63031; }
+        .hexagon.frame.green::before { background-color: #00b894; }
+        .hexagon.frame:active { transform: none; }
+
+        .spacer-margin { margin-right: 100px; }
+
+
+        /* ========================================= */
+        /* --- أنماط الألوان (Themes) --- */
+        /* ========================================= */
+        
+        /* 1. البرتقالي بدلاً من الأحمر */
+        body.alt-theme .hexagon:not(.frame).state-red::after { background-color: #e67e22; }
+        body.alt-theme .hexagon.frame.red::before { background-color: #d35400; }
+        body.alt-theme .hexagon:not(.frame).state-green::after { background-color: #1e8449; }
+        body.alt-theme .hexagon.frame.green::before { background-color: #145a32; }
+        body.alt-theme { background-color: #fff8e1; }
+
+        /* 2. الأزرق والأحمر */
+        /* تمت إزالة تخصيص التحديد من هنا لأنه أصبح افتراضياً */
+        body.blue-red-theme .hexagon:not(.frame).state-red::after { background-color: #5dade2; }
+        body.blue-red-theme .hexagon.frame.red::before { background-color: #2e86c1; }
+        body.blue-red-theme .hexagon:not(.frame).state-green::after { background-color: #e74c3c; }
+        body.blue-red-theme .hexagon.frame.green::before { background-color: #c0392b; }
+        body.blue-red-theme { background-color: #ecf0f1; }
+
+        /* ========================================= */
+        /* --- نافذة التتويج والاحتفال --- */
+        /* ========================================= */
+
+        /* نافذة اختيار الفائز */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 200; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 300px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 { margin-top: 0; color: #2c3e50; }
+
+        .winner-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .winner-btn:hover { transform: scale(1.05); }
+
+        /* أزرار اختيار الفائز تتغير ألوانها حسب الثيم */
+        .btn-team-1 { background-color: #c0392b; } /* أحمر افتراضي */
+        body.alt-theme .btn-team-1 { background-color: #e67e22; } /* برتقالي */
+        body.blue-red-theme .btn-team-1 { background-color: #5dade2; } /* أزرق */
+
+        .btn-team-2 { background-color: #27ae60; } /* أخضر افتراضي */
+        body.alt-theme .btn-team-2 { background-color: #1e8449; } /* أخضر غامق */
+        body.blue-red-theme .btn-team-2 { background-color: #e74c3c; } /* أحمر */
+
+        /* شاشة الاحتفال */
+        .celebration-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 300;
+            background-color: rgba(255,255,255,0.95);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: fadeIn 0.5s;
+        }
+
+        .celebration-message {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: bounceIn 1s infinite alternate;
+        }
+
+        .close-celebration {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        @keyframes bounceIn {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        /* القصاصات */
+        .confetti {
+            position: absolute;
+            width: 10px; height: 10px;
+            background-color: #f1c40f;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <!-- نافذة اختيار الفائز -->
+    <div id="winnerModal" class="modal">
+        <div class="modal-content">
+            <h2>من الفائز؟</h2>
+            <button class="winner-btn btn-team-1" onclick="celebrateWinner(1)">الفريق الأول (أعلى/أسفل)</button>
+            <button class="winner-btn btn-team-2" onclick="celebrateWinner(2)">الفريق الثاني (يمين/يسار)</button>
+            <button style="background:transparent; color:#7f8c8d; border:none; margin-top:10px; cursor:pointer;" onclick="closeWinnerModal()">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- شاشة الاحتفال -->
+    <div id="celebrationScreen" class="celebration-overlay">
+        <div id="celebrationText" class="celebration-message">مبروك!</div>
+        <button class="close-celebration" onclick="closeCelebration()">إغلاق</button>
+    </div>
+
+    <!-- جسم اللعبة -->
+    <div class="honeycomb" id="gameBoard">
+        <!-- الإطار العلوي -->
+        <div class="hex-row overlap z-7">
+            <div class="hexagon frame red" style="visibility: hidden;"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+        </div>
+        <!-- الصفوف -->
+        <div class="hex-row overlap z-6"><div class="hexagon frame green spacer-margin"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon frame green"></div></div>
+        <div class="hex-row overlap z-5"><div class="hexagon frame green"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon frame green"></div></div>
+        <div class="hex-row overlap z-4"><div class="hexagon frame green spacer-margin"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon frame green"></div></div>
+        <div class="hex-row overlap z-3"><div class="hexagon frame green"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon frame green"></div></div>
+        <div class="hex-row overlap z-2"><div class="hexagon frame green spacer-margin"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon"></div><div class="hexagon frame green"></div></div>
+        <!-- الإطار السفلي -->
+        <div class="hex-row z-1">
+            <div class="hexagon frame red" style="visibility: hidden;"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+            <div class="hexagon frame red"></div>
+        </div>
+    </div>
+
+    <!-- شريط الأدوات السفلي -->
+    <div class="bottom-bar">
+        <!-- أزرار التكبير والتصغير الجديدة -->
+        <button class="bar-btn" onclick="zoomBoard(0.05)" title="تكبير">
+            <span>➕</span>
+        </button>
+        <button class="bar-btn" onclick="zoomBoard(-0.05)" title="تصغير">
+            <span>➖</span>
+        </button>
+        
+        <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div> <!-- فاصل -->
+
+        <button class="bar-btn" onclick="resetBoard(true)">
+            <span>🎲</span> خلط الحروف
+        </button>
+        <button class="bar-btn" onclick="clearColors()">
+            <span>🧹</span> تصفير الألوان
+        </button>
+        <button class="bar-btn" onclick="invertFrameColors()">
+            <span>🔄</span> عكس الألوان
+        </button>
+        <button class="bar-btn" onclick="toggleColorTheme()">
+            <span>🎨</span> ألوان بديلة
+        </button>
+        <button class="bar-btn" onclick="openWinnerModal()">
+            <span>🏆</span> تتويج الفائز
+        </button>
+    </div>
+
+    <script>
+        const arabicLetters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'هـ', 'و', 'ي'];
+        const activeHexagons = document.querySelectorAll('.hexagon:not(.frame)');
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // متغير ومنطق التكبير (Zoom)
+        let currentScale = 0.65;
+        const honeycomb = document.querySelector('.honeycomb');
+
+        function zoomBoard(amount) {
+            currentScale += amount;
+            // حدود التكبير لمنع اختفاء اللعبة أو كبر حجمها بشكل مفرط
+            if (currentScale < 0.3) currentScale = 0.3;
+            if (currentScale > 1.2) currentScale = 1.2;
+            
+            honeycomb.style.transform = `scale(${currentScale})`;
+        }
+
+        // 1. خلط الحروف وتصفير الألوان
+        function resetBoard(shuffle = true) {
+            if (shuffle) {
+                const shuffledLetters = shuffleArray([...arabicLetters]);
+                activeHexagons.forEach((hex, index) => {
+                    if (index < shuffledLetters.length) {
+                        hex.innerText = shuffledLetters[index];
+                    } else {
+                        hex.innerText = "؟";
+                    }
+                });
+            }
+            clearColors();
+        }
+
+        // 2. تصفير الألوان فقط
+        function clearColors() {
+            activeHexagons.forEach((hex) => {
+                hex.classList.remove('state-selected', 'state-red', 'state-green');
+                hex.dataset.state = "0";
+            });
+        }
+
+        // 3. عكس ألوان الإطار
+        function invertFrameColors() {
+            const frameParts = document.querySelectorAll('.hexagon.frame');
+            frameParts.forEach((hex) => {
+                if (hex.classList.contains('red')) {
+                    hex.classList.remove('red');
+                    hex.classList.add('green');
+                } else if (hex.classList.contains('green')) {
+                    hex.classList.remove('green');
+                    hex.classList.add('red');
+                }
+            });
+        }
+
+        // 4. تغيير نمط الألوان
+        let themeIndex = 0; 
+        function toggleColorTheme() {
+            themeIndex++;
+            if (themeIndex > 2) themeIndex = 0;
+
+            document.body.classList.remove('alt-theme', 'blue-red-theme');
+            if (themeIndex === 1) document.body.classList.add('alt-theme');
+            else if (themeIndex === 2) document.body.classList.add('blue-red-theme');
+        }
+
+        // --- وظائف التتويج ---
+        function openWinnerModal() {
+            document.getElementById('winnerModal').style.display = 'flex';
+        }
+
+        function closeWinnerModal() {
+            document.getElementById('winnerModal').style.display = 'none';
+        }
+
+        function celebrateWinner(team) {
+            closeWinnerModal();
+            const screen = document.getElementById('celebrationScreen');
+            const msg = document.getElementById('celebrationText');
+            
+            let color = '';
+            let teamName = '';
+
+            // تحديد اللون واسم الفريق بناءً على الثيم والفريق المختار
+            if (themeIndex === 0) { // Default (Red vs Green)
+                if (team === 1) {
+                    color = '#c0392b';
+                    teamName = "الأحمر";
+                } else {
+                    color = '#27ae60';
+                    teamName = "الأخضر";
+                }
+            } else if (themeIndex === 1) { // Alt (Orange vs Dark Green)
+                if (team === 1) {
+                    color = '#e67e22';
+                    teamName = "البرتقالي";
+                } else {
+                    color = '#1e8449';
+                    teamName = "الأخضر الغامق";
+                }
+            } else if (themeIndex === 2) { // Blue/Red (Blue vs Red)
+                if (team === 1) {
+                    color = '#5dade2';
+                    teamName = "الأزرق";
+                } else {
+                    color = '#e74c3c';
+                    teamName = "الأحمر";
+                }
+            }
+
+            msg.style.color = color;
+            msg.innerText = `مبروك للفريق ${teamName}!`;
+            
+            screen.style.display = 'flex';
+            startConfetti(color);
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebrationScreen').style.display = 'none';
+            stopConfetti();
+        }
+
+        // --- منطق القصاصات (Confetti) ---
+        let confettiInterval;
+        function startConfetti(color) {
+            const colors = [color, '#f1c40f', '#ecf0f1'];
+            const container = document.getElementById('celebrationScreen');
+            
+            confettiInterval = setInterval(() => {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                
+                container.appendChild(conf);
+                
+                // إزالة العنصر بعد انتهاء الحركة
+                setTimeout(() => conf.remove(), 4000);
+            }, 50);
+        }
+
+        function stopConfetti() {
+            clearInterval(confettiInterval);
+            // تنظيف القصاصات المتبقية
+            const confettis = document.querySelectorAll('.confetti');
+            confettis.forEach(c => c.remove());
+        }
+
+        // --- منطق اللعبة ---
+        activeHexagons.forEach((hex) => {
+            hex.dataset.state = "0";
+            hex.addEventListener('click', function() {
+                let currentState = parseInt(hex.dataset.state);
+                currentState++;
+                if (currentState > 3) currentState = 0;
+                hex.dataset.state = currentState;
+                updateHexagonAppearance(hex, currentState);
+            });
+        });
+
+        function updateHexagonAppearance(element, currentState) {
+            element.classList.remove('state-selected', 'state-red', 'state-green');
+            if (currentState === 1) element.classList.add('state-selected');
+            else if (currentState === 2) element.classList.add('state-red');
+            else if (currentState === 3) element.classList.add('state-green');
+        }
+
+        resetBoard(true);
+    </script>
+</body>
+</html>

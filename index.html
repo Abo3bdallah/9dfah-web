@@ -1351,7 +1351,19 @@
         
     </div>
 </div>
-            <!-- === (نهاية البطاقة) === -->
+            <!-- بطاقة 6: حروف عبقر -->
+            <div data-appid="game-hrof" class="app-card block bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 dark:bg-zinc-800 cursor-pointer">
+                <div class="relative">
+                    <img src="images/HROF.WEBP" alt="صورة لعبة حروف عبقر" class="w-full h-auto" onerror="this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';">
+                    <button class="favorite-btn absolute top-3 right-3 p-2 rounded-full bg-black/30 text-white/70 hover:text-white active:scale-90 transition-all">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    </button>
+                </div>
+                <div class="p-6 app-card-body">
+                    <h3 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">6. حروف عبقر</h3>
+                    <p class="text-zinc-600 mb-4 dark:text-zinc-400">لعبة حروف تفاعلية لرفع الحماس بين الفرق على طريقة عبقر.</p>
+                </div>
+            </div>
             
         </main>
         <!-- تذييل الصفحة - تم التغيير إلى zinc -->
@@ -1603,6 +1615,18 @@
         
         <main>
             <iframe id="mafia-iframe" src="about:blank"></iframe>
+        </main>
+    </div>
+
+    <!-- صفحة لعبة حروف عبقر -->
+    <div id="page-game-hrof" class="page min-h-screen page-iframe-container">
+        <button class="btn-close-iframe flex items-center justify-center fixed top-11 left-11 z-[9999] w-10 h-10 bg-black/30 text-white rounded-full hover:bg-black/50 transition-all active:scale-90">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <main>
+            <iframe id="hrof-iframe" src="about:blank"></iframe>
         </main>
     </div>
 
@@ -1945,6 +1969,7 @@
             const pageGameMalkoof = document.getElementById('page-game-malkoof');
             const pageGameMafia = document.getElementById('page-game-mafia');
             const page4toWon = document.getElementById('page-4to-won');
+            const pageGameHrof = document.getElementById('page-game-hrof');
 
             // جلب كل الصفحات
             const allPages = document.querySelectorAll('.page');
@@ -1969,7 +1994,8 @@
                 'page-game-mileon': document.getElementById('mileon-iframe'), // تم تحديث هذا السطر ليشير إلى ID الصحيح
                 'game-malkoof': document.getElementById('malkoof-iframe'),
                 'game-mafia': document.getElementById('mafia-iframe'),
-                'page-4to-won': document.getElementById('page-4to-won-iframe')
+                'page-4to-won': document.getElementById('page-4to-won-iframe'),
+                'game-hrof': document.getElementById('hrof-iframe')
             };
 
             // ماب لأسماء ملفات IFrames
@@ -1990,7 +2016,8 @@
                 
                 'game-malkoof': 'malkoof-app.html',
                 'game-mafia': 'mafia-app.html',
-                'page-4to-won': '4to-won.html'
+                'page-4to-won': '4to-won.html',
+                'game-hrof': 'HROF-ABQAR-APP.HTML'
             };
             
             // (جديد) ماب لبيانات التطبيقات (للمفضلة)
@@ -2006,7 +2033,8 @@
                 'page-game-mileon': { title: '5. من سيربح المليون', img: 'images/game-million-alt.webp' },
                 'game-malkoof': { title: '1. مين الملقوف', img: 'images/game-malkoof-alt.webp' },
                 'game-mafia': { title: '2. مافيا', img: 'images/game-mafia-alt.webp' },
-                'page-4to-won': { title: '3. من سيربح الأربعة', img: 'images/game-million-alt.webp' }
+                'page-4to-won': { title: '3. من سيربح الأربعة', img: 'images/game-million-alt.webp' },
+                'game-hrof': { title: 'حروف عبقر', img: 'images/HROF.WEBP' }
             };
 
             // جلب أزرار "العودة" للصفحات العادية
@@ -2128,7 +2156,8 @@
                 'page-game-mileon': { element: pageGameMileon, iframe: iframes['page-game-mileon'], src: iframeSrcMap['page-game-mileon'] },
                 'game-malkoof': { element: pageGameMalkoof, iframe: iframes['game-malkoof'], src: iframeSrcMap['game-malkoof'] },
                 'game-mafia': { element: pageGameMafia, iframe: iframes['game-mafia'], src: iframeSrcMap['game-mafia'] },
-                'page-4to-won': { element: page4toWon, iframe: iframes['page-4to-won'], src: iframeSrcMap['page-4to-won'] }
+                'page-4to-won': { element: page4toWon, iframe: iframes['page-4to-won'], src: iframeSrcMap['page-4to-won'] },
+                'game-hrof': { element: pageGameHrof, iframe: iframes['game-hrof'], src: iframeSrcMap['game-hrof'] }
             };
 
             allAppCards.forEach(card => {
