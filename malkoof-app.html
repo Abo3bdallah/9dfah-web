@@ -2846,7 +2846,7 @@
                 button.className = button.className.replace('bg-sky-600 border-sky-400 text-white shadow-xl', 'bg-slate-600 border-slate-500 text-slate-300 hover:bg-slate-500');
             } else {
                 if (modalSelectedCategories.size >= 4) {
-                    customAlert('الحد الأقصى هو اختيار تصنيفين إلى أربع فقط!');
+                    customAlert('الحد الأقصى هو اختيار 4 تصنيفات فقط!');
                     return;
                 }
                 modalSelectedCategories.add(key);
@@ -2855,8 +2855,8 @@
         }
 
         function confirmTwoCategories() {
-            if (modalSelectedCategories.size !== 4) {
-                customAlert('يجب اختيار تصنيفين إلى أربع للمتابعة.');
+            if (modalSelectedCategories.size < 2) {
+                customAlert('يجب اختيار تصنيفين على الأقل للمتابعة.');
                 return;
             }
 
@@ -3017,8 +3017,8 @@
                 
                 const specialCategories = {
                     twoCategories: {
-                        name: "تصنيفين ✌️",
-                        desc: "اصنع لعبتك بنفسك واختر تصنيفين إلى أربع من اختيارك",
+                        name: "تصنيفات متعددة ✌️",
+                        desc: "اصنع لعبتك بنفسك واختر من 2 إلى 4 تصنيفات",
                         onclick: "openTwoCategoriesModal()"
                     },
                     random: {
